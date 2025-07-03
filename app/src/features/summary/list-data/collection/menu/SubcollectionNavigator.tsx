@@ -1,14 +1,13 @@
 import { mdiChevronDown, mdiFolderOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Button, Link, List, ListItem, ListItemIcon, ListItemText, Menu, Stack, Typography } from '@mui/material';
+import { Box, Button, List, Menu, Typography } from '@mui/material';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { ICollection } from 'interfaces/useCollectionApi.interface';
 import { useCallback, useEffect, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
-import appTheme from 'themes/appTheme';
+import { useHistory } from 'react-router';
+import { SubcollectionListItem } from './item/SubcollectionListItem';
 
 interface SubcollectionNavigatorProps {
   collectionId: number;
@@ -16,19 +15,19 @@ interface SubcollectionNavigatorProps {
 
 export const SubcollectionNavigator = ({ collectionId }: SubcollectionNavigatorProps) => {
   const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-  const [expandedCollections, setExpandedCollections] = useState<number[]>([]);
+  const history = useHistory();
   const biohubApi = useBiohubApi();
 
   const collectionsLoader = useDataLoader(() =>
     biohubApi.collection.findCollections(undefined, {
       parent_collection_id: collectionId,
-      include_children: true
+      include_children: false
     })
   );
 
   useEffect(() => {
     return () => {
-      setExpandedCollections([]);
+      setAnchorEl(null);
     };
   }, []);
 
@@ -46,63 +45,15 @@ export const SubcollectionNavigator = ({ collectionId }: SubcollectionNavigatorP
     setAnchorEl(null);
   }, []);
 
-  const handleHover = async (collection: ICollection) => {
-    if (collection.subcollections.length < 1) {
-      return;
-    }
-
-    setExpandedCollections((prev) => [...prev, collection.collection_id]);
-  };
+  const handleNavigate = useCallback(
+    (collectionId: number) => {
+      history.push(`/admin/collection/${collectionId}`);
+      setAnchorEl(null);
+    },
+    [history]
+  );
 
   const isOpen = Boolean(anchorEl);
-
-  const renderCollectionItems = (items: ICollection[], depth = 0): JSX.Element[] => {
-    const result: JSX.Element[] = [];
-
-    for (const item of items) {
-      result.push(
-        <ListItem key={item.collection_id} sx={{ pl: 2 + depth * 2 }} onMouseEnter={() => handleHover(item)} button>
-          <ListItemIcon>
-            <Icon path={mdiFolderOutline} size={0.9} />
-          </ListItemIcon>
-
-          <ListItemText
-            primary={
-              <Stack flexDirection="row" alignItems="center" justifyContent="space-between" width="100%">
-                <Link
-                  component={RouterLink}
-                  to={`/admin/collections/${item.collection_id}`}
-                  underline="always"
-                  sx={{
-                    fontWeight: 700,
-                    fontSize: '0.875rem',
-                    overflow: 'hidden',
-                    textOverflow: 'ellipsis',
-                    whiteSpace: 'nowrap',
-                    flexGrow: 1
-                  }}
-                  title={item.name}>
-                  {item.name}
-                </Link>
-
-                {item.subcollections.length > 0 && (
-                  <Icon path={mdiChevronDown} size={0.85} color={appTheme.palette.primary.main} />
-                )}
-              </Stack>
-            }
-            sx={{ pr: 1 }}
-          />
-        </ListItem>
-      );
-
-      // Insert children if expanded
-      if (expandedCollections.includes(item.collection_id) && item.subcollections?.length) {
-        result.push(...renderCollectionItems(item.subcollections, depth + 1));
-      }
-    }
-
-    return result;
-  };
 
   return (
     <>
@@ -141,7 +92,13 @@ export const SubcollectionNavigator = ({ collectionId }: SubcollectionNavigatorP
 
         <LoadingGuard isLoading={collectionsLoader.isLoading} isLoadingFallback={<SkeletonList numberOfLines={1} />}>
           <List disablePadding>
-            {collectionsLoader.data?.collections ? renderCollectionItems(collectionsLoader.data.collections) : null}
+            {collectionsLoader.data?.collections.map((collection) => (
+              <SubcollectionListItem
+                key={collection.collection_id}
+                collection={collection}
+                onNavigate={handleNavigate}
+              />
+            ))}
           </List>
         </LoadingGuard>
       </Menu>

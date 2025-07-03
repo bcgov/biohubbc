@@ -1,193 +1,118 @@
-// SubcollectionListItem.tsx
-import { mdiChevronRight, mdiFolderOutline } from '@mdi/js';
+import { mdiChevronDown, mdiFolderOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, List, ListItem, ListItemIcon, ListItemText, Menu } from '@mui/material';
+import { Box, Collapse, Link, List, ListItem, ListItemIcon, ListItemText, Stack } from '@mui/material';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICollection } from 'interfaces/useCollectionApi.interface';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
+import { Link as RouterLink } from 'react-router-dom';
+import appTheme from 'themes/appTheme';
 
 interface SubcollectionListItemProps {
   collection: ICollection;
-  openMenuPath: number[];
-  onHover: (collectionId: number, parentId: number | null) => void;
+  depth?: number;
   onNavigate: (collectionId: number) => void;
-  onClose?: () => void;
-  parentId: number | null;
 }
 
-export const SubcollectionListItem = ({
-  collection,
-  openMenuPath,
-  onHover,
-  onNavigate,
-  onClose,
-  parentId
-}: SubcollectionListItemProps) => {
-  const [nestedAnchorEl, setNestedAnchorEl] = useState<HTMLElement | null>(null);
-  const [closeTimeout, setCloseTimeout] = useState<NodeJS.Timeout | null>(null);
-
-  const isSubmenuOpen = openMenuPath.includes(collection.collection_id);
-
+export const SubcollectionListItem = ({ collection, depth = 0, onNavigate }: SubcollectionListItemProps) => {
+  const [expanded, setExpanded] = useState(false);
   const biohubApi = useBiohubApi();
 
   const subcollectionsLoader = useDataLoader(() =>
     biohubApi.collection.findCollections(undefined, {
       parent_collection_id: collection.collection_id,
-      include_children: true
+      include_children: false
     })
   );
 
-  const subcollections = subcollectionsLoader.data?.collections ?? [];
-  const hasSubcollections = collection.subcollections && collection.subcollections.length > 0;
+  const hasChildren = (collection.subcollections?.length ?? 0) > 0;
 
-  const handleMouseEnter = useCallback(
-    (event: React.MouseEvent<HTMLElement>) => {
-      if (closeTimeout) {
-        clearTimeout(closeTimeout);
-        setCloseTimeout(null);
-      }
-
-      if (hasSubcollections) {
-        onHover(collection.collection_id, parentId);
-        subcollectionsLoader.load();
-        if (!nestedAnchorEl) {
-          setNestedAnchorEl(event.currentTarget);
-        }
-      } else {
-        onHover(collection.collection_id, parentId);
-      }
-    },
-    [closeTimeout, hasSubcollections, onHover, collection.collection_id, parentId, subcollectionsLoader, nestedAnchorEl]
-  );
-
-  const handleCloseNestedMenu = useCallback(() => {
-    onHover(parentId ?? 0, null);
-  }, [onHover, parentId]);
-
-  const handleDelayedClose = useCallback(() => {
-    if (closeTimeout) {
-      clearTimeout(closeTimeout);
+  const toggleExpanded = () => {
+    if (!expanded && !subcollectionsLoader.data) {
+      subcollectionsLoader.load();
     }
-    const timeout = setTimeout(handleCloseNestedMenu, 100);
-    setCloseTimeout(timeout);
-  }, [handleCloseNestedMenu, closeTimeout]);
+    setExpanded(true);
+  };
 
-  const handleCancelClose = useCallback(() => {
-    if (closeTimeout) {
-      clearTimeout(closeTimeout);
-      setCloseTimeout(null);
-    }
-  }, [closeTimeout]);
-
-  useEffect(() => {
-    return () => {
-      if (closeTimeout) {
-        clearTimeout(closeTimeout);
-      }
-    };
-  }, [closeTimeout]);
-
-  const handleNavigate = useCallback(() => {
-    onNavigate(collection.collection_id);
-    onClose?.();
-  }, [onNavigate, collection.collection_id, onClose]);
-
-  const handleNestedNavigate = useCallback(
-    (collectionId: number) => {
-      onNavigate(collectionId);
-      handleCloseNestedMenu();
-      onClose?.();
+  const handleNavigate = useCallback(
+    (event: React.MouseEvent) => {
+      event.stopPropagation(); // Prevent toggling expand when clicking the link
+      onNavigate(collection.collection_id);
     },
-    [onNavigate, handleCloseNestedMenu, onClose]
+    [collection.collection_id, onNavigate]
   );
 
   return (
     <>
       <ListItem
-        disablePadding
-        color="primary"
-        onClick={handleNavigate}
-        onMouseEnter={handleMouseEnter}
+        onMouseEnter={hasChildren ? toggleExpanded : undefined}
         sx={{
-          pl: 2,
-          pr: 1,
-          minHeight: 44,
+          pl: 2 + depth * 2,
           display: 'flex',
           alignItems: 'center',
-          position: 'relative',
-          zIndex: 999999,
-          '&:hover': {
-            backgroundColor: 'action.hover'
-          }
+          cursor: hasChildren ? 'pointer' : 'default'
         }}>
-        <ListItemIcon sx={{ minWidth: 36 }}>
-          <Icon path={mdiFolderOutline} size={0.9} color="currentColor" />
+        <ListItemIcon>
+          <Icon path={mdiFolderOutline} size={0.9} />
         </ListItemIcon>
 
         <ListItemText
-          primary={collection.name}
-          primaryTypographyProps={{
-            fontSize: '0.875rem',
-            fontWeight: 400,
-            noWrap: true
-          }}
-        />
+          primary={
+            <Stack direction="row" alignItems="center" justifyContent="space-between" width="100%" spacing={1}>
+              <Link
+                component={RouterLink}
+                to={`/admin/collections/${collection.collection_id}`}
+                underline="hover"
+                sx={{
+                  fontWeight: 700,
+                  fontSize: '0.875rem',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap',
+                  flexGrow: 1
+                }}
+                title={collection.name}
+                onClick={handleNavigate}>
+                {collection.name}
+              </Link>
 
-        {hasSubcollections && (
-          <Box sx={{ display: 'flex', alignItems: 'center', mx: 2, opacity: 0.6 }}>
-            <Icon path={mdiChevronRight} size={0.85} />
-          </Box>
-        )}
+              {hasChildren && (
+                <Icon
+                  path={mdiChevronDown}
+                  size={0.85}
+                  color={appTheme.palette.primary.main}
+                  style={{
+                    transform: expanded ? 'rotate(180deg)' : 'rotate(0deg)',
+                    transition: 'transform 0.2s ease'
+                  }}
+                />
+              )}
+            </Stack>
+          }
+          sx={{ pr: 1 }}
+        />
       </ListItem>
 
-      {isSubmenuOpen && hasSubcollections && (
-        <Menu
-          anchorEl={nestedAnchorEl}
-          open={isSubmenuOpen}
-          onClose={handleCloseNestedMenu}
-          anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
-          transformOrigin={{ vertical: 'top', horizontal: 'left' }}
-          slotProps={{
-            paper: {
-              elevation: 8,
-              onMouseLeave: handleDelayedClose,
-              onMouseEnter: handleCancelClose,
-              sx: {
-                zIndex: 99999,
-                minWidth: 320,
-                maxWidth: 480,
-                maxHeight: 500,
-                overflow: 'auto',
-                mt: -1,
-                ml: 0.2,
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 2
-              }
-            }
-          }}>
+      <Collapse in={expanded} timeout="auto" unmountOnExit>
+        <Box>
           <LoadingGuard
             isLoading={subcollectionsLoader.isLoading}
             isLoadingFallback={<SkeletonList numberOfLines={1} />}>
             <List disablePadding>
-              {subcollections.map((subcollection) => (
+              {subcollectionsLoader.data?.collections.map((subcollection) => (
                 <SubcollectionListItem
                   key={subcollection.collection_id}
                   collection={subcollection}
-                  openMenuPath={openMenuPath}
-                  onHover={onHover}
-                  onNavigate={handleNestedNavigate}
-                  onClose={onClose}
-                  parentId={collection.collection_id}
+                  depth={depth + 1}
+                  onNavigate={onNavigate}
                 />
               ))}
             </List>
           </LoadingGuard>
-        </Menu>
-      )}
+        </Box>
+      </Collapse>
     </>
   );
 };

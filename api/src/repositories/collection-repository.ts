@@ -96,20 +96,19 @@ export class CollectionRepository extends BaseRepository {
           .from('collection AS c');
 
         const parentId = filterFields?.parent_collection_id;
-        const includeChildren = filterFields?.include_children !== false;
+        // const includeChildren = !!filterFields?.include_children
 
-        if (!includeChildren) {
-          if (parentId) {
-            base.where('c.collection_id', parentId);
-          } else {
-            base.whereNull('c.parent_collection_id');
-          }
-          return base;
-        }
+        // if (!includeChildren) {
+        //   if (parentId) {
+        //     base.where('c.collection_id', parentId);
+        //   } else {
+        //     base.whereNull('c.parent_collection_id');
+        //   }
+        //   return base;
+        // }
 
-        // This is the part you want
         if (parentId) {
-          base.where('c.collection_id', parentId); // Start recursion here
+          base.where('c.collection_id', parentId); // Start recursion at the parent if a parent_collection_id is given
         } else {
           base.whereNull('c.parent_collection_id');
         }
@@ -338,23 +337,23 @@ export class CollectionRepository extends BaseRepository {
       );
     }
 
-    // Handle parent_collection_id logic
-    if (filterFields.parent_collection_id) {
-      getCollectionIdsQuery.where('collection.parent_collection_id', filterFields.parent_collection_id);
-    } else {
-      // No explicit parent specified: include top-level collections (either no parent or inaccessible parent)
-      getCollectionIdsQuery.where(function () {
-        this.whereNull('collection.parent_collection_id').orWhereNotIn('collection.parent_collection_id', function () {
-          this.select('collection_id').from('collection');
-        });
-      });
-    }
-
     const query = knex.queryBuilder();
 
     this._getCollectionsHierarchyBaseQuery(query, filterFields);
 
     query.whereIn('collection.collection_id', getCollectionIdsQuery);
+
+    // Handle parent_collection_id logic
+    if (filterFields.parent_collection_id) {
+      query.where('collection.parent_collection_id', filterFields.parent_collection_id);
+    } else {
+      // No explicit parent specified: include top-level collections (either no parent or inaccessible parent)
+      query.where(function () {
+        this.whereNull('collection.parent_collection_id').orWhereNotIn('collection.parent_collection_id', function () {
+          this.select('collection_id').from('collection');
+        });
+      });
+    }
 
     return query;
   }
