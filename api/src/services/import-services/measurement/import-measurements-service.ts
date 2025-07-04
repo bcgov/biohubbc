@@ -31,7 +31,7 @@ import { getTsnFromMeasurementRow } from './utils/measurement-utils';
 const defaultLog = getLogger('services/import/import-measurement-service');
 
 // Measurement CSV static headers
-export type MeasurementCSVStaticHeader = 'ALIAS' | 'CAPTURE_DATE' | 'CAPTURE_TIME';
+export type MeasurementCSVStaticHeader = 'ALIAS' | 'DATE' | 'TIME';
 
 /**
  * ImportMeasurementsService - A service for importing Measurements from a CSV into Critterbase.
@@ -59,8 +59,8 @@ export class ImportMeasurementsService extends DBService {
     const initialConfig: CSVConfig<MeasurementCSVStaticHeader> = {
       staticHeadersConfig: {
         ALIAS: { aliases: ['NICKNAME', 'ANIMAL'] },
-        CAPTURE_DATE: { aliases: ['CAPTURE DATE', 'DATE'] },
-        CAPTURE_TIME: { aliases: ['CAPTURE TIME', 'TIME'] }
+        DATE: { aliases: ['CAPTURE_DATE', 'MORTALITY_DATE', 'CAPTURE DATE', 'MORTALITY DATE'] },
+        TIME: { aliases: ['CAPTURE TIME', 'MORTALITY_TIME', 'CAPTURE_TIME', 'MORTALITY TIME'] }
       },
       ignoreDynamicHeaders: false
     };
@@ -139,17 +139,25 @@ export class ImportMeasurementsService extends DBService {
     // Set the static header configs for additional error information
     this.utils.setAllStaticHeaderConfigs({
       ALIAS: { validateCell: (params) => validateZodCell(params.cell, z.string()) },
-      CAPTURE_DATE: { validateCell: getDateCellValidator() },
-      CAPTURE_TIME: { validateCell: getTimeCellValidator() }
+      DATE: { validateCell: getDateCellValidator() },
+      TIME: { validateCell: getTimeCellValidator() }
     });
 
     const config = this.utils.getConfig();
 
-    // Inject the row validator based on context
+    // Inject the row validator based on context, passing correct static headers for both mortality and capture
     config.rowValidators = [
       context === 'mortalities'
-        ? getCritterMortalityRowValidator(surveyAliasMap, this.utils)
-        : getCritterCaptureRowValidator(surveyAliasMap, this.utils)
+        ? getCritterMortalityRowValidator(surveyAliasMap, this.utils, {
+            alias: 'ALIAS',
+            mortalityDate: 'DATE',
+            mortalityTime: 'TIME'
+          })
+        : getCritterCaptureRowValidator(surveyAliasMap, this.utils, {
+            alias: 'ALIAS',
+            captureDate: 'DATE',
+            captureTime: 'TIME'
+          })
     ];
 
     // Inject dynamic header config - handles measurement validation

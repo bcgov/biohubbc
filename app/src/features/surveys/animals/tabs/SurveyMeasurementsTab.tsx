@@ -115,7 +115,6 @@ export const SurveyMeasurementsTab = () => {
 
   // filteredMeasurements
   const measurementRows = filteredMeasurements;
-  console.log('measurementRows', measurementRows);
 
   const columns = [
     {

@@ -60,10 +60,39 @@ export const getCritterMortalityRowValidator = (
       ];
     }
 
-    // Optionally, match by date/time if needed
+    // Match by date/time
+    const rowDate = utils.getCellValue(headers.mortalityDate, params.row);
+    const rowTime = utils.getCellValue(headers.mortalityTime, params.row);
+    // Use the same formatting as in import-mortality-service.ts
+    const dayjs = require('dayjs');
+    const tz = require('dayjs/plugin/timezone');
+    const utc = require('dayjs/plugin/utc');
+    dayjs.extend(utc);
+    dayjs.extend(tz);
+    const { formatDateString, formatTimeString } = require('../../../utils/date-time-utils');
+    const rowTimestamp = dayjs
+      .tz(
+        rowTime ? `${formatDateString(rowDate)} ${formatTimeString(rowTime)}` : formatDateString(rowDate),
+        'America/Los_Angeles'
+      )
+      .format();
+
+    // critter.mortality can be an array or single object, handle both
+    const mortalities = Array.isArray(critter.mortality) ? critter.mortality : [critter.mortality];
+    const matched = mortalities.find((m) => m.mortality_timestamp === rowTimestamp);
+    if (!matched) {
+      return [
+        {
+          error: `No mortality event found for critter on this date/time`,
+          solution: `Check the mortality date/time for this animal`,
+          header: utils.getWorksheetHeader(headers.mortalityDate, params.row),
+          cell: rowDate
+        }
+      ];
+    }
     updateCSVRowState(params.row, {
       critter_id: critter.critter_id,
-      mortality_id: critter.mortality.mortality_id
+      mortality_id: matched.mortality_id
     });
     return [];
   };
