@@ -213,13 +213,11 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
       description: 'The frequency of the device',
       flex: 1,
       renderCell: (params) => (
-        <Typography>
+        <Typography variant="body2">
           {params.row.frequency}&nbsp;
-          <Typography color="textSecondary" component="span">
-            {codesContext.codesDataLoader.data?.frequency_units.find(
-              (frequencyUnit) => frequencyUnit.id === params.row.frequency_unit_id
-            )?.name ?? null}
-          </Typography>
+          {codesContext.codesDataLoader.data?.frequency_units.find(
+            (frequencyUnit) => frequencyUnit.id === params.row.frequency_unit_id
+          )?.name ?? null}
         </Typography>
       )
     },
