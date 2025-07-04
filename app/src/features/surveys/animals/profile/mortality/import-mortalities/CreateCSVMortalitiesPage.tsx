@@ -164,7 +164,7 @@ export const CreateCSVMortalitiesPage = () => {
     // Measurements / Markings can be uploaded in parallel
     const [measurementStatus, markingStatus] = await Promise.all([
       handleFileUpload('measurements', (file, onProgress) =>
-        biohubApi.survey.importMeasurementsFromCsv(file, surveyId, cancelToken, onProgress)
+        biohubApi.survey.importMeasurementsFromCsv(file, surveyId, 'mortalities', cancelToken, onProgress)
       ),
       handleFileUpload('markings', (file, onProgress) =>
         biohubApi.survey.importMarkingsFromCsv(file, surveyId, cancelToken, onProgress)

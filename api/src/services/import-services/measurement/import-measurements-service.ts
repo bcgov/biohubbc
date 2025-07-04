@@ -10,6 +10,7 @@ import {
   validateZodCell
 } from '../../../utils/csv-utils/csv-header-configs';
 import { getCritterCaptureRowValidator } from '../../../utils/csv-utils/row-validators/critter-capture-row-validator';
+import { getCritterMortalityRowValidator } from '../../../utils/csv-utils/row-validators/critter-mortality-row-validator';
 import { getLogger } from '../../../utils/logger';
 import { CritterbaseService, ICritterDetailed, IQualMeasurement, IQuantMeasurement } from '../../critterbase-service';
 import { DBService } from '../../db-service';
@@ -73,64 +74,55 @@ export class ImportMeasurementsService extends DBService {
   }
 
   /**
-   * Import a Marking CSV worksheet into Critterbase.
+   * Import a Measurement CSV worksheet into Critterbase.
    *
    * @async
+   * @param {'captures' | 'mortalities'} context - Determines which event type to match (capture or mortality)
    * @throws {ApiGeneralError} - If unable to fully insert records into Critterbase
    * @returns {*} {Promise<CSVError[]>} List of CSV errors encountered during import
    */
-  async importCSVWorksheet(): Promise<CSVError[]> {
-    const config = await this.getCSVConfig();
-
+  async importCSVWorksheet(context: 'captures' | 'mortalities' = 'captures'): Promise<CSVError[]> {
+    const config = await this.getCSVConfig(context);
     const { errors, rows } = validateCSVWorksheet(this.worksheet, config);
-
     if (errors.length) {
       return errors;
     }
-
     const qualitativeMeasurements: IQualMeasurement[] = [];
     const quantitativeMeasurements: IQuantMeasurement[] = [];
-
+    // Choose the correct row state getter based on context
+    const getCritterEventFromRowState =
+      context === 'mortalities'
+        ? require('../utils/row-state').getCritterMortalityFromRowState
+        : getCritterCaptureFromRowState;
     for (const row of rows) {
       this.utils.worksheetDynamicHeaders.forEach((header) => {
         const stateMeasurement = row[CSVRowState]?.[header];
-
-        // Grab the qualitative measurement from the row
         if (isCBQualitativeMeasurementStub(stateMeasurement)) {
-          // Get the critter and qualitative measurement meta from the row state
-          const critter = getCritterCaptureFromRowState(row);
+          const critter = getCritterEventFromRowState(row);
           const qualitativeMeasurement = getQualitativeMeasurementFromRowState(stateMeasurement);
-
           qualitativeMeasurements.push({
             critter_id: critter.critter_id,
-            capture_id: critter.capture_id,
+            ...(context === 'captures' ? { capture_id: critter.capture_id } : { mortality_id: critter.mortality_id }),
             taxon_measurement_id: qualitativeMeasurement.taxon_measurement_id,
             qualitative_option_id: qualitativeMeasurement.qualitative_option_id
           });
-        }
-        // Grab the quantitative measurement from the row
-        else if (isCBQuantitativeMeasurementStub(stateMeasurement)) {
-          // Get the critter and quantitative measurement meta from the row state
-          const critter = getCritterCaptureFromRowState(row);
+        } else if (isCBQuantitativeMeasurementStub(stateMeasurement)) {
+          const critter = getCritterEventFromRowState(row);
           const quantitativeMeasurement = getQuantitativeMeasurementFromRowState(stateMeasurement);
-
           quantitativeMeasurements.push({
             critter_id: critter.critter_id,
-            capture_id: critter.capture_id,
+            ...(context === 'captures' ? { capture_id: critter.capture_id } : { mortality_id: critter.mortality_id }),
             taxon_measurement_id: quantitativeMeasurement.taxon_measurement_id,
             value: quantitativeMeasurement.value
           });
         }
       });
     }
-
-    defaultLog.debug({ label: 'import measurements', qualitativeMeasurements, quantitativeMeasurements });
-
+    defaultLog.debug({ label: 'import measurements', context, qualitativeMeasurements, quantitativeMeasurements });
     await this.critterbaseService.bulkCreate({
       qualitative_measurements: qualitativeMeasurements,
       quantitative_measurements: quantitativeMeasurements
     });
-
     return [];
   }
 
@@ -139,7 +131,7 @@ export class ImportMeasurementsService extends DBService {
    *
    * @returns {Promise<CSVConfig<MeasurementCSVStaticHeader>>} The CSV configuration
    */
-  async getCSVConfig(): Promise<CSVConfig<MeasurementCSVStaticHeader>> {
+  async getCSVConfig(context: 'captures' | 'mortalities' = 'captures'): Promise<CSVConfig<MeasurementCSVStaticHeader>> {
     const surveyAliasMap = await this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId);
     const worksheetTsns = this._getWorksheetTsns(surveyAliasMap);
     const measurementDictionary = await getTsnMeasurementDictionary(worksheetTsns, this.critterbaseService);
@@ -153,8 +145,12 @@ export class ImportMeasurementsService extends DBService {
 
     const config = this.utils.getConfig();
 
-    // Inject the row validator - handles critter/alias capture validation
-    config.rowValidators = [getCritterCaptureRowValidator(surveyAliasMap, this.utils)];
+    // Inject the row validator based on context
+    config.rowValidators = [
+      context === 'mortalities'
+        ? getCritterMortalityRowValidator(surveyAliasMap, this.utils)
+        : getCritterCaptureRowValidator(surveyAliasMap, this.utils)
+    ];
 
     // Inject dynamic header config - handles measurement validation
     config.dynamicHeadersConfig = {
