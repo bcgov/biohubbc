@@ -96,16 +96,6 @@ export class CollectionRepository extends BaseRepository {
           .from('collection AS c');
 
         const parentId = filterFields?.parent_collection_id;
-        // const includeChildren = !!filterFields?.include_children
-
-        // if (!includeChildren) {
-        //   if (parentId) {
-        //     base.where('c.collection_id', parentId);
-        //   } else {
-        //     base.whereNull('c.parent_collection_id');
-        //   }
-        //   return base;
-        // }
 
         if (parentId) {
           base.where('c.collection_id', parentId); // Start recursion at the parent if a parent_collection_id is given

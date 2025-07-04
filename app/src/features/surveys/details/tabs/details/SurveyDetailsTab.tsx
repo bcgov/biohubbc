@@ -20,7 +20,6 @@ import { IGetSurveyChecklist } from 'interfaces/useChecklistApi.interface';
 import { SidebarLayout } from 'layouts/SidebarLayout';
 import SurveyMembersContainer from '../permissions/members/SurveyMembersContainer';
 import { LinearProgressWithLabel } from './checklist/progress/SurveyChecklistProgressBar';
-import { SurveyChecklistManager } from './checklist/SurveyChecklistManager';
 import { SurveySpatialAnimals } from './data/animals/SurveySpatialAnimals';
 import { SurveySpatialHabitatFeatures } from './data/habitat/SurveySpatialHabitatFeatures';
 import { SurveySpatialObservations } from './data/observations/SurveySpatialObservations';
@@ -65,73 +64,69 @@ export const SurveyDetailsTab = ({ checklist }: SurveyDetailsTabProps) => {
   return (
     <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
       <Box sx={{ flex: 1, minWidth: 0, height: '100%' }}>
-        <SurveyChecklistManager checklist={checklist}>
-          {() => (
-            <SidebarLayout
-              sx={{ borderRadius: '4px' }}
-              sidebar={
-                <Box
-                  p={2}
-                  sx={{
-                    minWidth: 250,
-                    width: showProgress ? '30%' : 400,
-                    transition: 'width 0.3s ease',
-                    overflowX: 'hidden'
-                  }}>
-                  <Paper
-                    role="button"
-                    tabIndex={0}
-                    elevation={0}
-                    onClick={() => setShowProgress((prev) => !prev)}
-                    sx={{
-                      bgcolor: grey[50],
-                      p: 2,
-                      mb: 2,
-                      cursor: 'pointer',
-                      transition: 'box-shadow 0.1s linear, background-color 0.2s ease',
-                      '&:hover': {
-                        backgroundColor: grey[100]
-                      },
-                      '&:focus-visible': {
-                        outline: `2px solid ${grey[400]}`,
-                        outlineOffset: 2
-                      }
-                    }}>
-                    <Box display="flex" justifyContent="space-between">
-                      <Typography component="legend">Checklist</Typography>
-                      <Icon path={mdiArrowExpand} size={0.8} color={grey[500]} style={{ marginTop: '2px' }} />
-                    </Box>
-                    <Box mt={1}>
-                      <LinearProgressWithLabel value={checklist.progress_percentage} />
-                    </Box>
-                  </Paper>
-
-                  <HiearchicalSurveyViewToggle
-                    checklist={checklist}
-                    activeView={activeView}
-                    setActiveView={handleSetActiveView}
-                  />
+        <SidebarLayout
+          sx={{ borderRadius: '4px' }}
+          sidebar={
+            <Box
+              p={2}
+              sx={{
+                minWidth: 250,
+                width: showProgress ? '30%' : 400,
+                transition: 'width 0.3s ease',
+                overflowX: 'hidden'
+              }}>
+              <Paper
+                role="button"
+                tabIndex={0}
+                elevation={0}
+                onClick={() => setShowProgress((prev) => !prev)}
+                sx={{
+                  bgcolor: grey[50],
+                  p: 2,
+                  mb: 2,
+                  cursor: 'pointer',
+                  transition: 'box-shadow 0.1s linear, background-color 0.2s ease',
+                  '&:hover': {
+                    backgroundColor: grey[100]
+                  },
+                  '&:focus-visible': {
+                    outline: `2px solid ${grey[400]}`,
+                    outlineOffset: 2
+                  }
+                }}>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography component="legend">Checklist</Typography>
+                  <Icon path={mdiArrowExpand} size={0.8} color={grey[500]} style={{ marginTop: '2px' }} />
                 </Box>
-              }>
-              <ComponentSwitch
-                switch={activeView}
-                components={{
-                  [SURVEY_ACTIVE_VIEW_VALUE.overview]: <SurveyOverviewPage />,
-                  [SAMPLING_ACTIVE_VIEW_VALUE.sites]: <SamplingSiteContainer />,
-                  [SAMPLING_ACTIVE_VIEW_VALUE.techniques]: <SamplingTechniqueContainer />,
-                  [SAMPLING_ACTIVE_VIEW_VALUE.periods]: <SamplingPeriodContainer />,
-                  [DATA_ACTIVE_VIEW_VALUE.observations]: <SurveySpatialObservations />,
-                  [DATA_ACTIVE_VIEW_VALUE.devices]: <DevicesContainer />,
-                  [DATA_ACTIVE_VIEW_VALUE.deployments]: <SurveyDeploymentList />,
-                  [DATA_ACTIVE_VIEW_VALUE.locations]: <SurveySpatialTelemetry />,
-                  [DATA_ACTIVE_VIEW_VALUE.animals]: <SurveySpatialAnimals />,
-                  [DATA_ACTIVE_VIEW_VALUE.habitat]: <SurveySpatialHabitatFeatures />,
-                  [SURVEY_ACTIVE_VIEW_VALUE.permissions]: <SurveyMembersContainer />
-                }}
+                <Box mt={1}>
+                  <LinearProgressWithLabel value={checklist.progress_percentage} />
+                </Box>
+              </Paper>
+
+              <HiearchicalSurveyViewToggle
+                checklist={checklist}
+                activeView={activeView}
+                setActiveView={handleSetActiveView}
               />
-            </SidebarLayout>
-          )}
-        </SurveyChecklistManager>
+            </Box>
+          }>
+          <ComponentSwitch
+            switch={activeView}
+            components={{
+              [SURVEY_ACTIVE_VIEW_VALUE.overview]: <SurveyOverviewPage />,
+              [SAMPLING_ACTIVE_VIEW_VALUE.sites]: <SamplingSiteContainer />,
+              [SAMPLING_ACTIVE_VIEW_VALUE.techniques]: <SamplingTechniqueContainer />,
+              [SAMPLING_ACTIVE_VIEW_VALUE.periods]: <SamplingPeriodContainer />,
+              [DATA_ACTIVE_VIEW_VALUE.observations]: <SurveySpatialObservations />,
+              [DATA_ACTIVE_VIEW_VALUE.devices]: <DevicesContainer />,
+              [DATA_ACTIVE_VIEW_VALUE.deployments]: <SurveyDeploymentList />,
+              [DATA_ACTIVE_VIEW_VALUE.locations]: <SurveySpatialTelemetry />,
+              [DATA_ACTIVE_VIEW_VALUE.animals]: <SurveySpatialAnimals />,
+              [DATA_ACTIVE_VIEW_VALUE.habitat]: <SurveySpatialHabitatFeatures />,
+              [SURVEY_ACTIVE_VIEW_VALUE.permissions]: <SurveyMembersContainer />
+            }}
+          />
+        </SidebarLayout>
       </Box>
     </Box>
   );

@@ -11,10 +11,8 @@ import { CircularProgress, Skeleton } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { ComponentSwitch } from 'components/misc/ComponentSwitch';
-import {
-  HierarchicalCustomToggleButtonGroup,
-  ToggleButtonView
-} from 'components/toggle/HierarchicalCustomToggleButtonGroup';
+import { ToggleButtonView } from 'components/toggle/CustomToggleButtonGroup';
+import { HierarchicalCustomToggleButtonGroup } from 'components/toggle/HierarchicalCustomToggleButtonGroup';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { SurveyDeploymentList } from 'features/surveys/telemetry/list/SurveyDeploymentList';
