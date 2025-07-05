@@ -167,7 +167,7 @@ export const CreateCSVMortalitiesPage = () => {
         biohubApi.survey.importMeasurementsFromCsv(file, surveyId, 'mortalities', cancelToken, onProgress)
       ),
       handleFileUpload('markings', (file, onProgress) =>
-        biohubApi.survey.importMarkingsFromCsv(file, surveyId, cancelToken, onProgress)
+        biohubApi.survey.importMarkingsFromCsv(file, surveyId, 'mortalities', cancelToken, onProgress)
       )
     ]);
 

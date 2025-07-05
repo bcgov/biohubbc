@@ -204,7 +204,7 @@ export const getMarkingCaptureDateCellValidator = (
     // Row meta data
     const dateCellValue = String(params.cell);
     const rowAlias = String(utils.getCellValue('ALIAS', params.row));
-    const rowTime = utils.getCellValue('CAPTURE_TIME', params.row) as string; // casting to allow undefined
+    const rowTime = utils.getCellValue('TIME', params.row) as string; // casting to allow undefined
     const aliasCritter = surveyAliasMap.get(rowAlias.toLowerCase());
 
     // All alias errors need to be resolved before proceeding ie: alias not found
@@ -234,6 +234,67 @@ export const getMarkingCaptureDateCellValidator = (
     // Set the capture id in the state for the setter
     params.mutateCell = foundCaptures[0].capture_id;
 
+    return [];
+  };
+};
+
+/**
+ * Get the marking mortality date cell validator.
+ *
+ * Note: Modifies the mutateCell value to the `mortality_id`
+ *
+ * Rules:
+ *  1. The cell combined with the 'TIME' must be a valid timestamp
+ *  2. The timestamp must map to a specific critter mortality
+ *
+ * @param {Map<string, ICritterDetailed>} surveyAliasMap The survey alias map
+ * @param {CSVConfigUtils<MarkingCSVStaticHeader>} utils The CSV config utils
+ * @returns {*} {CSVCellValidator} The validate cell callback
+ */
+export const getMarkingMortalityDateCellValidator = (
+  surveyAliasMap: Map<string, ICritterDetailed>,
+  utils: CSVConfigUtils<MarkingCSVStaticHeader>
+): CSVCellValidator => {
+  return (params: CSVParams): CSVError[] => {
+    const cellErrors = validateZodCell(params.cell, z.string().date());
+    if (cellErrors.length) {
+      return cellErrors;
+    }
+    // Row meta data
+    const dateCellValue = String(params.cell);
+    const rowAlias = String(utils.getCellValue('ALIAS', params.row));
+    const rowTime = utils.getCellValue('TIME', params.row) as string; // casting to allow undefined
+    const aliasCritter = surveyAliasMap.get(rowAlias.toLowerCase());
+    // All alias errors need to be resolved before proceeding ie: alias not found
+    if (!aliasCritter) {
+      return [];
+    }
+    // Use dayjs to parse and format the timestamp
+    const dayjs = require('dayjs');
+    const tz = require('dayjs/plugin/timezone');
+    const utc = require('dayjs/plugin/utc');
+    dayjs.extend(utc);
+    dayjs.extend(tz);
+    const { formatDateString, formatTimeString } = require('../../../utils/date-time-utils');
+    const rowTimestamp = dayjs
+      .tz(
+        rowTime ? `${formatDateString(dateCellValue)} ${formatTimeString(rowTime)}` : formatDateString(dateCellValue),
+        'America/Los_Angeles'
+      )
+      .format();
+    // critter.mortality can be an array or single object, handle both
+    const mortalities = Array.isArray(aliasCritter.mortality) ? aliasCritter.mortality : [aliasCritter.mortality];
+    const matched = mortalities.find((m) => m.mortality_timestamp === rowTimestamp);
+    if (!matched) {
+      return [
+        {
+          error: `Mortality not found for animal using date and time`,
+          solution: `Use a valid date and time to identify the mortality`
+        }
+      ];
+    }
+    // Set the mortality id in the state for the setter
+    params.mutateCell = matched.mortality_id;
     return [];
   };
 };

@@ -19,6 +19,7 @@ import {
   getMarkingCaptureDateCellValidator,
   getMarkingColourCellValidator,
   getMarkingIdentifierCellValidator,
+  getMarkingMortalityDateCellValidator,
   getMarkingTypeCellValidator
 } from './marking-header-configs';
 
@@ -27,8 +28,8 @@ const defaultLog = getLogger('services/import/import-markings-service');
 // Marking CSV static headers
 export type MarkingCSVStaticHeader =
   | 'ALIAS'
-  | 'CAPTURE_DATE'
-  | 'CAPTURE_TIME'
+  | 'DATE'
+  | 'TIME'
   | 'BODY_LOCATION'
   | 'MARKING_TYPE'
   | 'IDENTIFIER'
@@ -61,8 +62,8 @@ export class ImportMarkingsService extends DBService {
     const initialConfig: CSVConfig<MarkingCSVStaticHeader> = {
       staticHeadersConfig: {
         ALIAS: { aliases: ['NICKNAME', 'ANIMAL'] },
-        CAPTURE_DATE: { aliases: ['CAPTURE DATE', 'DATE'] },
-        CAPTURE_TIME: { aliases: ['CAPTURE TIME', 'TIME'], optional: true },
+        DATE: { aliases: ['CAPTURE_DATE', 'MORTALITY_DATE', 'CAPTURE DATE', 'MORTALITY DATE'] },
+        TIME: { aliases: ['CAPTURE_TIME', 'MORTALITY_TIME', 'CAPTURE TIME', 'MORTALITY TIME'], optional: true },
         BODY_LOCATION: { aliases: ['BODY LOCATION'] },
         MARKING_TYPE: { aliases: ['MARKING TYPE', 'TYPE'], optional: true },
         IDENTIFIER: { aliases: ['ID'], optional: true },
@@ -84,33 +85,28 @@ export class ImportMarkingsService extends DBService {
    * Import a Marking CSV worksheet into Critterbase.
    *
    * @async
+   * @param {'captures' | 'mortalities'} context - Determines which event type to match (capture or mortality)
    * @throws {ApiGeneralError} - If unable to fully insert records into Critterbase
    * @returns {*} {Promise<CSVError[]>} List of CSV errors encountered during import
    */
-  async importCSVWorksheet(): Promise<CSVError[]> {
-    const config = await this.getCSVConfig();
-
+  async importCSVWorksheet(context: 'captures' | 'mortalities' = 'captures'): Promise<CSVError[]> {
+    const config = await this.getCSVConfig(context);
     const { errors, rows } = validateCSVWorksheet(this.worksheet, config);
-
     if (errors.length) {
       return errors;
     }
-
     const markings = rows.map((row) => ({
-      critter_id: row.ALIAS, // ALIAS set to Critterbase critter_id
-      capture_id: row.CAPTURE_DATE, // CAPTURE_DATE set to Critterbase capture_id
-      body_location: row.BODY_LOCATION, // BODY_LOCATION set to Critterbase body_location_id
+      critter_id: row.ALIAS,
+      ...(context === 'captures' ? { capture_id: row.DATE } : { mortality_id: row.DATE }),
+      body_location: row.BODY_LOCATION,
       marking_type: row.MARKING_TYPE,
       identifier: row.IDENTIFIER,
       primary_colour: row.PRIMARY_COLOUR,
       secondary_colour: row.SECONDARY_COLOUR,
       comment: row.DESCRIPTION
     }));
-
-    defaultLog.debug({ label: 'import markings', markings });
-
+    defaultLog.debug({ label: 'import markings', context, markings });
     await this.surveyCritterService.critterbaseService.bulkCreate({ markings });
-
     return [];
   }
 
@@ -119,28 +115,36 @@ export class ImportMarkingsService extends DBService {
    *
    * @returns {Promise<CSVConfig<MarkingCSVStaticHeader>>} The CSV configuration
    */
-  async getCSVConfig(): Promise<CSVConfig<MarkingCSVStaticHeader>> {
+  async getCSVConfig(context: 'captures' | 'mortalities' = 'captures'): Promise<CSVConfig<MarkingCSVStaticHeader>> {
     const surveyAliasMap = await this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId);
     const bodyLocationDictionary = await this._getBodyLocationDictionary(surveyAliasMap);
-
     const markingTypes = new Set(
       (await this.surveyCritterService.critterbaseService.getFormattedMarkingTypes()).map((type) => type.value)
     );
-
     const colours = new Set(
       (await this.surveyCritterService.critterbaseService.getFormattedColours()).map((colour) => colour.value)
     );
-
     this.utils.setStaticHeaderConfig('ALIAS', {
       validateCell: getMarkingAliasCellValidator(surveyAliasMap)
     });
-    this.utils.setStaticHeaderConfig('CAPTURE_DATE', {
-      validateCell: getMarkingCaptureDateCellValidator(surveyAliasMap, this.utils)
-    });
-    this.utils.setStaticHeaderConfig('CAPTURE_TIME', {
-      validateCell: getTimeCellValidator(),
-      setCellValue: getTimeCellSetter()
-    });
+    // Use correct date/time headers for context
+    if (context === 'mortalities') {
+      this.utils.setStaticHeaderConfig('DATE', {
+        validateCell: getMarkingMortalityDateCellValidator(surveyAliasMap, this.utils)
+      });
+      this.utils.setStaticHeaderConfig('TIME', {
+        validateCell: getTimeCellValidator(),
+        setCellValue: getTimeCellSetter()
+      });
+    } else {
+      this.utils.setStaticHeaderConfig('DATE', {
+        validateCell: getMarkingCaptureDateCellValidator(surveyAliasMap, this.utils)
+      });
+      this.utils.setStaticHeaderConfig('TIME', {
+        validateCell: getTimeCellValidator(),
+        setCellValue: getTimeCellSetter()
+      });
+    }
     this.utils.setStaticHeaderConfig('BODY_LOCATION', {
       validateCell: getMarkingBodyLocationCellValidator(surveyAliasMap, bodyLocationDictionary, this.utils)
     });
@@ -159,7 +163,6 @@ export class ImportMarkingsService extends DBService {
     this.utils.setStaticHeaderConfig('DESCRIPTION', {
       validateCell: getDescriptionCellValidator({ optional: true })
     });
-
     // Return the final CSV config
     return this.utils.getConfig();
   }

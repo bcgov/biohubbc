@@ -119,7 +119,9 @@ export function importCsv(): RequestHandler {
 
       const importMarkings = new ImportMarkingsService(connection, worksheet, surveyId);
 
-      const errors = await importMarkings.importCSVWorksheet();
+      // Read context from query, default to 'captures'
+      const context = (req.query.context === 'mortalities' ? 'mortalities' : 'captures') as 'captures' | 'mortalities';
+      const errors = await importMarkings.importCSVWorksheet(context);
 
       if (errors.length) {
         throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
