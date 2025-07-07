@@ -1,18 +1,13 @@
 import { mdiCalendarClock, mdiDatabaseSearch, mdiFileOutline, mdiHome } from '@mdi/js';
-
-import { useCallback, useContext } from 'react';
-
 import {
   HierarchicalCustomToggleButtonGroup,
   HierarchicalToggleButtonView
 } from 'components/toggle/HierarchicalCustomToggleButtonGroup';
-
 import { SURVEY_ACTIVE_VIEW_VALUE, SURVEY_VIEW_VALUE } from 'constants/survey-view';
-
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-
 import { IGetSurveyChecklist, IGetSurveyChecklistItem } from 'interfaces/useChecklistApi.interface';
+import { useCallback, useContext } from 'react';
 
 type HiearchicalSurveyViewToggleProps = {
   checklist: IGetSurveyChecklist;
@@ -36,7 +31,7 @@ export const transformChecklistToViews = (
       label: key,
       value,
       checked: !!item.count,
-      disabled: item.applicable,
+      disabled: !item.applicable,
       checkbox: true,
       children: item.children ? transformChecklistToViews(item.children) : undefined
     };
