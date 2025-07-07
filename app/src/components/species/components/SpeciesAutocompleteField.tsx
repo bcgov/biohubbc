@@ -189,7 +189,7 @@ const SpeciesAutocompleteField = (props: ISpeciesAutocompleteFieldProps) => {
           });
           callback(response);
         } else {
-          // Otherwise search by terms (regular search)
+          // Otherwise search by terms (eg. "Moose")
           const searchTerms = inputValue.split(' ').filter(Boolean);
           const response = await biohubApi.taxonomy.searchSpeciesByTerms(searchTerms).catch(() => {
             return [];

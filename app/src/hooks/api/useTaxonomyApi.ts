@@ -11,11 +11,8 @@ const useTaxonomyApi = () => {
   /**
    * Searches for taxon records based on ITIS TSNs.
    *
-   * TODO: Update the return type to `ITaxonomy[]` once the BioHub API endpoint is updated to return the extra `rank`
-   * and `kingdom` fields.
-   *
    * @param {number[]} tsns
-   * @return {*}  {Promise<IPartialTaxonomy[]>}
+   * @return {*}  {Promise<ITaxonomy[]>}
    */
   const getSpeciesFromIds = async (tsns: number[]): Promise<ITaxonomy[]> => {
     const { data } = await apiAxios.get<{
