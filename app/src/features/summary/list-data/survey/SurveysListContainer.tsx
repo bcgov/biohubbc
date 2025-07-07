@@ -154,7 +154,7 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
             underline="always"
             title={params.row.name}
             component={RouterLink}
-            to={`/admin/surveys/${params.row.survey_id}`}
+            to={`/admin/surveys/${params.row.survey_id}/details`}
             sx={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}>
             {params.row.name}
           </Link>

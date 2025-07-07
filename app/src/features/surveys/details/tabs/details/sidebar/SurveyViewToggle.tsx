@@ -2,11 +2,12 @@ import { mdiCalendarClock, mdiDatabaseSearch, mdiFileOutline, mdiHome } from '@m
 import CustomToggleButtonGroup, { ToggleButtonView } from 'components/toggle/CustomToggleButtonGroup';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetSurveyChecklist } from 'interfaces/useChecklistApi.interface';
 import { useCallback, useContext, useMemo } from 'react';
 import { SURVEY_ACTIVE_VIEW_VALUE } from '../SurveyDetailsTab';
 
 type SurveyViewToggleProps = {
-  checklist: any;
+  checklist: IGetSurveyChecklist;
   activeView: SURVEY_ACTIVE_VIEW_VALUE;
   setActiveView: (v: SURVEY_ACTIVE_VIEW_VALUE) => void;
 };

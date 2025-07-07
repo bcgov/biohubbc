@@ -22,13 +22,13 @@ import { downloadFile } from 'utils/file-utils';
 import { getAxiosProgress } from 'utils/Utils';
 import { CSVDropzoneSection } from '../../../../../../components/csv/CSVDropzoneSection';
 import {
-  getCapturesCSVTemplate,
   getMarkingsCSVTemplate,
-  getMeasurementsCSVTemplate
+  getMeasurementsCSVTemplate,
+  getMortalitiesCSVTemplate
 } from '../../../../../../utils/csv-templates';
 
 type CSVFilesStatus = {
-  captures: { file: File | null; status: UploadFileStatus; progress: number; error?: string; errors: CSVError[] };
+  mortalities: { file: File | null; status: UploadFileStatus; progress: number; error?: string; errors: CSVError[] };
   measurements: { file: File | null; status: UploadFileStatus; progress: number; error?: string; errors: CSVError[] };
   markings: { file: File | null; status: UploadFileStatus; progress: number; error?: string; errors: CSVError[] };
 };
@@ -52,11 +52,11 @@ type UpdateFileState = {
 };
 
 /**
- * Page to create Captures + Measurements + Markings from CSV files.
+ * Page to create Mortalities + Measurements + Markings from CSV files.
  *
  * @returns {*}
  */
-export const CreateCSVCapturesPage = () => {
+export const CreateCSVMortalitiesPage = () => {
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
@@ -70,7 +70,7 @@ export const CreateCSVCapturesPage = () => {
 
   // Initialize the file upload states
   const [files, setFiles] = useState<CSVFilesStatus>({
-    captures: INITIAL_FILE_STATE,
+    mortalities: INITIAL_FILE_STATE,
     measurements: INITIAL_FILE_STATE,
     markings: INITIAL_FILE_STATE
   });
@@ -88,7 +88,7 @@ export const CreateCSVCapturesPage = () => {
    * Update a specific file's state.
    *
    * @param {UpdateFileState} config - Partial state to update.
-   * @example handleFileState({ fileType: 'captures', status: UploadFileStatus.COMPLETE, progress: 100 });
+   * @example handleFileState({ fileType: 'mortalities', status: UploadFileStatus.COMPLETE, progress: 100 });
    */
   const handleFileState = (config: UpdateFileState) => {
     setFiles((prevState) => ({ ...prevState, [config.fileType]: { ...prevState[config.fileType], ...config } }));
@@ -98,7 +98,7 @@ export const CreateCSVCapturesPage = () => {
    * Handle a file upload and update the uploading state.
    *
    * @async
-   * @param {keyof typeof files} fileType - The type of file being uploaded ie: `captures`.
+   * @param {keyof typeof files} fileType - The type of file being uploaded ie: `mortalities`.
    * @param {(file: File | null) => void} onUpload - The callback to handle the file upload.
    * @returns {Promise<UploadFileStatus>} Returns the final `UploadFileStatus` to prevent race condtions.
    */
@@ -143,31 +143,31 @@ export const CreateCSVCapturesPage = () => {
   );
 
   /**
-   * Handle all file uploads in order. `Captures` take precedence over `Measurements` and `Markings`.
+   * Handle all file uploads in order. `Mortalities` take precedence over `Measurements` and `Markings`.
    *
-   * Why? `Measurements` and `Markings` are dependent on `Captures` existing before they can be uploaded.
+   * Why? `Measurements` and `Markings` are dependent on `Mortalities` existing before they can be uploaded.
    *
    * @async
    * @returns {Promise<void>}
    */
   const handleAllFileUploads = async () => {
-    // Attempt to upload the captures first
-    const captureStatus = await handleFileUpload('captures', (file, onProgress) =>
-      biohubApi.survey.importCapturesFromCsv(file, surveyId, cancelToken, onProgress)
+    // Attempt to upload the mortalities first
+    const mortalityStatus = await handleFileUpload('mortalities', (file, onProgress) =>
+      biohubApi.survey.importMortalitiesFromCsv(file, surveyId, cancelToken, onProgress)
     );
 
-    // If the Captures CSV upload failed, don't attempt to upload Measurements or Markings
-    if (captureStatus === UploadFileStatus.FAILED) {
+    // If the Mortalities CSV upload failed, don't attempt to upload Measurements or Markings
+    if (mortalityStatus === UploadFileStatus.FAILED) {
       return;
     }
 
     // Measurements / Markings can be uploaded in parallel
     const [measurementStatus, markingStatus] = await Promise.all([
       handleFileUpload('measurements', (file, onProgress) =>
-        biohubApi.survey.importMeasurementsFromCsv(file, surveyId, 'captures', cancelToken, onProgress)
+        biohubApi.survey.importMeasurementsFromCsv(file, surveyId, 'mortalities', cancelToken, onProgress)
       ),
       handleFileUpload('markings', (file, onProgress) =>
-        biohubApi.survey.importMarkingsFromCsv(file, surveyId, 'captures', cancelToken, onProgress)
+        biohubApi.survey.importMarkingsFromCsv(file, surveyId, 'mortalities', cancelToken, onProgress)
       )
     ]);
 
@@ -226,7 +226,7 @@ export const CreateCSVCapturesPage = () => {
     <>
       <Prompt when={true} message={locationChangeInterceptor} />
       <PageHeader
-        title="Create Captures"
+        title="Create Mortalities"
         breadCrumbJSX={
           <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
             <Link component={RouterLink} underline="hover" to={`/admin/surveys/${surveyId}`}>
@@ -236,7 +236,7 @@ export const CreateCSVCapturesPage = () => {
               Manage Animals
             </Link>
             <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
-              Create Captures
+              Create Mortalities
             </Typography>
           </Breadcrumbs>
         }
@@ -261,17 +261,17 @@ export const CreateCSVCapturesPage = () => {
         <Paper sx={{ p: 5 }}>
           <Stack gap={5}>
             <CSVDropzoneSection
-              title="Captures"
-              summary="Upload the capture times and locations"
-              onDownloadTemplate={() => downloadFile(getCapturesCSVTemplate(), 'SIMS-captures-template.csv')}
-              errors={files.captures.errors}>
-              <FileUploadSingleItem {...getFileUploadProps('captures')} />
+              title="Mortalities"
+              summary="Upload the mortality times and locations"
+              onDownloadTemplate={() => downloadFile(getMortalitiesCSVTemplate(), 'SIMS-mortality-template.csv')}
+              errors={files.mortalities.errors}>
+              <FileUploadSingleItem {...getFileUploadProps('mortalities')} />
             </CSVDropzoneSection>
             <Divider />
 
             <CSVDropzoneSection
               title="Measurements"
-              summary="Upload measurements taken during the captures"
+              summary="Upload measurements taken during the mortality investigations"
               onDownloadTemplate={() => downloadFile(getMeasurementsCSVTemplate(), 'SIMS-measurements-template.csv')}
               errors={files.measurements.errors}>
               <FileUploadSingleItem {...getFileUploadProps('measurements')} />
@@ -280,7 +280,7 @@ export const CreateCSVCapturesPage = () => {
 
             <CSVDropzoneSection
               title="Markings"
-              summary="Upload markings applied during the captures"
+              summary="Upload markings applied during the mortality investigations"
               onDownloadTemplate={() => downloadFile(getMarkingsCSVTemplate(), 'SIMS-markings-template.csv')}
               errors={files.markings.errors}>
               <FileUploadSingleItem {...getFileUploadProps('markings')} />

@@ -1,10 +1,11 @@
-import { mdiDotsVertical } from '@mdi/js';
+import { mdiPlaylistPlus, mdiPlus } from '@mdi/js';
 import { Icon } from '@mdi/react';
+import Button from '@mui/material/Button';
 import IconButton from '@mui/material/IconButton';
 import Toolbar from '@mui/material/Toolbar';
+import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
 import axios, { AxiosProgressEvent } from 'axios';
-import { DualImportButton } from 'components/buttons/DualImportButton';
 import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
@@ -15,8 +16,6 @@ import { getAnimalCSVTemplate } from '../../../../../utils/csv-templates';
 
 interface IAnimaListToolbarProps {
   animalCount: number;
-  checkboxSelectedIdsLength: number;
-  handleHeaderMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }
 
 /**
@@ -35,13 +34,7 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
   const cancelToken = axios.CancelToken.source();
 
   const handleImportAnimals = async (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => {
-    await biohubApi.survey.importCrittersFromCsv(
-      file,
-
-      surveyContext.surveyId,
-      cancelToken,
-      onProgress
-    );
+    await biohubApi.survey.importCrittersFromCsv(file, surveyContext.surveyId, cancelToken, onProgress);
 
     surveyContext.critterDataLoader.refresh(surveyContext.surveyId);
 
@@ -62,9 +55,9 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
       <Toolbar
         disableGutters
         sx={{
-          flex: '0 0 auto',
-          pr: 3,
-          pl: 2
+          flex: '1 1 auto',
+          pl: 1,
+          minHeight: '0 !important'
         }}>
         <Typography variant="h3" component="h2" flexGrow={1}>
           Animals &zwnj;
@@ -72,24 +65,19 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
             ({props.animalCount})
           </Typography>
         </Typography>
-        <DualImportButton
-          singleImportButtonProps={{
-            component: RouterLink,
-            to: `/admin/surveys/${surveyContext.surveyId}/animals/create`
-          }}
-          bulkImportButtonProps={{
-            onClick: () => setOpenImportDialog(true)
-          }}
-        />
-        <IconButton
-          edge="end"
-          sx={{ ml: 1 }}
-          aria-label="header-settings"
-          disabled={!props.checkboxSelectedIdsLength}
-          onClick={props.handleHeaderMenuClick}
-          title="Bulk Actions">
-          <Icon path={mdiDotsVertical} size={1} />
-        </IconButton>
+        <Tooltip title="Bulk import animals">
+          <IconButton color="primary" sx={{ mr: 1 }} onClick={() => setOpenImportDialog(true)} aria-label="Import CSV">
+            <Icon path={mdiPlaylistPlus} size={1} />
+          </IconButton>
+        </Tooltip>
+        <Button
+          variant="contained"
+          component={RouterLink}
+          color="primary"
+          startIcon={<Icon path={mdiPlus} size={1} />}
+          to={`/admin/surveys/${surveyContext.surveyId}/animals/create`}>
+          Add
+        </Button>
       </Toolbar>
     </>
   );

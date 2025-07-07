@@ -49,7 +49,8 @@ export class TypedURLSearchParams<
 > extends URLSearchParams {
   /**
    * Sets a search parameter with the given key and value.
-   * If replace option is true, all existing parameters are cleared first.
+   * If replace option is true, all existing parameters are cleared first. Replace option can also be an array of params,
+   * which will clear only those params.
    *
    * @param key The parameter key
    * @param value The parameter value
@@ -66,6 +67,34 @@ export class TypedURLSearchParams<
     }
 
     super.set(key, value);
+    return this;
+  }
+
+  /**
+   * Sets multiple search parameters at once.
+   *
+   * @param entries An object of key-value pairs to set.
+   * @param options Configuration options
+   * @returns The instance for method chaining
+   */
+  setMany(values: Partial<ParamType>, options?: { replace?: boolean }) {
+    const { replace } = options || {};
+
+    if (replace) {
+      // Clear all existing parameters first
+      Array.from(super.keys()).forEach((k) => {
+        super.delete(k);
+      });
+    }
+
+    Object.entries(values).forEach(([key, value]) => {
+      if (value === null || value === undefined) {
+        super.delete(key);
+      } else {
+        super.set(key, String(value));
+      }
+    });
+
     return this;
   }
 

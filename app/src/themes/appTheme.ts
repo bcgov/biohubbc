@@ -35,7 +35,7 @@ const appTheme = createTheme({
       secondary: '#757575'
     },
     action: {
-      selected: grey[100],
+      selected: 'rgba(0, 51, 102, 0.08)', // rgb(0, 51, 102) = #003366
       hover: grey[50]
     }
   },

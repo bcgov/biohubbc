@@ -108,25 +108,19 @@ export function importMeasurementCSV(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
     const rawFile = getFileFromRequest(req);
-
     const connection = getDBConnection(req.keycloak_token);
-
     const mediaFile = parseMulterFile(rawFile);
     const worksheet = getDefaultWorksheet(constructXLSXWorkbook(mediaFile));
-
     try {
       await connection.open();
-
-      const importMarkings = new ImportMeasurementsService(connection, worksheet, surveyId);
-
-      const errors = await importMarkings.importCSVWorksheet();
-
+      const importMeasurements = new ImportMeasurementsService(connection, worksheet, surveyId);
+      // Get context from query param, default to 'captures'
+      const context = req.query.context === 'mortalities' ? 'mortalities' : 'captures';
+      const errors = await importMeasurements.importCSVWorksheet(context);
       if (errors.length) {
         throw new HTTP422CSVValidationError(CSV_ERROR_MESSAGE, errors);
       }
-
       await connection.commit();
-
       return res.status(204).send();
     } catch (error) {
       defaultLog.error({ label: 'importMeasurementsCSV', message: 'error', error });

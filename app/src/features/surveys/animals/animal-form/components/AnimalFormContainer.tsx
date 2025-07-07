@@ -7,6 +7,7 @@ import { ICreateEditAnimalRequest, ICritterCollectionUnitResponse } from 'interf
 import yup from 'utils/YupSchema';
 import { EcologicalUnitsForm } from './ecological-units/EcologicalUnitsForm';
 import { AnimalGeneralInformationForm } from './general-information/AnimalGeneralInformationForm';
+import { WildlifeHealthForm } from './wildlife-health/WildlifeHealthForm';
 
 export interface IAnimalFormProps {
   /**
@@ -84,7 +85,7 @@ const AnimalFormYupSchema = yup.object({
       })
       .nullable()
   ),
-  wildlife_health_id: yup.string().nullable()
+  wildlife_health_id: yup.string().nullable().notRequired().default(null)
 });
 
 /**
@@ -96,6 +97,14 @@ const AnimalFormYupSchema = yup.object({
 export const AnimalFormContainer = (props: IAnimalFormProps) => {
   const { initialAnimalData, handleSubmit, formikRef, isEdit } = props;
 
+  const handleAnimalFormSubmit = (formikData: ICreateEditAnimalRequest) => {
+    const payload = { ...formikData };
+    if (!isEdit && (payload.wildlife_health_id == null || payload.wildlife_health_id === '')) {
+      delete (payload as any).wildlife_health_id;
+    }
+    handleSubmit(payload);
+  };
+
   return (
     <Formik
       innerRef={formikRef}
@@ -104,13 +113,19 @@ export const AnimalFormContainer = (props: IAnimalFormProps) => {
       validationSchema={AnimalFormYupSchema}
       validateOnBlur={false}
       validateOnChange={false}
-      onSubmit={handleSubmit}>
+      onSubmit={handleAnimalFormSubmit}>
       <Stack gap={5}>
         <FormikErrorSnackbar />
         <HorizontalSplitFormComponent
           title="General Information"
           summary="Enter information to identify the animal"
           component={<AnimalGeneralInformationForm isEdit={isEdit} />}
+        />
+        <Divider />
+        <HorizontalSplitFormComponent
+          title="Wildlife Health ID"
+          summary="If applicable, specify the primary Wildlife Health ID as assigned by the Widlife Health Lab."
+          component={<WildlifeHealthForm />}
         />
         <Divider />
         <HorizontalSplitFormComponent

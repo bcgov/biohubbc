@@ -31,6 +31,23 @@ export const getCapturesCSVTemplate = (): CSVEncodedTemplate => {
 };
 
 /**
+ * Get CSV template for mortalities.
+ *
+ * @returns {CSVEncodedTemplate} Encoded CSV template
+ */
+export const getMortalitiesCSVTemplate = (): CSVEncodedTemplate => {
+  return getCSVTemplate([
+    'ALIAS',
+    'MORTALITY_DATE',
+    'MORTALITY_TIME',
+    'CAUSE_OF_DEATH',
+    'MORTALITY_LATITUDE',
+    'MORTALITY_LONGITUDE',
+    'MORTALITY_COMMENT'
+  ]);
+};
+
+/**
  * Get CSV template for markings.
  *
  * @returns {CSVEncodedTemplate} Encoded CSV template
@@ -38,8 +55,8 @@ export const getCapturesCSVTemplate = (): CSVEncodedTemplate => {
 export const getMarkingsCSVTemplate = (): CSVEncodedTemplate => {
   return getCSVTemplate([
     'ALIAS',
-    'CAPTURE_DATE',
-    'CAPTURE_TIME',
+    'DATE',
+    'TIME',
     'BODY_LOCATION',
     'MARKING_TYPE',
     'IDENTIFIER',

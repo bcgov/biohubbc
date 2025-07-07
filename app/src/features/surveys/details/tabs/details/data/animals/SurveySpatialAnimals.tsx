@@ -14,6 +14,7 @@ import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
 import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
+import { ANIMAL_ACTIVE_VIEW_KEY, ANIMAL_ACTIVE_VIEW_VALUE } from 'features/surveys/animals/AnimalPage';
 import { SurveySpatialAnimalCapturePopup } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalCapturePopup';
 import { SurveySpatialAnimalMortalityPopup } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalMortalityPopup';
 import { SurveySpatialAnimalTable } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimalTable';
@@ -150,7 +151,11 @@ export const SurveySpatialAnimals = (props: ISurveySpatialAnimalsProps) => {
               variant="contained"
               color="primary"
               aria-label="Manage Survey Data"
-              onClick={() => history.push(`/admin/surveys/${surveyContext.surveyId}/animals`)}
+              onClick={() =>
+                history.push(
+                  `/admin/surveys/${surveyContext.surveyId}/animals/details?${ANIMAL_ACTIVE_VIEW_KEY}=${ANIMAL_ACTIVE_VIEW_VALUE.animals}`
+                )
+              }
               startIcon={<Icon path={mdiCog} size={0.75}></Icon>}>
               Manage
             </Button>

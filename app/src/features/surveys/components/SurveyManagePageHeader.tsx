@@ -7,7 +7,7 @@ import { Link as RouterLink } from 'react-router-dom';
 
 export enum SurveyManagePageEnum {
   OBSERVATIONS = 'Observations',
-  ANIMALS = 'Animal',
+  ANIMALS = 'Animals',
   TELEMETRY = 'Telemetry',
   HABITAT_FEATURES = 'Habitat Features'
 }
@@ -56,6 +56,9 @@ export const SurveyManagePageHeader = (props: SurveyManagePageHeaderProps): JSX.
       title={`Manage ${props.page}`}
       breadCrumbJSX={
         <Breadcrumbs aria-label="breadcrumb" separator={'>'}>
+          <Link component={RouterLink} underline="hover" to={`/admin/surveys`}>
+            Surveys
+          </Link>
           <Link component={RouterLink} underline="hover" to={`/admin/surveys/${props.survey_id}/details`}>
             {props.survey_name}
           </Link>

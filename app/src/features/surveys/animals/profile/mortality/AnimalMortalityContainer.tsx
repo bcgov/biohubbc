@@ -10,7 +10,6 @@ import {
 } from 'interfaces/useCritterApi.interface';
 import { useHistory } from 'react-router';
 import { AnimalMortalityCardContainer } from './components/AnimalMortalityCardContainer';
-import { AnimalMortalityMap } from './components/AnimalMortalityMap';
 import { AnimalMortalityToolbar } from './components/AnimalMortalityToolbar';
 
 export interface IMortalityWithSupplementaryData extends IMortalityResponse {
@@ -109,7 +108,6 @@ const AnimalMortalityContainer = () => {
           history.push(`/admin/surveys/${surveyId}/animals/${selectedAnimal.critter_id}/mortality/create`);
         }}
       />
-      {mortality.length > 0 && <AnimalMortalityMap mortality={mortality} isLoading={false} />}
       <AnimalMortalityCardContainer mortality={mortality} selectedAnimal={selectedAnimal} handleDelete={handleDelete} />
     </>
   );

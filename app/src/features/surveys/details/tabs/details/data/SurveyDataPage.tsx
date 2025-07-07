@@ -155,8 +155,6 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
     }
   ];
 
-  console.log(views);
-
   return (
     <SidebarLayout
       sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, overflow: 'hidden' }}

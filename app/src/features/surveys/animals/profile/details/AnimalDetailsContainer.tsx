@@ -18,7 +18,7 @@ export const AnimalDetailsContainer = () => {
     !animalPageContext.critterDataLoader.data
   ) {
     return (
-      <Stack flex="1 1 auto" flexDirection="column" spacing={1.5} height="100%" maxWidth="100%" maxHeight="136px">
+      <Stack flex="1 1 auto" flexDirection="column" spacing={1.5} height="100%" maxWidth="100%" maxHeight="136px" p={2}>
         {/* Title */}
         <Skeleton variant="rectangular" width={'25%'} height={25} sx={{ p: 2 }} />
         {/* Species/Status/ID */}

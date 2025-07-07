@@ -134,13 +134,13 @@ export interface IMortality {
   critter_id: string;
   location_id: string;
   mortality_timestamp: string;
-  proximate_cause_of_death_id: string;
-  proximate_cause_of_death_confidence: string;
-  proximate_predated_by_itis_tsn: string;
-  ultimate_cause_of_death_id: string;
-  ultimate_cause_of_death_confidence: string;
-  ultimate_predated_by_itis_tsn: string;
-  mortality_comment: string;
+  proximate_cause_of_death_id: string | null;
+  proximate_cause_of_death_confidence: string | null;
+  proximate_predated_by_itis_tsn: string | null;
+  ultimate_cause_of_death_id: string | null;
+  ultimate_cause_of_death_confidence: string | null;
+  ultimate_predated_by_itis_tsn: string | null;
+  mortality_comment: string | null;
   mortality_location: {
     latitude: number;
     longitude: number;
