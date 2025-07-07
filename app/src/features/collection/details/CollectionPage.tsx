@@ -4,13 +4,13 @@ import Container from '@mui/material/Container';
 import { ComponentSwitch } from 'components/misc/ComponentSwitch';
 import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import { CodesContext } from 'contexts/codesContext';
+import { TabularDataTableContainer } from 'features/summary/tabular-data/TabularDataTableContainer';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { SidebarLayout } from 'layouts/SidebarLayout';
 import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { CollectionDataContainer } from './data/CollectionDataContainer';
 import CollectionHeader from './header/CollectionHeader';
 import { CollectionMembersTableContainer } from './members/CollectionMembersTableContainer';
 import CollectionSurveyContainer from './survey/CollectionSurveyContainer';
@@ -94,7 +94,8 @@ const CollectionPage = () => {
             components={{
               [CollectionView.Surveys]: <CollectionSurveyContainer collection={collection} showSearch={false} />,
               [CollectionView.Subcollections]: <SubcollectionContainer collection={collection} showSearch={false} />,
-              [CollectionView.Data]: <CollectionDataContainer collection={collection} />,
+              // TODO: Replace with collection-specific data table
+              [CollectionView.Data]: <TabularDataTableContainer />,
               [CollectionView.Members]: <CollectionMembersTableContainer collectionId={collection.collection_id} />
             }}
           />
