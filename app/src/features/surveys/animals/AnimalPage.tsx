@@ -13,7 +13,7 @@ import { useSearchParams } from 'hooks/useSearchParams';
 import { SidebarLayout } from 'layouts/SidebarLayout';
 import { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import SurveyHeader from '../view/SurveyHeader';
+import { SurveyManagePageEnum, SurveyManagePageHeader } from '../components/SurveyManagePageHeader';
 import { SURVEY_ACTIVE_TAB_VALUE } from '../view/tabs/SurveyHeaderTabs';
 import { AnimalViewToggle } from './sidebar/AnimalViewToggle';
 import { SurveyAnimalsTab } from './tabs/SurveyAnimalsTab';
@@ -71,7 +71,11 @@ export const SurveyAnimalPage = () => {
 
   return (
     <>
-      <SurveyHeader activeTab={activeTab} handleTabChange={handleTabChange} />
+      <SurveyManagePageHeader
+        page={SurveyManagePageEnum.ANIMALS}
+        survey_id={surveyContext.surveyId}
+        survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
+      />
       <Container maxWidth="xl" sx={{ my: 3, p: 0, px: 2 }} disableGutters>
         <Box sx={{ display: 'flex', gap: 2, height: '100%' }}>
           <Box sx={{ flex: 1, minWidth: 0, height: '100%' }}>
