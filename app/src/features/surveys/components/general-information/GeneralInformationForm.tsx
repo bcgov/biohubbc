@@ -44,11 +44,6 @@ export const GeneralInformationYupSchema = () => {
         survey_name: yup.string().required('Survey Name is Required'),
         start_date: yup.string().isValidDateString().required('Start Date is Required'),
         end_date: yup.string().nullable().isValidDateString(),
-        progress_id: yup
-          .number()
-          .min(1, 'Survey Progress is Required')
-          .required('Survey Progress is Required')
-          .nullable(),
         survey_types: yup
           .array(yup.number())
           .min(1, 'One or more data types are required')
@@ -70,7 +65,6 @@ const GeneralInformationForm = () => {
         <CustomTextField
           name="survey_details.survey_name"
           label="Survey Name"
-          // helpText={`A descriptive names that mentions species, regions, and objectives will make it easier to find this Survey.`}
           maxLength={200}
           other={{
             required: true
@@ -85,6 +79,7 @@ const GeneralInformationForm = () => {
           endRequired={false}
         />
       </Grid>
+
       <Grid item xs={12}>
         <CustomTextField
           name="purpose_and_methodology.additional_details"

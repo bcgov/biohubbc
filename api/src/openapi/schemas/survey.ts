@@ -6,7 +6,7 @@ export const surveyDetailsSchema: OpenAPIV3.SchemaObject = {
   title: 'survey response object',
   type: 'object',
   additionalProperties: false,
-  required: ['survey_name', 'start_date', 'survey_types', 'progress_id'],
+  required: ['survey_name', 'start_date', 'survey_types'],
   properties: {
     id: {
       description: 'Survey id',
@@ -33,7 +33,8 @@ export const surveyDetailsSchema: OpenAPIV3.SchemaObject = {
       nullable: true
     },
     progress_id: {
-      type: 'integer'
+      type: 'integer',
+      nullable: true
     },
     survey_types: {
       description: 'Survey types',
@@ -719,6 +720,7 @@ export const getSurveyBasicFieldsSchema: OpenAPIV3.SchemaObject = {
     },
     progress_id: {
       type: 'integer',
+      nullable: true,
       minimum: 1
     },
     start_date: {

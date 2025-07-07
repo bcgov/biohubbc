@@ -65,7 +65,7 @@ const SurveyRecord = z.object({
   revision_count: z.number(),
   ecological_season_id: z.number().nullable(),
   comments: z.string().nullable(),
-  progress_id: z.number()
+  progress_id: z.number().nullable()
 });
 
 export type SurveyRecord = z.infer<typeof SurveyRecord>;

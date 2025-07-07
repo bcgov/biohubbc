@@ -19,7 +19,6 @@ import SurveysListFilterForm, {
   ISurveyAdvancedFilters,
   SurveyAdvancedFiltersInitialValues
 } from 'features/summary/list-data/survey/SurveysListFilterForm';
-import { SurveyProgressChip } from 'features/surveys/components/SurveyProgressChip';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
@@ -146,17 +145,6 @@ const CollectionSurveyContainer = (props: ICollectionSurveyContainerProps) => {
           to={`/admin/surveys/${params.row.survey_id}/details`}
           children={params.row.name}
         />
-      )
-    },
-    {
-      field: 'progress',
-      headerName: 'Progress',
-      flex: 0.25,
-      disableColumnMenu: true,
-      renderCell: (params) => (
-        <Box>
-          <SurveyProgressChip progress_id={params.row.progress_id} />
-        </Box>
       )
     },
     {

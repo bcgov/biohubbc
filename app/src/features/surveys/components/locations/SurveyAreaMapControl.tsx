@@ -153,6 +153,7 @@ export const SurveyAreaMapControl = (props: ISurveyAreMapControlProps) => {
                 uuid: v4()
               };
               setFieldValue(formik_key, [...values.locations, location]);
+              setFieldError(formik_key, undefined);
             }}
             onLayerEdit={(event: DrawEvents.Edited) => {
               event.layers.getLayers().forEach((item) => {

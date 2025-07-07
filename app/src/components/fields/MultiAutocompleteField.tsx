@@ -59,10 +59,10 @@ export const sortAutocompleteOptions = (
 };
 
 const MultiAutocompleteField = (props: IMultiAutocompleteField) => {
-  const { values, touched, errors, setFieldValue } = useFormikContext<IMultiAutocompleteFieldOption>();
+  const { values, touched, errors, setFieldValue, setFieldError } = useFormikContext<IMultiAutocompleteFieldOption>();
 
   const [inputValue, setInputValue] = useState('');
-  const [options, setOptions] = useState<IMultiAutocompleteFieldOption[]>(props.options || []); // store options if provided
+  const [options, setOptions] = useState<IMultiAutocompleteFieldOption[]>(props.options ?? []);
   const [selectedOptions, setSelectedOptions] = useState<IMultiAutocompleteFieldOption[]>([]);
 
   useEffect(() => {
@@ -86,6 +86,9 @@ const MultiAutocompleteField = (props: IMultiAutocompleteField) => {
       props.id,
       selectedOptions.map((item) => item.value)
     );
+    if (get(errors, props.id)) {
+      setFieldError(props.id, undefined);
+    }
   };
 
   const handleGetOptionSelected = (
