@@ -61,7 +61,7 @@ export const SubcollectionNavigator = ({ collectionId }: SubcollectionNavigatorP
         onClick={handleOpenMenu}
         endIcon={<Icon path={mdiChevronDown} size={0.8} style={{ marginLeft: '-5px' }} />}
         sx={{ minWidth: 'auto', mx: 1 }}>
-        <Icon path={mdiFolderOutline} size={0.9} />
+        <Icon path={mdiFolderOutline} size={0.75} />
       </Button>
 
       <Menu
@@ -69,7 +69,7 @@ export const SubcollectionNavigator = ({ collectionId }: SubcollectionNavigatorP
         open={isOpen}
         onClose={handleCloseMenu}
         onMouseLeave={handleCloseMenu}
-        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'left' }}
         slotProps={{
           paper: {

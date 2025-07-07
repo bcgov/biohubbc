@@ -163,18 +163,6 @@ export class CollectionRepository extends BaseRepository {
         'collection.subcollections'
       )
       .from('final_collection_structure AS collection')
-      // // This where statement removes subcollections so the response is hierarchical. We cannot just do
-      // // .whereNull(collection_parent_id) because a collection might technically be a subcollection (with a parent) but
-      // // be a root collection from a user's perspective, because the user doesn't have access to the true parent.
-      // // In that case, we want that subcollection at the root of the tree, and to exclude the
-      // // subcollection's parent from the response.
-      // .where(function () {
-      //   this.whereNotExists(function () {
-      //     this.select('*')
-      //       .from('final_collection_structure AS visible')
-      //       .whereRaw('visible.collection_id = collection.parent_collection_id');
-      //   }).orWhereNull('collection.parent_collection_id');
-      // })
       .orderBy('collection.collection_id');
 
     return query;
@@ -399,44 +387,6 @@ export class CollectionRepository extends BaseRepository {
     return response.rows;
   }
 
-  // /**
-  //  * Base query for finding collections with filters and permissions (flat only).
-  //  *
-  //  * @param {boolean} isUserAdmin - Whether the user has admin privileges.
-  //  * @param {number | null} systemUserId - The ID of the system user.
-  //  * @param {ICollectionAdvancedFilters} filterFields - The fields to filter by.
-  //  * @returns {Knex.QueryBuilder} The Knex query builder with filters applied.
-  //  * @memberof CollectionRepository
-  //  */
-  // _makeFindCollectionsBaseQuery(
-  //   isUserAdmin: boolean,
-  //   systemUserId: number | null,
-  //   filterFields: ICollectionAdvancedFilters
-  // ): Knex.QueryBuilder {
-  //   const knex = getKnex();
-
-  //   const getCollectionIdsQuery = knex.select('collection_id').from('collection');
-
-  //   if (!isUserAdmin) {
-  //     getCollectionIdsQuery.whereIn('collection.collection_id', (subquery) =>
-  //       subquery.select('collection_id').from('collection_member').where('system_user_id', systemUserId)
-  //     );
-  //   }
-
-  //   if (filterFields.system_user_id) {
-  //     getCollectionIdsQuery.whereIn('collection.collection_id', (subquery) =>
-  //       subquery.select('collection_id').from('collection_member').where('system_user_id', filterFields.system_user_id)
-  //     );
-  //   }
-
-  //   const query = knex.queryBuilder();
-  //   this._getCollectionsFlatQuery(query);
-
-  //   query.whereIn('collection.collection_id', getCollectionIdsQuery);
-
-  //   return query;
-  // }
-
   /**
    * Find collections that the user has access to
    *
@@ -488,6 +438,38 @@ export class CollectionRepository extends BaseRepository {
     }
 
     return response.rows[0];
+  }
+
+  /**
+   * Gets all subcollection IDs (all depths) for the given collection ID, excluding the root itself.
+   *
+   * @param {number} collectionId
+   * @returns {Promise<number[]>}
+   */
+  async getSubcollectionIds(collectionId: number): Promise<number[]> {
+    const knex = getKnex();
+
+    const query = knex
+      .withRecursive('collection_hierarchy', (qb) => {
+        const base = qb.select('c.collection_id').from('collection AS c').where('c.collection_id', collectionId);
+
+        return base.unionAll((qb) => {
+          qb.select('c.collection_id')
+            .from('collection AS c')
+            .join('collection_hierarchy AS ch', 'c.parent_collection_id', 'ch.collection_id');
+        });
+      })
+      .select(
+        knex.raw(
+          `COALESCE(json_agg(collection_id) FILTER (WHERE collection_id != ?), '[]'::json) AS all_subcollection_ids`,
+          [collectionId]
+        )
+      )
+      .from('collection_hierarchy');
+
+    const result = await this.connection.knex(query, z.object({ all_subcollection_ids: z.array(z.number()) }));
+
+    return result.rows[0].all_subcollection_ids;
   }
 
   /**
