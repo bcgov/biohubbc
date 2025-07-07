@@ -105,21 +105,29 @@ export const DeploymentDetailsForm = (props: IDeploymentDetailsFormProps) => {
           <TextField
             name="frequency"
             label="Device frequency"
-            inputProps={{ 'data-testid': 'frequency' }}
+            type="number"
+            inputProps={{
+              'data-testid': 'frequency',
+              step: 'any' // Allows any decimal number
+            }}
             onChange={(event) => {
-              // Ensure that the formik value is set to null if the input is empty, and not empty-string
+              // Parse decimal value or return null if input is empty
               setFieldValue('frequency', numberOrNull(event.target.value));
             }}
             onBlur={handleBlur}
             variant="outlined"
-            value={get(values, 'frequency') || ''} // Ensure that the value is an empty string if it is null (controlled component)
+            value={get(values, 'frequency') ?? ''}
             error={get(touched, 'frequency') && Boolean(get(errors, 'frequency'))}
             helperText={get(touched, 'frequency') && get(errors, 'frequency')}
             sx={{
               flex: 0.8,
-              '& .MuiOutlinedInput-root': { borderTopRightRadius: 0, borderBottomRightRadius: 0 }
+              '& .MuiOutlinedInput-root': {
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0
+              }
             }}
           />
+
           <AutocompleteField
             name="frequency_unit_id"
             id="frequency_unit_id"
