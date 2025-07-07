@@ -17,9 +17,9 @@ const useTaxonomyApi = () => {
    * @param {number[]} tsns
    * @return {*}  {Promise<IPartialTaxonomy[]>}
    */
-  const getSpeciesFromIds = async (tsns: number[]): Promise<IPartialTaxonomy[]> => {
+  const getSpeciesFromIds = async (tsns: number[]): Promise<ITaxonomy[]> => {
     const { data } = await apiAxios.get<{
-      searchResponse: IPartialTaxonomy[];
+      searchResponse: ITaxonomy[];
     }>(config.BIOHUB_TAXON_TSN_PATH, {
       params: {
         tsn: [...new Set(tsns)]
