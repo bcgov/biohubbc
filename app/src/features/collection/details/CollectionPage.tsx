@@ -1,4 +1,10 @@
-import { mdiAccountMultipleOutline, mdiClipboardOutline, mdiDatabaseSearchOutline, mdiLabelOutline } from '@mdi/js';
+import {
+  mdiAccountMultipleOutline,
+  mdiClipboardOutline,
+  mdiDatabaseSearchOutline,
+  mdiLabelOutline,
+  mdiLink
+} from '@mdi/js';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
 import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
@@ -11,6 +17,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { CollectionDataContainer } from './data/CollectionDataContainer';
 import CollectionHeader from './header/CollectionHeader';
+import { CollectionLinkContainer } from './links/CollectionLinkContainer';
 import CollectionParticipantsContainer from './members/CollectionMembersContainer';
 import CollectionSurveyContainer from './survey/CollectionSurveyContainer';
 import { SubcollectionContainer } from './tags/SubcollectionContainer';
@@ -21,7 +28,8 @@ export enum CollectionView {
   Surveys = 'surveys',
   Data = 'data',
   Subcollections = 'subprojects',
-  Participants = 'participants'
+  Participants = 'participants',
+  Links = 'links'
 }
 
 type CollectionPageURLParams = {
@@ -69,7 +77,8 @@ const CollectionPage = () => {
     { value: CollectionView.Surveys, label: 'Surveys', icon: mdiClipboardOutline },
     { value: CollectionView.Subcollections, label: 'Subprojects', icon: mdiLabelOutline },
     { value: CollectionView.Data, label: 'Data', icon: mdiDatabaseSearchOutline },
-    { value: CollectionView.Participants, label: 'Members', icon: mdiAccountMultipleOutline }
+    { value: CollectionView.Participants, label: 'Members', icon: mdiAccountMultipleOutline },
+    { value: CollectionView.Links, label: 'External Resources', icon: mdiLink }
   ];
 
   return (
@@ -110,6 +119,12 @@ const CollectionPage = () => {
             {activeView === CollectionView.Participants && (
               <Box>
                 <CollectionParticipantsContainer collectionId={collection.collection_id} />
+              </Box>
+            )}
+
+            {activeView === CollectionView.Links && (
+              <Box>
+                <CollectionLinkContainer collectionId={collection.collection_id} />
               </Box>
             )}
           </SidebarLayout>
