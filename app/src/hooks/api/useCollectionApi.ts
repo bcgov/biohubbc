@@ -4,14 +4,18 @@ import { ISurveyAdvancedFilters } from 'features/summary/list-data/survey/Survey
 import { IObservationsAdvancedFilters } from 'features/summary/tabular-data/observation/ObservationsListFilterForm';
 import {
   ICollection,
+  ICollectionLink,
   ICollectionMemberResponse,
   ICollectionMembersAdvancedFilters,
+  ICreateCollectionLinkRequest,
   ICreateCollectionRequest,
   ICreateCollectionSurveyRequest,
   ICreateSurveyCollectionRequest,
   IGetCollectionHierarchyResponse,
+  IGetCollectionLinksResponse,
   IGetCollectionsResponse,
-  IPostCollectionMember
+  IPostCollectionMember,
+  IUpdateCollectionLinkRequest
 } from 'interfaces/useCollectionApi.interface';
 import { IGetSurveyObservationsResponse } from 'interfaces/useObservationApi.interface';
 import { IFindSurveysResponse } from 'interfaces/useSurveyApi.interface';
@@ -259,6 +263,72 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get collection links
+   *
+   * @param {number} collectionId
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @return {*} {Promise<IGetCollectionLinksResponse>}
+   */
+  const getCollectionLinks = async (
+    collectionId: number,
+    pagination?: ApiPaginationRequestOptions
+  ): Promise<IGetCollectionLinksResponse> => {
+    const params = {
+      ...pagination
+    };
+
+    const { data } = await axios.get(`/api/collection/${collectionId}/links`, {
+      params,
+      paramsSerializer: (params) => qs.stringify(params)
+    });
+
+    return data;
+  };
+
+  /**
+   * Create a new collection link
+   *
+   * @param {number} collectionId
+   * @param {ICreateCollectionLinkRequest} link
+   * @return {*} {Promise<ICollectionLink>}
+   */
+  const createCollectionLink = async (
+    collectionId: number,
+    link: ICreateCollectionLinkRequest
+  ): Promise<ICollectionLink> => {
+    const { data } = await axios.post(`/api/collection/${collectionId}/links`, link);
+
+    return data;
+  };
+
+  /**
+   * Update a collection link
+   *
+   * @param {number} collectionId
+   * @param {IUpdateCollectionLinkRequest} link
+   * @return {*} {Promise<ICollectionLink>}
+   */
+  const updateCollectionLink = async (
+    collectionId: number,
+    link: IUpdateCollectionLinkRequest
+  ): Promise<ICollectionLink> => {
+    const { data } = await axios.put(`/api/collection/${collectionId}/links/${link.id}`, link);
+
+    return data;
+  };
+
+  /**
+   * Delete a collection link
+   *
+   * @param {number} collectionId
+   * @param {number} linkId
+   * @return {*} {Promise<void>}
+   */
+  const deleteCollectionLink = async (collectionId: number, linkId: number): Promise<void> => {
+    await axios.delete(`/api/collection/${collectionId}/links/${linkId}`);
+  };
+
   return {
     createCollection,
     createSubcollection,
@@ -273,6 +343,10 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     getObservations,
     addParticipants,
     getCollection,
-    deleteCollection
+    deleteCollection,
+    getCollectionLinks,
+    createCollectionLink,
+    updateCollectionLink,
+    deleteCollectionLink
   };
 };
