@@ -66,36 +66,30 @@ export const DevicesTable = (props: IDevicesTableProps) => {
       return;
     }
 
-    await biohubApi.telemetryDevice
-      .deleteDevice(surveyContext.surveyId, actionMenuDeviceId)
-      .then(() => {
-        dialogContext.setYesNoDialog({ open: false });
-        setActionMenuAnchorEl(null);
-        onDelete?.();
-      })
-      .catch((error: any) => {
-        dialogContext.setYesNoDialog({ open: false });
-        setActionMenuAnchorEl(null);
-        dialogContext.setSnackbar({
-          snackbarMessage: (
-            <>
-              <Typography variant="body2" component="div">
-                <strong>Error Deleting Device</strong>
-              </Typography>
-              {String(error).includes(FOREIGN_KEY_CONSTRAINT_ERROR) ? (
-                <Typography variant="body2" component="div">
-                  You must delete the deployments involving this device before deleting the device.
-                </Typography>
-              ) : (
-                <Typography variant="body2" component="div">
-                  {String(error)}
-                </Typography>
-              )}
-            </>
-          ),
-          open: true
-        });
+    try {
+      await biohubApi.telemetryDevice.deleteDevice(surveyContext.surveyId, actionMenuDeviceId);
+      dialogContext.setYesNoDialog({ open: false });
+      setActionMenuAnchorEl(null);
+      onDelete?.();
+    } catch (error: any) {
+      dialogContext.setYesNoDialog({ open: false });
+      setActionMenuAnchorEl(null);
+      dialogContext.setSnackbar({
+        open: true,
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              <strong>Error Deleting Device</strong>
+            </Typography>
+            <Typography variant="body2" component="div">
+              {String(error).includes(FOREIGN_KEY_CONSTRAINT_ERROR)
+                ? 'You must delete the deployments involving this device before deleting the device.'
+                : String(error)}
+            </Typography>
+          </>
+        )
       });
+    }
   };
 
   const confirmDeleteDeviceDialog = () => {
@@ -270,6 +264,9 @@ export const DevicesTable = (props: IDevicesTableProps) => {
     </>
   );
 };
+
+const getDeviceDeploymentsForSerial = (deployments: TelemetryDeployment[], serial: string) =>
+  deployments.filter((dep) => dep.device_key?.split(':')[1] === serial);
 
 const isDeploymentActive = (deployment: TelemetryDeployment) => {
   const now = dayjs();

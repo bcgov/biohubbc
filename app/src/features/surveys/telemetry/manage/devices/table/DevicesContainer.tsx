@@ -56,6 +56,8 @@ export const DevicesContainer = () => {
     deploymentsDataLoader.load(surveyContext.surveyId);
   }, [deploymentsDataLoader, surveyContext.surveyId]);
 
+  const deployments = deploymentsDataLoader.data?.deployments ?? [];
+
   // Handler for bulk delete operation
   const handleBulkDelete = async () => {
     try {
@@ -189,6 +191,7 @@ export const DevicesContainer = () => {
           <Button
             variant="contained"
             color="primary"
+            disabled={processingRecords}
             startIcon={<Icon path={mdiImport} size={1} />}
             onClick={() => setShowImportDialog(true)}>
             Import
@@ -221,6 +224,7 @@ export const DevicesContainer = () => {
         }
         hasNoDataFallbackDelay={100}>
         <DevicesTable
+          deployments={deployments}
           devices={devices}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}

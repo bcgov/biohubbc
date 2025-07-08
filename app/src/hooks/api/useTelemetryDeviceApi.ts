@@ -126,7 +126,6 @@ export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
   /**
    * Imports a device CSV.
    *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {File} file
    * @param {CancelTokenSource} [cancelTokenSource]
@@ -134,7 +133,6 @@ export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
    * @return {*} {Promise<void>}
    */
   const importTelemetryDeviceCSV = async (
-    projectId: number,
     surveyId: number,
     file: File,
     cancelTokenSource?: CancelTokenSource,
@@ -144,7 +142,7 @@ export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
 
     formData.append('media', file);
 
-    await axios.post(`/api/project/${projectId}/survey/${surveyId}/devices/import`, formData, {
+    await axios.post(`/api/survey/${surveyId}/devices/import`, formData, {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress
     });
