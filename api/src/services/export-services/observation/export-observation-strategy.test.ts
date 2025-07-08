@@ -199,7 +199,7 @@ describe('ExportObservationStrategy', () => {
 
       // Stub the SubCountService's getMeasurementTypeDefinitionsForSurvey method to return the mocked response
       const subCountServiceStub = sinon
-        .stub(SubCountService.prototype, 'getMeasurementTypeDefinitionsForSurvey')
+        .stub(SubCountService.prototype, 'getMeasurementTypeDefinitionsForSurveys')
         .resolves(mockedResponse);
 
       const result = await exportObservationStrategy._getMeasurementsMap();

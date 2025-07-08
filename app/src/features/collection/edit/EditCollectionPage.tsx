@@ -18,6 +18,7 @@ import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICollectionMember, IUpdateCollectionRequest } from 'interfaces/useCollectionApi.interface';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
+import { CollectionBreadcrumb } from '../details/header/breadcrumb/CollectionBreadcrumb';
 import CollectionForm from '../edit/CollectionForm';
 
 export const defaultCollectionDataFormValues: IUpdateCollectionRequest = {
@@ -25,7 +26,7 @@ export const defaultCollectionDataFormValues: IUpdateCollectionRequest = {
   parent_collection_id: null,
   name: '',
   description: '',
-  participants: []
+  members: []
 };
 
 /**
@@ -65,7 +66,7 @@ const EditCollectionPage = () => {
 
   const authStateContext = useAuthStateContext();
 
-  const initialParticipants: ICollectionMember[] = useMemo(() => {
+  const initialmembers: ICollectionMember[] = useMemo(() => {
     if (!authStateContext.simsUserWrapper.systemUserId) {
       return [];
     }
@@ -83,9 +84,9 @@ const EditCollectionPage = () => {
   const initialCollectionData: IUpdateCollectionRequest = useMemo(() => {
     return {
       ...defaultCollectionDataFormValues,
-      participants: initialParticipants
+      members: initialmembers
     };
-  }, [initialParticipants]);
+  }, [initialmembers]);
 
   const defaultErrorDialogProps = {
     onClose: () => {
@@ -122,10 +123,11 @@ const EditCollectionPage = () => {
     const { collection_id, ...values } = collectionPostObject;
     try {
       await biohubApi.collection.updateCollection(Number(collection_id), {
-        ...values,
-        participants: values.participants.map((participant) => ({
-          system_user_id: participant.system_user_id,
-          collection_role_name: participant.collection_role_name
+        name: values.name,
+        description: values.description,
+        members: values.members.map((member) => ({
+          system_user_id: member.system_user_id,
+          collection_role_name: member.collection_role_name
         }))
       });
 
@@ -138,15 +140,15 @@ const EditCollectionPage = () => {
     setIsSaving(false);
   };
 
-  if (!codesContext.codesDataLoader.data || !collectionId) {
+  if (!codesContext.codesDataLoader.data || !collectionDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-
   return (
     <>
       <Prompt when={enableCancelCheck} message={locationChangeInterceptor} />
       <PageHeader
-        title="Edit New Collection"
+        title="Edit Collection"
+        breadCrumbJSX={<CollectionBreadcrumb collection={collectionDataLoader.data} />}
         buttonJSX={
           <>
             <LoadingButton

@@ -86,7 +86,7 @@ describe('SampleSiteService', () => {
       const mockDBConnection = getMockDBConnection();
       const service = new SampleSiteService(mockDBConnection);
 
-      sinon.stub(SampleSiteRepository.prototype, 'getSampleSitesForSurveyId').resolves([
+      sinon.stub(SampleSiteRepository.prototype, 'getSampleSitesForSurveyIds').resolves([
         {
           survey_sample_site_id: 1,
           survey_id: 1,
@@ -98,7 +98,7 @@ describe('SampleSiteService', () => {
         }
       ]);
 
-      const response = await service.getSampleSitesForSurveyId(1);
+      const response = await service.getSampleSitesForSurveyIds([1]);
 
       expect(response).to.have.lengthOf(1);
       response.forEach((item) => {
@@ -111,11 +111,11 @@ describe('SampleSiteService', () => {
     it('should return the sample site count successfully', async () => {
       const dbConnectionObj = getMockDBConnection();
 
-      const repoStub = sinon.stub(SampleSiteRepository.prototype, 'getSampleSitesCountBySurveyId').resolves(20);
+      const repoStub = sinon.stub(SampleSiteRepository.prototype, 'getSampleSitesCountBySurveyIds').resolves(20);
       const surveyService = new SampleSiteService(dbConnectionObj);
-      const response = await surveyService.getSampleSitesCountBySurveyId(1001);
+      const response = await surveyService.getSampleSitesCountBySurveyIds([1001]);
 
-      expect(repoStub).to.be.calledOnceWith(1001);
+      expect(repoStub).to.be.calledOnceWith([1001]);
       expect(response).to.equal(20);
     });
   });

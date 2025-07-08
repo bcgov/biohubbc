@@ -1,14 +1,16 @@
-import { mdiCalendarClock, mdiDatabaseSearch, mdiFileOutline, mdiHome } from '@mdi/js';
-import CustomToggleButtonGroup, { ToggleButtonView } from 'components/toggle/CustomToggleButtonGroup';
+import { mdiAccountMultiple, mdiCalendarClock, mdiDatabaseSearch, mdiFileOutline, mdiHome } from '@mdi/js';
+import { ToggleButtonView } from 'components/toggle/CustomToggleButtonGroup';
+import { HierarchicalCustomToggleButtonGroup } from 'components/toggle/HierarchicalCustomToggleButtonGroup';
+import { DATA_ACTIVE_VIEW_VALUE, SURVEY_ACTIVE_VIEW_VALUE, SURVEY_VIEW_VALUE } from 'constants/survey-view';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCallback, useContext, useMemo } from 'react';
-import { SURVEY_ACTIVE_VIEW_VALUE } from '../SurveyDetailsTab';
+import { SAMPLING_ACTIVE_VIEW_VALUE } from '../sampling/SurveySamplingPage';
 
 type SurveyViewToggleProps = {
   checklist: any;
-  activeView: SURVEY_ACTIVE_VIEW_VALUE;
-  setActiveView: (v: SURVEY_ACTIVE_VIEW_VALUE) => void;
+  activeView: SURVEY_VIEW_VALUE;
+  setActiveView: (v: SURVEY_VIEW_VALUE) => void;
 };
 
 export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: SurveyViewToggleProps) => {
@@ -26,7 +28,7 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
             value: item.checklist_item_name ?? key,
             checked: !!item.count,
             disabled: !item.applicable,
-            checkbox: true,
+
             children: children.length ? children : undefined
           }
         ];
@@ -44,17 +46,34 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
     ];
   }, [checklist]);
 
-  const BULK_IGNORE_MAP: Record<SURVEY_ACTIVE_VIEW_VALUE, string[]> = useMemo(
+  const BULK_IGNORE_MAP: Record<SURVEY_VIEW_VALUE, string[]> = useMemo(
     () => ({
-      [SURVEY_ACTIVE_VIEW_VALUE.data]: ['observations', 'devices', 'deployments', 'locations', 'habitat', 'animals'],
-      [SURVEY_ACTIVE_VIEW_VALUE.sampling]: ['sites', 'techniques', 'periods'],
+      // Top-level views
       [SURVEY_ACTIVE_VIEW_VALUE.overview]: [],
-      [SURVEY_ACTIVE_VIEW_VALUE.attachments]: []
+      [SURVEY_ACTIVE_VIEW_VALUE.sampling]: ['sites', 'techniques', 'periods'],
+      [SURVEY_ACTIVE_VIEW_VALUE.data]: ['observations', 'devices', 'deployments', 'locations', 'habitat', 'animals'],
+      [SURVEY_ACTIVE_VIEW_VALUE.attachments]: [],
+      [SURVEY_ACTIVE_VIEW_VALUE.permissions]: [],
+
+      // Sampling sub-views
+      [SAMPLING_ACTIVE_VIEW_VALUE.sites]: [],
+      [SAMPLING_ACTIVE_VIEW_VALUE.techniques]: [],
+      [SAMPLING_ACTIVE_VIEW_VALUE.periods]: [],
+
+      // Data sub-views
+      [DATA_ACTIVE_VIEW_VALUE.observations]: [],
+      [DATA_ACTIVE_VIEW_VALUE.telemetry]: [],
+      [DATA_ACTIVE_VIEW_VALUE.devices]: [],
+      [DATA_ACTIVE_VIEW_VALUE.locations]: [],
+      [DATA_ACTIVE_VIEW_VALUE.deployments]: [],
+      [DATA_ACTIVE_VIEW_VALUE.animals]: [],
+      [DATA_ACTIVE_VIEW_VALUE.habitat]: []
     }),
     []
   );
+
   const handleCheckboxClick = useCallback(
-    async (view: ToggleButtonView<SURVEY_ACTIVE_VIEW_VALUE>) => {
+    async (view: ToggleButtonView<SURVEY_VIEW_VALUE>) => {
       const itemMap = flattenedChecklistItems.reduce<Record<string, any>>((acc, item) => {
         acc[item.value] = item;
         return acc;
@@ -129,7 +148,7 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
     [checklist?.data]
   );
 
-  const views: ToggleButtonView<SURVEY_ACTIVE_VIEW_VALUE>[] = useMemo(
+  const views: ToggleButtonView<SURVEY_VIEW_VALUE>[] = useMemo(
     () => [
       {
         value: SURVEY_ACTIVE_VIEW_VALUE.overview,
@@ -140,7 +159,6 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
         value: SURVEY_ACTIVE_VIEW_VALUE.sampling,
         label: 'Sampling',
         icon: mdiCalendarClock,
-        checkbox: true,
 
         indeterminate:
           samplingCounts.some((count) => (count ?? 0) > 0) && samplingCounts.some((count) => (count ?? 0) === 0),
@@ -156,7 +174,6 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
         value: SURVEY_ACTIVE_VIEW_VALUE.data,
         label: 'Data',
         icon: mdiDatabaseSearch,
-        checkbox: true,
 
         indeterminate: dataCounts.some((count) => (count ?? 0) > 0) && dataCounts.some((count) => (count ?? 0) === 0),
 
@@ -174,16 +191,21 @@ export const SurveyViewToggle = ({ checklist, activeView, setActiveView }: Surve
         value: SURVEY_ACTIVE_VIEW_VALUE.attachments,
         label: 'Supplementary',
         icon: mdiFileOutline,
-        checkbox: true,
+
         disabled: !checklist?.attachments?.applicable,
         checked: !!checklist?.attachments.count
+      },
+      {
+        value: SURVEY_ACTIVE_VIEW_VALUE.permissions,
+        label: 'Members',
+        icon: mdiAccountMultiple
       }
     ],
     [checklist, samplingCounts, dataCounts]
   );
 
   return (
-    <CustomToggleButtonGroup
+    <HierarchicalCustomToggleButtonGroup
       views={views}
       activeView={activeView}
       onViewChange={setActiveView}

@@ -3,11 +3,14 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ApiExecuteSQLError } from '../errors/api-error';
-import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
-import { GetAttachmentsData, GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../models/survey-view';
+import {
+  GetAttachmentsData,
+  GetReportAttachmentsData,
+  GetSurveyProprietorData,
+  GetSurveyPurposeAndMethodologyData
+} from '../models/survey-view';
 import { getMockDBConnection } from '../__mocks__/db';
 import {
   SurveyRecord,
@@ -33,56 +36,6 @@ describe('SurveyRepository', () => {
       const response = await repository.deleteSurvey(1);
 
       expect(response).to.eql(undefined);
-    });
-  });
-
-  describe('getSurveyCountByProjectId', () => {
-    it('should return the survey count successfully', async () => {
-      const mockResponse = { rows: [{ count: 69 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
-      const dbConnectionObj = getMockDBConnection({ sql: () => mockResponse });
-
-      const repo = new SurveyRepository(dbConnectionObj);
-      const response = await repo.getSurveyCountByProjectId(1001);
-
-      expect(response).to.eql(69);
-    });
-
-    it('should throw an exception if row count is 0', async () => {
-      const mockResponse = { rows: [], count: 0 } as any as Promise<QueryResult<any>>;
-      const dbConnectionObj = getMockDBConnection({ sql: sinon.stub().resolves(mockResponse) });
-
-      const repo = new SurveyRepository(dbConnectionObj);
-
-      try {
-        await repo.getSurveyCountByProjectId(1001);
-      } catch (error) {
-        expect(dbConnectionObj.sql).to.have.been.calledOnce;
-        expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to get survey count');
-      }
-    });
-  });
-
-  describe('getSurveyIdsByProjectId', () => {
-    it('should return result', async () => {
-      const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getSurveyIdsByProjectId(1);
-
-      expect(response).to.eql([{ id: 1 }]);
-    });
-
-    it('should return empty rows', async () => {
-      const mockResponse = { rows: [], rowCount: 1 } as any as Promise<QueryResult<any>>;
-      const dbConnection = getMockDBConnection({ sql: () => mockResponse });
-
-      const repository = new SurveyRepository(dbConnection);
-
-      const response = await repository.getSurveyIdsByProjectId(1);
-
-      expect(response).to.eql([]);
     });
   });
 
@@ -444,7 +397,7 @@ describe('SurveyRepository', () => {
         locations: [{ geometry: [{ id: 1 }] }]
       } as unknown as PostSurveyObject;
 
-      const response = await repository.insertSurveyData(1, input);
+      const response = await repository.insertSurveyData(input);
 
       expect(response).to.eql(1);
     });
@@ -470,7 +423,7 @@ describe('SurveyRepository', () => {
         locations: [{ geometry: [] }]
       } as unknown as PostSurveyObject;
 
-      const response = await repository.insertSurveyData(1, input);
+      const response = await repository.insertSurveyData(input);
 
       expect(response).to.eql(1);
     });
@@ -497,7 +450,7 @@ describe('SurveyRepository', () => {
       } as unknown as PostSurveyObject;
 
       try {
-        await repository.insertSurveyData(1, input);
+        await repository.insertSurveyData(input);
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to insert survey data');
@@ -632,7 +585,7 @@ describe('SurveyRepository', () => {
 
       const repository = new SurveyRepository(dbConnection);
 
-      const response = await repository.associateSurveyToPermit(1, 1, '1');
+      const response = await repository.associateSurveyToPermit(1, '1');
 
       expect(response).to.eql(undefined);
     });
@@ -644,7 +597,7 @@ describe('SurveyRepository', () => {
       const repository = new SurveyRepository(dbConnection);
 
       try {
-        await repository.associateSurveyToPermit(1, 1, '1');
+        await repository.associateSurveyToPermit(1, '1');
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to update survey permit record');
@@ -659,7 +612,7 @@ describe('SurveyRepository', () => {
 
       const repository = new SurveyRepository(dbConnection);
 
-      const response = await repository.insertSurveyPermit(1, 1, 1, 'number', 'type');
+      const response = await repository.insertSurveyPermit(1, 1, 'number', 'type');
 
       expect(response).to.eql(undefined);
     });
@@ -671,7 +624,7 @@ describe('SurveyRepository', () => {
       const repository = new SurveyRepository(dbConnection);
 
       try {
-        await repository.insertSurveyPermit(1, 1, 1, 'number', 'type');
+        await repository.insertSurveyPermit(1, 1, 'number', 'type');
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Failed to insert survey permit record');

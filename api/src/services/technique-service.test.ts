@@ -72,7 +72,7 @@ describe('TechniqueService', () => {
         vantage_methods: []
       };
 
-      sinon.stub(TechniqueRepository.prototype, 'getTechniquesForSurveyId').resolves([mockRecord]);
+      sinon.stub(TechniqueRepository.prototype, 'getTechniquesForSurveyIds').resolves([mockRecord]);
 
       const dbConnection = getMockDBConnection();
 
@@ -81,7 +81,7 @@ describe('TechniqueService', () => {
       const surveyId = 1;
       const pagination = undefined;
 
-      const response = await service.getTechniquesForSurveyId(surveyId, pagination);
+      const response = await service.getTechniquesForSurveyIds([surveyId], pagination);
 
       expect(response).to.eql([mockRecord]);
     });
@@ -91,7 +91,7 @@ describe('TechniqueService', () => {
     it('should run successfully', async () => {
       const count = 10;
 
-      sinon.stub(TechniqueRepository.prototype, 'getTechniquesCountForSurveyId').resolves(count);
+      sinon.stub(TechniqueRepository.prototype, 'getTechniquesCountForSurveyIds').resolves(count);
 
       const dbConnection = getMockDBConnection();
 
@@ -99,7 +99,7 @@ describe('TechniqueService', () => {
 
       const surveyId = 1;
 
-      const response = await service.getTechniquesCountForSurveyId(surveyId);
+      const response = await service.getTechniquesCountForSurveyId([surveyId]);
 
       expect(response).to.eql(count);
     });

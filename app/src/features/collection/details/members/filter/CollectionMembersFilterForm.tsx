@@ -35,7 +35,7 @@ const MembersFilterForm = (props: IMembersFilterFormProps) => {
             <CustomTextField
               name="keyword"
               label="Search"
-              other={{ placeholder: "Type a person's name" }}
+              other={{ placeholder: "Type a person's name", size: 'small' }}
               key="collection-member-keyword-filter"
             />
           ]}

@@ -140,7 +140,7 @@ export const SURVEY_MAP_LAYER_COLOURS = {
  */
 const COLLECTION_ROLE_COLOUR_MAP = {
   [COLLECTION_ROLE.ADMIN]: { colour: blue },
-  [COLLECTION_ROLE.MEMBER]: { colour: orange }
+  [COLLECTION_ROLE.MEMBER]: { colour: grey }
 };
 
 /**

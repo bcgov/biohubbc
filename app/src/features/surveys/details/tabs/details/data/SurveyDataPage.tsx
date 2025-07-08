@@ -11,10 +11,8 @@ import { CircularProgress, Skeleton } from '@mui/material';
 import { Box, Stack } from '@mui/system';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { ComponentSwitch } from 'components/misc/ComponentSwitch';
-import {
-  HierarchicalCustomToggleButtonGroup,
-  ToggleButtonView
-} from 'components/toggle/HierarchicalCustomToggleButtonGroup';
+import { ToggleButtonView } from 'components/toggle/CustomToggleButtonGroup';
+import { HierarchicalCustomToggleButtonGroup } from 'components/toggle/HierarchicalCustomToggleButtonGroup';
 import { CodesContext } from 'contexts/codesContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { SurveyDeploymentList } from 'features/surveys/telemetry/list/SurveyDeploymentList';
@@ -101,7 +99,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
       value: DATA_ACTIVE_VIEW_VALUE.observations,
       label: 'Observations',
       icon: mdiEye,
-      checkbox: true,
+
       disabled: !checklist.data.observations.applicable,
       checked: !!checklist.data.observations.count
     },
@@ -109,7 +107,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
       value: DATA_ACTIVE_VIEW_VALUE.animals,
       label: 'Animals',
       icon: mdiPaw,
-      checkbox: true,
+
       disabled: !checklist.data.animals.applicable,
       checked: !!checklist.data.animals.count
     },
@@ -123,7 +121,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
           value: DATA_ACTIVE_VIEW_VALUE.devices,
           label: 'Devices',
           icon: mdiAntenna,
-          checkbox: true,
+
           disabled: !checklist.data.telemetry.devices.applicable,
           checked: !!checklist.data.telemetry.devices.count
         },
@@ -131,7 +129,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
           value: DATA_ACTIVE_VIEW_VALUE.deployments,
           label: 'Deployments',
           icon: mdiCalendarRangeOutline,
-          checkbox: true,
+
           disabled: !checklist.data.telemetry.deployments.applicable,
           checked: !!checklist.data.telemetry.deployments.count
         },
@@ -139,7 +137,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
           value: DATA_ACTIVE_VIEW_VALUE.locations,
           label: 'Locations',
           icon: mdiMapMarkerRadiusOutline,
-          checkbox: true,
+
           disabled: !checklist.data.telemetry.locations.applicable,
           checked: !!checklist.data.telemetry.locations.count
         }
@@ -149,7 +147,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
       value: DATA_ACTIVE_VIEW_VALUE.habitat,
       label: 'Habitat Features',
       icon: mdiPineTree,
-      checkbox: true,
+
       disabled: !checklist.data.habitat.applicable,
       checked: !!checklist.data.habitat.count
     }
@@ -161,7 +159,7 @@ export const SurveyDataPage = (props: ISurveyDataPageProps) => {
     <SidebarLayout
       sx={{ borderTopLeftRadius: 0, borderBottomLeftRadius: 0, overflow: 'hidden' }}
       sidebar={
-        <Box p={2}>
+        <Box p={2} sx={{ minWidth: '300px', overflowY: 'auto', height: '100%', flexShrink: 0 }}>
           <HierarchicalCustomToggleButtonGroup
             views={views}
             activeView={activeView}

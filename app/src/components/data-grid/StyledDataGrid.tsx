@@ -42,6 +42,9 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
             borderBottom: 'none'
           }
         },
+        '& .MuiDataGrid-cell:last-of-type': {
+          pr: `10 !important` // Add right padding (you can also use `mr` for margin)
+        },
         // Define custom header padding for the first column vs every other column
         '& .MuiDataGrid-columnHeader:first-of-type:not(.MuiDataGrid-columnHeaderCheckbox)': {
           pl: 3 // Add extra padding to the first header, unless it is a checkbox header

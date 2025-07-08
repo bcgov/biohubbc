@@ -1,4 +1,3 @@
-import { mdiArrowTopRight } from '@mdi/js';
 import { GridColDef, GridSortModel, GridValidRowModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -150,10 +149,9 @@ export const SurveySpatialObservationTable = () => {
       hasNoData={!rows.length}
       hasNoDataFallback={
         <NoDataOverlay
-          sx={{ minHeight: '300px' }}
-          title="Add Species Observations"
-          subtitle="Observations show where and when you observed species. You can link observations to sampling periods."
-          icon={mdiArrowTopRight}
+          title="Species Observations"
+          subtitle="Observations show where and when you observed species. Observations that belong to the surveys in this collection will show here."
+          sx={{ width: '100%', height: '100%', m: 0 }}
         />
       }
       hasNoDataFallbackDelay={100}>

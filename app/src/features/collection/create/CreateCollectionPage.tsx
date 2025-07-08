@@ -23,7 +23,7 @@ import CollectionForm from '../edit/CollectionForm';
 export const defaultCollectionDataFormValues: ICreateCollectionRequest = {
   name: '',
   description: '',
-  participants: []
+  members: []
 };
 
 /**
@@ -51,7 +51,7 @@ const CreateCollectionPage = () => {
 
   const authStateContext = useAuthStateContext();
 
-  const initialParticipants: ICollectionMember[] = useMemo(() => {
+  const initialmembers: ICollectionMember[] = useMemo(() => {
     if (!authStateContext.simsUserWrapper.systemUserId) {
       return [];
     }
@@ -72,9 +72,9 @@ const CreateCollectionPage = () => {
   const initialCollectionData: ICreateCollectionRequest = useMemo(() => {
     return {
       ...defaultCollectionDataFormValues,
-      participants: initialParticipants
+      members: initialmembers
     };
-  }, [initialParticipants]);
+  }, [initialmembers]);
 
   const defaultErrorDialogProps = {
     onClose: () => {
@@ -110,9 +110,9 @@ const CreateCollectionPage = () => {
     try {
       await biohubApi.collection.createCollection({
         ...collectionPostObject,
-        participants: collectionPostObject.participants.map((participant) => ({
-          system_user_id: participant.system_user_id,
-          collection_role_name: participant.collection_role_name
+        members: collectionPostObject.members.map((member) => ({
+          system_user_id: member.system_user_id,
+          collection_role_name: member.collection_role_name
         }))
       });
 
