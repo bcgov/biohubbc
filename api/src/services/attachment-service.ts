@@ -23,11 +23,6 @@ import { DBService } from './db-service';
 import { HistoryPublishService } from './history-publish-service';
 import { getTelemetryDeviceKey, IValidationData } from './telemetry-services/telemetry-utils';
 
-export interface IAttachmentType {
-  id: number;
-  type: 'Report' | 'Other';
-}
-
 /**
  * Response object for inserting a device key into the tables
  *

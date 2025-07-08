@@ -10,7 +10,7 @@ import { DBService } from './db-service';
 import { SurveyMemberService } from './survey-member-service';
 import { UserService } from './user-service';
 
-export enum AuthorizeOperator {
+enum AuthorizeOperator {
   AND = 'and',
   OR = 'or'
 }
@@ -32,7 +32,7 @@ export interface AuthorizeBySystemRoles {
  * @export
  * @interface AuthorizeBySystemUser
  */
-export interface AuthorizeBySystemUser {
+interface AuthorizeBySystemUser {
   discriminator: 'SystemUser';
 }
 
@@ -72,12 +72,12 @@ export type AuthorizeRule =
   | AuthorizeBySurveyRole
   | AuthorizeByCollectionRole;
 
-export type AuthorizeConfigOr = {
+type AuthorizeConfigOr = {
   [AuthorizeOperator.AND]?: never;
   [AuthorizeOperator.OR]: AuthorizeRule[];
 };
 
-export type AuthorizeConfigAnd = {
+type AuthorizeConfigAnd = {
   [AuthorizeOperator.AND]: AuthorizeRule[];
   [AuthorizeOperator.OR]?: never;
 };

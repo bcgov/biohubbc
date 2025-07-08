@@ -18,20 +18,6 @@ const SurveyJob = z.object({
 
 export type SurveyJob = z.infer<typeof SurveyJob>;
 
-const SurveyParticipation = z.object({
-  survey_participation_id: z.number().int().positive(),
-  survey_id: z.number().int().positive(),
-  system_user_id: z.number().int().positive(),
-  survey_job_id: z.number().int().positive(),
-  create_date: z.string(),
-  create_user: z.number().int().positive(),
-  update_date: z.string().nullable(),
-  update_user: z.number().int().positive().nullable(),
-  revision_count: z.number().int().positive()
-});
-
-export type SurveyParticipation = z.infer<typeof SurveyParticipation>;
-
 const SurveyUser = z.object({
   survey_participation_id: z.number().int().positive(),
   survey_id: z.number().int().positive(),

@@ -22,7 +22,7 @@ interface IFlattenedObservationTableRow extends GridValidRowModel {
   method_technique_name: string | null;
   survey_sample_period_start_datetime: string | null;
   observation_date: string;
-  observation_time: string;
+  observation_time: string | null;
   latitude: number | null;
   longitude: number | null;
 }
@@ -75,7 +75,7 @@ export const SurveySpatialObservationTable = () => {
         method_technique_name: item.method_technique_name,
         survey_sample_period_start_datetime: item.survey_sample_period_start_datetime,
         observation_date: dayjs(item.observation_date).format('YYYY-MM-DD'),
-        observation_time: dayjs(item.observation_date).format('HH:mm:ss'),
+        observation_time: item.observation_time,
         latitude: item.latitude,
         longitude: item.longitude
       };

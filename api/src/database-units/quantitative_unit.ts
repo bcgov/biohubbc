@@ -5,7 +5,7 @@ import { z } from 'zod';
  *
  * @description Enum for `quantitative_unit` database type.
  */
-export enum QuantitativeUnit {
+enum QuantitativeUnit {
   MILLIMETER = 'millimeter',
   CENTIMETER = 'centimeter',
   METER = 'meter',

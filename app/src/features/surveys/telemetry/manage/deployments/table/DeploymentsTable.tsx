@@ -14,15 +14,17 @@ import Typography from '@mui/material/Typography';
 import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { FOREIGN_KEY_CONSTRAINT_ERROR } from 'constants/errors';
 import dayjs from 'dayjs';
+import isBetween from 'dayjs/plugin/isBetween';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { combineDateTime } from 'utils/datetime';
+import { combineDateTime, formatDateTime } from 'utils/datetime';
+
+dayjs.extend(isBetween);
 
 export interface IDeploymentRowData {
   id: number;
@@ -211,13 +213,11 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
       description: 'The frequency of the device',
       flex: 1,
       renderCell: (params) => (
-        <Typography>
+        <Typography variant="body2">
           {params.row.frequency}&nbsp;
-          <Typography color="textSecondary" component="span">
-            {codesContext.codesDataLoader.data?.frequency_units.find(
-              (frequencyUnit) => frequencyUnit.id === params.row.frequency_unit_id
-            )?.name ?? null}
-          </Typography>
+          {codesContext.codesDataLoader.data?.frequency_units.find(
+            (frequencyUnit) => frequencyUnit.id === params.row.frequency_unit_id
+          )?.name ?? null}
         </Typography>
       )
     },
@@ -226,34 +226,14 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
       headerName: 'Start',
       description: 'The start date of the deployment',
       flex: 1,
-      renderCell: (params) => (
-        <>
-          {params.row.attachment_start_time
-            ? dayjs(`${params.row.attachment_start_date} ${params.row.attachment_start_time}`).format(
-                DATE_FORMAT.MediumDateTimeFormat
-              )
-            : dayjs(params.row.attachment_start_date).format(DATE_FORMAT.MediumDateFormat)}
-        </>
-      )
+      renderCell: (params) => formatDateTime(params.row.attachment_start_date)
     },
     {
       field: 'attachment_end_date',
       headerName: 'End',
       description: 'The end date of the deployment',
       flex: 1,
-      renderCell: (params) => {
-        if (!params.row.attachment_end_date) {
-          return null;
-        }
-
-        if (params.row.attachment_end_time) {
-          return dayjs(`${params.row.attachment_end_date} ${params.row.attachment_end_time}`).format(
-            DATE_FORMAT.MediumDateTimeFormat
-          );
-        }
-
-        return dayjs(params.row.attachment_end_date).format(DATE_FORMAT.MediumDateFormat);
-      }
+      renderCell: (params) => (params.row.attachment_end_date ? formatDateTime(params.row.attachment_end_date) : null)
     },
     {
       field: 'status',
@@ -261,14 +241,25 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
       description: 'The status of the deployment, based on whether the end date has passed',
       flex: 1,
       renderCell: (params) => {
-        if (
+        const now = dayjs();
+        const start = combineDateTime(params.row.attachment_start_date, params.row.attachment_start_time);
+        const end =
           params.row.attachment_end_date &&
-          dayjs().isBefore(combineDateTime(params.row.attachment_end_date, params.row.attachment_end_time))
-        ) {
-          return <ColouredRectangleChip colour={blue} label="Done" />;
+          combineDateTime(params.row.attachment_end_date, params.row.attachment_end_time);
+
+        if (now.isBefore(start)) {
+          return <ColouredRectangleChip colour={grey} label="Future" />;
         }
 
-        return <ColouredRectangleChip colour={green} label="active" />;
+        if (end && now.isAfter(end)) {
+          return <ColouredRectangleChip colour={blue} label="Ended" />;
+        }
+
+        if (!end || now.isBetween(start, end, null, '[)')) {
+          return <ColouredRectangleChip colour={green} label="Active" />;
+        }
+
+        return null;
       }
     },
     {

@@ -15,7 +15,7 @@ export interface ISurveyAttachment extends IAttachmentData {
   survey_attachment_id: number;
 }
 
-export interface IAttachmentData {
+interface IAttachmentData {
   file_name: string;
   file_type: string;
   create_user: number;

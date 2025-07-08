@@ -23,15 +23,12 @@ import {
   InsertObservationSubCountQualitativeMeasurementRecord,
   InsertObservationSubCountQuantitativeMeasurementRecord
 } from '../../repositories/observation-subcount-measurement-repository';
-import { getLogger } from '../../utils/logger';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { DBService } from '../db-service';
 import { ObservationEnvironmentService } from '../observation-environment-service';
 import { ObservationSubCountMeasurementService } from '../observation-subcount-measurement-service';
 import { SamplePeriodService } from '../sample-period-service';
 import { SubCountService } from '../subcount-service';
-
-export const defaultLog = getLogger('services/observation-services/observation-service');
 
 export class ObservationService extends DBService {
   observationRepository: ObservationRepository;
