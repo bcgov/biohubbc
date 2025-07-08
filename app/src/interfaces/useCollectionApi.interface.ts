@@ -82,3 +82,32 @@ export interface IPostCollectionMember {
   system_user_id: number;
   collection_role_name: string;
 }
+
+export interface ICollectionLink {
+  id: number;
+  name: string;
+  description: string | null;
+  url: string;
+  collection_id: number;
+  record_end_date: string | null;
+  create_date: string;
+  create_user: number;
+}
+
+export interface ICreateCollectionLinkRequest {
+  name: string;
+  description?: string;
+  url: string;
+}
+
+export interface IUpdateCollectionLinkRequest {
+  id: number;
+  name: string;
+  description?: string;
+  url: string;
+}
+
+export interface IGetCollectionLinksResponse {
+  links: ICollectionLink[];
+  pagination: ApiPaginationResponseParams;
+}
