@@ -10,24 +10,17 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { CustomTooltip } from 'components/tooltip/CustomTooltip';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import appTheme from 'themes/appTheme';
+import { ToggleButtonView } from './CustomToggleButtonGroup';
 
-export interface ToggleButtonView<ViewValueType> {
-  value: ViewValueType;
-  label: string;
-  icon?: string;
-  checkbox?: boolean;
-  checked?: boolean;
-  disabled?: boolean;
-  children?: ToggleButtonView<ViewValueType>[];
-  tooltip?: string;
-  isHeader?: boolean;
+export interface HierarchicalToggleButtonView<ViewValueType> extends ToggleButtonView<ViewValueType> {
+  children?: HierarchicalToggleButtonView<ViewValueType>[];
 }
 
 interface HierarchicalCustomToggleButtonGroupProps<ViewValueType extends string> {
-  views: ToggleButtonView<ViewValueType>[];
+  views: HierarchicalToggleButtonView<ViewValueType>[];
   activeView: ViewValueType | null;
   onViewChange: (view: ViewValueType) => void;
-  handleCheckboxClick?: (view: ToggleButtonView<ViewValueType>) => void;
+  handleCheckboxClick?: (view: HierarchicalToggleButtonView<ViewValueType>) => void;
   orientation: 'horizontal' | 'vertical';
   fixedExpanded?: boolean;
 }
@@ -47,7 +40,7 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
       return new Set<ViewValueType>();
     }
 
-    const collectAll = (items: ToggleButtonView<ViewValueType>[], acc: ViewValueType[] = []) => {
+    const collectAll = (items: HierarchicalToggleButtonView<ViewValueType>[], acc: ViewValueType[] = []) => {
       for (const item of items) {
         acc.push(item.value);
         if (item.children?.length) {
@@ -75,7 +68,7 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
 
   const findParentViews = useCallback(
     (
-      items: ToggleButtonView<ViewValueType>[],
+      items: HierarchicalToggleButtonView<ViewValueType>[],
       target: ViewValueType,
       parents: Set<ViewValueType> = new Set()
     ): Set<ViewValueType> => {
@@ -102,7 +95,7 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
     }
   }, [activeView, views, findParentViews]);
 
-  const renderViews = (items: ToggleButtonView<ViewValueType>[], level = 0): JSX.Element[] => {
+  const renderViews = (items: HierarchicalToggleButtonView<ViewValueType>[], level = 0): JSX.Element[] => {
     return items.flatMap((item) => {
       const hasChildren = !!item.children?.length;
       const startIcon = item.icon && <Icon path={item.icon} size={0.75} />;

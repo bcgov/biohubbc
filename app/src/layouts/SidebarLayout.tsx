@@ -13,7 +13,7 @@ interface SidebarLayoutProps extends PaperProps {
 
 export const SidebarLayout = ({ sidebar, header, children, ...paperProps }: SidebarLayoutProps) => {
   return (
-    <Box component={Paper} display="flex" minHeight="70vh" {...paperProps} sx={{ ...paperProps.sx }}>
+    <Box component={Paper} display="flex" minHeight="70vh" height="100%" {...paperProps} sx={{ ...paperProps.sx }}>
       {sidebar}
 
       <Divider flexItem orientation="vertical" />

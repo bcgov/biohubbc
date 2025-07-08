@@ -13,9 +13,11 @@ export interface ToggleButtonView<ViewValueType> {
   label: string;
   icon?: string;
   checkbox?: boolean;
-  indeterminate?: boolean;
   checked?: boolean;
   disabled?: boolean;
+  tooltip?: string;
+  isHeader?: boolean;
+  indeterminate?: boolean;
   menu?: {
     label: string;
     onClick: () => void;

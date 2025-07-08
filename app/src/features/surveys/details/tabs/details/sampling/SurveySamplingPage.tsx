@@ -86,7 +86,7 @@ export const SurveySamplingPage = (props: ISurveySamplingPageProps) => {
       value: SAMPLING_ACTIVE_VIEW_VALUE.sites,
       label: 'Sites',
       icon: mdiMapMarker,
-      checkbox: true,
+
       disabled: !checklist.sampling.sites.applicable,
       checked: !!checklist.sampling.sites.count
     },
@@ -94,7 +94,7 @@ export const SurveySamplingPage = (props: ISurveySamplingPageProps) => {
       value: SAMPLING_ACTIVE_VIEW_VALUE.techniques,
       label: 'Techniques',
       icon: mdiBinoculars,
-      checkbox: true,
+
       disabled: !checklist.sampling.techniques.applicable,
       checked: !!checklist.sampling.techniques.count
     },
@@ -102,7 +102,7 @@ export const SurveySamplingPage = (props: ISurveySamplingPageProps) => {
       value: SAMPLING_ACTIVE_VIEW_VALUE.periods,
       label: 'Periods',
       icon: mdiClockOutline,
-      checkbox: true,
+
       disabled: !checklist.sampling.periods.applicable,
       checked: !!checklist.sampling.periods.count
     }

@@ -60,8 +60,6 @@ export const SurveyLocationYupSchema = yup.object({
 const StudyAreaForm = () => {
   const formikProps = useFormikContext<ISurveyLocationForm>();
 
-  console.log(formikProps.errors);
-
   const { handleSubmit, values, setFieldValue, errors } = formikProps;
   const [isOpen, setIsOpen] = useState(false);
   const [isDeleteOpen, setIsDeleteOpen] = useState(false);

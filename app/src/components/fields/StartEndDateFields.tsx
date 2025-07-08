@@ -32,7 +32,7 @@ const CalendarEndIcon = () => {
 const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
   const { startName, endName, startRequired, endRequired } = props;
 
-  const { values, errors, touched, setFieldValue } = useFormikContext();
+  const { values, errors, touched, setFieldValue, setFieldError } = useFormikContext();
 
   const rawStartDateValue = get(values, startName);
   const rawEndDateValue = get(values, endName);
@@ -59,7 +59,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
           '& .MuiInputAdornment-root.MuiInputAdornment-positionStart': { mr: -1 },
           '& .MuiInputAdornment-root': { mr: 1 }
         }}>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <DatePicker
             slots={{
               openPickerIcon: CalendarStartIcon
@@ -97,10 +97,13 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
               }
 
               setFieldValue(startName, dayjs(value).format(DATE_FORMAT.ShortDateFormat));
+              if (get(errors, startName)) {
+                setFieldError(startName, undefined);
+              }
             }}
           />
         </Grid>
-        <Grid item xs={6}>
+        <Grid item xs={12}>
           <DatePicker
             slots={{
               openPickerIcon: CalendarEndIcon
@@ -136,6 +139,9 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
               }
 
               setFieldValue(endName, dayjs(value).format(DATE_FORMAT.ShortDateFormat));
+              if (get(errors, endName)) {
+                setFieldError(endName, undefined);
+              }
             }}
           />
         </Grid>

@@ -237,21 +237,16 @@ export class CollectionService extends DBService {
     return collectionResponse;
   }
 
-  _getAllSubcollectionIds = (collections: Collection[]): number[] => {
-    const ids: number[] = [];
-
-    for (const collection of collections) {
-      // Add current collection's ID
-      ids.push(collection.collection_id);
-
-      // Recursively get IDs from subcollections
-      if (collection.subcollections && collection.subcollections.length > 0) {
-        ids.push(...this._getAllSubcollectionIds(collection.subcollections));
-      }
-    }
-
-    return ids;
-  };
+  /**
+   * Get all subcollection Ids (all depths) for the given collection id
+   *
+   * @param {number} collectionId
+   * @return {*}  {Promise<number[]>}
+   * @memberof CollectionService
+   */
+  async getSubcollectionIds(collectionId: number): Promise<number[]> {
+    return this.collectionRepository.getSubcollectionIds(collectionId);
+  }
 
   /**
    * Delete a collection by ID.
@@ -261,14 +256,8 @@ export class CollectionService extends DBService {
    * @memberof CollectionService
    */
   async deleteCollection(collectionId: number): Promise<void> {
-    // Find the direct subcollections for deletion
-    const subcollections: Collection[] = await this.findCollections(false, null, {
-      parent_collection_id: collectionId,
-      include_children: true
-    });
-
-    // Flatten the children to get the subcollection Ids to delete
-    const subcollectionIds = this._getAllSubcollectionIds(subcollections);
+    // Get the Ids of all subcollections (flattened hierarchy) for the to-be-deleted collection
+    const subcollectionIds = await this.getSubcollectionIds(collectionId);
 
     // Delete the subcollections (internally removes foreign key-linked records, i.e members, surveys)
     await this.collectionRepository.deleteCollections([...subcollectionIds, collectionId]);

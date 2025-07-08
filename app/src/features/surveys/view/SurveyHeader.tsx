@@ -42,20 +42,13 @@ import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import CreateCollectionSurveyDialog from './collection/CollectionSurveyDialog';
-import SurveyHeaderTabs, { SURVEY_ACTIVE_TAB_VALUE } from './tabs/SurveyHeaderTabs';
 
-interface ISurveyHeaderProps {
-  activeTab: SURVEY_ACTIVE_TAB_VALUE;
-  handleTabChange: (tab: SURVEY_ACTIVE_TAB_VALUE) => void;
-}
 /**
  * Survey header for a single-survey view.
  *
  * @return {*}
  */
-const SurveyHeader = (props: ISurveyHeaderProps) => {
-  const { activeTab, handleTabChange } = props;
-
+const SurveyHeader = () => {
   const surveyContext = useContext(SurveyContext);
 
   const surveyWithDetails = surveyContext.surveyDataLoader.data;
@@ -285,7 +278,6 @@ const SurveyHeader = (props: ISurveyHeaderProps) => {
               </Menu>
             </SurveyRoleRouteGuard>
           }
-          tabsJSX={<SurveyHeaderTabs activeTab={activeTab} handleTabChange={handleTabChange} />}
         />
       </Box>
 

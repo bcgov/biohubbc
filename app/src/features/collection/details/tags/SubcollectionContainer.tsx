@@ -13,7 +13,6 @@ import {
   MenuProps,
   Stack,
   Toolbar,
-  Tooltip,
   Typography
 } from '@mui/material';
 import grey from '@mui/material/colors/grey';
@@ -21,7 +20,6 @@ import { GridColDef, GridPaginationModel, GridSortDirection, GridSortModel } fro
 import { useMemo, useState } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 
-import { TeamMemberAvatar } from 'components/avatar/TeamMemberAvatar';
 import { CreateButton } from 'components/buttons/CreateButton';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -40,11 +38,11 @@ import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { SUMMARY_ACTIVE_VIEW_KEY, SUMMARY_ACTIVE_VIEW_VALUE } from 'features/summary/list-data/ListDataTableContainer';
+import { SubcollectionNavigator } from 'features/summary/list-data/collection/menu/SubcollectionNavigator';
 import { APIError } from 'hooks/api/useAxios';
 import { ICollection } from 'interfaces/useCollectionApi.interface';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
-import { firstOrNull, getRandomHexColor } from 'utils/Utils';
+import { firstOrNull } from 'utils/Utils';
 
 const pageSizeOptions = [10, 25, 50];
 
@@ -144,7 +142,6 @@ export const SubcollectionContainer = ({ collection, showSearch }: ICollectionsT
         try {
           await biohubApi.collection.deleteCollection(actionMenuAnchorEl.collectionId);
           collectionsDataLoader.refresh(paginationSort, advancedFiltersModel);
-          history.push(`/admin/summary?${SUMMARY_ACTIVE_VIEW_KEY}=${SUMMARY_ACTIVE_VIEW_VALUE.collections}`);
         } catch (error) {
           showDeleteErrorDialog({ dialogErrorDetails: [(error as APIError).message], open: true });
         } finally {
@@ -198,74 +195,20 @@ export const SubcollectionContainer = ({ collection, showSearch }: ICollectionsT
       flex: 0.3,
       disableColumnMenu: true,
       renderCell: (params) => (
-        <Stack mb={0.25}>
+        <Stack mb={0.25} flexDirection="row" gap={1} alignItems="center">
           <Link
-            component={RouterLink}
-            to={`/admin/collections/${params.row.collection_id}`}
+            style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}
+            data-testid={params.row.name}
             underline="always"
             title={params.row.name}
-            style={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}>
+            component={RouterLink}
+            to={`/admin/collections/${params.row.collection_id}`}>
             {params.row.name}
           </Link>
+
+          {params.row.subcollections.length > 0 && <SubcollectionNavigator collectionId={params.row.collection_id} />}
         </Stack>
       )
-    },
-    {
-      field: 'description',
-      headerName: 'Description',
-      flex: 0.4,
-      disableColumnMenu: true,
-      renderCell: (params) => (
-        <Tooltip title={params.row.description}>
-          <Typography color="textSecondary" variant="body2">
-            {params.row.description}
-          </Typography>
-        </Tooltip>
-      )
-    },
-    {
-      field: 'members',
-      headerName: 'Members',
-      flex: 0.4,
-      disableColumnMenu: true,
-      renderCell: (params) => {
-        const members = params.row.members;
-        const visibleMembers = members.slice(0, 5);
-        const remainingCount = members.length - visibleMembers.length;
-
-        return (
-          <Stack direction="row" alignItems="center" gap={0.5}>
-            {visibleMembers.map((member) => (
-              <TeamMemberAvatar
-                key={member.system_user_id}
-                tooltip={member.display_name}
-                label={member.display_name
-                  .split(',')
-                  .map((name) => name.trim()[0].toUpperCase())
-                  .reverse()
-                  .join('')}
-                color={getRandomHexColor(member.system_user_id)}
-              />
-            ))}
-            {remainingCount > 0 && (
-              <Box
-                sx={{
-                  width: 32,
-                  height: 32,
-                  borderRadius: '50%',
-                  backgroundColor: '#ccc',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  fontSize: 12,
-                  fontWeight: 'bold'
-                }}>
-                +{remainingCount}
-              </Box>
-            )}
-          </Stack>
-        );
-      }
     },
     {
       field: 'actions',

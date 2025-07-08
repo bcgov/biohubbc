@@ -2,7 +2,8 @@ export enum SURVEY_ACTIVE_VIEW_VALUE {
   overview = 'overview',
   sampling = 'sampling',
   data = 'data',
-  attachments = 'attachments'
+  attachments = 'attachments',
+  permissions = 'permissions'
 }
 
 export enum SAMPLING_ACTIVE_VIEW_VALUE {
@@ -56,6 +57,9 @@ export const viewHierarchy: Record<SURVEY_VIEW_VALUE, ViewNode> = {
   },
   [SURVEY_ACTIVE_VIEW_VALUE.attachments]: {
     key: SURVEY_ACTIVE_VIEW_VALUE.attachments
+  },
+  [SURVEY_ACTIVE_VIEW_VALUE.permissions]: {
+    key: SURVEY_ACTIVE_VIEW_VALUE.permissions
   },
 
   // Sampling subviews

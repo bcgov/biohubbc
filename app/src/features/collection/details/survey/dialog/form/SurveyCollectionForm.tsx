@@ -47,6 +47,7 @@ const SurveyCollectionForm = (props: ISurveyCollectionFormProps) => {
                 label="Surveys"
                 id="surveys"
                 name="surveys"
+                loading={surveysDataLoader.isLoading}
                 selectedOptions={surveysInCollection}
                 options={
                   surveysDataLoader.data?.surveys.map((survey) => ({
