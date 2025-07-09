@@ -4,6 +4,14 @@ import { Formik, FormikProps } from 'formik';
 import { ReactNode } from 'react';
 import * as yup from 'yup';
 
+//TECH DEBT:
+//TO-DO:
+// - ENSURE ALL ASPECTS OF THIS FORM AND OTHER FILES ARE COVERED BY UNIT TESTS
+// - REMOVE SEED FILES BEFORE MERGING ANYWHERE
+// - DO WE NEED THE ABILITY TO MULTI-DELETE LINKS?
+// - DELETING IS A BIT BROKEN AND DOESNT RENDER PROPERLY? this might just be the docker status issue
+// - Do we want to able to see the links in the collection details page? Without having to click into external resourses?
+
 export interface ICollectionLinkFormData {
   name: string;
   description: string;
