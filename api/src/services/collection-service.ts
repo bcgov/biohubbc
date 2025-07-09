@@ -131,10 +131,15 @@ export class CollectionService extends DBService {
    *
    * @param {IPostCollectionRequest} collection
    * @param {number} systemUserId
+   * @param {boolean} isAdmin
    * @return {*}  {Promise<CollectionModel>}
    * @memberof CollectionService
    */
-  async createCollection(collection: IPostCollectionRequest, systemUserId?: number): Promise<CollectionModel> {
+  async createCollection(
+    collection: IPostCollectionRequest,
+    systemUserId?: number,
+    isAdmin?: boolean
+  ): Promise<CollectionModel> {
     // Confirm that the user has access to the parent collection id
     if (collection.parent_collection_id && systemUserId) {
       const member = await this.collectionMemberService.getCollectionMemberByCollectionIdAndSystemUserId(
@@ -142,7 +147,8 @@ export class CollectionService extends DBService {
         systemUserId
       );
 
-      if (!member) {
+      // Only administrators or users with access to the parent collection can create a subcollection
+      if (!member || isAdmin) {
         throw new HTTP401('Access denied: No access to the parent collection');
       }
     }

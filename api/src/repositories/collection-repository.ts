@@ -9,29 +9,23 @@ import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
 export class CollectionRepository extends BaseRepository {
-  /**
-   * Add a 'collection_members' CTE to the given query builder.
-   *
-   * @param {Knex} knex
-   * @param {Knex.QueryBuilder} queryBuilder
-   */
   _addCollectionMembersCTE(knex: Knex, queryBuilder: Knex.QueryBuilder): void {
     queryBuilder.with('collection_members', (qb) => {
       qb.select(
         'cm.collection_id',
         knex.raw(`COALESCE(
-        jsonb_agg(DISTINCT jsonb_build_object(
-          'collection_member_id', cm.collection_member_id,
-          'collection_id', cm.collection_id,
-          'system_user_id', su.system_user_id,
-          'user_identifier', su.user_identifier,
-          'user_guid', su.user_guid,
-          'identity_source', uis.name,
-          'email', su.email,
-          'display_name', su.display_name,
-          'collection_role_id', cr.collection_role_id,
-          'collection_role_name', cr.name
-        )) FILTER (WHERE su.system_user_id IS NOT NULL), '[]'::jsonb) AS members`)
+          jsonb_agg(DISTINCT jsonb_build_object(
+            'collection_member_id', cm.collection_member_id,
+            'collection_id', cm.collection_id,
+            'system_user_id', su.system_user_id,
+            'user_identifier', su.user_identifier,
+            'user_guid', su.user_guid,
+            'identity_source', uis.name,
+            'email', su.email,
+            'display_name', su.display_name,
+            'collection_role_id', cr.collection_role_id,
+            'collection_role_name', cr.name
+          )) FILTER (WHERE su.system_user_id IS NOT NULL), '[]'::jsonb) AS members`)
       )
         .from('collection_member AS cm')
         .join('collection_role as cr', 'cm.collection_role_id', 'cr.collection_role_id')
@@ -41,15 +35,8 @@ export class CollectionRepository extends BaseRepository {
     });
   }
 
-  /**
-   * Flat collection structure with members only.
-   *
-   * @param {Knex.QueryBuilder} queryBuilder
-   * @returns {Knex.QueryBuilder}
-   */
   _getCollectionsFlatQuery(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
     const knex = getKnex();
-
     this._addCollectionMembersCTE(knex, queryBuilder);
 
     return queryBuilder
@@ -65,19 +52,262 @@ export class CollectionRepository extends BaseRepository {
       .leftJoin('collection_members AS cm', 'cm.collection_id', 'collection.collection_id');
   }
 
-  /**
-   * Get the base query for retrieving collections with nested subcollections and members.
-   *
-   * @param {Knex.QueryBuilder} queryBuilder - A Knex query builder to modify.
-   * @param {ICollectionAdvancedFilters} filterFields
-   * @returns {Knex.QueryBuilder}
-   */
+  // _getCollectionsHierarchyBaseQuery(
+  //   queryBuilder: Knex.QueryBuilder,
+  //   filterFields?: ICollectionAdvancedFilters
+  // ): Knex.QueryBuilder {
+  //   const knex = getKnex();
+
+  //   const query = queryBuilder
+  //     .with('user_roles', (qb) => {
+  //       qb.select(
+  //         'sur.system_user_id',
+  //         knex.raw(`array_agg(DISTINCT sr.system_role_id) FILTER (WHERE sr.system_role_id IS NOT NULL) AS role_ids`),
+  //         knex.raw(`array_agg(DISTINCT sr.name) FILTER (WHERE sr.name IS NOT NULL) AS role_names`)
+  //       )
+  //         .from('system_user_role AS sur')
+  //         .leftJoin('system_role AS sr', 'sr.system_role_id', 'sur.system_role_id')
+  //         .groupBy('sur.system_user_id');
+  //     })
+  //     .withRecursive('collection_hierarchy', (qb) => {
+  //       const base = qb
+  //         .select('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id')
+  //         .from('collection AS c');
+
+  //       if (filterFields?.parent_collection_id) {
+  //         base.where('c.collection_id', filterFields.parent_collection_id);
+  //       } else {
+  //         base.whereNull('c.parent_collection_id');
+  //       }
+
+  //       return base.unionAll(function () {
+  //         this.select('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id')
+  //           .from('collection AS c')
+  //           .join('collection_hierarchy AS ch', 'c.parent_collection_id', 'ch.collection_id');
+  //       });
+  //     });
+
+  //   this._addCollectionMembersCTE(knex, query);
+
+  //   query
+  //     .with('collection_with_subcollections', (qb) => {
+  //       qb.select(
+  //         'ch.collection_id',
+  //         'ch.name',
+  //         'ch.description',
+  //         'ch.parent_collection_id',
+  //         knex.raw(`COALESCE(cm.members, '[]'::jsonb) AS members`),
+  //         knex.raw("'[]'::jsonb AS subcollections")
+  //       )
+  //         .from('collection_hierarchy AS ch')
+  //         .leftJoin('collection_members AS cm', 'cm.collection_id', 'ch.collection_id');
+  //     })
+  //     .with('final_collection_structure', (qb) => {
+  //       qb.select(
+  //         'c.collection_id',
+  //         'c.name',
+  //         'c.description',
+  //         'c.parent_collection_id',
+  //         'c.members',
+  //         knex.raw(`
+  //           COALESCE(
+  //             jsonb_agg(
+  //               jsonb_build_object(
+  //                 'collection_id', child.collection_id,
+  //                 'name', child.name,
+  //                 'description', child.description,
+  //                 'parent_collection_id', child.parent_collection_id,
+  //                 'members', child.members,
+  //                 'subcollections', child.subcollections
+  //               )
+  //             ) FILTER (WHERE child.collection_id IS NOT NULL), '[]'::jsonb
+  //           ) AS subcollections
+  //         `)
+  //       )
+  //         .from('collection_with_subcollections AS c')
+  //         .leftJoin('collection_with_subcollections AS child', 'child.parent_collection_id', 'c.collection_id')
+  //         .groupBy('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id', 'c.members');
+  //     })
+  //     .select(
+  //       'collection.collection_id',
+  //       'collection.name',
+  //       'collection.description',
+  //       'collection.parent_collection_id',
+  //       'collection.members',
+  //       'collection.subcollections'
+  //     )
+  //     .from('final_collection_structure AS collection')
+  //     .orderBy('collection.collection_id');
+
+  //   return query;
+  // }
+
+  _getCollectionsParentsBaseQuery(queryBuilder: Knex.QueryBuilder, collectionId: number): Knex.QueryBuilder {
+    const knex = getKnex();
+    this._addCollectionMembersCTE(knex, queryBuilder);
+
+    return queryBuilder
+      .withRecursive('parent_chain', (qb) => {
+        const base = qb
+          .select('c.collection_id', 'c.parent_collection_id', knex.raw('0 as depth'))
+          .from('collection AS c')
+          .where('c.collection_id', collectionId);
+
+        return base.unionAll(function () {
+          this.select('p.collection_id', 'p.parent_collection_id', knex.raw('pc.depth + 1 as depth'))
+            .from('collection AS p')
+            .join('parent_chain AS pc', 'pc.parent_collection_id', 'p.collection_id');
+        });
+      })
+      .with('collection_details', (qb) => {
+        qb.select('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id', 'pc.depth')
+          .from('collection AS c')
+          .join('parent_chain AS pc', 'pc.collection_id', 'c.collection_id')
+          .orderBy('pc.depth', 'desc');
+      })
+      .with('collection_with_members', (qb) => {
+        qb.select(
+          'cd.collection_id',
+          'cd.name',
+          'cd.description',
+          'cd.parent_collection_id',
+          'cd.depth',
+          knex.raw(`COALESCE(
+            jsonb_agg(DISTINCT jsonb_build_object(
+              'collection_member_id', cm.collection_member_id,
+              'collection_id', cm.collection_id,
+              'system_user_id', su.system_user_id,
+              'user_identifier', su.user_identifier,
+              'user_guid', su.user_guid,
+              'identity_source', uis.name,
+              'email', su.email,
+              'display_name', su.display_name,
+              'collection_role_id', cr.collection_role_id,
+              'collection_role_name', cr.name
+            )) FILTER (WHERE su.system_user_id IS NOT NULL), '[]'::jsonb
+          ) AS members`)
+        )
+          .from('collection_details AS cd')
+          .leftJoin('collection_member AS cm', 'cm.collection_id', 'cd.collection_id')
+          .leftJoin('system_user AS su', 'su.system_user_id', 'cm.system_user_id')
+          .leftJoin('collection_role AS cr', 'cr.collection_role_id', 'cm.collection_role_id')
+          .leftJoin('user_identity_source AS uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
+          .groupBy('cd.collection_id', 'cd.name', 'cd.description', 'cd.parent_collection_id', 'cd.depth');
+      })
+      .with('nested_hierarchy', (qb) => {
+        qb.select(
+          'cwp.collection_id',
+          'cwp.name',
+          'cwp.description',
+          'cwp.parent_collection_id',
+          'cwp.members',
+          'cwp.depth',
+          knex.raw(`'[]'::jsonb AS subcollections`)
+        )
+          .from('collection_with_members AS cwp')
+          .where('cwp.depth', 0)
+          .unionAll(function () {
+            this.select(
+              'cwp.collection_id',
+              'cwp.name',
+              'cwp.description',
+              'cwp.parent_collection_id',
+              'cwp.members',
+              'cwp.depth',
+              knex.raw(`jsonb_build_array(
+              jsonb_build_object(
+                'collection_id', nh.collection_id,
+                'name', nh.name,
+                'description', nh.description,
+                'parent_collection_id', nh.parent_collection_id,
+                'members', nh.members,
+                'subcollections', nh.subcollections
+              )
+            ) AS subcollections`)
+            )
+              .from('collection_with_members AS cwp')
+              .join('nested_hierarchy AS nh', 'nh.parent_collection_id', 'cwp.collection_id')
+              .where('cwp.depth', '>', 0);
+          });
+      })
+      .select(
+        'nh.collection_id',
+        'nh.name',
+        'nh.description',
+        'nh.parent_collection_id',
+        'nh.members',
+        'nh.subcollections'
+      )
+      .from('nested_hierarchy AS nh')
+      .orderBy('nh.depth', 'desc')
+      .limit(1);
+  }
+
+  _findCollectionsBaseQuery(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields: ICollectionAdvancedFilters
+  ): Knex.QueryBuilder {
+    const knex = getKnex();
+    const query = knex.queryBuilder();
+
+    // For admins, use the simpler flat query if no parent filtering is needed
+
+    this._getCollectionsHierarchyBaseQuery(query, filterFields);
+
+    // Apply access restrictions only for non-admin users
+    if (!isUserAdmin) {
+      // Get all collections that are descendants of collections where user is a member
+      const accessibleCollectionIds = knex
+        .withRecursive('accessible_collections', (cte) => {
+          // Base case: collections where user is a direct member
+          cte
+            .select('collection_id')
+            .from('collection_member')
+            .where('system_user_id', systemUserId)
+            .unionAll((union) => {
+              // Recursive case: all child collections of accessible collections
+              union
+                .select('c.collection_id')
+                .from('collection AS c')
+                .join('accessible_collections AS ac', 'c.parent_collection_id', 'ac.collection_id');
+            });
+        })
+        .select('ac.collection_id')
+        .from('accessible_collections AS ac');
+
+      query.whereIn('collection.collection_id', accessibleCollectionIds);
+    }
+
+    // Apply system_user_id filter if specified (for both admin and non-admin)
+    if (filterFields.system_user_id) {
+      const memberCollectionIds = knex
+        .select('collection_id')
+        .from('collection_member')
+        .where('system_user_id', filterFields.system_user_id);
+
+      query.whereIn('collection.collection_id', memberCollectionIds);
+    }
+
+    // Apply parent collection filter if specified and not already handled by hierarchy query
+    if (filterFields.parent_collection_id) {
+      query.where('collection.parent_collection_id', filterFields.parent_collection_id);
+    } else {
+      query.where((qb) => {
+        qb.whereNull('collection.parent_collection_id').orWhereNotIn('collection.parent_collection_id', (sub) =>
+          sub.select('collection_id').from('collection')
+        );
+      });
+    }
+
+    return query;
+  }
+
   _getCollectionsHierarchyBaseQuery(
     queryBuilder: Knex.QueryBuilder,
     filterFields?: ICollectionAdvancedFilters
   ): Knex.QueryBuilder {
     const knex = getKnex();
-
     const query = queryBuilder
       .with('user_roles', (qb) => {
         qb.select(
@@ -89,16 +319,13 @@ export class CollectionRepository extends BaseRepository {
           .leftJoin('system_role AS sr', 'sr.system_role_id', 'sur.system_role_id')
           .groupBy('sur.system_user_id');
       })
-
       .withRecursive('collection_hierarchy', (qb) => {
         const base = qb
           .select('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id')
           .from('collection AS c');
 
-        const parentId = filterFields?.parent_collection_id;
-
-        if (parentId) {
-          base.where('c.collection_id', parentId); // Start recursion at the parent if a parent_collection_id is given
+        if (filterFields?.parent_collection_id) {
+          base.where('c.collection_id', filterFields.parent_collection_id);
         } else {
           base.whereNull('c.parent_collection_id');
         }
@@ -125,7 +352,6 @@ export class CollectionRepository extends BaseRepository {
           .from('collection_hierarchy AS ch')
           .leftJoin('collection_members AS cm', 'cm.collection_id', 'ch.collection_id');
       })
-
       .with('final_collection_structure', (qb) => {
         qb.select(
           'c.collection_id',
@@ -134,26 +360,24 @@ export class CollectionRepository extends BaseRepository {
           'c.parent_collection_id',
           'c.members',
           knex.raw(`
-        COALESCE(
-          jsonb_agg(
-            jsonb_build_object(
-              'collection_id', child.collection_id,
-              'name', child.name,
-              'description', child.description,
-              'parent_collection_id', child.parent_collection_id,
-              'members', child.members,
-              'subcollections', child.subcollections
-            )
-          ) FILTER (WHERE child.collection_id IS NOT NULL),
-          '[]'::jsonb
-        ) AS subcollections
-      `)
+          COALESCE(
+            jsonb_agg(
+              jsonb_build_object(
+                'collection_id', child.collection_id,
+                'name', child.name,
+                'description', child.description,
+                'parent_collection_id', child.parent_collection_id,
+                'members', child.members,
+                'subcollections', child.subcollections
+              )
+            ) FILTER (WHERE child.collection_id IS NOT NULL), '[]'::jsonb
+          ) AS subcollections
+        `)
         )
           .from('collection_with_subcollections AS c')
           .leftJoin('collection_with_subcollections AS child', 'child.parent_collection_id', 'c.collection_id')
           .groupBy('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id', 'c.members');
       })
-
       .select(
         'collection.collection_id',
         'collection.name',
@@ -164,174 +388,6 @@ export class CollectionRepository extends BaseRepository {
       )
       .from('final_collection_structure AS collection')
       .orderBy('collection.collection_id');
-
-    return query;
-  }
-
-  /**
-   *
-   * @param {Knex.QueryBuilder} queryBuilder
-   * @param {number} collectionId
-   * @returns {Knex.QueryBuilder}
-   */
-  _getCollectionsParentsBaseQuery(queryBuilder: Knex.QueryBuilder, collectionId: number): Knex.QueryBuilder {
-    const knex = getKnex();
-
-    this._addCollectionMembersCTE(knex, queryBuilder);
-
-    return queryBuilder
-      .withRecursive('parent_chain', (qb) => {
-        const base = qb
-          .select('c.collection_id', 'c.parent_collection_id', knex.raw('0 as depth'))
-          .from('collection AS c')
-          .where('c.collection_id', collectionId);
-
-        return base.unionAll(function () {
-          this.select('p.collection_id', 'p.parent_collection_id', knex.raw('pc.depth + 1 as depth'))
-            .from('collection AS p')
-            .join('parent_chain AS pc', 'pc.parent_collection_id', 'p.collection_id');
-        });
-      })
-
-      .with('collection_details', (qb) => {
-        qb.select('c.collection_id', 'c.name', 'c.description', 'c.parent_collection_id', 'pc.depth')
-          .from('collection AS c')
-          .join('parent_chain AS pc', 'pc.collection_id', 'c.collection_id')
-          .orderBy('pc.depth', 'desc');
-      })
-
-      .with('collection_with_members', (qb) => {
-        qb.select(
-          'cd.collection_id',
-          'cd.name',
-          'cd.description',
-          'cd.parent_collection_id',
-          'cd.depth',
-          knex.raw(`
-        COALESCE(
-          jsonb_agg(DISTINCT jsonb_build_object(
-            'collection_member_id', cm.collection_member_id,
-            'collection_id', cm.collection_id,
-            'system_user_id', su.system_user_id,
-            'user_identifier', su.user_identifier,
-            'user_guid', su.user_guid,
-            'identity_source', uis.name,
-            'email', su.email,
-            'display_name', su.display_name,
-            'collection_role_id', cr.collection_role_id,
-            'collection_role_name', cr.name
-          )) FILTER (WHERE su.system_user_id IS NOT NULL),
-          '[]'::jsonb
-        ) AS members
-      `)
-        )
-          .from('collection_details AS cd')
-          .leftJoin('collection_member AS cm', 'cm.collection_id', 'cd.collection_id')
-          .leftJoin('system_user AS su', 'su.system_user_id', 'cm.system_user_id')
-          .leftJoin('collection_role AS cr', 'cr.collection_role_id', 'cm.collection_role_id')
-          .leftJoin('user_identity_source AS uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
-          .groupBy('cd.collection_id', 'cd.name', 'cd.description', 'cd.parent_collection_id', 'cd.depth');
-      })
-
-      .with('nested_hierarchy', (qb) => {
-        qb.select(
-          'cwp.collection_id',
-          'cwp.name',
-          'cwp.description',
-          'cwp.parent_collection_id',
-          'cwp.members',
-          'cwp.depth',
-          knex.raw(`'[]'::jsonb AS subcollections`)
-        )
-          .from('collection_with_members AS cwp')
-          .where('cwp.depth', 0)
-          .unionAll(function () {
-            this.select(
-              'cwp.collection_id',
-              'cwp.name',
-              'cwp.description',
-              'cwp.parent_collection_id',
-              'cwp.members',
-              'cwp.depth',
-              knex.raw(`
-            jsonb_build_array(
-              jsonb_build_object(
-                'collection_id', nh.collection_id,
-                'name', nh.name,
-                'description', nh.description,
-                'parent_collection_id', nh.parent_collection_id,
-                'members', nh.members,
-                'subcollections', nh.subcollections
-              )
-            ) AS subcollections
-          `)
-            )
-              .from('collection_with_members AS cwp')
-              .join('nested_hierarchy AS nh', 'nh.parent_collection_id', 'cwp.collection_id')
-              .where('cwp.depth', '>', 0);
-          });
-      })
-
-      .select(
-        'nh.collection_id',
-        'nh.name',
-        'nh.description',
-        'nh.parent_collection_id',
-        'nh.members',
-        'nh.subcollections'
-      )
-      .from('nested_hierarchy AS nh')
-      .orderBy('nh.depth', 'desc')
-      .limit(1);
-  }
-
-  /**
-   * Base query for finding collections with filters and permissions (no children).
-   *
-   * @param {boolean} isUserAdmin
-   * @param {number | null} systemUserId
-   * @param {ICollectionAdvancedFilters} filterFields
-   * @returns {Knex.QueryBuilder}
-   */
-  _findCollectionsBaseQuery(
-    isUserAdmin: boolean,
-    systemUserId: number | null,
-    filterFields: ICollectionAdvancedFilters
-  ): Knex.QueryBuilder {
-    const knex = getKnex();
-
-    const getCollectionIdsQuery = knex.select('collection_id').from('collection');
-
-    // Apply visibility filters
-    if (!isUserAdmin) {
-      getCollectionIdsQuery.whereIn('collection.collection_id', (subquery) =>
-        subquery.select('collection_id').from('collection_member').where('system_user_id', systemUserId)
-      );
-    }
-
-    if (filterFields.system_user_id) {
-      getCollectionIdsQuery.whereIn('collection.collection_id', (subquery) =>
-        subquery.select('collection_id').from('collection_member').where('system_user_id', filterFields.system_user_id)
-      );
-    }
-
-    const query = knex.queryBuilder();
-
-    this._getCollectionsHierarchyBaseQuery(query, filterFields);
-
-    query.whereIn('collection.collection_id', getCollectionIdsQuery);
-
-    // Handle parent_collection_id logic
-    if (filterFields.parent_collection_id) {
-      query.where('collection.parent_collection_id', filterFields.parent_collection_id);
-    } else {
-      // No explicit parent specified: include top-level collections (either no parent or inaccessible parent)
-      query.where(function () {
-        this.whereNull('collection.parent_collection_id').orWhereNotIn('collection.parent_collection_id', function () {
-          this.select('collection_id').from('collection');
-        });
-      });
-    }
 
     return query;
   }

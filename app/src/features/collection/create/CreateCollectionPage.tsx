@@ -58,16 +58,14 @@ const CreateCollectionPage = () => {
     return [
       {
         system_user_id: authStateContext.simsUserWrapper?.systemUserId,
-        collection_role_name:
-          codesContext.codesDataLoader.data?.collection_roles.find((role) => role.name === COLLECTION_ROLE.ADMIN)
-            ?.name ?? '',
+        collection_role_name: COLLECTION_ROLE.ADMIN,
         display_name: authStateContext.simsUserWrapper?.displayName,
         email: authStateContext.simsUserWrapper?.email,
         agency: authStateContext.simsUserWrapper?.agency,
         identity_source: authStateContext.simsUserWrapper?.identitySource
       } as ICollectionMember
     ];
-  }, [authStateContext.simsUserWrapper, codesContext.codesDataLoader.data?.collection_roles]);
+  }, [authStateContext.simsUserWrapper]);
 
   const initialCollectionData: ICreateCollectionRequest = useMemo(() => {
     return {

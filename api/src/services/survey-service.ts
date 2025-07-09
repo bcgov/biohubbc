@@ -394,7 +394,6 @@ export class SurveyService extends DBService {
     );
 
     // Handle survey collections
-    console.log('COLLECTIONS@@@@@@', postSurveyData.collections);
     const collectionSurveyService = new CollectionSurveyService(this.connection);
     await collectionSurveyService.addSurveyToMultipleCollections({
       survey_id: surveyId,

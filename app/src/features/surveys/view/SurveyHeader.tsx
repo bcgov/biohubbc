@@ -30,12 +30,12 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import blue from '@mui/material/colors/blue';
 import Link from '@mui/material/Link';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
-import { SurveyContext } from 'contexts/surveyContext';
 import { SUMMARY_ACTIVE_VIEW_KEY, SUMMARY_ACTIVE_VIEW_VALUE } from 'features/summary/list-data/ListDataTableContainer';
 import { SurveyExportDialog } from 'features/surveys/view/survey-export/SurveyExportDialog';
 import { APIError } from 'hooks/api/useAxios';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
@@ -49,7 +49,7 @@ import CreateCollectionSurveyDialog from './collection/CollectionSurveyDialog';
  * @return {*}
  */
 const SurveyHeader = () => {
-  const surveyContext = useContext(SurveyContext);
+  const surveyContext = useSurveyContext();
 
   const surveyWithDetails = surveyContext.surveyDataLoader.data;
 

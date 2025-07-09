@@ -1,8 +1,6 @@
 import CircularProgress from '@mui/material/CircularProgress';
 import { Container } from '@mui/system';
-import { CodesContext } from 'contexts/codesContext';
-import { SurveyContext } from 'contexts/surveyContext';
-import { useContext } from 'react';
+import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import SurveyHeader from '../view/SurveyHeader';
 import { SurveyDetailsTab } from './tabs/details/SurveyDetailsTab';
 
@@ -12,8 +10,8 @@ import { SurveyDetailsTab } from './tabs/details/SurveyDetailsTab';
  * @returns {*}
  */
 export const SurveyPage = () => {
-  const surveyContext = useContext(SurveyContext);
-  const codesContext = useContext(CodesContext);
+  const surveyContext = useSurveyContext();
+  const codesContext = useCodesContext();
 
   const checklist = surveyContext.surveyChecklistDataLoader.data?.checklist;
 
