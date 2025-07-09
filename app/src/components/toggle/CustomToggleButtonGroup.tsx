@@ -1,23 +1,17 @@
-import { mdiMinus, mdiPlus } from '@mdi/js';
+import { mdiDotsVertical } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Checkbox } from '@mui/material';
+import { IconButton, Menu, MenuItem } from '@mui/material';
 import Box from '@mui/material/Box';
-import grey from '@mui/material/colors/grey';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
-import { CustomTooltip } from 'components/tooltip/CustomTooltip';
-import appTheme from 'themes/appTheme';
+import { useState } from 'react';
 
 export interface ToggleButtonView<ViewValueType> {
   value: ViewValueType;
   label: string;
   icon?: string;
-  checkbox?: boolean;
-  checked?: boolean;
-  disabled?: boolean;
   tooltip?: string;
   isHeader?: boolean;
-  indeterminate?: boolean;
   menu?: {
     label: string;
     onClick: () => void;
@@ -28,12 +22,28 @@ interface CustomToggleButtonGroupProps<ViewValueType extends string> {
   views: ToggleButtonView<ViewValueType>[];
   activeView: ViewValueType;
   onViewChange: (view: ViewValueType) => void;
-  handleCheckboxClick?: (view: ToggleButtonView<ViewValueType>) => void;
   orientation: 'horizontal' | 'vertical';
 }
 
-const CustomToggleButtonGroup = <ViewValueType extends string>(props: CustomToggleButtonGroupProps<ViewValueType>) => {
-  const { views, activeView, onViewChange, orientation, handleCheckboxClick } = props;
+const CustomToggleButtonGroup = <ViewValueType extends string>({
+  views,
+  activeView,
+  onViewChange,
+  orientation
+}: CustomToggleButtonGroupProps<ViewValueType>) => {
+  const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
+  const [activeMenuView, setActiveMenuView] = useState<ViewValueType | null>(null);
+
+  const handleMenuClick = (event: React.MouseEvent<HTMLElement>, viewValue: ViewValueType) => {
+    event.stopPropagation(); // prevent triggering toggle selection
+    setMenuAnchorEl(event.currentTarget);
+    setActiveMenuView(viewValue);
+  };
+
+  const handleMenuClose = () => {
+    setMenuAnchorEl(null);
+    setActiveMenuView(null);
+  };
 
   return (
     <>
@@ -66,144 +76,59 @@ const CustomToggleButtonGroup = <ViewValueType extends string>(props: CustomTogg
           const startIcon = view.icon && <Icon path={view.icon} size={0.75} />;
 
           return (
-            <ToggleButton
-              key={view.value}
-              value={view.value}
-              color="primary"
-              sx={{
-                position: 'relative',
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                px: 1.5,
-                '& .MuiIconButton-root': { p: 0.25 }
-              }}>
-              <Box display="flex" alignItems="center" gap={1} flexGrow={1} minWidth={0}>
-                {startIcon}
-                {view.label}
-              </Box>
-
-              {/* IconButton with Plus icon for disabled view */}
-              {view.checkbox && view.disabled && (
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    right: 15,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    width: 24,
-                    height: 24
-                  }}>
-                  <CustomTooltip tooltip={`Include ${view.label} in the progress calculation`}>
-                    <Box
-                      sx={{
-                        position: 'relative',
-                        width: '100%',
-                        height: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center'
-                      }}>
-                      <Box
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCheckboxClick?.(view);
-                        }}
-                        sx={{
-                          position: 'absolute',
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          width: 30,
-                          height: 30,
-                          color: grey[400],
-                          '&:hover': {
-                            bgcolor: grey[300],
-                            borderRadius: '500px'
-                          }
-                        }}>
-                        <Icon path={mdiPlus} size={1} />
-                      </Box>
-                    </Box>
-                  </CustomTooltip>
+            <Box key={view.value} position="relative">
+              <ToggleButton
+                value={view.value}
+                color="primary"
+                sx={{
+                  position: 'relative',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  px: 1.5,
+                  width: '100%',
+                  '& .MuiIconButton-root': { p: 0.25 }
+                }}>
+                <Box display="flex" alignItems="center" gap={1} flexGrow={1} minWidth={0}>
+                  {startIcon}
+                  {view.label}
                 </Box>
-              )}
 
-              {view.checkbox && !view.disabled && (
-                <Box
-                  sx={{
-                    position: 'absolute',
-                    right: 15,
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    width: 24,
-                    height: 24
-                  }}>
-                  <CustomTooltip tooltip={`Remove ${view.label} from the progress calculation`}>
-                    <Box
-                      sx={{
-                        position: 'relative',
-                        width: '100%',
-                        height: '100%',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        '&:hover .checkbox': {
-                          opacity: 0
-                        },
-                        '&:hover .minus-icon': {
-                          opacity: 1
-                        }
+                {view.menu?.length && (
+                  <IconButton
+                    sx={{ ml: 1 }}
+                    size="small"
+                    onClick={(e) => handleMenuClick(e, view.value)}
+                    onMouseDown={(e) => e.stopPropagation()} // prevent focus from going to ToggleButton
+                  >
+                    <Icon path={mdiDotsVertical} size={0.8} />
+                  </IconButton>
+                )}
+              </ToggleButton>
+
+              {activeMenuView === view.value && (
+                <Menu
+                  anchorEl={menuAnchorEl}
+                  open={Boolean(menuAnchorEl)}
+                  onClose={handleMenuClose}
+                  anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+                  transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+                  onClick={(e) => e.stopPropagation()} // prevent bubbling to ToggleButtonGroup
+                >
+                  {view.menu?.map((item, index) => (
+                    <MenuItem
+                      key={index}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        item.onClick();
+                        handleMenuClose();
                       }}>
-                      <Checkbox
-                        className="checkbox"
-                        checked={view.checked}
-                        indeterminate={view.indeterminate}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCheckboxClick?.(view);
-                        }}
-                        size="small"
-                        sx={{
-                          position: 'absolute',
-                          p: 0,
-
-                          opacity: 1,
-                          '& .MuiSvgIcon-root': {
-                            fill: appTheme.palette.primary.main
-                          }
-                        }}
-                      />
-
-                      <Box
-                        className="minus-icon"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCheckboxClick?.(view);
-                        }}
-                        sx={{
-                          position: 'absolute',
-                          opacity: 0,
-                          cursor: 'pointer',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          width: 30,
-                          height: 30,
-                          color: grey[400],
-                          '&:hover': {
-                            bgcolor: grey[300],
-                            borderRadius: '500px'
-                          }
-                        }}>
-                        <Icon path={mdiMinus} size={1} />
-                      </Box>
-                    </Box>
-                  </CustomTooltip>
-                </Box>
+                      {item.label}
+                    </MenuItem>
+                  ))}
+                </Menu>
               )}
-            </ToggleButton>
+            </Box>
           );
         })}
       </ToggleButtonGroup>

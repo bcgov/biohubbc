@@ -21,6 +21,7 @@ import { useDialogContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
+import { ISurveyFilter } from 'interfaces/useFilterApi.interface';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -199,19 +200,19 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
     }
   ];
 
-  const handleDeleteFilter = useCallback(
-    async (surveyFilterId: number) => {
-      try {
-        await biohubApi.filter.deleteSurveyFilter(surveyFilterId);
-        filtersDataLoader.refresh();
-        dialogContext.setSnackbar({ snackbarMessage: 'Successfully deleted filter' });
-      } catch (error) {
-        dialogContext.setSnackbar({
-          snackbarMessage: `Failed to delete filter: ${(error as APIError).message}`
-        });
-      }
+  // --- Helper function to update search params and filters ---
+  const updateSearchParamsAndFilters = useCallback(
+    (filters: any, customLabel?: string) => {
+      const updatedParams = searchParams
+        .setOrDelete('s_keyword', filters.keyword)
+        .setOrDelete('s_itis_tsn', filters.itis_tsn)
+        .setOrDelete('s_system_user_id', filters.system_user_id)
+        .setOrDelete(SURVEY_TAB_KEY, customLabel);
+
+      setSearchParams(updatedParams);
+      setAdvancedFiltersModel(filters);
     },
-    [biohubApi.filter, filtersDataLoader, dialogContext]
+    [searchParams, setSearchParams]
   );
 
   const fixedViews: FilterView[] = useMemo(
@@ -221,6 +222,26 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
       { value: 'Completed', label: 'PUBLISHED', type: 'FIXED', conditions: { keyword: 'published' } }
     ],
     []
+  );
+
+  const handleDeleteFilter = useCallback(
+    async (filter: ISurveyFilter) => {
+      try {
+        await biohubApi.filter.deleteSurveyFilter(filter.survey_filter_id);
+        filtersDataLoader.refresh();
+        dialogContext.setSnackbar({ snackbarMessage: 'Successfully deleted filter' });
+
+        if (filter.name === searchParams.get(SURVEY_TAB_KEY)) {
+          setActiveView('All');
+          updateSearchParamsAndFilters(SurveyAdvancedFiltersInitialValues);
+        }
+      } catch (error) {
+        dialogContext.setSnackbar({
+          snackbarMessage: `Failed to delete filter: ${(error as APIError).message}`
+        });
+      }
+    },
+    [biohubApi.filter, dialogContext, filtersDataLoader, searchParams, updateSearchParamsAndFilters]
   );
 
   const customViews: FilterView[] = useMemo(
@@ -235,9 +256,7 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
           {
             label: 'Delete',
             icon: mdiTrashCanOutline,
-            onClick: () => {
-              handleDeleteFilter(filter.survey_filter_id);
-            }
+            onClick: () => handleDeleteFilter(filter)
           }
         ]
       })) ?? [],
@@ -246,41 +265,30 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
 
   const mergedViews: FilterView[] = useMemo(() => [...fixedViews, ...customViews], [fixedViews, customViews]);
 
+  const handleViewChange = useCallback(
+    (viewValue: string) => {
+      setActiveView(viewValue);
+      const selected = mergedViews.find((v) => v.value === viewValue);
+      const filters = selected?.conditions ?? SurveyAdvancedFiltersInitialValues;
+      const customLabel = selected?.type === 'CUSTOM' ? selected.label : undefined;
+
+      updateSearchParamsAndFilters(filters, customLabel);
+    },
+    [mergedViews, updateSearchParamsAndFilters]
+  );
+
   useEffect(() => {
     const tabKeyParam = searchParams.get(SURVEY_TAB_KEY);
-
     if (!tabKeyParam) {
       return;
     }
 
     const selectedView = mergedViews.find((view) => view.label === tabKeyParam || view.value === tabKeyParam);
-
     if (selectedView && selectedView.value !== activeView) {
       setActiveView(selectedView.value);
       setAdvancedFiltersModel(selectedView.conditions ?? SurveyAdvancedFiltersInitialValues);
     }
   }, [mergedViews, searchParams, activeView]);
-
-  const handleViewChange = (viewValue: string) => {
-    setActiveView(viewValue);
-
-    const selected = mergedViews.find((v) => v.value === viewValue);
-    const filters = selected?.conditions ?? SurveyAdvancedFiltersInitialValues;
-
-    const updatedParams = searchParams
-      .setOrDelete('s_keyword', filters.keyword)
-      .setOrDelete('s_itis_tsn', filters.itis_tsn)
-      .setOrDelete('s_system_user_id', filters.system_user_id);
-
-    if (selected?.type === 'CUSTOM') {
-      updatedParams.set(SURVEY_TAB_KEY, selected.label);
-    } else {
-      updatedParams.setOrDelete(SURVEY_TAB_KEY, undefined);
-    }
-
-    setSearchParams(updatedParams);
-    setAdvancedFiltersModel(filters);
-  };
 
   return (
     <>

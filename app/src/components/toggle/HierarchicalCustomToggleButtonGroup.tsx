@@ -10,7 +10,22 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { CustomTooltip } from 'components/tooltip/CustomTooltip';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import appTheme from 'themes/appTheme';
-import { ToggleButtonView } from './CustomToggleButtonGroup';
+
+interface ToggleButtonView<ViewValueType> {
+  value: ViewValueType;
+  label: string;
+  icon?: string;
+  checkbox?: boolean;
+  checked?: boolean;
+  disabled?: boolean;
+  tooltip?: string;
+  isHeader?: boolean;
+  indeterminate?: boolean;
+  menu?: {
+    label: string;
+    onClick: () => void;
+  }[];
+}
 
 export interface HierarchicalToggleButtonView<ViewValueType> extends ToggleButtonView<ViewValueType> {
   children?: HierarchicalToggleButtonView<ViewValueType>[];

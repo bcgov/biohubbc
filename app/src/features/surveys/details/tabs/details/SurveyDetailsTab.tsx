@@ -23,14 +23,14 @@ import { LinearProgressWithLabel } from './checklist/progress/SurveyChecklistPro
 import { SurveySpatialAnimals } from './data/animals/SurveySpatialAnimals';
 import { SurveySpatialHabitatFeatures } from './data/habitat/SurveySpatialHabitatFeatures';
 import { SurveySpatialObservations } from './data/observations/SurveySpatialObservations';
-import { DATA_ACTIVE_VIEW_KEY } from './data/SurveyDataPage';
 import { SurveyOverviewPage } from './overview/SurveyOverviewPage';
 import { SamplingPeriodContainer } from './sampling/period/SamplingPeriodContainer';
 import { SamplingSiteContainer } from './sampling/site/SamplingSiteContainer';
-import { SAMPLING_ACTIVE_VIEW_KEY } from './sampling/SurveySamplingPage';
 import { SamplingTechniqueContainer } from './sampling/technique/SamplingTechniqueContainer';
 import { HiearchicalSurveyViewToggle } from './sidebar/HierarchicalSurveyViewToggle';
 
+const DATA_ACTIVE_VIEW_KEY = 'sd';
+const SAMPLING_ACTIVE_VIEW_KEY = 'ss';
 const SURVEY_ACTIVE_VIEW_KEY = 'sv';
 const DEFAULT_VIEW = SURVEY_ACTIVE_VIEW_VALUE.overview;
 
@@ -51,7 +51,7 @@ export const SurveyDetailsTab = ({ checklist }: SurveyDetailsTabProps) => {
       setSearchParams(searchParams.set(SURVEY_ACTIVE_VIEW_KEY, DEFAULT_VIEW));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [codesContext.codesDataLoader]);
 
   const handleSetActiveView = (view: SURVEY_VIEW_VALUE) => {
     setSearchParams(

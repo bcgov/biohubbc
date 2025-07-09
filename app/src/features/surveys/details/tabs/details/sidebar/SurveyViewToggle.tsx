@@ -1,11 +1,15 @@
 import { mdiAccountMultiple, mdiCalendarClock, mdiDatabaseSearch, mdiFileOutline, mdiHome } from '@mdi/js';
 import { ToggleButtonView } from 'components/toggle/CustomToggleButtonGroup';
 import { HierarchicalCustomToggleButtonGroup } from 'components/toggle/HierarchicalCustomToggleButtonGroup';
-import { DATA_ACTIVE_VIEW_VALUE, SURVEY_ACTIVE_VIEW_VALUE, SURVEY_VIEW_VALUE } from 'constants/survey-view';
+import {
+  DATA_ACTIVE_VIEW_VALUE,
+  SAMPLING_ACTIVE_VIEW_VALUE,
+  SURVEY_ACTIVE_VIEW_VALUE,
+  SURVEY_VIEW_VALUE
+} from 'constants/survey-view';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCallback, useContext, useMemo } from 'react';
-import { SAMPLING_ACTIVE_VIEW_VALUE } from '../sampling/SurveySamplingPage';
 
 type SurveyViewToggleProps = {
   checklist: any;
