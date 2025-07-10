@@ -212,17 +212,16 @@ export function createCollectionLink(): RequestHandler {
       await connection.open();
 
       const collectionId = Number(req.params.collectionId);
-      const systemUserId = connection.systemUserId();
 
       const collectionLinkService = new CollectionLinkService(connection);
 
       const data = req.body as IPostCollectionLinkRequest;
 
-      const newLink = await collectionLinkService.createCollectionLink(collectionId, data, systemUserId);
+      await collectionLinkService.createCollectionLink(collectionId, data);
 
       await connection.commit();
 
-      return res.status(201).json(newLink);
+      return res.status(201).send();
     } catch (error) {
       defaultLog.error({ label: 'createCollectionLink', message: 'error', error });
       await connection.rollback();

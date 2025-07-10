@@ -48,16 +48,14 @@ export class CollectionLinkService extends DBService {
    *
    * @param {number} collectionId
    * @param {IPostCollectionLinkRequest} linkData
-   * @param {number} systemUserId
-   * @return {*}  {Promise<CollectionLink>}
+   * @return {*}  {Promise<void>}
    * @memberof CollectionLinkService
    */
   async createCollectionLink(
     collectionId: number,
-    linkData: IPostCollectionLinkRequest,
-    systemUserId: number
-  ): Promise<CollectionLink> {
-    return this.collectionLinkRepository.createCollectionLink(collectionId, linkData, systemUserId);
+    linkData: IPostCollectionLinkRequest
+  ): Promise<void> {
+    return this.collectionLinkRepository.createCollectionLink(collectionId, linkData);
   }
 
   /**
@@ -73,7 +71,7 @@ export class CollectionLinkService extends DBService {
     collectionId: number,
     linkId: number,
     linkData: IPutCollectionLinkRequest
-  ): Promise<CollectionLink> {
+  ): Promise<void> {
     return this.collectionLinkRepository.updateCollectionLink(collectionId, linkId, linkData);
   }
 

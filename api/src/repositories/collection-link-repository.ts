@@ -97,26 +97,26 @@ export class CollectionLinkRepository extends BaseRepository {
    *
    * @param {number} collectionId
    * @param {IPostCollectionLinkRequest} linkData
-   * @param {number} systemUserId
    * @return {*}  {Promise<void>}
    * @memberof CollectionLinkRepository
    */
   async createCollectionLink(
     collectionId: number,
-    linkData: IPostCollectionLinkRequest,
-    systemUserId: number
+    linkData: IPostCollectionLinkRequest
   ): Promise<void> {
     const sqlStatement = SQL`
       INSERT INTO collection_links (
         name,
         description,
         url,
-        collection_id
+        collection_id,
+        create_user
       ) VALUES (
         ${linkData.name},
         ${linkData.description || null},
         ${linkData.url},
-        ${collectionId}
+        ${collectionId},
+        ${this.connection.systemUserId()}
       )
       RETURNING
         id,
