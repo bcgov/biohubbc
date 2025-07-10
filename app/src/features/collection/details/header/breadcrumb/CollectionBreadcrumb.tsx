@@ -3,6 +3,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Link from '@mui/material/Link';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { SubcollectionNavigator } from 'features/summary/list-data/collection/menu/SubcollectionNavigator';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICollection } from 'interfaces/useCollectionApi.interface';
@@ -61,13 +62,17 @@ export const CollectionBreadcrumb = (props: CollectionBreadcrumbProps) => {
     const collected = gatherCollectionIdsAndNames([hierarchy]);
 
     return collected.map((item) => (
-      <Link
-        key={item.collection_id}
-        component={RouterLink}
-        underline="hover"
-        to={`/admin/collections/${item.collection_id}`}>
-        {item.name}
-      </Link>
+      <Stack flexDirection="row" alignItems="center" gap={0} mr={-1}>
+        <Link
+          key={item.collection_id}
+          title={item.name}
+          component={RouterLink}
+          underline="hover"
+          to={`/admin/collections/${item.collection_id}`}>
+          {item.name}
+        </Link>
+        <SubcollectionNavigator collectionId={item.collection_id} />
+      </Stack>
     ));
   }, [parentsDataLoader.data?.hierarchy]);
 
@@ -80,19 +85,16 @@ export const CollectionBreadcrumb = (props: CollectionBreadcrumbProps) => {
       aria-label="breadcrumb"
       separator="/"
       sx={{
-        '& .MuiTypography-root': { fontSize: '1.5rem !important', fontWeight: 700 },
+        '& .MuiTypography-root': { fontSize: '1.35rem !important', fontWeight: 700 },
         '& .MuiBreadcrumbs-separator': { fontSize: '1.5rem' }
       }}>
-      <Stack gap={0.5} flexDirection="row" alignItems="center">
-        <Link component={RouterLink} to="/admin/summary?p_view=collections" underline="hover">
-          Projects
-        </Link>
-        {/* <SubcollectionNavigator /> */}
-      </Stack>
+      <Link component={RouterLink} to="/admin/summary?p_view=collections" underline="hover">
+        Projects
+      </Link>
 
       {breadcrumbLinks}
 
-      <Typography component="span" color="textSecondary" aria-current="page">
+      <Typography component="span" color="textSecondary" aria-current="page" title={collection.name}>
         {collection.name}
       </Typography>
     </Breadcrumbs>

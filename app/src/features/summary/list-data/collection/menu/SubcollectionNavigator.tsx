@@ -1,4 +1,4 @@
-import { mdiChevronDown, mdiFolderOutline } from '@mdi/js';
+import { mdiChevronDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Button, List, Menu } from '@mui/material';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -57,11 +57,8 @@ export const SubcollectionNavigator = ({ collectionId }: SubcollectionNavigatorP
 
   return (
     <>
-      <Button
-        onClick={handleOpenMenu}
-        endIcon={<Icon path={mdiChevronDown} size={0.8} style={{ marginLeft: '-5px', marginTop: '2px' }} />}
-        sx={{ minWidth: 'auto', mt: 0.25 }}>
-        <Icon path={mdiFolderOutline} size={1} />
+      <Button onClick={handleOpenMenu} sx={{ minWidth: 'auto', mx: 1, mt: 0.25, p: 0.5 }}>
+        <Icon path={mdiChevronDown} size={0.9} />
       </Button>
 
       <Menu
