@@ -1,5 +1,5 @@
 import { IDBConnection } from '../database/db';
-import { ICollectionLink, IPostCollectionLinkRequest, IPutCollectionLinkRequest } from '../models/collection-link';
+import { CollectionLink, IPostCollectionLinkRequest, IPutCollectionLinkRequest } from '../models/collection-link';
 import { CollectionLinkRepository } from '../repositories/collection-link-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { DBService } from './db-service';
@@ -25,10 +25,10 @@ export class CollectionLinkService extends DBService {
    *
    * @param {number} collectionId
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<ICollectionLink[]>}
+   * @return {*}  {Promise<CollectionLink[]>}
    * @memberof CollectionLinkService
    */
-  async getCollectionLinks(collectionId: number, pagination?: ApiPaginationOptions): Promise<ICollectionLink[]> {
+  async getCollectionLinks(collectionId: number, pagination?: ApiPaginationOptions): Promise<CollectionLink[]> {
     return this.collectionLinkRepository.getCollectionLinks(collectionId, pagination);
   }
 
@@ -49,14 +49,14 @@ export class CollectionLinkService extends DBService {
    * @param {number} collectionId
    * @param {IPostCollectionLinkRequest} linkData
    * @param {number} systemUserId
-   * @return {*}  {Promise<ICollectionLink>}
+   * @return {*}  {Promise<CollectionLink>}
    * @memberof CollectionLinkService
    */
   async createCollectionLink(
     collectionId: number,
     linkData: IPostCollectionLinkRequest,
     systemUserId: number
-  ): Promise<ICollectionLink> {
+  ): Promise<CollectionLink> {
     return this.collectionLinkRepository.createCollectionLink(collectionId, linkData, systemUserId);
   }
 
@@ -66,14 +66,14 @@ export class CollectionLinkService extends DBService {
    * @param {number} collectionId
    * @param {number} linkId
    * @param {IPutCollectionLinkRequest} linkData
-   * @return {*}  {Promise<ICollectionLink>}
+   * @return {*}  {Promise<CollectionLink>}
    * @memberof CollectionLinkService
    */
   async updateCollectionLink(
     collectionId: number,
     linkId: number,
     linkData: IPutCollectionLinkRequest
-  ): Promise<ICollectionLink> {
+  ): Promise<CollectionLink> {
     return this.collectionLinkRepository.updateCollectionLink(collectionId, linkId, linkData);
   }
 

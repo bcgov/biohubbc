@@ -1,13 +1,15 @@
-export interface ICollectionLink {
-  id: number;
-  name: string;
-  description: string | null;
-  url: string;
-  collection_id: number;
-  record_end_date: Date | null;
-  create_date: Date;
-  create_user: number;
-}
+import { z } from 'zod';
+import { ApiPaginationResults } from '../zod-schema/pagination';
+
+export const CollectionLink = z.object({
+  collection_links_id: z.number(),
+  name: z.string(),
+  description: z.string().nullable(),
+  url: z.string(),
+  collection_id: z.number()
+});
+
+export type CollectionLink = z.infer<typeof CollectionLink>;
 
 export interface IPostCollectionLinkRequest {
   name: string;
@@ -22,11 +24,6 @@ export interface IPutCollectionLinkRequest {
 }
 
 export interface IGetCollectionLinksResponse {
-  links: ICollectionLink[];
-  pagination: {
-    total: number;
-    current_page: number;
-    last_page: number;
-    per_page: number;
-  };
+  links: CollectionLink[];
+  pagination: ApiPaginationResults;
 }

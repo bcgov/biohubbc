@@ -1,20 +1,9 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { ICollectionLink, IPostCollectionLinkRequest, IPutCollectionLinkRequest } from '../models/collection-link';
+import { CollectionLink, IPostCollectionLinkRequest, IPutCollectionLinkRequest } from '../models/collection-link';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
-
-const CollectionLinkRecord = z.object({
-  id: z.number(),
-  name: z.string(),
-  description: z.string().nullable(),
-  url: z.string(),
-  collection_id: z.number(),
-  record_end_date: z.string().nullable(),
-  create_date: z.string(),
-  create_user: z.number()
-});
 
 /**
  * A repository class for accessing collection link data
@@ -29,10 +18,10 @@ export class CollectionLinkRepository extends BaseRepository {
    *
    * @param {number} collectionId
    * @param {ApiPaginationOptions} [pagination]
-   * @return {*}  {Promise<ICollectionLink[]>}
+   * @return {*}  {Promise<CollectionLink[]>}
    * @memberof CollectionLinkRepository
    */
-  async getCollectionLinks(collectionId: number, pagination?: ApiPaginationOptions): Promise<ICollectionLink[]> {
+  async getCollectionLinks(collectionId: number, pagination?: ApiPaginationOptions): Promise<CollectionLink[]> {
     let sqlStatement;
 
     if (pagination) {
@@ -76,23 +65,8 @@ export class CollectionLinkRepository extends BaseRepository {
         ORDER BY cl.create_date DESC`;
     }
 
-    const response = await this.connection.sql(sqlStatement, CollectionLinkRecord);
-
-    if (!response.rows || response.rows.length === 0) {
-      return [];
-    }
-
-    // Convert string dates to Date objects and map to ICollectionLink
-    return response.rows.map((row) => ({
-      id: row.id,
-      name: row.name,
-      description: row.description,
-      url: row.url,
-      collection_id: row.collection_id,
-      record_end_date: row.record_end_date ? new Date(row.record_end_date) : null,
-      create_date: new Date(row.create_date),
-      create_user: row.create_user
-    }));
+    const response = await this.connection.sql(sqlStatement, CollectionLink);
+    return response.rows;
   }
 
   /**
@@ -115,13 +89,6 @@ export class CollectionLinkRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement, z.object({ count: z.number() }));
 
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to get collection links count', [
-        'CollectionLinkRepository->getCollectionLinksCount',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
     return response.rows[0].count;
   }
 
@@ -131,40 +98,35 @@ export class CollectionLinkRepository extends BaseRepository {
    * @param {number} collectionId
    * @param {IPostCollectionLinkRequest} linkData
    * @param {number} systemUserId
-   * @return {*}  {Promise<ICollectionLink>}
+   * @return {*}  {Promise<void>}
    * @memberof CollectionLinkRepository
    */
   async createCollectionLink(
     collectionId: number,
     linkData: IPostCollectionLinkRequest,
     systemUserId: number
-  ): Promise<ICollectionLink> {
+  ): Promise<void> {
     const sqlStatement = SQL`
       INSERT INTO collection_links (
         name,
         description,
         url,
-        collection_id,
-        create_user
+        collection_id
       ) VALUES (
         ${linkData.name},
         ${linkData.description || null},
         ${linkData.url},
-        ${collectionId},
-        ${systemUserId}
+        ${collectionId}
       )
       RETURNING
         id,
         name,
         description,
         url,
-        collection_id,
-        record_end_date,
-        create_date,
-        create_user;
+        collection_id;
     `;
 
-    const response = await this.connection.sql(sqlStatement, CollectionLinkRecord);
+    const response = await this.connection.sql(sqlStatement, CollectionLink);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to create collection link', [
@@ -172,14 +134,6 @@ export class CollectionLinkRepository extends BaseRepository {
         'rows was null or undefined, expected rows != null'
       ]);
     }
-
-    const row = response.rows[0];
-
-    return {
-      ...row,
-      record_end_date: row.record_end_date ? new Date(row.record_end_date) : null,
-      create_date: new Date(row.create_date)
-    };
   }
 
   /**
@@ -188,14 +142,10 @@ export class CollectionLinkRepository extends BaseRepository {
    * @param {number} collectionId
    * @param {number} linkId
    * @param {IPutCollectionLinkRequest} linkData
-   * @return {*}  {Promise<ICollectionLink>}
+   * @return {*}  {Promise<void>}
    * @memberof CollectionLinkRepository
    */
-  async updateCollectionLink(
-    collectionId: number,
-    linkId: number,
-    linkData: IPutCollectionLinkRequest
-  ): Promise<ICollectionLink> {
+  async updateCollectionLink(collectionId: number, linkId: number, linkData: IPutCollectionLinkRequest): Promise<void> {
     const sqlStatement = SQL`
       UPDATE collection_links 
       SET 
@@ -217,7 +167,7 @@ export class CollectionLinkRepository extends BaseRepository {
         create_user;
     `;
 
-    const response = await this.connection.sql(sqlStatement, CollectionLinkRecord);
+    const response = await this.connection.sql(sqlStatement, CollectionLink);
 
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to update collection link', [
@@ -225,14 +175,6 @@ export class CollectionLinkRepository extends BaseRepository {
         'rows was null or undefined, expected rows != null'
       ]);
     }
-
-    const row = response.rows[0];
-
-    return {
-      ...row,
-      record_end_date: row.record_end_date ? new Date(row.record_end_date) : null,
-      create_date: new Date(row.create_date)
-    };
   }
 
   /**
