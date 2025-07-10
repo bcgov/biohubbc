@@ -1,6 +1,6 @@
 import { mdiChevronDown, mdiFolderOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { Box, Button, List, Menu, Typography } from '@mui/material';
+import { Button, List, Menu } from '@mui/material';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -10,7 +10,7 @@ import { useHistory } from 'react-router';
 import { SubcollectionListItem } from './item/SubcollectionListItem';
 
 interface SubcollectionNavigatorProps {
-  collectionId: number;
+  collectionId?: number;
 }
 
 export const SubcollectionNavigator = ({ collectionId }: SubcollectionNavigatorProps) => {
@@ -59,9 +59,9 @@ export const SubcollectionNavigator = ({ collectionId }: SubcollectionNavigatorP
     <>
       <Button
         onClick={handleOpenMenu}
-        endIcon={<Icon path={mdiChevronDown} size={0.8} style={{ marginLeft: '-5px' }} />}
-        sx={{ minWidth: 'auto', mx: 1 }}>
-        <Icon path={mdiFolderOutline} size={0.75} />
+        endIcon={<Icon path={mdiChevronDown} size={0.8} style={{ marginLeft: '-5px', marginTop: '2px' }} />}
+        sx={{ minWidth: 'auto', mt: 0.25 }}>
+        <Icon path={mdiFolderOutline} size={1} />
       </Button>
 
       <Menu
@@ -84,12 +84,6 @@ export const SubcollectionNavigator = ({ collectionId }: SubcollectionNavigatorP
             }
           }
         }}>
-        <Box sx={{ p: 2, pt: 1, borderBottom: '1px solid', borderColor: 'divider', fontWeight: 700 }}>
-          <Typography variant="subtitle2" color="text.secondary">
-            Subprojects
-          </Typography>
-        </Box>
-
         <LoadingGuard isLoading={collectionsLoader.isLoading} isLoadingFallback={<SkeletonList numberOfLines={1} />}>
           <List disablePadding>
             {collectionsLoader.data?.collections.map((collection) => (

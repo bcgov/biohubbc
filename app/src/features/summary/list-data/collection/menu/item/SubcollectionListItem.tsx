@@ -33,7 +33,7 @@ export const SubcollectionListItem = ({ collection, depth = 0, onNavigate }: Sub
     if (!expanded && !subcollectionsLoader.data) {
       subcollectionsLoader.load();
     }
-    setExpanded(true);
+    setExpanded((prev) => !prev);
   };
 
   const handleNavigate = useCallback(
@@ -47,7 +47,7 @@ export const SubcollectionListItem = ({ collection, depth = 0, onNavigate }: Sub
   return (
     <>
       <ListItem
-        onMouseEnter={hasChildren ? toggleExpanded : undefined}
+        onClick={hasChildren ? toggleExpanded : undefined}
         sx={{
           pl: 2 + depth * 2,
           display: 'flex',
@@ -70,8 +70,7 @@ export const SubcollectionListItem = ({ collection, depth = 0, onNavigate }: Sub
                   fontSize: '0.875rem',
                   overflow: 'hidden',
                   textOverflow: 'ellipsis',
-                  whiteSpace: 'nowrap',
-                  flexGrow: 1
+                  whiteSpace: 'nowrap'
                 }}
                 title={collection.name}
                 onClick={handleNavigate}>

@@ -1,6 +1,7 @@
 import Breadcrumbs from '@mui/material/Breadcrumbs';
 import CircularProgress from '@mui/material/CircularProgress';
 import Link from '@mui/material/Link';
+import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -75,14 +76,23 @@ export const CollectionBreadcrumb = (props: CollectionBreadcrumbProps) => {
   }
 
   return (
-    <Breadcrumbs aria-label="breadcrumb" separator=">">
-      <Link component={RouterLink} to="/admin/summary?p_view=collections" underline="hover">
-        Projects
-      </Link>
+    <Breadcrumbs
+      aria-label="breadcrumb"
+      separator="/"
+      sx={{
+        '& .MuiTypography-root': { fontSize: '1.5rem !important', fontWeight: 700 },
+        '& .MuiBreadcrumbs-separator': { fontSize: '1.5rem' }
+      }}>
+      <Stack gap={0.5} flexDirection="row" alignItems="center">
+        <Link component={RouterLink} to="/admin/summary?p_view=collections" underline="hover">
+          Projects
+        </Link>
+        {/* <SubcollectionNavigator /> */}
+      </Stack>
 
       {breadcrumbLinks}
 
-      <Typography variant="body2" component="span" color="textSecondary" aria-current="page">
+      <Typography component="span" color="textSecondary" aria-current="page">
         {collection.name}
       </Typography>
     </Breadcrumbs>

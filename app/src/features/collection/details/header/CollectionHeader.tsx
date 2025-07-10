@@ -6,7 +6,7 @@ import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import PageHeader from 'components/layout/PageHeader';
+import { BreadcrumbHeader } from 'components/layout/BreadcrumbHeader';
 import { DialogContext } from 'contexts/dialogContext';
 import { SUMMARY_ACTIVE_VIEW_KEY, SUMMARY_ACTIVE_VIEW_VALUE } from 'features/summary/list-data/ListDataTableContainer';
 import { APIError } from 'hooks/api/useAxios';
@@ -74,8 +74,7 @@ const CollectionHeader = (props: ICollectionHeaderProps) => {
 
   return (
     <>
-      <PageHeader
-        title={collection.name ?? ''}
+      <BreadcrumbHeader
         breadCrumbJSX={<CollectionBreadcrumb collection={collection} />}
         buttonJSX={
           <>
