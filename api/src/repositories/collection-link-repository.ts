@@ -97,13 +97,13 @@ export class CollectionLinkRepository extends BaseRepository {
    *
    * @param {number} collectionId
    * @param {IPostCollectionLinkRequest} linkData
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<CollectionLink>}
    * @memberof CollectionLinkRepository
    */
   async createCollectionLink(
     collectionId: number,
     linkData: IPostCollectionLinkRequest
-  ): Promise<void> {
+  ): Promise<CollectionLink> {
     const sqlStatement = SQL`
       INSERT INTO collection_links (
         name,
@@ -123,7 +123,10 @@ export class CollectionLinkRepository extends BaseRepository {
         name,
         description,
         url,
-        collection_id;
+        collection_id,
+        record_end_date,
+        create_date,
+        create_user;
     `;
 
     const response = await this.connection.sql(sqlStatement, CollectionLink);
@@ -134,6 +137,8 @@ export class CollectionLinkRepository extends BaseRepository {
         'rows was null or undefined, expected rows != null'
       ]);
     }
+
+    return response.rows[0];
   }
 
   /**
@@ -142,10 +147,10 @@ export class CollectionLinkRepository extends BaseRepository {
    * @param {number} collectionId
    * @param {number} linkId
    * @param {IPutCollectionLinkRequest} linkData
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<CollectionLink>}
    * @memberof CollectionLinkRepository
    */
-  async updateCollectionLink(collectionId: number, linkId: number, linkData: IPutCollectionLinkRequest): Promise<void> {
+  async updateCollectionLink(collectionId: number, linkId: number, linkData: IPutCollectionLinkRequest): Promise<CollectionLink> {
     const sqlStatement = SQL`
       UPDATE collection_links 
       SET 
@@ -175,6 +180,8 @@ export class CollectionLinkRepository extends BaseRepository {
         'rows was null or undefined, expected rows != null'
       ]);
     }
+
+    return response.rows[0];
   }
 
   /**

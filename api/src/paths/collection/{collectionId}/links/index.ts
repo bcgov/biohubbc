@@ -230,11 +230,11 @@ export function createCollectionLink(): RequestHandler {
 
       const data = req.body as IPostCollectionLinkRequest;
 
-      await collectionLinkService.createCollectionLink(collectionId, data);
+      const createdLink = await collectionLinkService.createCollectionLink(collectionId, data);
 
       await connection.commit();
 
-      return res.status(201).send();
+      return res.status(201).json(createdLink);
     } catch (error) {
       defaultLog.error({ label: 'createCollectionLink', message: 'error', error });
       await connection.rollback();
