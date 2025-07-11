@@ -6,15 +6,22 @@ import { CollectionLinkSchema, UpdateCollectionLinkSchema } from '../../../../..
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { CollectionLinkService } from '../../../../../services/collection-link-service';
 import { getLogger } from '../../../../../utils/logger';
+import { COLLECTION_ROLE, SYSTEM_ROLE } from '../../../../../constants/roles';
 
 const defaultLog = getLogger('paths/collection/{collectionId}/links/{linkId}');
 
 export const PUT: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
         {
-          discriminator: 'SystemUser'
+          discriminator: 'SystemRole',
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+        },
+        {
+          discriminator: 'CollectionRole',
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN],
+          collectionId: Number(req.params.collectionId)
         }
       ]
     };
@@ -123,11 +130,17 @@ export function updateCollectionLink(): RequestHandler {
 }
 
 export const DELETE: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
         {
-          discriminator: 'SystemUser'
+          discriminator: 'SystemRole',
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+        },
+        {
+          discriminator: 'CollectionRole',
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN],
+          collectionId: Number(req.params.collectionId)
         }
       ]
     };

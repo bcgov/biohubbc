@@ -7,6 +7,7 @@ import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { CollectionLinkService } from '../../../../services/collection-link-service';
 import { getLogger } from '../../../../utils/logger';
+import { SYSTEM_ROLE, COLLECTION_ROLE } from '../../../../constants/roles';
 import {
   ensureCompletePaginationOptions,
   makePaginationOptionsFromRequest,
@@ -16,11 +17,17 @@ import {
 const defaultLog = getLogger('paths/collection/{collectionId}/links');
 
 export const GET: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
         {
-          discriminator: 'SystemUser'
+          discriminator: 'SystemRole',
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+        },
+        {
+          discriminator: 'CollectionRole',
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN, COLLECTION_ROLE.MEMBER],
+          collectionId: Number(req.params.collectionId)
         }
       ]
     };
@@ -130,11 +137,17 @@ export function getCollectionLinks(): RequestHandler {
 }
 
 export const POST: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
         {
-          discriminator: 'SystemUser'
+          discriminator: 'SystemRole',
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]
+        },
+        {
+          discriminator: 'CollectionRole',
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN],
+          collectionId: Number(req.params.collectionId)
         }
       ]
     };
