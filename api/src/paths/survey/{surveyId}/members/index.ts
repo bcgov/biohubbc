@@ -119,11 +119,21 @@ export function getSurveyMembers(): RequestHandler {
 }
 
 export const POST: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
         {
-          discriminator: 'SystemUser'
+          validSurveyRoles: [SURVEY_ROLE.ADMIN],
+          surveyId: Number(req.params.surveyId),
+          discriminator: 'SurveyRole'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+          discriminator: 'SystemRole'
         }
       ]
     };
