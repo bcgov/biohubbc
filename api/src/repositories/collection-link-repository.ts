@@ -30,7 +30,7 @@ export class CollectionLinkRepository extends BaseRepository {
 
       sqlStatement = SQL`
         SELECT 
-          cl.id,
+          cl.id as collection_links_id,
           cl.name,
           cl.description,
           cl.url,
@@ -49,7 +49,7 @@ export class CollectionLinkRepository extends BaseRepository {
     } else {
       sqlStatement = SQL`
         SELECT 
-          cl.id,
+          cl.id as collection_links_id,
           cl.name,
           cl.description,
           cl.url,
@@ -119,7 +119,7 @@ export class CollectionLinkRepository extends BaseRepository {
         ${this.connection.systemUserId()}
       )
       RETURNING
-        id,
+        id as collection_links_id,
         name,
         description,
         url,
@@ -162,7 +162,7 @@ export class CollectionLinkRepository extends BaseRepository {
         AND collection_id = ${collectionId}
         AND record_end_date IS NULL
       RETURNING
-        id,
+        id as collection_links_id,
         name,
         description,
         url,
