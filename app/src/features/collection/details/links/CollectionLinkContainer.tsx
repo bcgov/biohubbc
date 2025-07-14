@@ -282,7 +282,7 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
             // Rows
             rows={rows}
             rowCount={collectionLinksDataLoader.data?.pagination.total ?? 0}
-            getRowId={(row) => row.id}
+            getRowId={(row) => row.collection_links_id}
             // Pagination
             paginationMode="server"
             paginationModel={paginationModel}
