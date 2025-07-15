@@ -21,7 +21,7 @@ export class PutSurveyObject {
     this.survey_details = (obj?.survey_details && new PutSurveyDetailsData(obj.survey_details)) || null;
     this.species = (obj?.species && new PutSurveySpeciesData(obj.species)) || null;
     this.permit = (obj?.permit && new PutSurveyPermitData(obj.permit)) || null;
-    this.collections = (obj?.collections && new PutCollectionsData(obj.collections)) || null;
+    this.collections = (obj?.collections && new PutCollectionsData(obj)) || null;
     this.funding_sources =
       (obj?.funding_sources?.length && obj.funding_sources.map((fs: any) => new PutFundingSourceData(fs))) || [];
     this.proprietor = (obj?.proprietor && new PutSurveyProprietorData(obj.proprietor)) || null;

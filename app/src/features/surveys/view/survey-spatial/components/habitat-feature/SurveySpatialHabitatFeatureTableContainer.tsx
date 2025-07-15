@@ -1,4 +1,3 @@
-import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
@@ -27,9 +26,8 @@ export const SurveySpatialHabitatFeatureTableContainer = () => {
         <Box flex="1 1 auto">
           <NoDataOverlay
             height="100%"
-            title="Add Habitat Features"
-            subtitle="Add habitat features that you have observed in the survey area"
-            icon={mdiArrowTopRight}
+            title="Habitat Features"
+            subtitle="Add habitat features that you have observed in the survey area. Habitat features that belong to the surveys in this collection will show here."
           />
         </Box>
       }>

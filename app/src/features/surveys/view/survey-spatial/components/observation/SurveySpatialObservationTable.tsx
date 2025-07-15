@@ -1,4 +1,3 @@
-import { mdiArrowTopRight } from '@mdi/js';
 import { GridColDef, GridSortModel, GridValidRowModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -23,7 +22,7 @@ interface IFlattenedObservationTableRow extends GridValidRowModel {
   method_technique_name: string | null;
   survey_sample_period_start_datetime: string | null;
   observation_date: string;
-  observation_time: string;
+  observation_time: string | null;
   latitude: number | null;
   longitude: number | null;
 }
@@ -76,7 +75,7 @@ export const SurveySpatialObservationTable = () => {
         method_technique_name: item.method_technique_name,
         survey_sample_period_start_datetime: item.survey_sample_period_start_datetime,
         observation_date: dayjs(item.observation_date).format('YYYY-MM-DD'),
-        observation_time: dayjs(item.observation_date).format('HH:mm:ss'),
+        observation_time: item.observation_time,
         latitude: item.latitude,
         longitude: item.longitude
       };
@@ -150,10 +149,9 @@ export const SurveySpatialObservationTable = () => {
       hasNoData={!rows.length}
       hasNoDataFallback={
         <NoDataOverlay
-          sx={{ minHeight: '300px' }}
-          title="Add Species Observations"
-          subtitle="Observations show where and when you observed species. You can link observations to sampling periods."
-          icon={mdiArrowTopRight}
+          title="Species Observations"
+          subtitle="Observations show where and when you observed species. Observations that belong to the surveys in this collection will show here."
+          sx={{ width: '100%', height: '100%', m: 0 }}
         />
       }
       hasNoDataFallbackDelay={100}>

@@ -58,7 +58,7 @@ interface ICustomTextField {
 }
 
 const CustomTextField = (props: React.PropsWithChildren<ICustomTextField>) => {
-  const { touched, errors, values, handleChange, handleBlur } = useFormikContext<any>();
+  const { touched, errors, values, handleChange, handleBlur, setFieldError } = useFormikContext<any>();
 
   const { name, label, other, placeholder, helpText } = props;
 
@@ -87,6 +87,9 @@ const CustomTextField = (props: React.PropsWithChildren<ICustomTextField>) => {
         }
 
         handleChange(event);
+        if (get(errors, name)) {
+          setFieldError(name, undefined);
+        }
       }}
       onBlur={handleBlur}
       variant="outlined"

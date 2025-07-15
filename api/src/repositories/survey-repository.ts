@@ -18,27 +18,6 @@ import { IPostCollectionUnit } from '../services/critterbase-service';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
 
-export interface IGetSpeciesData {
-  itis_tsn: number;
-}
-
-export interface IObservationSubmissionInsertDetails {
-  surveyId: number;
-  source: string;
-  inputFileName?: string;
-  inputKey?: string;
-  outputFileName?: string;
-  outputKey?: string;
-}
-
-export interface IObservationSubmissionUpdateDetails {
-  submissionId: number;
-  inputFileName?: string;
-  inputKey?: string;
-  outputFileName?: string;
-  outputKey?: string;
-}
-
 export interface ISurveyProprietorModel {
   first_nations_id: number;
   proprietor_type_id: number;
@@ -65,7 +44,7 @@ const SurveyRecord = z.object({
   revision_count: z.number(),
   ecological_season_id: z.number().nullable(),
   comments: z.string().nullable(),
-  progress_id: z.number()
+  progress_id: z.number().nullable()
 });
 
 export type SurveyRecord = z.infer<typeof SurveyRecord>;
@@ -1450,7 +1429,7 @@ export class SurveyRepository extends BaseRepository {
           survey_sample_site_id,
           name,
           description,
-          ST_AsText(ST_GeomFromGeoJSON(geojson->'geometry'::text)) AS geometry_wkt 
+          ST_AsText(ST_GeomFromGeoJSON(geojson->'geometry'::text)) AS geometry_wkt
         FROM
           survey_sample_site
         WHERE
@@ -1537,11 +1516,11 @@ export class SurveyRepository extends BaseRepository {
       ),
       -- Get the vantage categories and their corresponding methods
       vantage_data AS (
-          SELECT 
+          SELECT
               mtv.method_technique_id,
               vc.name AS vh,  -- Vantage category (i.e. air, arboreal, ground)
               v.name AS vv    -- Vantage value (i.e. helicopter, stationary fixture, horseback)
-          FROM 
+          FROM
               method_technique mt
           LEFT JOIN method_technique_vantage mtv
               ON mt.method_technique_id = mtv.method_technique_id
@@ -1551,7 +1530,7 @@ export class SurveyRepository extends BaseRepository {
               ON vm.vantage_id = v.vantage_id
           LEFT JOIN vantage_category vc
               ON v.vantage_category_id = vc.vantage_category_id
-          WHERE 
+          WHERE
               mt.survey_id = ${surveyId}
       ),
       -- Identify used vantage categories that have non-null 'vv' values
@@ -1562,7 +1541,7 @@ export class SurveyRepository extends BaseRepository {
       ),
       -- Ensure we only keep relevant vantage categories with non-null 'vv' values
       method_technique_data AS (
-          SELECT 
+          SELECT
               mt.method_technique_id,
               jsonb_agg(
                   jsonb_build_object(
@@ -1633,8 +1612,8 @@ export class SurveyRepository extends BaseRepository {
               ON true  -- We want all used attributes to be considered here
           LEFT JOIN method_technique_data vd
               ON ad.method_technique_id = vd.method_technique_id
-          GROUP BY 
-              ad.method_technique_id, 
+          GROUP BY
+              ad.method_technique_id,
               ad.method_name,
               ad.description,
               ad.method_lookup_name,
@@ -1643,7 +1622,7 @@ export class SurveyRepository extends BaseRepository {
               ad.response_metric,
               vd.vantage_data
       )
-      SELECT 
+      SELECT
           cd.method_technique_id,
           cd.method_name,
           cd.description,

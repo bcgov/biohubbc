@@ -22,8 +22,8 @@ export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
 
 export const PurposeAndMethodologyYupSchema = yup.object().shape({
   purpose_and_methodology: yup.object().shape({
-    additional_details: yup.string(),
-    intended_outcome_ids: yup.array().min(1, 'One or more Ecological Variables are Required').required('Required')
+    additional_details: yup.string().required('Objectives is required'),
+    intended_outcome_ids: yup.array().min(1, 'One or more ecological variables are required').required('Required')
   })
 });
 

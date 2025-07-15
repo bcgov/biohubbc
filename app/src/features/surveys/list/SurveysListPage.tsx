@@ -87,7 +87,7 @@ const SurveysListPage = () => {
     {
       field: 'name',
       headerName: 'Name',
-      flex: 1,
+      width: 200,
       disableColumnMenu: true,
       renderCell: (params) => (
         <Link

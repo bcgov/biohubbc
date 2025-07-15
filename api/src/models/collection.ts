@@ -29,18 +29,26 @@ export interface IPostCollectionMember {
   collection_role_name: COLLECTION_ROLE;
 }
 
-export const Collection: z.ZodType<any> = z.lazy(() =>
+export type Collection = {
+  collection_id: number;
+  name: string;
+  description: string;
+  parent_collection_id: number | null;
+  members: Array<Omit<CollectionMember, 'collection_id'>>;
+  subcollections: Collection[];
+};
+
+// Then create the schema with explicit typing
+export const Collection: z.ZodType<Collection> = z.lazy(() =>
   z.object({
     collection_id: z.number(),
     name: z.string(),
     description: z.string(),
     parent_collection_id: z.number().nullable(),
-    participants: z.array(CollectionMember.omit({ collection_id: true })),
+    members: z.array(CollectionMember.omit({ collection_id: true })),
     subcollections: z.array(Collection)
   })
 );
-
-export type Collection = z.infer<typeof Collection>;
 
 export const CollectionBasic = z.object({
   collection_id: z.number(),
@@ -52,7 +60,7 @@ export type CollectionBasic = z.infer<typeof CollectionBasic>;
 export interface IPostCollectionRequest {
   name: string;
   description: string;
-  participants: IPostCollectionMember[];
+  members: IPostCollectionMember[];
 }
 
 export interface IPostCollection {
@@ -62,7 +70,7 @@ export interface IPostCollection {
 }
 
 export interface IPostCollectionRequest extends IPostCollection {
-  participants: IPostCollectionMember[];
+  members: IPostCollectionMember[];
 }
 
 export interface IPostCollectionSurvey {

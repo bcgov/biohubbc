@@ -21,6 +21,7 @@ import { useDialogContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
+import { ISurveyFilter } from 'interfaces/useFilterApi.interface';
 import { SurveyBasicFieldsObject } from 'interfaces/useSurveyApi.interface';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -131,7 +132,9 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
     {
       field: 'survey_id',
       headerName: 'ID',
+
       width: 85,
+      disableColumnMenu: true,
       renderHeader: () => (
         <Typography color={grey[500]} variant="body2">
           ID
@@ -149,22 +152,23 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
       flex: 1,
       disableColumnMenu: true,
       renderCell: (params) => (
-        <Stack mb={0.25}>
-          <Link
-            underline="always"
-            title={params.row.name}
-            component={RouterLink}
-            to={`/admin/surveys/${params.row.survey_id}`}
-            sx={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}>
-            {params.row.name}
-          </Link>
-        </Stack>
+        <Link
+          underline="always"
+          title={params.row.name}
+          component={RouterLink}
+          to={`/admin/surveys/${params.row.survey_id}`}
+          sx={{ overflow: 'hidden', textOverflow: 'ellipsis', fontWeight: 700 }}>
+          {params.row.name}
+        </Link>
       )
     },
     {
       field: 'progress_percentage',
       headerName: 'Progress',
-      flex: 0.6,
+      flex: 0.5,
+      minWidth: 100,
+
+      disableColumnMenu: true,
       renderCell: (params) => (
         <Box flex="1 1 auto" mr={5}>
           <LinearProgressWithLabel value={params.row.progress_percentage} />
@@ -175,6 +179,9 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
       field: 'start_date',
       headerName: 'Start Date',
       flex: 0.3,
+      minWidth: 170,
+
+      disableColumnMenu: true,
       renderCell: (params) => (
         <Typography variant="body2">{dayjs(params.row.start_date).format(DATE_FORMAT.MediumDateFormat)}</Typography>
       )
@@ -183,6 +190,9 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
       field: 'end_date',
       headerName: 'End Date',
       flex: 0.3,
+      minWidth: 170,
+
+      disableColumnMenu: true,
       renderCell: (params) =>
         params.row.end_date && (
           <Typography variant="body2">{dayjs(params.row.end_date).format(DATE_FORMAT.MediumDateFormat)}</Typography>
@@ -190,19 +200,19 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
     }
   ];
 
-  const handleDeleteFilter = useCallback(
-    async (surveyFilterId: number) => {
-      try {
-        await biohubApi.filter.deleteSurveyFilter(surveyFilterId);
-        filtersDataLoader.refresh();
-        dialogContext.setSnackbar({ snackbarMessage: 'Successfully deleted filter' });
-      } catch (error) {
-        dialogContext.setSnackbar({
-          snackbarMessage: `Failed to delete filter: ${(error as APIError).message}`
-        });
-      }
+  // --- Helper function to update search params and filters ---
+  const updateSearchParamsAndFilters = useCallback(
+    (filters: any, customLabel?: string) => {
+      const updatedParams = searchParams
+        .setOrDelete('s_keyword', filters.keyword)
+        .setOrDelete('s_itis_tsn', filters.itis_tsn)
+        .setOrDelete('s_system_user_id', filters.system_user_id)
+        .setOrDelete(SURVEY_TAB_KEY, customLabel);
+
+      setSearchParams(updatedParams);
+      setAdvancedFiltersModel(filters);
     },
-    [biohubApi.filter, filtersDataLoader, dialogContext]
+    [searchParams, setSearchParams]
   );
 
   const fixedViews: FilterView[] = useMemo(
@@ -212,6 +222,26 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
       { value: 'Completed', label: 'PUBLISHED', type: 'FIXED', conditions: { keyword: 'published' } }
     ],
     []
+  );
+
+  const handleDeleteFilter = useCallback(
+    async (filter: ISurveyFilter) => {
+      try {
+        await biohubApi.filter.deleteSurveyFilter(filter.survey_filter_id);
+        filtersDataLoader.refresh();
+        dialogContext.setSnackbar({ snackbarMessage: 'Successfully deleted filter' });
+
+        if (filter.name === searchParams.get(SURVEY_TAB_KEY)) {
+          setActiveView('All');
+          updateSearchParamsAndFilters(SurveyAdvancedFiltersInitialValues);
+        }
+      } catch (error) {
+        dialogContext.setSnackbar({
+          snackbarMessage: `Failed to delete filter: ${(error as APIError).message}`
+        });
+      }
+    },
+    [biohubApi.filter, dialogContext, filtersDataLoader, searchParams, updateSearchParamsAndFilters]
   );
 
   const customViews: FilterView[] = useMemo(
@@ -226,9 +256,7 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
           {
             label: 'Delete',
             icon: mdiTrashCanOutline,
-            onClick: () => {
-              handleDeleteFilter(filter.survey_filter_id);
-            }
+            onClick: () => handleDeleteFilter(filter)
           }
         ]
       })) ?? [],
@@ -237,42 +265,30 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
 
   const mergedViews: FilterView[] = useMemo(() => [...fixedViews, ...customViews], [fixedViews, customViews]);
 
+  const handleViewChange = useCallback(
+    (viewValue: string) => {
+      setActiveView(viewValue);
+      const selected = mergedViews.find((v) => v.value === viewValue);
+      const filters = selected?.conditions ?? SurveyAdvancedFiltersInitialValues;
+      const customLabel = selected?.type === 'CUSTOM' ? selected.label : undefined;
+
+      updateSearchParamsAndFilters(filters, customLabel);
+    },
+    [mergedViews, updateSearchParamsAndFilters]
+  );
+
   useEffect(() => {
     const tabKeyParam = searchParams.get(SURVEY_TAB_KEY);
-
     if (!tabKeyParam) {
       return;
     }
 
     const selectedView = mergedViews.find((view) => view.label === tabKeyParam || view.value === tabKeyParam);
-
     if (selectedView && selectedView.value !== activeView) {
       setActiveView(selectedView.value);
       setAdvancedFiltersModel(selectedView.conditions ?? SurveyAdvancedFiltersInitialValues);
     }
   }, [mergedViews, searchParams, activeView]);
-
-  const handleViewChange = (viewValue: string) => {
-    setActiveView(viewValue);
-
-    const selected = mergedViews.find((v) => v.value === viewValue);
-    const filters = selected?.conditions ?? SurveyAdvancedFiltersInitialValues;
-
-    const updatedParams = searchParams
-      .setOrDelete('s_keyword', filters.keyword)
-      .setOrDelete('s_itis_tsn', filters.itis_tsn)
-      .setOrDelete('s_system_user_id', filters.system_user_id);
-
-    // For the SURVEY_TAB_KEY, store the view label (or any identifying value)
-    if (selected?.type === 'CUSTOM') {
-      updatedParams.set(SURVEY_TAB_KEY, selected.label); // or `selected.value` if that makes more sense
-    } else {
-      updatedParams.setOrDelete(SURVEY_TAB_KEY, undefined);
-    }
-
-    setSearchParams(updatedParams);
-    setAdvancedFiltersModel(filters);
-  };
 
   return (
     <>
@@ -340,38 +356,51 @@ const SurveysListContainer = ({ showSearch }: { showSearch: boolean }) => {
             />
           )
         }>
-        <StyledDataGrid
-          noRowsMessage="No surveys found"
-          loading={!rows.length && surveysDataLoader.isLoading}
-          columns={columns}
-          rows={rows}
-          rowCount={surveysDataLoader.data?.pagination.total ?? 0}
-          getRowId={(row) => row.survey_id}
-          paginationMode="server"
-          paginationModel={paginationModel}
-          pageSizeOptions={pageSizeOptions}
-          onPaginationModelChange={(model) => {
-            setSearchParams(searchParams.set('s_page', String(model.page)).set('s_limit', String(model.pageSize)));
-            setPaginationModel(model);
-          }}
-          sortingMode="server"
-          sortModel={sortModel}
-          sortingOrder={['asc', 'desc']}
-          onSortModelChange={(model) => {
-            if (model.length) {
+        <Box sx={{ flex: 1, overflowX: 'auto' }}>
+          <StyledDataGrid
+            noRowsMessage="No surveys found"
+            loading={!rows.length && (surveysDataLoader.isLoading || !surveysDataLoader.isReady)}
+            // Columns
+            columns={columns}
+            // Rows
+            rows={rows}
+            rowCount={surveysDataLoader.data?.pagination.total ?? 0}
+            getRowId={(row) => row.survey_id}
+            // Pagination
+            paginationMode="server"
+            paginationModel={paginationModel}
+            pageSizeOptions={pageSizeOptions}
+            onPaginationModelChange={(model) => {
+              if (!model) {
+                return;
+              }
+              setSearchParams(searchParams.set('s_page', String(model.page)).set('s_limit', String(model.pageSize)));
+              setPaginationModel(model);
+            }}
+            // Sorting
+            sortingMode="server"
+            sortModel={sortModel}
+            sortingOrder={['asc', 'desc']}
+            onSortModelChange={(model) => {
+              if (!model.length) {
+                return;
+              }
               setSearchParams(searchParams.set('s_sort', model[0].field).set('s_order', model[0].sort ?? 'desc'));
               setSortModel(model);
-            }
-          }}
-          rowSelection={false}
-          checkboxSelection={false}
-          disableRowSelectionOnClick
-          disableColumnSelector
-          disableColumnFilter
-          disableColumnMenu
-          rowHeight={50}
-          autoHeight={false}
-        />
+            }}
+            // Row options
+            rowSelection={false}
+            checkboxSelection={false}
+            disableRowSelectionOnClick
+            // Column options
+            disableColumnSelector
+            disableColumnFilter
+            disableColumnMenu
+            // Styling
+            rowHeight={52}
+            autoHeight={false}
+          />
+        </Box>
       </LoadingGuard>
     </>
   );

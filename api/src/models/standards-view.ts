@@ -1,7 +1,8 @@
 import { z } from 'zod';
 import {
   CBQualitativeMeasurementTypeDefinition,
-  CBQuantitativeMeasurementTypeDefinition
+  CBQuantitativeMeasurementTypeDefinition,
+  ICollectionCategory
 } from '../services/critterbase-service';
 
 const QualitativeMeasurementSchema = z.object({
@@ -63,4 +64,5 @@ export interface ISpeciesStandards {
     qualitative: CBQualitativeMeasurementTypeDefinition[];
   };
   markingBodyLocations: { id: string; key: string; value: string }[];
+  ecologicalUnits: ICollectionCategory[];
 }

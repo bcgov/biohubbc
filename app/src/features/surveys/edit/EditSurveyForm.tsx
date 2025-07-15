@@ -8,7 +8,8 @@ import { CodesContext } from 'contexts/codesContext';
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import Paper from '@mui/material/Paper';
-import { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';
+import Typography from '@mui/material/Typography';
+import SurveyPermitForm, { ISurveyPermitForm } from 'features/surveys/components/permit/SurveyPermitForm';
 import { SurveyPartnershipsFormYupSchema } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { Formik, FormikProps } from 'formik';
 import { ICreateSurveyRequest, IUpdateSurveyRequest } from 'interfaces/useSurveyApi.interface';
@@ -16,7 +17,7 @@ import React, { useContext, useEffect } from 'react';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsYupSchema } from '../components/agreements/AgreementsForm';
 import { ProprietaryDataYupSchema } from '../components/agreements/ProprietaryDataForm';
-import {
+import SurveyFundingSourceForm, {
   ISurveyFundingSourceForm,
   SurveyFundingSourceFormYupSchema
 } from '../components/funding/SurveyFundingSourceForm';
@@ -102,21 +103,21 @@ const EditSurveyForm = <
         <Stack gap={5} p={3}>
           <HorizontalSplitFormComponent
             title="General"
-            summary="Enter the name, objectives, and dates of your survey"
+            summary="Enter the name, dates, and objectives of your survey"
             component={<GeneralInformationForm />}
           />
 
           <Divider />
 
-          <HorizontalSplitFormComponent title="Focal species" summary="Enter species that you targetted in the survey">
+          <HorizontalSplitFormComponent title="Species" summary="Select species that you targetted in the survey">
             <SpeciesForm />
           </HorizontalSplitFormComponent>
 
           <Divider />
 
           <HorizontalSplitFormComponent
-            title="Objectives"
-            summary="Select the type of data collected"
+            title="Data"
+            summary="Enter information about the data you collected"
             component={
               <PurposeAndMethodologyForm
                 intended_outcomes={
@@ -141,9 +142,27 @@ const EditSurveyForm = <
 
           <HorizontalSplitFormComponent
             title="Area"
-            summary="Import, draw or select a feature from an existing layer to define your general areas of interest."
+            summary="Enter your general area of interest by importing a spatial file, drawing, or selecting from a map layer"
             component={<StudyAreaForm />}
           />
+
+          <Divider />
+
+          <HorizontalSplitFormComponent
+            title="Funding"
+            summary="If applicable, select funding sources that contributed to the survey">
+            <Typography component="legend">Do any funding agencies require this survey to be submitted? *</Typography>
+            <SurveyFundingSourceForm />
+          </HorizontalSplitFormComponent>
+
+          <Divider />
+
+          <HorizontalSplitFormComponent title="Permits" summary="If applicable, select permits that enabled the survey">
+            <Typography component="legend">
+              Do any permitting agencies require this survey to be submitted? *
+            </Typography>
+            <SurveyPermitForm />
+          </HorizontalSplitFormComponent>
 
           <Divider />
 

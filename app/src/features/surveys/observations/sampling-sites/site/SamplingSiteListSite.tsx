@@ -1,4 +1,4 @@
-import { mdiChevronDown, mdiDotsVertical, mdiMapMarker, mdiVectorLine, mdiVectorSquare } from '@mdi/js';
+import { mdiChevronDown, mdiDotsVertical } from '@mdi/js';
 import Icon from '@mdi/react';
 import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -11,6 +11,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import { IGetSampleSiteRecordExtendedNonSpatial } from 'interfaces/useSamplingSiteApi.interface';
 import { SamplingSiteListContent } from './accordion-details/SamplingSiteListContent';
+import { getSamplingSiteIcon } from './utils/SamplingSiteUtils';
 
 export interface ISamplingSiteListSiteProps {
   sampleSite: IGetSampleSiteRecordExtendedNonSpatial;
@@ -28,14 +29,7 @@ export interface ISamplingSiteListSiteProps {
 export const SamplingSiteListSite = (props: ISamplingSiteListSiteProps) => {
   const { sampleSite, isChecked, handleSampleSiteMenuClick, handleCheckboxChange } = props;
 
-  let icon;
-  if (sampleSite.geometry_type === 'Point') {
-    icon = { path: mdiMapMarker, title: 'Point sampling site' };
-  } else if (sampleSite.geometry_type === 'LineString') {
-    icon = { path: mdiVectorLine, title: 'Transect sampling site' };
-  } else {
-    icon = { path: mdiVectorSquare, title: 'Polygon sampling site' };
-  }
+  const icon = getSamplingSiteIcon(sampleSite.geometry_type);
 
   return (
     <Accordion

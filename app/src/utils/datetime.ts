@@ -1,3 +1,4 @@
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import duration, { DurationUnitType } from 'dayjs/plugin/duration';
 import { pluralize } from './Utils';
@@ -21,6 +22,18 @@ export const combineDateTime = (date: string, time?: string | null) => {
   return dayjs(`${date}`).format(TIMESTAMP_FORMAT);
 };
 
+/**
+ * Returns true if the timestamp has a time not equal to midnight (00:00:00), otherwise returns false.
+ *
+ * @param {string} date
+ * @returns {boolean}
+ */
+export const hasRealTime = (date: string): boolean => {
+  const dt = dayjs(date);
+  const hasRealTime = dt.format('HH:mm:ss') !== '00:00:00';
+
+  return hasRealTime;
+};
 /**
  * Formats the time difference between two timestamps into a human-readable string.
  *
@@ -88,4 +101,26 @@ export const getDateTimeLabel = (
   const endTimeString = endTime ? ` ${endTime}` : ''; // includes leading space
 
   return `${startDate}${startTimeString} - ${endDate}${endTimeString}`;
+};
+
+/**
+ * Format date and optional time with separate formats.
+ *
+ * @param {string} date - Date string, e.g., '2024-01-01'
+ * @param {string | null} [time] - Optional time string, e.g., '14:30'
+ * @param {string} [dateFormat] - Format to use if only date is provided
+ * @param {string} [dateTimeFormat] - Format to use if date and time are provided
+ * @returns {string} - Formatted date/time string
+ */
+export const formatDateTime = (
+  date: string,
+  time?: string | null,
+  dateFormat: string = DATE_FORMAT.MediumDateFormat,
+  dateTimeFormat: string = DATE_FORMAT.MediumDateTimeFormat
+): string => {
+  const hasTime = Boolean(time);
+  const dateTimeStr = hasTime ? `${date} ${time}` : date;
+  const format = hasTime ? dateTimeFormat : dateFormat;
+
+  return dayjs(dateTimeStr).format(format);
 };

@@ -30,33 +30,26 @@ import Breadcrumbs from '@mui/material/Breadcrumbs';
 import blue from '@mui/material/colors/blue';
 import Link from '@mui/material/Link';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
-import { SurveyContext } from 'contexts/surveyContext';
 import { SUMMARY_ACTIVE_VIEW_KEY, SUMMARY_ACTIVE_VIEW_VALUE } from 'features/summary/list-data/ListDataTableContainer';
 import { SurveyExportDialog } from 'features/surveys/view/survey-export/SurveyExportDialog';
 import { APIError } from 'hooks/api/useAxios';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import CreateCollectionSurveyDialog from './collection/CollectionSurveyDialog';
-import SurveyHeaderTabs, { SURVEY_ACTIVE_TAB_VALUE } from './tabs/SurveyHeaderTabs';
 
-interface ISurveyHeaderProps {
-  activeTab: SURVEY_ACTIVE_TAB_VALUE;
-  handleTabChange: (tab: SURVEY_ACTIVE_TAB_VALUE) => void;
-}
 /**
  * Survey header for a single-survey view.
  *
  * @return {*}
  */
-const SurveyHeader = (props: ISurveyHeaderProps) => {
-  const { activeTab, handleTabChange } = props;
-
-  const surveyContext = useContext(SurveyContext);
+const SurveyHeader = () => {
+  const surveyContext = useSurveyContext();
 
   const surveyWithDetails = surveyContext.surveyDataLoader.data;
 
@@ -185,8 +178,8 @@ const SurveyHeader = (props: ISurveyHeaderProps) => {
                     <ColouredRectangleChip
                       onClick={() => {
                         if (
-                          collection.participants.some(
-                            (participant) => participant.system_user_id === authContext.simsUserWrapper.systemUserId
+                          collection.members.some(
+                            (member) => member.system_user_id === authContext.simsUserWrapper.systemUserId
                           )
                         ) {
                           history.push(`/admin/collections/${collection.collection_id}`);
@@ -285,7 +278,6 @@ const SurveyHeader = (props: ISurveyHeaderProps) => {
               </Menu>
             </SurveyRoleRouteGuard>
           }
-          tabsJSX={<SurveyHeaderTabs activeTab={activeTab} handleTabChange={handleTabChange} />}
         />
       </Box>
 

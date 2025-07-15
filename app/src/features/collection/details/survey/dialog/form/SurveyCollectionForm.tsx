@@ -47,12 +47,19 @@ const SurveyCollectionForm = (props: ISurveyCollectionFormProps) => {
                 label="Surveys"
                 id="surveys"
                 name="surveys"
+                loading={surveysDataLoader.isLoading}
                 selectedOptions={surveysInCollection}
                 options={
-                  surveysDataLoader.data?.surveys.map((survey) => ({
-                    value: survey.survey_id,
-                    label: survey.name
-                  })) ?? []
+                  surveysDataLoader.data?.surveys
+                    .map((survey) => ({
+                      value: survey.survey_id,
+                      label: survey.name
+                    }))
+                    .filter(
+                      (survey) =>
+                        !surveysInCollection.includes(survey.value) &&
+                        !values.surveys.some((existing) => existing.survey_id === survey.value)
+                    ) ?? []
                 }
                 onChange={(_, selectedOption) => {
                   if (selectedOption && !values.surveys.some((survey) => survey.survey_id === selectedOption.value)) {

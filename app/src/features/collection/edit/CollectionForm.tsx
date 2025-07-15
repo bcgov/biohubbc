@@ -8,7 +8,7 @@ import { ICreateCollectionRequest, IUpdateCollectionRequest } from 'interfaces/u
 import { useContext } from 'react';
 import yup from 'utils/YupSchema';
 import GeneralInformationCollectionForm from './general/GeneralInformationCollectionForm';
-import ParticipantsCollectionForm from './participants/ParticipantsCollectionForm';
+import { CollectionMembersForm } from './members/CollectionMembersForm';
 
 interface ICollectionForm<InitialValuesType extends IUpdateCollectionRequest | ICreateCollectionRequest> {
   initialCollectionData: InitialValuesType;
@@ -19,9 +19,9 @@ interface ICollectionForm<InitialValuesType extends IUpdateCollectionRequest | I
 const validationCollectionYupSchema = yup.object().shape({
   name: yup.string().required('Name is required'),
   description: yup.string().max(3000, 'Description cannot exceed 3000 characters.').nullable(),
-  participants: yup
+  members: yup
     .array(yup.object({ system_user_id: yup.number(), collection_role_name: yup.string() }))
-    .min(1, 'There must be at least one participant')
+    .min(1, 'There must be at least one member')
 });
 
 /**
@@ -62,7 +62,7 @@ const CollectionForm = <InitialValuesType extends IUpdateCollectionRequest | ICr
         <HorizontalSplitFormComponent
           title="Members"
           summary="Invite people to the collection, giving read-only access to Surveys in the collection."
-          component={<ParticipantsCollectionForm roles={codes?.collection_roles ?? []} />}
+          component={<CollectionMembersForm roles={codes?.collection_roles ?? []} />}
         />
 
         <Divider />

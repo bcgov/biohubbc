@@ -37,7 +37,7 @@ export interface IGetSampleSiteRecordExtendedNonSpatial {
   survey_id: number;
   name: string;
   description: string;
-  geometry_type: string;
+  geometry_type: 'Point' | 'LineString' | 'Polygon';
   blocks: IGetSampleBlockDetails[];
   stratums: IGetSampleStratumDetails[];
 }
@@ -46,25 +46,12 @@ export interface IGetSampleSiteGeometryResponse {
   sampleSites: IGetSampleSiteGeometry[];
 }
 
-export interface IFindSampleSiteResponse {
-  sites: {
-    survey_sample_site_id: number;
-    survey_id: number;
-    name: string;
-    description: string | null;
-    geometry_type: string;
-    blocks: IGetSampleBlockDetails[];
-    stratums: IGetSampleStratumDetails[];
-  }[];
-  pagination: ApiPaginationResponseParams;
-}
-
 export interface IFindSampleSiteRecord {
   survey_sample_site_id: number;
   survey_id: number;
   name: string;
   description: string | null;
-  geometry_type: string;
+  geometry_type: 'Point' | 'LineString' | 'Polygon';
   blocks: IGetSampleBlockDetails[];
   stratums: IGetSampleStratumDetails[];
 }

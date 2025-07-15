@@ -69,7 +69,7 @@ export function getSampleSiteBaseQuery(knex: Knex): Knex.QueryBuilder {
  * @param {Knex} knex The Knex instance.
  * @return {*}  {Knex.QueryBuilder} The base query for retrieving survey sample sites
  */
-export function getSamplingSiteBaseQuery(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
+function getSamplingSiteBaseQuery(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
   const knex = getKnex();
 
   queryBuilder

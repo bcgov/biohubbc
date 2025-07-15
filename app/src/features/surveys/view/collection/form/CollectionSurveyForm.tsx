@@ -18,6 +18,10 @@ export const CollectionSurveyFormInitialValues: ICollectionSurveyForm = {
 
 interface ICollectionSurveyFormProps {
   formikFieldName: string;
+  /**
+   * Collections that the survey already belongs to
+   */
+  existingCollectionIds?: number[];
 }
 
 /**
@@ -26,7 +30,7 @@ interface ICollectionSurveyFormProps {
  * @returns {*}
  */
 const CollectionSurveyForm = (props: ICollectionSurveyFormProps) => {
-  const { formikFieldName } = props;
+  const { formikFieldName, existingCollectionIds } = props;
   const { values } = useFormikContext<ICollectionSurveyForm>();
 
   const biohubApi = useBiohubApi();
@@ -49,10 +53,16 @@ const CollectionSurveyForm = (props: ICollectionSurveyFormProps) => {
                 id={formikFieldName}
                 name={formikFieldName}
                 options={
-                  collectionsDataLoader.data?.collections.map((collection) => ({
-                    value: collection.collection_id,
-                    label: collection.name
-                  })) ?? []
+                  collectionsDataLoader.data?.collections
+                    .map((collection) => ({
+                      value: collection.collection_id,
+                      label: collection.name
+                    }))
+                    .filter(
+                      (collection) =>
+                        !existingCollectionIds?.includes(collection.value) &&
+                        !values.collections.some((existing) => existing.collection_id === collection.value)
+                    ) ?? []
                 }
                 onChange={(_, selectedOption) => {
                   if (

@@ -1,7 +1,7 @@
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import GeneralInformationCollectionForm from 'features/collection/edit/general/GeneralInformationCollectionForm';
-import ParticipantsCollectionForm from 'features/collection/edit/participants/ParticipantsCollectionForm';
+import { CollectionMembersForm } from 'features/collection/edit/members/CollectionMembersForm';
 import { useCodesContext } from 'hooks/useContext';
 import { ICollection } from 'interfaces/useCollectionApi.interface';
 
@@ -29,7 +29,7 @@ export const SubcollectionForm = (props: ISubcollectionFormProps) => {
         <Typography color="textSecondary" mt={1} mb={3}>
           All members of <strong>{collection.name}</strong> will inherit access to the subproject
         </Typography>
-        <ParticipantsCollectionForm roles={codes?.collection_roles ?? []} />
+        <CollectionMembersForm roles={codes?.collection_roles ?? []} />
       </Box>
     </>
   );

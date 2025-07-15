@@ -273,11 +273,18 @@ export function createCollection(): RequestHandler {
 
       const systemUserId = connection.systemUserId();
 
+      const systemUser = getSystemUserFromRequest(req);
+
+      const isUserAdmin = userHasValidRole(
+        [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+        systemUser.role_names
+      );
+
       const collectionService = new CollectionService(connection);
 
       const data = req.body as IPostCollectionRequest;
 
-      await collectionService.createCollection(data, systemUserId);
+      await collectionService.createCollection(data, systemUserId, isUserAdmin);
 
       await connection.commit();
 

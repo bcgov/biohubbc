@@ -2,9 +2,6 @@ import { AuthenticatedRouteGuard, SystemRoleRouteGuard } from 'components/securi
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { HabitatFeatureTableContextProvider } from 'contexts/habitatFeatureTableContext';
-import { SurveyAuthStateContextProvider } from 'contexts/surveyAuthStateContext';
-import { SurveyContextProvider } from 'contexts/surveyContext';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import AdminRouter from 'features/admin/AdminRouter';
 import CollectionsRouter from 'features/collection/CollectionRouter';
@@ -91,19 +88,11 @@ const AppRouter: React.FC = () => {
       <RouteWithTitle path="/admin/surveys/:survey_id" title={getTitle('Survey')}>
         <BaseLayout>
           <AuthenticatedRouteGuard>
-            <SurveyAuthStateContextProvider>
-              <CodesContextProvider>
-                <SurveyContextProvider>
-                  <TaxonomyContextProvider>
-                    <DialogContextProvider>
-                      <HabitatFeatureTableContextProvider>
-                        <SurveyRouter />
-                      </HabitatFeatureTableContextProvider>
-                    </DialogContextProvider>
-                  </TaxonomyContextProvider>
-                </SurveyContextProvider>
-              </CodesContextProvider>
-            </SurveyAuthStateContextProvider>
+            <CodesContextProvider>
+              <TaxonomyContextProvider>
+                <SurveyRouter />
+              </TaxonomyContextProvider>
+            </CodesContextProvider>
           </AuthenticatedRouteGuard>
         </BaseLayout>
       </RouteWithTitle>

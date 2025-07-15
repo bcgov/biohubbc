@@ -20,7 +20,7 @@ export interface IGetCollectionHierarchyResponse {
 export interface ICreateCollectionRequest {
   name: string;
   description: string | null;
-  participants: IPostCollectionMember[];
+  members: IPostCollectionMember[];
 }
 
 export interface ICreateCollectionSurveyRequest {
@@ -38,7 +38,7 @@ export interface IUpdateCollectionRequest {
   parent_collection_id: number | null;
   name: string;
   description: string | null;
-  participants: ICollectionMember[];
+  members: ICollectionMember[];
 }
 
 export interface ICollection {
@@ -46,12 +46,13 @@ export interface ICollection {
   parent_collection_id: number;
   name: string;
   description: string | null;
-  participants: ICollectionMember[];
+  subcollections: ICollection[];
+  members: ICollectionMember[];
 }
 
 export interface ICreateCollectionMembersRequest {
   collection_id: number;
-  participants: IPostCollectionMember[];
+  members: IPostCollectionMember[];
 }
 
 export interface ICollectionMemberResponse {

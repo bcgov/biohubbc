@@ -1,12 +1,11 @@
 import { IStaticLayerFeature } from 'components/map/components/StaticLayers';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { SurveyObservationBasic } from 'interfaces/useObservationApi.interface';
 import { Popup } from 'react-leaflet';
-import { getFormattedDate } from 'utils/Utils';
+import { formatDateTime } from 'utils/datetime';
 
 interface ISurveySpatialObservationPointPopupProps {
   feature: IStaticLayerFeature;
@@ -33,7 +32,7 @@ export const SurveySpatialObservationPointPopup = (props: ISurveySpatialObservat
       { label: 'Taxon ID', value: String(observation.itis_tsn) },
       { label: 'Count', value: String(observation.count) },
       {
-        label: 'Coords',
+        label: 'Location',
         value: [observation.latitude, observation.longitude]
           .filter((coord): coord is number => coord !== null)
           .map((coord) => coord.toFixed(6))
@@ -41,10 +40,11 @@ export const SurveySpatialObservationPointPopup = (props: ISurveySpatialObservat
       },
       {
         label: 'Date',
-        value: getFormattedDate(
-          observation.observation_time ? DATE_FORMAT.LongDateTimeFormat : DATE_FORMAT.MediumDateFormat,
-          `${observation.observation_date} ${observation.observation_time}`
-        )
+        value: observation.observation_date ? formatDateTime(observation.observation_date) : null
+      },
+      {
+        label: 'Time',
+        value: observation.observation_time
       }
     ];
   };

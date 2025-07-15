@@ -201,49 +201,50 @@ export class SurveyMemberRepository extends BaseRepository {
     queryBuilder
       .select(
         knex.raw(`
-          su.system_user_id,
-          su.user_identifier,
-          su.user_guid,
-          su.record_end_date,
-          uis.name AS identity_source,
-          array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
-          array_remove(array_agg(sr.name), NULL) AS role_names,
-          su.email,
-          su.display_name,
-          su.given_name,
-          su.family_name,
-          su.agency,
-          pp.survey_member_id,
-          pp.survey_id,
-          pr.survey_role_id,
-          pr.name as survey_role_name
-        `)
+      su.system_user_id,
+      su.user_identifier,
+      su.user_guid,
+      su.record_end_date,
+      uis.name AS identity_source,
+      array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
+      array_remove(array_agg(sr.name), NULL) AS role_names,
+      su.email,
+      su.display_name,
+      su.given_name,
+      su.family_name,
+      su.agency,
+      pp.survey_member_id,
+      pp.survey_id,
+      pr.survey_role_id,
+      pr.name AS survey_role_name
+    `)
       )
-      .from('survey_member as pp')
-      .leftJoin('survey_role as pr', 'pp.survey_role_id', 'pr.survey_role_id')
-      .leftJoin('system_user as su', 'pp.system_user_id', 'su.system_user_id')
-      .leftJoin('system_user_role as sur', 'su.system_user_id', 'sur.system_user_id')
-      .leftJoin('system_role as sr', 'sur.system_role_id', 'sr.system_role_id')
-      .leftJoin('user_identity_source as uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
-      .where('su.record_end_date', null)
+      .from('survey_member AS pp')
+      .leftJoin('survey_role AS pr', 'pp.survey_role_id', 'pr.survey_role_id')
+      .leftJoin('system_user AS su', 'pp.system_user_id', 'su.system_user_id')
+      .leftJoin('system_user_role AS sur', 'su.system_user_id', 'sur.system_user_id')
+      .leftJoin('system_role AS sr', 'sur.system_role_id', 'sr.system_role_id')
+      .leftJoin('user_identity_source AS uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
+      .whereNull('su.record_end_date')
       .where('pp.survey_id', surveyId)
-      .where(knex.raw(`LOWER(su.user_guid) = LOWER('${userGuid}')`))
-      .groupBy('su.system_user_id')
-      .groupBy('su.record_end_date')
-      .groupBy('su.user_identifier')
-      .groupBy('su.user_guid')
-      .groupBy('uis.name')
-      .groupBy('su.email')
-      .groupBy('su.display_name')
-      .groupBy('su.given_name')
-      .groupBy('su.family_name')
-      .groupBy('su.agency')
-      .groupBy('pp.survey_member_id')
-      .groupBy('pp.survey_id')
-      .groupBy('pp.survey_role_id')
-      .groupBy('pp.name')
-      .groupBy('pp.create_date')
-      .orderBy('pp.create_date', 'desc');
+      .whereRaw('LOWER(su.user_guid) = LOWER(?)', [userGuid])
+      .groupBy(
+        'su.system_user_id',
+        'su.user_identifier',
+        'su.user_guid',
+        'su.record_end_date',
+        'uis.name',
+        'su.email',
+        'su.display_name',
+        'su.given_name',
+        'su.family_name',
+        'su.agency',
+        'pp.survey_member_id',
+        'pp.survey_id',
+        'pr.survey_role_id',
+        'pr.name'
+      )
+      .orderBy('pp.survey_member_id', 'desc');
 
     const response = await this.connection.knex(queryBuilder, SurveyMember.merge(SystemUserWithRoles));
 

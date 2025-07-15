@@ -124,6 +124,31 @@ export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Imports a device CSV.
+   *
+   * @param {number} surveyId
+   * @param {File} file
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
+   * @return {*} {Promise<void>}
+   */
+  const importTelemetryDeviceCSV = async (
+    surveyId: number,
+    file: File,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
+  ): Promise<void> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    await axios.post(`/api/survey/${surveyId}/devices/import`, formData, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
+    });
+  };
+
+  /**
    * Get all uploaded telemetry device credential key files.
    * @param {number} surveyId
    * @return {*}  {Promise<TelemetryDeviceKeyFile[]>}
@@ -144,6 +169,7 @@ export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
     deleteDevice,
     deleteDevices,
     uploadTelemetryDeviceCredentialFile,
-    getTelemetryDeviceKeyFiles
+    getTelemetryDeviceKeyFiles,
+    importTelemetryDeviceCSV
   };
 };

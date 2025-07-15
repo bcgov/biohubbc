@@ -3,14 +3,19 @@ import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateCollectionSurveyI18N } from 'constants/i18n';
 import { ISnackbarProps } from 'contexts/dialogContext';
+import { CollectionMembersForm } from 'features/collection/edit/members/CollectionMembersForm';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext } from 'hooks/useContext';
+import { ICollectionMember } from 'interfaces/useCollectionApi.interface';
+import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { useState } from 'react';
 import { pluralize } from 'utils/Utils';
 import yup from 'utils/YupSchema';
-import CollectionMemberForm, { ICollectionMemberData } from './form/CollectionMemberForm';
 
+export interface ICollectionMemberData {
+  members: (ISystemUser & ICollectionMember)[];
+}
 interface ICollectionMemberDialogProps {
   collectionId: number;
   open: boolean;
@@ -64,7 +69,7 @@ const CollectionMemberDialog = (props: ICollectionMemberDialogProps) => {
     try {
       setIsSubmitting(true);
 
-      await biohubApi.collection.addParticipants(
+      await biohubApi.collection.addMembers(
         props.collectionId,
         values.members.map((member) => ({
           system_user_id: member.system_user_id,
@@ -100,7 +105,7 @@ const CollectionMemberDialog = (props: ICollectionMemberDialogProps) => {
       open={props.open}
       dialogLoading={isSubmitting}
       component={{
-        element: <CollectionMemberForm roles={codesContext.codesDataLoader.data?.collection_roles ?? []} />,
+        element: <CollectionMembersForm roles={codesContext.codesDataLoader.data?.collection_roles ?? []} />,
         initialValues: {
           members: []
         },
