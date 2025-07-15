@@ -151,7 +151,15 @@ export const CollectionAndSystemUserSchema: OpenAPIV3.SchemaObject = {
 export const GetCollectionSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: ['collection_id', 'parent_collection_id', 'name', 'description', 'members', 'subcollections'],
+  required: [
+    'collection_id',
+    'parent_collection_id',
+    'name',
+    'description',
+    'members',
+    'subcollections',
+    'subcollection_count'
+  ],
   properties: {
     collection_id: {
       type: 'integer',
@@ -180,6 +188,10 @@ export const GetCollectionSchema: OpenAPIV3.SchemaObject = {
       // type: 'array',
       // description: 'List of child collections',
       // items: {} as OpenAPIV3.SchemaObject // TODO: Add children recursively
+    },
+    subcollection_count: {
+      type: 'number',
+      description: 'The number of immediate subcollections (one generation below) in the collection'
     }
   }
 };

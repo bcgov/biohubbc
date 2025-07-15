@@ -48,6 +48,7 @@ export interface ICollection {
   description: string | null;
   subcollections: ICollection[];
   members: ICollectionMember[];
+  subcollection_count: number;
 }
 
 export interface ICreateCollectionMembersRequest {

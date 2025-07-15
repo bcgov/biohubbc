@@ -36,6 +36,7 @@ export type Collection = {
   parent_collection_id: number | null;
   members: Array<Omit<CollectionMember, 'collection_id'>>;
   subcollections: Collection[];
+  subcollection_count: number;
 };
 
 // Then create the schema with explicit typing
@@ -46,7 +47,8 @@ export const Collection: z.ZodType<Collection> = z.lazy(() =>
     description: z.string(),
     parent_collection_id: z.number().nullable(),
     members: z.array(CollectionMember.omit({ collection_id: true })),
-    subcollections: z.array(Collection)
+    subcollections: z.array(Collection),
+    subcollection_count: z.number()
   })
 );
 
