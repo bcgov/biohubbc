@@ -36,4 +36,31 @@ export async function seed(knex: Knex): Promise<void> {
       create_user: 8
     }
   ]);
+
+  // Get user IDs for Annika and Macgregor
+  const [annikaUser] = await knex('system_user')
+    .select('system_user_id')
+    .where('user_identifier', 'ameijer');
+    
+  const [macgregorUser] = await knex('system_user')
+    .select('system_user_id')
+    .where('user_identifier', 'mauberti');
+
+  // Add collection members
+  await knex('collection_member').insert([
+    {
+      collection_id: collectionId,
+      system_user_id: annikaUser.system_user_id,
+      collection_role_id: 2, // Member role
+      create_date: knex.fn.now(),
+      create_user: 8
+    },
+    {
+      collection_id: collectionId,
+      system_user_id: macgregorUser.system_user_id,
+      collection_role_id: 2, // Member role
+      create_date: knex.fn.now(),
+      create_user: 8
+    }
+  ]);
 }
