@@ -120,19 +120,19 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
     setLinkDialogIsOpen(true);
   };
 
-  const handleDelete = async (linkId: number) => {
+  const handleDeleteLink = async (linkId: number) => {
     try {
-      await biohubApi.collection.deleteCollectionLink(collectionId, linkId);
+      await biohubApi.collection.endCollectionLink(collectionId, linkId);
       collectionLinksDataLoader.refresh(paginationSort);
     } catch (error) {
-      console.error('Error deleting collection link:', error);
+      console.error('Error ending collection link:', error);
     }
   };
 
   // Define the columns for the DataGrid
   const columns: GridColDef<ICollectionLink>[] = [
     {
-      field: 'id',
+      field: 'collection_links_id',
       headerName: 'ID',
       width: 85,
       minWidth: 85,
@@ -143,7 +143,7 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
       ),
       renderCell: (params) => (
         <Typography color={grey[500]} variant="body2">
-          {params.row.id}
+          {params.row.collection_links_id}
         </Typography>
       )
     },
@@ -223,7 +223,7 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
             </IconButton>
           }
           label="Delete"
-          onClick={() => handleDelete(params.row.id)}
+          onClick={() => handleDeleteLink(params.row.collection_links_id)}
         />
       ]
     }
