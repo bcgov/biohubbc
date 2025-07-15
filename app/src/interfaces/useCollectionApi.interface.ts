@@ -84,7 +84,7 @@ export interface IPostCollectionMember {
 }
 
 export interface ICollectionLink {
-  id: number;
+  collection_links_id: number;
   name: string;
   description: string | null;
   url: string;
@@ -101,10 +101,14 @@ export interface ICreateCollectionLinkRequest {
 }
 
 export interface IUpdateCollectionLinkRequest {
-  id: number;
+  collection_links_id: number;
   name: string;
   description?: string;
   url: string;
+}
+
+export interface IEndCollectionLinkRequest {
+  record_end_date: string;
 }
 
 export interface IGetCollectionLinksResponse {
