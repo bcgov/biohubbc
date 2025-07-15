@@ -24,6 +24,10 @@ export interface IPutCollectionLinkRequest {
   url: string;
 }
 
+export interface IEndCollectionLinkRequest {
+  record_end_date: string;
+}
+
 export interface IGetCollectionLinksResponse {
   links: CollectionLink[];
   pagination: ApiPaginationResults;

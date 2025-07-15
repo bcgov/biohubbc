@@ -11,6 +11,7 @@ import {
   ICreateCollectionRequest,
   ICreateCollectionSurveyRequest,
   ICreateSurveyCollectionRequest,
+  IEndCollectionLinkRequest,
   IGetCollectionHierarchyResponse,
   IGetCollectionLinksResponse,
   IGetCollectionsResponse,
@@ -313,20 +314,23 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     collectionId: number,
     link: IUpdateCollectionLinkRequest
   ): Promise<ICollectionLink> => {
-    const { data } = await axios.put(`/api/collection/${collectionId}/links/${link.id}`, link);
+    const { data } = await axios.put(`/api/collection/${collectionId}/links/${link.collection_links_id}`, link);
 
     return data;
   };
 
   /**
-   * Delete a collection link
+   * End a collection link by setting its record_end_date
    *
    * @param {number} collectionId
    * @param {number} linkId
    * @return {*} {Promise<void>}
    */
-  const deleteCollectionLink = async (collectionId: number, linkId: number): Promise<void> => {
-    await axios.delete(`/api/collection/${collectionId}/links/${linkId}`);
+  const endCollectionLink = async (collectionId: number, linkId: number): Promise<void> => {
+    const requestData: IEndCollectionLinkRequest = {
+      record_end_date: new Date().toISOString()
+    };
+    await axios.put(`/api/collection/${collectionId}/links/${linkId}`, requestData);
   };
 
   return {
@@ -347,6 +351,6 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     getCollectionLinks,
     createCollectionLink,
     updateCollectionLink,
-    deleteCollectionLink
+    endCollectionLink
   };
 };

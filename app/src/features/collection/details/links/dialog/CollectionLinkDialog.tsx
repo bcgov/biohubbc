@@ -39,7 +39,7 @@ const CollectionLinkDialog = (props: ICollectionLinkDialogProps) => {
     try {
       if (isEditing && link) {
         const updateData: IUpdateCollectionLinkRequest = {
-          id: link.id,
+          collection_links_id: link.collection_links_id,
           name: formData.name,
           description: formData.description,
           url: formData.url

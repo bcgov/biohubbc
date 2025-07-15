@@ -212,4 +212,45 @@ export class CollectionLinkRepository extends BaseRepository {
       ]);
     }
   }
+
+  /**
+   * End a collection link by setting record_end_date to specified date.
+   *
+   * @param {number} collectionId
+   * @param {number} linkId
+   * @param {string} recordEndDate
+   * @return {*}  {Promise<CollectionLink>}
+   * @memberof CollectionLinkRepository
+   */
+  async endCollectionLink(collectionId: number, linkId: number, recordEndDate: string): Promise<CollectionLink> {
+    const sqlStatement = SQL`
+      UPDATE collection_links 
+      SET 
+        record_end_date = ${recordEndDate}
+      WHERE 
+        id = ${linkId}
+        AND collection_id = ${collectionId}
+        AND record_end_date IS NULL
+      RETURNING
+        id as collection_links_id,
+        name,
+        description,
+        url,
+        collection_id,
+        record_end_date,
+        create_date,
+        create_user;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, CollectionLink);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to end collection link', [
+        'CollectionLinkRepository->endCollectionLink',
+        'rows was null or undefined, expected rows != null'
+      ]);
+    }
+
+    return response.rows[0];
+  }
 }

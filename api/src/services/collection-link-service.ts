@@ -86,4 +86,17 @@ export class CollectionLinkService extends DBService {
   async deleteCollectionLink(collectionId: number, linkId: number): Promise<void> {
     return this.collectionLinkRepository.deleteCollectionLink(collectionId, linkId);
   }
+
+  /**
+   * End a collection link by setting record_end_date.
+   *
+   * @param {number} collectionId
+   * @param {number} linkId
+   * @param {string} recordEndDate
+   * @return {*}  {Promise<CollectionLink>}
+   * @memberof CollectionLinkService
+   */
+  async endCollectionLink(collectionId: number, linkId: number, recordEndDate: string): Promise<CollectionLink> {
+    return this.collectionLinkRepository.endCollectionLink(collectionId, linkId, recordEndDate);
+  }
 }
