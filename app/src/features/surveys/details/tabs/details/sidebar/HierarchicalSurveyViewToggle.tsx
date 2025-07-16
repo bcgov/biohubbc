@@ -1,4 +1,4 @@
-import { mdiCalendarClock, mdiDatabaseSearch, mdiFileOutline, mdiHome } from '@mdi/js';
+import { mdiAccount, mdiCalendarClock, mdiDatabaseSearch, mdiFileOutline, mdiHome } from '@mdi/js';
 import {
   HierarchicalCustomToggleButtonGroup,
   HierarchicalToggleButtonView
@@ -101,6 +101,11 @@ export const HiearchicalSurveyViewToggle = ({
       isHeader: true,
       icon: mdiFileOutline,
       children: transformChecklistToViews({ attachments: checklist.attachments })
+    },
+    {
+      label: 'Permissions',
+      value: SURVEY_ACTIVE_VIEW_VALUE.permissions,
+      icon: mdiAccount
     }
   ];
 
@@ -111,7 +116,6 @@ export const HiearchicalSurveyViewToggle = ({
       onViewChange={setActiveView}
       handleCheckboxClick={handleCheckboxClick}
       orientation="vertical"
-      fixedExpanded
     />
   );
 };

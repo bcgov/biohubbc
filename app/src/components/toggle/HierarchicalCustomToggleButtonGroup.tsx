@@ -8,7 +8,7 @@ import grey from '@mui/material/colors/grey';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { CustomTooltip } from 'components/tooltip/CustomTooltip';
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import appTheme from 'themes/appTheme';
 
 interface ToggleButtonView<ViewValueType> {
@@ -37,7 +37,6 @@ interface HierarchicalCustomToggleButtonGroupProps<ViewValueType extends string>
   onViewChange: (view: ViewValueType) => void;
   handleCheckboxClick?: (view: HierarchicalToggleButtonView<ViewValueType>) => void;
   orientation: 'horizontal' | 'vertical';
-  fixedExpanded?: boolean;
 }
 
 export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string>({
@@ -45,33 +44,9 @@ export const HierarchicalCustomToggleButtonGroup = <ViewValueType extends string
   activeView,
   onViewChange,
   orientation,
-  handleCheckboxClick,
-  fixedExpanded
+  handleCheckboxClick
 }: HierarchicalCustomToggleButtonGroupProps<ViewValueType>) => {
   const [expanded, setExpanded] = useState<Set<ViewValueType>>(new Set());
-
-  const fullyExpandedViews = useMemo(() => {
-    if (!fixedExpanded) {
-      return new Set<ViewValueType>();
-    }
-
-    const collectAll = (items: HierarchicalToggleButtonView<ViewValueType>[], acc: ViewValueType[] = []) => {
-      for (const item of items) {
-        acc.push(item.value);
-        if (item.children?.length) {
-          collectAll(item.children, acc);
-        }
-      }
-      return acc;
-    };
-
-    // If some items are initially expanded, still update the setExpanded after initial mount to trigger the animation
-    return new Set(collectAll(views));
-  }, [fixedExpanded, views]);
-
-  useEffect(() => {
-    setExpanded(fullyExpandedViews);
-  }, [fullyExpandedViews]);
 
   const toggleExpand = (value: ViewValueType) => {
     setExpanded((prev) => {
