@@ -1,5 +1,6 @@
 import React from 'react';
 import { Route, Switch } from 'react-router';
+import { Redirect } from 'react-router-dom';
 import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 
@@ -26,6 +27,7 @@ import { TelemetryRouter } from './telemetry/TelemetryRouter';
 const SurveyRouter: React.FC = () => {
   return (
     <Switch>
+      <Redirect from="/admin/surveys/:survey_id" to="/admin/surveys/:survey_id/details" exact />
       {/* Wrap all routes under the survey_id param */}
       <Route path="/admin/surveys/:survey_id">
         <SurveyAuthStateContextProvider>
@@ -136,6 +138,7 @@ const SurveyRouter: React.FC = () => {
           </SurveyContextProvider>
         </SurveyAuthStateContextProvider>
       </Route>
+      <Redirect from="/admin/surveys/:survey_id/details" to="/admin/surveys" exact />
     </Switch>
   );
 };
