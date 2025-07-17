@@ -101,7 +101,6 @@ export interface ICreateCollectionLinkRequest {
 }
 
 export interface IUpdateCollectionLinkRequest {
-  collection_links_id: number;
   name: string;
   description?: string;
   url: string;

@@ -307,15 +307,16 @@ export const useCollectionApi = (axios: AxiosInstance) => {
    * Update a collection link
    *
    * @param {number} collectionId
+   * @param {number} linkId
    * @param {IUpdateCollectionLinkRequest} link
    * @return {*} {Promise<ICollectionLink>}
    */
   const updateCollectionLink = async (
     collectionId: number,
+    linkId: number,
     link: IUpdateCollectionLinkRequest
   ): Promise<ICollectionLink> => {
-    const { data } = await axios.put(`/api/collection/${collectionId}/links/${link.collection_links_id}`, link);
-
+    const { data } = await axios.put(`/api/collection/${collectionId}/links/${linkId}`, link);
     return data;
   };
 
@@ -350,7 +351,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     deleteCollection,
     getCollectionLinks,
     createCollectionLink,
-    updateCollectionLink,
+    updateCollectionLink, // Now requires linkId as a parameter
     endCollectionLink
   };
 };

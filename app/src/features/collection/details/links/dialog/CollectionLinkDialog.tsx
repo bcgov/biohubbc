@@ -39,12 +39,12 @@ const CollectionLinkDialog = (props: ICollectionLinkDialogProps) => {
     try {
       if (isEditing && link) {
         const updateData: IUpdateCollectionLinkRequest = {
-          collection_links_id: link.collection_links_id,
           name: formData.name,
           description: formData.description,
           url: formData.url
         };
-        await biohubApi.collection.updateCollectionLink(collectionId, updateData);
+        // Add the missing linkId parameter
+        await biohubApi.collection.updateCollectionLink(collectionId, link.collection_links_id, updateData);
       } else {
         const createData: ICreateCollectionLinkRequest = {
           name: formData.name,
