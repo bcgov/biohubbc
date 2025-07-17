@@ -100,10 +100,7 @@ export class CollectionLinkRepository extends BaseRepository {
    * @return {*}  {Promise<CollectionLink>}
    * @memberof CollectionLinkRepository
    */
-  async createCollectionLink(
-    collectionId: number,
-    linkData: IPostCollectionLinkRequest
-  ): Promise<CollectionLink> {
+  async createCollectionLink(collectionId: number, linkData: IPostCollectionLinkRequest): Promise<CollectionLink> {
     const sqlStatement = SQL`
       INSERT INTO collection_links (
         name,
@@ -150,7 +147,11 @@ export class CollectionLinkRepository extends BaseRepository {
    * @return {*}  {Promise<CollectionLink>}
    * @memberof CollectionLinkRepository
    */
-  async updateCollectionLink(collectionId: number, linkId: number, linkData: IPutCollectionLinkRequest): Promise<CollectionLink> {
+  async updateCollectionLink(
+    collectionId: number,
+    linkId: number,
+    linkData: IPutCollectionLinkRequest
+  ): Promise<CollectionLink> {
     const sqlStatement = SQL`
       UPDATE collection_links 
       SET 

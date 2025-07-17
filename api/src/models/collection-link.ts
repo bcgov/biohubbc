@@ -7,9 +7,10 @@ export const CollectionLink = z.object({
   description: z.string().nullable(),
   url: z.string(),
   collection_id: z.number(),
-  record_end_date: z.string().nullable().optional()
+  record_end_date: z.string().nullable().optional(),
+  create_date: z.string(),
+  create_user: z.number()
 });
-
 export type CollectionLink = z.infer<typeof CollectionLink>;
 
 export interface IPostCollectionLinkRequest {
