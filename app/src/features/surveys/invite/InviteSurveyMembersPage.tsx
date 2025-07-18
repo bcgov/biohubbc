@@ -1,6 +1,7 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
+import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import PageHeader from 'components/layout/PageHeader';
 import { Formik, FormikProps } from 'formik';
@@ -41,16 +42,17 @@ export const InviteSurveyMembersPage: React.FC = () => {
     <>
       <PageHeader title="Manage Users" />
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Formik
-          innerRef={formikRef}
-          initialValues={initialValues}
-          validateOnBlur={false}
-          validateOnChange={false}
-          validationSchema={manageUsersYupSchema}
-          enableReinitialize={true}
-          onSubmit={handleSubmit}>
-          <InviteSurveyMembersForm />
-
+        <Paper sx={{ p: 5 }}>
+          <Formik
+            innerRef={formikRef}
+            initialValues={initialValues}
+            validateOnBlur={false}
+            validateOnChange={false}
+            validationSchema={manageUsersYupSchema}
+            enableReinitialize={true}
+            onSubmit={handleSubmit}>
+            <InviteSurveyMembersForm />
+          </Formik>
           <Stack mt={4} flexDirection="row" justifyContent="flex-end" gap={1}>
             <LoadingButton
               loading={isSaving}
@@ -69,7 +71,7 @@ export const InviteSurveyMembersPage: React.FC = () => {
               Cancel
             </Button>
           </Stack>
-        </Formik>
+        </Paper>
       </Container>
     </>
   );
