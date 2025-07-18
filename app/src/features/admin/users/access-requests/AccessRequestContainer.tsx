@@ -1,4 +1,4 @@
-import { mdiCancel, mdiCheck, mdiExclamationThick } from '@mdi/js';
+import { mdiCancel, mdiCheck, mdiEmailPlusOutline, mdiExclamationThick } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
@@ -17,6 +17,7 @@ interface IAccessRequestContainerProps {
 }
 
 enum AccessRequestViewEnum {
+  INVITED = 'INVITED',
   ACTIONED = 'ACTIONED',
   PENDING = 'PENDING',
   REJECTED = 'REJECTED'
@@ -31,11 +32,13 @@ const AccessRequestContainer = (props: IAccessRequestContainerProps) => {
 
   const [activeView, setActiveView] = useState<AccessRequestViewEnum>(AccessRequestViewEnum.PENDING);
 
+  const invitedRequests = accessRequests.filter((request) => request.status_name === 'Invited');
   const pendingRequests = accessRequests.filter((request) => request.status_name === 'Pending');
   const actionedRequests = accessRequests.filter((request) => request.status_name === 'Actioned');
   const rejectedRequests = accessRequests.filter((request) => request.status_name === 'Rejected');
 
   const views = [
+    { value: AccessRequestViewEnum.INVITED, label: `Invited (${invitedRequests.length})`, icon: mdiEmailPlusOutline },
     { value: AccessRequestViewEnum.PENDING, label: `Pending (${pendingRequests.length})`, icon: mdiExclamationThick },
     { value: AccessRequestViewEnum.ACTIONED, label: `Approved (${actionedRequests.length})`, icon: mdiCheck },
     { value: AccessRequestViewEnum.REJECTED, label: `Rejected (${rejectedRequests.length})`, icon: mdiCancel }
@@ -61,6 +64,9 @@ const AccessRequestContainer = (props: IAccessRequestContainerProps) => {
       </Box>
       <Divider />
       <Box>
+        {activeView === AccessRequestViewEnum.INVITED && (
+          <AccessRequestPendingList accessRequests={invitedRequests} refresh={refresh} />
+        )}
         {activeView === AccessRequestViewEnum.PENDING && (
           <AccessRequestPendingList accessRequests={pendingRequests} refresh={refresh} />
         )}
