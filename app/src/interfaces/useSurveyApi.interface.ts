@@ -97,6 +97,10 @@ export interface IPostSurveyMember extends ISystemUser {
   system_user_id: number;
   survey_role_name: SURVEY_ROLE;
 }
+export interface IPostSurveyMemberRequest {
+  system_user_id: number;
+  survey_role_name: SURVEY_ROLE;
+}
 export interface ISurveyMember extends ISystemUser {
   survey_member_id: number;
   survey_role_id: number;
