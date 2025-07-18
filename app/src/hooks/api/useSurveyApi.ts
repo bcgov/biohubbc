@@ -169,7 +169,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<void>}
    */
   const addBulkSurveysMembers = async (values: IManageUsersFormValues): Promise<void> => {
-    const { data } = await axios.post(`/api/survey/members`, { values });
+    const { data } = await axios.post(`/api/survey`, { values });
 
     return data;
   };
