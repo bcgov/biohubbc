@@ -5,7 +5,7 @@ import { getDBConnection } from '../../database/db';
 import { IPostSurveyMember } from '../../models/survey-create';
 import { ISurveyAdvancedFilters } from '../../models/survey-view';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
-import { getSurveyBasicFieldsSchema } from '../../openapi/schemas/survey';
+import { CreateSurveyMemberSchema, getSurveyBasicFieldsSchema } from '../../openapi/schemas/survey';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
 import { SurveyMemberService } from '../../services/survey-member-service';
 import { SurveyService } from '../../services/survey-service';
@@ -244,6 +244,84 @@ function parseQueryParams(req: Request<unknown, unknown, unknown, ISurveyAdvance
     survey_roles: req.query.survey_roles ?? undefined
   };
 }
+
+export const POST: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      or: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.PROJECT_CREATOR],
+          discriminator: 'SystemRole'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  addMembersToSurveys()
+];
+
+POST.apiDoc = {
+  description: 'Adds multiple members to a survey',
+  tags: ['surveys'],
+  security: [
+    {
+      Bearer: []
+    }
+  ],
+  parameters: [
+    {
+      in: 'path',
+      name: 'surveyIds',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    ...paginationRequestQueryParamSchema
+  ],
+  requestBody: {
+    description: 'Survey member create request object.',
+    required: true,
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          additionalProperties: false,
+          required: ['data', 'surveyIds'],
+          properties: { members: { type: 'array', minItems: 1, items: CreateSurveyMemberSchema } }
+        }
+      }
+    }
+  },
+  responses: {
+    200: {
+      description: 'Survey response object.'
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/403'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};
 
 /**
  * Add members to any number of surveys.
