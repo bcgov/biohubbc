@@ -1,7 +1,7 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { ISurveyCritter } from 'contexts/animalPageContext';
-import { IManageUsersFormValues } from 'features/summary/list-data/survey/manage/ManageUsersForm';
 import { ISurveyAdvancedFilters } from 'features/summary/list-data/survey/SurveysListFilterForm';
+import { IManageUsersFormValues } from 'features/surveys/invite/form/InviteSurveyMembersForm';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import { SurveyExportConfig } from 'features/surveys/view/survey-export/SurveyExportForm';
 import { IGetCollectionsResponse } from 'interfaces/useCollectionApi.interface';

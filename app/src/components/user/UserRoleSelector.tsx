@@ -10,13 +10,13 @@ import Typography from '@mui/material/Typography';
 import { SURVEY_ROLE_ICONS } from 'constants/roles';
 import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
 import { ICollectionMember } from 'interfaces/useCollectionApi.interface';
-import { IGetSurveyParticipant, ISurveyMember } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyParticipant, IPostSurveyMember, ISurveyMember } from 'interfaces/useSurveyApi.interface';
 import { ISystemUser } from 'interfaces/useUserApi.interface';
 import UserCard from './UserCard';
 
 interface IUserRoleSelectorProps {
   index: number;
-  user: ISystemUser | IGetSurveyParticipant | ICollectionMember | ISurveyMember;
+  user: ISystemUser | IGetSurveyParticipant | ICollectionMember | ISurveyMember | IPostSurveyMember;
   selectedRole: string;
   roles: ICodeWithDescription[];
   error: JSX.Element | undefined;

@@ -11,10 +11,10 @@ import CollectionsRouter from 'features/collection/CollectionRouter';
 import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
 import StandardsPage from 'features/standards/StandardsPage';
-import ManageUsersForm from 'features/summary/list-data/survey/manage/ManageUsersForm';
 import SummaryRouter from 'features/summary/SummaryRouter';
 import { SupportPage } from 'features/support/SupportPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
+import { InviteSurveyMembersPage } from 'features/surveys/invite/InviteSurveyMembersPage';
 import SurveyRouter from 'features/surveys/SurveyRouter';
 import BaseLayout from 'layouts/BaseLayout';
 import AccessDenied from 'pages/403/AccessDenied';
@@ -80,7 +80,7 @@ const AppRouter: React.FC = () => {
         <BaseLayout>
           <AuthenticatedRouteGuard>
             <CodesContextProvider>
-              <ManageUsersForm formikRef={React.createRef()} />
+              <InviteSurveyMembersPage />
             </CodesContextProvider>
           </AuthenticatedRouteGuard>
         </BaseLayout>
