@@ -23,7 +23,7 @@ const manageUsersYupSchema = yup.object().shape({
 });
 
 /**
- * Page for bulk adding emmbers to surveys
+ * Page for bulk adding members to surveys
  *
  * @return {*}
  */
