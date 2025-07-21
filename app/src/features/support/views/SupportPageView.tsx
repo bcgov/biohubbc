@@ -3,6 +3,7 @@ import {
   mdiAutoFix,
   mdiCheckDecagram,
   mdiDatabaseCog,
+  mdiEmailFast,
   mdiEye,
   mdiFileOutline,
   mdiFolder,
@@ -13,6 +14,7 @@ import {
   mdiPineTree,
   mdiWifiMarker
 } from '@mdi/js';
+import { SupportContact } from './content/contact/SupportContact';
 import { SupportOverview } from './content/overview/SupportOverview';
 import { SupportProjects } from './content/projects/SupportProjects';
 import { SupportAnimals } from './content/projects/surveys/data/animals/SupportAnimals';
@@ -31,6 +33,7 @@ import { SupportStandards } from './content/standards/SupportStandards';
 export enum SupportPageView {
   overview = 'overview',
   standards = 'standards',
+  contact = 'contact',
   animals = 'animals',
   telemetry = 'telemetry',
   observations = 'observations',
@@ -150,6 +153,13 @@ export const SupportPageViews: ISupportPageView[] = [
     icon: mdiCheckDecagram,
     order: 13,
     children: []
+  },
+  {
+    label: 'Contact',
+    value: SupportPageView.contact,
+    icon: mdiEmailFast,
+    order: 14,
+    children: []
   }
 ];
 
@@ -162,6 +172,7 @@ export const SupportPageViews: ISupportPageView[] = [
 export const SupportPageViewMap: Record<SupportPageView, JSX.Element> = {
   [SupportPageView.overview]: <SupportOverview />,
   [SupportPageView.projects]: <SupportProjects />,
+  [SupportPageView.contact]: <SupportContact />,
   [SupportPageView.team]: <SupportTeam />,
   [SupportPageView.surveys]: <SupportSurveys />,
   [SupportPageView.sampling]: <SupportSampling />,
