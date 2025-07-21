@@ -195,7 +195,8 @@ PUT.apiDoc = {
             'start_date',
             'start_time',
             'end_date',
-            'end_time'
+            'end_time',
+            'comment'
           ],
           properties: {
             survey_sample_site_id: {
@@ -226,6 +227,11 @@ PUT.apiDoc = {
             end_time: {
               type: 'string',
               description: 'End time of the period',
+              nullable: true
+            },
+            comment: {
+              type: 'string',
+              description: 'Sample period comment',
               nullable: true
             }
           }

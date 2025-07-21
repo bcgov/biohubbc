@@ -41,6 +41,7 @@ export type GetSamplingPeriod = {
       start_time: string | null;
       end_date: string | null;
       end_time: string | null;
+      comment: string | null;
       survey_sample_site: {
         survey_sample_site_id: number;
         name: string;
@@ -60,6 +61,7 @@ export type GetSamplingPeriod = {
       start_time: string | null;
       end_date: string | null;
       end_time: string | null;
+      comment: string | null;
       survey_sample_site: {
         survey_sample_site_id: number;
         name: string;
@@ -79,6 +81,7 @@ export type GetSamplingPeriod = {
       start_time: string | null;
       end_date: string;
       end_time: string | null;
+      comment: string | null;
       survey_sample_site: {
         survey_sample_site_id: number;
         name: string;
@@ -112,4 +115,5 @@ export type UpdateSamplingPeriod = {
   start_time: string | null;
   end_date: string;
   end_time: string | null;
+  comment: string | null;
 };

@@ -15,7 +15,7 @@ import { BaseRepository } from './base-repository';
  */
 export type InsertSamplePeriodObject = Pick<
   SurveySamplePeriodRecord,
-  'survey_sample_site_id' | 'method_technique_id' | 'start_date' | 'end_date' | 'start_time' | 'end_time'
+  'survey_sample_site_id' | 'method_technique_id' | 'start_date' | 'end_date' | 'start_time' | 'end_time' | 'comment'
 >;
 
 /**
@@ -184,6 +184,7 @@ export class SamplePeriodRepository extends BaseRepository {
         survey_sample_period.end_date,
         survey_sample_period.start_time,
         survey_sample_period.end_time,
+        survey_sample_period.comment,
         CASE 
           WHEN 
             survey_sample_period.survey_sample_site_id IS NULL 
@@ -253,6 +254,7 @@ export class SamplePeriodRepository extends BaseRepository {
         end_date: samplePeriod.end_date,
         start_time: samplePeriod.start_time,
         end_time: samplePeriod.end_time
+        comment: samplePeriod.comment
       })
       .from('survey_sample_period');
 
@@ -318,6 +320,7 @@ export class SamplePeriodRepository extends BaseRepository {
         end_date: samplePeriod.end_date,
         start_time: samplePeriod.start_time,
         end_time: samplePeriod.end_time
+        comment: samplePeriod.comment
       })
       .into('survey_sample_period')
       .whereExists(
@@ -369,6 +372,7 @@ export class SamplePeriodRepository extends BaseRepository {
         'survey_sample_period.start_time',
         'survey_sample_period.end_date',
         'survey_sample_period.end_time',
+        'survey_sample_period.comment',
         knex.raw(`
           CASE 
             WHEN 
