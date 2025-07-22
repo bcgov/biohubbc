@@ -40,7 +40,7 @@ export const InviteSurveyMembersMemberForm = () => {
 
     const newUserObject: IPostSurveyMember = {
       system_user_id: user.system_user_id,
-      survey_role_name: SURVEY_ROLE.EDITOR,
+      survey_role_name: SURVEY_ROLE.VIEWER,
       display_name: user.display_name,
       email: user.email,
       agency: user.agency,

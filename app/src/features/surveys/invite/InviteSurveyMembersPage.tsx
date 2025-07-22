@@ -4,6 +4,7 @@ import Container from '@mui/material/Container';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import PageHeader from 'components/layout/PageHeader';
+import { SURVEY_ROLE } from 'constants/roles';
 import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useRef, useState } from 'react';
@@ -15,6 +16,16 @@ const initialValues: IManageUsersFormValues = {
   selectedSurveys: [],
   selectedMembers: []
 };
+
+export interface ITrimmedSurveyMember {
+  survey_role_name: SURVEY_ROLE;
+  system_user_id: number;
+}
+
+export interface ITrimmedPayload {
+  selectedSurveys: number[];
+  selectedMembers: ITrimmedSurveyMember[];
+}
 
 const manageUsersYupSchema = yup.object().shape({
   selectedSurveys: yup.array(yup.number()).min(1, 'You must select at least one survey.'),
@@ -34,9 +45,18 @@ export const InviteSurveyMembersPage: React.FC = () => {
   const formikRef = useRef<FormikProps<IManageUsersFormValues>>(null);
   const [isSaving] = useState(false);
   const handleSubmit = async (values: IManageUsersFormValues) => {
-    await biohubApi.survey.addBulkSurveysMembers(values);
+    const trimMembers: ITrimmedSurveyMember[] = values.selectedMembers.map((member) => ({
+      survey_role_name: member.survey_role_name,
+      system_user_id: member.system_user_id
+    }));
+
+    const payload: ITrimmedPayload = {
+      selectedSurveys: values.selectedSurveys,
+      selectedMembers: trimMembers
+    };
+
+    await biohubApi.survey.addBulkSurveysMembers(payload);
   };
-  //
 
   return (
     <>

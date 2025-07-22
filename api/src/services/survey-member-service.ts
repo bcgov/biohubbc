@@ -97,7 +97,7 @@ export class SurveyMemberService extends DBService {
   /**
    * Adds multiple survey participants to any number of surveys (bulk permissions).
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {IInsertSurveyMember[]} members
    * @return {*}  {Promise<void[]>}
    * @memberof SurveyMemberService

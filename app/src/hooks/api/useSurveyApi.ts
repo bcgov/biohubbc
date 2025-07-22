@@ -1,7 +1,7 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { ISurveyCritter } from 'contexts/animalPageContext';
 import { ISurveyAdvancedFilters } from 'features/summary/list-data/survey/SurveysListFilterForm';
-import { IManageUsersFormValues } from 'features/surveys/invite/form/InviteSurveyMembersForm';
+import { ITrimmedPayload } from 'features/surveys/invite/InviteSurveyMembersPage';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import { SurveyExportConfig } from 'features/surveys/view/survey-export/SurveyExportForm';
 import { IGetCollectionsResponse } from 'interfaces/useCollectionApi.interface';
@@ -168,9 +168,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {IManageUsersFormValues} values
    * @return {*}  {Promise<void>}
    */
-  const addBulkSurveysMembers = async (values: IManageUsersFormValues): Promise<void> => {
-    const { data } = await axios.post(`/api/survey`, { values });
-
+  const addBulkSurveysMembers = async (values: ITrimmedPayload): Promise<void> => {
+    const { data } = await axios.post(`/api/survey/members`, values);
     return data;
   };
 

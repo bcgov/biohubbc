@@ -2,12 +2,10 @@ import { Request, RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { IPostSurveyMember } from '../../models/survey-create';
 import { ISurveyAdvancedFilters } from '../../models/survey-view';
 import { paginationRequestQueryParamSchema, paginationResponseSchema } from '../../openapi/schemas/pagination';
-import { CreateSurveyMemberSchema, getSurveyBasicFieldsSchema } from '../../openapi/schemas/survey';
+import { getSurveyBasicFieldsSchema } from '../../openapi/schemas/survey';
 import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
-import { SurveyMemberService } from '../../services/survey-member-service';
 import { SurveyService } from '../../services/survey-service';
 import { getLogger } from '../../utils/logger';
 import {
@@ -242,118 +240,5 @@ function parseQueryParams(req: Request<unknown, unknown, unknown, ISurveyAdvance
     survey_name: req.query.survey_name ?? undefined,
     system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined,
     survey_roles: req.query.survey_roles ?? undefined
-  };
-}
-
-export const POST: Operation = [
-  authorizeRequestHandler((req) => {
-    return {
-      or: [
-        {
-          validSystemRoles: [SYSTEM_ROLE.PROJECT_CREATOR],
-          discriminator: 'SystemRole'
-        },
-        {
-          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
-          discriminator: 'SystemRole'
-        },
-        {
-          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
-          discriminator: 'SystemRole'
-        }
-      ]
-    };
-  }),
-  addMembersToSurveys()
-];
-
-POST.apiDoc = {
-  description: 'Adds multiple members to a survey',
-  tags: ['surveys'],
-  security: [
-    {
-      Bearer: []
-    }
-  ],
-  parameters: [
-    {
-      in: 'path',
-      name: 'surveyIds',
-      schema: {
-        type: 'integer',
-        minimum: 1
-      },
-      required: true
-    },
-    ...paginationRequestQueryParamSchema
-  ],
-  requestBody: {
-    description: 'Survey member create request object.',
-    required: true,
-    content: {
-      'application/json': {
-        schema: {
-          type: 'object',
-          additionalProperties: false,
-          required: ['data', 'surveyIds'],
-          properties: { members: { type: 'array', minItems: 1, items: CreateSurveyMemberSchema } }
-        }
-      }
-    }
-  },
-  responses: {
-    200: {
-      description: 'Survey response object.'
-    },
-    400: {
-      $ref: '#/components/responses/400'
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    403: {
-      $ref: '#/components/responses/403'
-    },
-    500: {
-      $ref: '#/components/responses/500'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
-};
-
-/**
- * Add members to any number of surveys.
- *
- * @returns {RequestHandler}
- */
-export function addMembersToSurveys(): RequestHandler {
-  return async (req, res) => {
-    defaultLog.debug({ label: 'addMembersToSurveys' });
-
-    const connection = getDBConnection(req.keycloak_token);
-
-    try {
-      await connection.open();
-
-      const surveyIds = req.body.surveyIds;
-
-      const surveyMemberService = new SurveyMemberService(connection);
-
-      const data = req.body.members as IPostSurveyMember[];
-
-      await surveyMemberService.insertMemberstoSurveys(surveyIds, data);
-
-      await connection.commit();
-
-      return res.status(200).json();
-    } catch (error) {
-      defaultLog.error({ label: 'addMembersToSurveys', message: 'error', error });
-      await connection.rollback();
-      throw error;
-    } finally {
-      connection.release();
-    }
   };
 }
