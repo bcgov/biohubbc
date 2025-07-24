@@ -1,7 +1,6 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import { ISurveyCritter } from 'contexts/animalPageContext';
 import { ISurveyAdvancedFilters } from 'features/summary/list-data/survey/SurveysListFilterForm';
-import { ITrimmedPayload } from 'features/surveys/invite/InviteSurveyMembersPage';
 import { ICreateCritter } from 'features/surveys/view/survey-animals/animal';
 import { SurveyExportConfig } from 'features/surveys/view/survey-export/SurveyExportForm';
 import { IGetCollectionsResponse } from 'interfaces/useCollectionApi.interface';
@@ -159,17 +158,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
   ): Promise<ISurveyMemberResponse> => {
     const { data } = await axios.post(`/api/survey/${surveyId}/members`, { members });
 
-    return data;
-  };
-
-  /**
-   * Add users to multiple surveys
-   *
-   * @param {IManageUsersFormValues} values
-   * @return {*}  {Promise<void>}
-   */
-  const addBulkSurveysMembers = async (values: ITrimmedPayload): Promise<void> => {
-    const { data } = await axios.post(`/api/survey/members`, values);
     return data;
   };
 
@@ -532,7 +520,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyForUpdate,
     getSurveyMembers,
     addSurveyMembers,
-    addBulkSurveysMembers,
     findSurveys,
     updateSurvey,
     uploadSurveyAttachments,

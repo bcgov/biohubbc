@@ -55,7 +55,8 @@ export const InviteSurveyMembersPage: React.FC = () => {
       selectedMembers: trimMembers
     };
 
-    await biohubApi.survey.addBulkSurveysMembers(payload);
+    await biohubApi.surveyMembers.addBulkSurveysMembers(payload);
+    history.push('/admin/summary');
   };
 
   return (

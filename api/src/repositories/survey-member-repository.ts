@@ -507,7 +507,7 @@ export class SurveyMemberRepository extends BaseRepository {
 
     const rowsSql = members.map(
       (m) =>
-        SQL`SELECT ${m.survey_id} AS survey_id, ${m.system_user_id} AS system_user_id, ${m.survey_role_name} AS survey_role_name`
+        SQL`SELECT ${Number(m.survey_id)}::int AS survey_id, ${Number(m.system_user_id)}::int AS system_user_id, ${m.survey_role_name} AS survey_role_name`
     );
 
     let sqlStatement = SQL`
