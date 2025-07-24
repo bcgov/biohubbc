@@ -136,7 +136,7 @@ export const EditSamplePeriodPage = () => {
         start_date: samplePeriod.start_date as string,
         start_time: samplePeriod?.start_time || null,
         end_date: samplePeriod.end_date as string,
-        end_time: samplePeriod?.end_time || null
+        end_time: samplePeriod?.end_time || null,
         comment: samplePeriod.comment || null
       };
 

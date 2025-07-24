@@ -112,7 +112,8 @@ export const CreateSamplePeriodPage = () => {
           start_date: period.start_date as string,
           start_time: period.start_time || null,
           end_date: period.end_date as string,
-          end_time: period.end_time || null
+          end_time: period.end_time || null,
+          comment: period.comment || null
         });
       }
 

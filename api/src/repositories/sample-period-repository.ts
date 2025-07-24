@@ -253,7 +253,7 @@ export class SamplePeriodRepository extends BaseRepository {
         start_date: samplePeriod.start_date,
         end_date: samplePeriod.end_date,
         start_time: samplePeriod.start_time,
-        end_time: samplePeriod.end_time
+        end_time: samplePeriod.end_time,
         comment: samplePeriod.comment
       })
       .from('survey_sample_period');
@@ -319,7 +319,7 @@ export class SamplePeriodRepository extends BaseRepository {
         start_date: samplePeriod.start_date,
         end_date: samplePeriod.end_date,
         start_time: samplePeriod.start_time,
-        end_time: samplePeriod.end_time
+        end_time: samplePeriod.end_time,
         comment: samplePeriod.comment
       })
       .into('survey_sample_period')
