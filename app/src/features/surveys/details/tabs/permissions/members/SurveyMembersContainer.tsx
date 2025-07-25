@@ -1,5 +1,7 @@
-import { mdiArrowTopRight } from '@mdi/js';
+import { mdiArrowTopRight, mdiEmailPlus } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
@@ -131,12 +133,13 @@ const SurveyMembersContainer = () => {
               setParticipantDialogIsOpen(true);
             }}
           />
-          <CreateButton
-            label="Invite via Email"
+          <Button
+            variant="outlined"
             onClick={() => {
               setParticipantEmailDialogIsOpen(true);
-            }}
-          />
+            }}>
+            <Icon path={mdiEmailPlus} size={1} />
+          </Button>
           <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEYS} />
         </Stack>
       </Toolbar>
