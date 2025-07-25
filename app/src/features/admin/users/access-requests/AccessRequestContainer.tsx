@@ -1,7 +1,5 @@
 import { mdiCancel, mdiCheck, mdiEmailPlusOutline, mdiExclamationThick } from '@mdi/js';
-import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import Paper from '@mui/material/Paper';
 import Toolbar from '@mui/material/Toolbar';
@@ -53,13 +51,6 @@ const AccessRequestContainer = (props: IAccessRequestContainerProps) => {
         <Typography variant="h4" component="h2">
           Access Requests
         </Typography>
-        <Button
-          color="primary"
-          variant="contained"
-          startIcon={<Icon path={mdiEmailPlusOutline} size={1} />}
-          onClick={() => {}}>
-          Invite
-        </Button>
       </Toolbar>
       <Divider />
       <Box p={2} display="flex" justifyContent="space-between">
