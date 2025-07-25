@@ -20,7 +20,7 @@ import yup from 'utils/YupSchema';
 export const SurveyMembersEmailYupSchema = yup.object().shape({
   members: yup.array().of(
     yup.object().shape({
-      email: yup.string().email('Must be a valid email address').required('A valid email address is required'),
+      email: yup.string().trim().email('Must be a valid email address').required('A valid email address is required'),
       survey_role_name: yup.string().required('Select a survey role for this team member')
     })
   )
