@@ -3,14 +3,16 @@ import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CreateCollectionSurveyI18N } from 'constants/i18n';
 import { ISnackbarProps } from 'contexts/dialogContext';
-import { SurveyMembersEmailsForm } from 'features/surveys/components/member/SurveyMembersEmailsForm';
+import {
+  SurveyMembersEmailsForm,
+  SurveyMembersEmailYupSchema,
+  SurveyMembersFormInitialValues
+} from 'features/surveys/components/member/SurveyMembersEmailsForm';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext } from 'hooks/useContext';
-import { ISurveyMemberEmailForm } from 'interfaces/useSurveyApi.interface';
 import { useState } from 'react';
 import { pluralize } from 'utils/Utils';
-import yup from 'utils/YupSchema';
 
 interface ISurveyMemberEmailDialogProps {
   surveyId: number;
@@ -35,17 +37,6 @@ const SurveyMemberEmailDialog = (props: ISurveyMemberEmailDialogProps) => {
 
   const biohubApi = useBiohubApi();
 
-  const CollectionSurveyYupSchema = yup.object().shape({
-    members: yup
-      .array(
-        yup.object({
-          system_user_id: yup.number().required('You must supply an email address'),
-          survey_role_name: yup.string().required('You must select a role')
-        })
-      )
-      .min(1, 'You must supply at least one email address')
-  });
-
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
   };
@@ -61,17 +52,12 @@ const SurveyMemberEmailDialog = (props: ISurveyMemberEmailDialogProps) => {
     });
   };
 
-  const handleSubmitCollectionService = async (values: ISurveyMemberEmailForm) => {
+  const handleSubmitCollectionService = async (values: any) => {
     try {
       setIsSubmitting(true);
 
-      await biohubApi.survey.addSurveyMembers(
-        props.surveyId,
-        values.members.map((member) => ({
-          system_user_id: member.system_user_id,
-          survey_role_name: member.survey_role_name
-        }))
-      );
+      //TECH DEBT: UPDATE API ENDPOINT
+      console.log('Email members to invite:', values.members);
 
       props.onSubmit();
 
@@ -79,7 +65,7 @@ const SurveyMemberEmailDialog = (props: ISurveyMemberEmailDialogProps) => {
         snackbarMessage: (
           <>
             <Typography variant="body2" component="span">
-              Added {values.members.length} {pluralize(values.members.length, 'user')} to survey
+              Would invite {values.members.length} {pluralize(values.members.length, 'user')} to survey
             </Typography>
           </>
         ),
@@ -102,10 +88,8 @@ const SurveyMemberEmailDialog = (props: ISurveyMemberEmailDialogProps) => {
       dialogLoading={isSubmitting}
       component={{
         element: <SurveyMembersEmailsForm roles={codesContext.codesDataLoader.data?.survey_roles ?? []} />,
-        initialValues: {
-          members: []
-        },
-        validationSchema: CollectionSurveyYupSchema
+        initialValues: SurveyMembersFormInitialValues,
+        validationSchema: SurveyMembersEmailYupSchema
       }}
       dialogSaveButtonLabel="Add"
       onCancel={() => props.onClose && props.onClose()}
