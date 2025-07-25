@@ -71,6 +71,7 @@ const NRM_REGION_COLOUR_MAP = {
  *
  */
 const ACCESS_REQUEST_STATUS_COLOUR_MAP = {
+  Invited: { colour: blueGrey },
   Pending: { colour: purple },
   Actioned: { colour: green },
   Rejected: { colour: red }

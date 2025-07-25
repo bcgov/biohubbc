@@ -3,6 +3,7 @@ export enum AdministrativeActivityType {
 }
 
 export enum AdministrativeActivityStatusType {
+  INVITED = 'Invited',
   PENDING = 'Pending',
   ACTIONED = 'Actioned',
   REJECTED = 'Rejected'
