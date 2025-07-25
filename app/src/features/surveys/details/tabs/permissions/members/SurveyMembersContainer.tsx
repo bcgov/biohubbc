@@ -26,6 +26,7 @@ import { useEffect, useState } from 'react';
 import { StringValues } from 'types/misc';
 import { getCodesName } from 'utils/Utils';
 import SurveyMemberDialog from './dialog/SurveyMembersDialog';
+import SurveyMembersEmailDialog from './dialog/SurveyMembersEmailDialog';
 
 type SurveyDataTableURLParams = {
   // filter
@@ -46,6 +47,7 @@ const SurveyMembersContainer = () => {
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<SurveyDataTableURLParams>>();
   const [participantDialogIsOpen, setParticipantDialogIsOpen] = useState(false);
+  const [participantEmailDialogIsOpen, setParticipantEmailDialogIsOpen] = useState(false);
 
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ISurveyMembersAdvancedFilters>({
     keyword: searchParams.get('sm_keyword') ?? undefined,
@@ -129,6 +131,12 @@ const SurveyMembersContainer = () => {
               setParticipantDialogIsOpen(true);
             }}
           />
+          <CreateButton
+            label="Invite via Email"
+            onClick={() => {
+              setParticipantEmailDialogIsOpen(true);
+            }}
+          />
           <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEYS} />
         </Stack>
       </Toolbar>
@@ -183,6 +191,17 @@ const SurveyMembersContainer = () => {
           setParticipantDialogIsOpen(false);
         }}
         open={participantDialogIsOpen}
+      />
+      <SurveyMembersEmailDialog
+        surveyId={surveyContext.surveyId}
+        onSubmit={() => {
+          surveyMembersDataLoader.refresh(advancedFiltersModel);
+          setParticipantEmailDialogIsOpen(false);
+        }}
+        onClose={() => {
+          setParticipantEmailDialogIsOpen(false);
+        }}
+        open={participantEmailDialogIsOpen}
       />
     </>
   );
