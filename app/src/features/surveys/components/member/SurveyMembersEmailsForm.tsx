@@ -11,16 +11,16 @@ import { ISystemUser } from 'interfaces/useUserApi.interface';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
 
-export const SurveyMembersYupSchema = yup.object().shape({
+export const SurveyMembersEmailYupSchema = yup.object().shape({
   members: yup.array().of(
     yup.object().shape({
-      system_user_id: yup.string().required('Username is required'),
+      email: yup.string().required('A valid email address is required'), //add functionality to validate email format
       survey_role_name: yup.string().required('Select a survey role for this team member')
     })
   )
 });
 
-interface ISurveyMembersFormProps {
+interface ISurveyMembersEmailFormProps {
   roles: ICodeWithDescription[];
 }
 
@@ -31,9 +31,9 @@ export const SurveyMembersFormInitialValues = {
 /**
  * Form for adding members to a survey, granting them permissions to view the survey
  *
- * @param {ISurveyMembersFormProps} props
+ * @param {ISurveyMembersEmailFormProps} props
  */
-export const SurveyMembersEmailsForm = (props: ISurveyMembersFormProps) => {
+export const SurveyMembersEmailsForm = (props: ISurveyMembersEmailFormProps) => {
   const { handleSubmit, values, setFieldValue, errors, setErrors } = useFormikContext<ICreateSurveyRequest>();
 
   const handleAddUser = (user: ISystemUser | ISurveyMember) => {
@@ -94,7 +94,7 @@ export const SurveyMembersEmailsForm = (props: ISurveyMembersFormProps) => {
       <SystemUserAutocompleteField
         formikFieldName="members"
         label="Members"
-        helpText="Only active users who have requested access to the Species Inventory Management System before can be invited"
+        helpText="You can grant permissions for survey participation via email address, but individuals will still need to be granted access to Species Inventory Management System before they can access the survey."
         selectedUsers={values.members.map((member) => member.system_user_id)}
         clearOnSelect
         onSelect={(value) => {
