@@ -195,8 +195,7 @@ PUT.apiDoc = {
             'start_date',
             'start_time',
             'end_date',
-            'end_time',
-            'comment'
+            'end_time'
           ],
           properties: {
             survey_sample_site_id: {

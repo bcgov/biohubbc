@@ -193,6 +193,12 @@ export const SamplingPeriodTable = (props: ISamplingPeriodTableProps) => {
 
         return formatTimeDifference(start_date, start_time, end_date, end_time);
       }
+    },
+    {
+      field: 'comment',
+      headerName: 'Comment',
+      flex: 1,
+      renderCell: (params) => <Typography variant="body2">{params.row.comment || ''}</Typography>
     }
   ];
 
