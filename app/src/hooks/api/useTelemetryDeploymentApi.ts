@@ -1,4 +1,4 @@
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
 import {
   CreateTelemetryDeployment,
   GetSurveyDeploymentsResponse,
@@ -132,12 +132,40 @@ export const useTelemetryDeploymentApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Imports a deployment CSV.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {File} file
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: AxiosProgressEvent) => void} [onProgress]
+   * @return {*} {Promise<void>}
+   */
+  const importManualDeploymentCSV = async (
+    projectId: number,
+    surveyId: number,
+    file: File,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: AxiosProgressEvent) => void
+  ): Promise<void> => {
+    const formData = new FormData();
+
+    formData.append('media', file);
+
+    await axios.post(`/api/project/${projectId}/survey/${surveyId}/deployments/import`, formData, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
+    });
+  };
+
   return {
     createDeployment,
     updateDeployment,
     getDeploymentById,
     getDeploymentsInSurvey,
     deleteDeployment,
-    deleteDeployments
+    deleteDeployments,
+    importManualDeploymentCSV
   };
 };

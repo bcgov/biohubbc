@@ -39,7 +39,7 @@ export const DeploymentsContainer = () => {
   const [processingRecords, setProcessingRecords] = useState(false);
   const handleImportDeploymentCSV = async (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => {
     try {
-      await biohubApi.telemetry.importManualTelemetryCSV(
+      await biohubApi.telemetryDeployment.importManualDeploymentCSV(
         surveyContext.projectId,
         surveyContext.surveyId,
         file,

@@ -6,7 +6,7 @@ import { HTTP422CSVValidationError } from '../../../../../../errors/http-error';
 import { CSVValidationErrorResponse } from '../../../../../../openapi/schemas/csv';
 import { csvFileSchema } from '../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { ImportTelemetryService } from '../../../../../../services/import-services/telemetry/import-telemetry-service';
+import { ImportDeploymentService } from '../../../../../../services/import-services/deployments/import-deployment-service';
 import { CSV_ERROR_MESSAGE } from '../../../../../../utils/csv-utils/csv-config-validation.interface';
 import { getLogger } from '../../../../../../utils/logger';
 import { parseMulterFile } from '../../../../../../utils/media/media-utils';
@@ -35,8 +35,8 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Upload survey telemetry submission file.',
-  tags: ['telemetry'],
+  description: 'Upload survey deployment submission file.',
+  tags: ['deployment'],
   security: [
     {
       Bearer: []
@@ -55,7 +55,7 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Survey telemetry submission file to upload',
+    description: 'Survey deployment submission file to upload',
     required: true,
     content: {
       'multipart/form-data': {
@@ -65,7 +65,7 @@ POST.apiDoc = {
           required: ['media'],
           properties: {
             media: {
-              description: 'A survey telemetry submission file.',
+              description: 'A survey deployment submission file.',
               type: 'array',
               minItems: 1,
               maxItems: 1,
