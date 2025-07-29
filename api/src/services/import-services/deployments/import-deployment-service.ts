@@ -182,19 +182,26 @@ export class ImportDeploymentService extends DBService {
     // Ensure frequency units are properly calling ids
     const frequencySet = new Set(frequency_units.map((frequency_unit) => frequency_unit.name.toLowerCase()));
 
-    this.utils.setAllStaticHeaderConfigs({
-      SERIAL: { validateCell: getDeviceSerialCellValidator(devices, this.utils) },
-      ALIAS: { validateCell: getSurveyCritterAliasCellValidator(surveyCritterAliasMap) },
-      VENDOR: { validateCell: getTelemetryVendorCellValidator(vendorsSet) },
-      CAPTURE_DATE: { validateCell: getDateCellValidator() },
-      CAPTURE_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
-      END_DATE: { validateCell: getDateCellValidator() },
-      END_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
-      FREQUENCY: { validateCell: getPositiveNumberCellValidator() },
-      FREQUENCY_UNIT: { validateCell: getFrequencyUnitCellValidator(frequencySet) },
-      END_CAPTURE_DATE: { validateCell: getDateCellValidator() },
-      MORTALITY_DATE: { validateCell: getDateCellValidator() }
+    // Update individual static header configs to preserve the optional settings
+    this.utils.setStaticHeaderConfig('SERIAL', { validateCell: getDeviceSerialCellValidator(devices, this.utils) });
+    this.utils.setStaticHeaderConfig('ALIAS', {
+      validateCell: getSurveyCritterAliasCellValidator(surveyCritterAliasMap)
     });
+    this.utils.setStaticHeaderConfig('VENDOR', { validateCell: getTelemetryVendorCellValidator(vendorsSet) });
+    this.utils.setStaticHeaderConfig('CAPTURE_DATE', { validateCell: getDateCellValidator() });
+    this.utils.setStaticHeaderConfig('CAPTURE_TIME', {
+      validateCell: getTimeCellValidator(),
+      setCellValue: getTimeCellSetter()
+    });
+    this.utils.setStaticHeaderConfig('END_DATE', { validateCell: getDateCellValidator() });
+    this.utils.setStaticHeaderConfig('END_TIME', {
+      validateCell: getTimeCellValidator(),
+      setCellValue: getTimeCellSetter()
+    });
+    this.utils.setStaticHeaderConfig('FREQUENCY', { validateCell: getPositiveNumberCellValidator() });
+    this.utils.setStaticHeaderConfig('FREQUENCY_UNIT', { validateCell: getFrequencyUnitCellValidator(frequencySet) });
+    this.utils.setStaticHeaderConfig('END_CAPTURE_DATE', { validateCell: getDateCellValidator() });
+    this.utils.setStaticHeaderConfig('MORTALITY_DATE', { validateCell: getDateCellValidator() });
 
     // Return the final CSV config
     return this.utils.getConfig();
