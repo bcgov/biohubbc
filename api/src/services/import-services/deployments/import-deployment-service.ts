@@ -78,17 +78,17 @@ export class ImportDeploymentService extends DBService {
           optional: true
         },
         END_DATE: {
-          aliases: ['END_DATE', 'END DATE', 'DATE REMOVED', 'DATE RECOVERED', 'ATTACHMENT_END_DATE'],
+          aliases: ['END DATE', 'DATE REMOVED', 'DATE RECOVERED', 'ATTACHMENT_END_DATE'],
           optional: true
         },
         END_TIME: {
-          aliases: ['END_TIME', 'END TIME', 'TIME REMOVED', 'TIME RECOVERED', 'ATTACHMENT_END_TIME'],
+          aliases: ['END TIME', 'TIME REMOVED', 'TIME RECOVERED', 'ATTACHMENT_END_TIME'],
           optional: true
         },
         FREQUENCY: { aliases: ['FREQ'], optional: true },
-        FREQUENCY_UNIT: { aliases: ['FREQ_UNIT', 'FREQUENCY_UNIT'], optional: true },
+        FREQUENCY_UNIT: { aliases: ['FREQ_UNIT', 'FREQUENCY UNIT'], optional: true },
         END_CAPTURE_DATE: {
-          aliases: ['END CAPTURE DATE', 'CAPTURE END DATE', 'DATE RECOVERED', 'DATE REMOVED'],
+          aliases: ['END CAPTURE DATE', 'CAPTURE END DATE'],
           optional: true
         },
         MORTALITY_DATE: { aliases: ['MORTALITY DATE', 'DATE OF MORTALITY'], optional: true }
