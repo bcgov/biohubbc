@@ -4,7 +4,7 @@ import { CodeRepository } from '../../../repositories/code-repository';
 import { CreateDeployment } from '../../../repositories/telemetry-repositories/telemetry-deployment-repository.interface';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-validation';
-import { CSVConfig, CSVError } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { CSVConfig, CSVError, CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
   getDateCellValidator,
   getPositiveNumberCellValidator,
@@ -135,7 +135,7 @@ export class ImportDeploymentService extends DBService {
 
       deployments.push({
         survey_id: this.surveyId,
-        critter_id: row.ALIAS,
+        critter_id: row[CSVRowState]?.critterId,
         device_id: row.SERIAL,
         frequency: row.FREQUENCY,
         frequency_unit_id: frequencyUnitId,
@@ -200,8 +200,8 @@ export class ImportDeploymentService extends DBService {
     });
     this.utils.setStaticHeaderConfig('FREQUENCY', { validateCell: getPositiveNumberCellValidator() });
     this.utils.setStaticHeaderConfig('FREQUENCY_UNIT', { validateCell: getFrequencyUnitCellValidator(frequencySet) });
-    this.utils.setStaticHeaderConfig('END_CAPTURE_DATE', { validateCell: getDateCellValidator() });
-    this.utils.setStaticHeaderConfig('MORTALITY_DATE', { validateCell: getDateCellValidator() });
+    this.utils.setStaticHeaderConfig('END_CAPTURE_DATE', { validateCell: getDateCellValidator({ optional: true }) });
+    this.utils.setStaticHeaderConfig('MORTALITY_DATE', { validateCell: getDateCellValidator({ optional: true }) });
 
     // Return the final CSV config
     return this.utils.getConfig();
