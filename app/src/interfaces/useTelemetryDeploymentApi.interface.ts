@@ -1,6 +1,69 @@
 import { ApiPaginationResponseParams } from 'types/misc';
 
 /**
+ * Advanced filters for deployment search.
+ */
+export interface IAllDeploymentAdvancedFilters {
+  /**
+   * Filter results by system user id.
+   *
+   * @type {number}
+   * @memberof IAllDeploymentAdvancedFilters
+   */
+  system_user_id?: number;
+  /**
+   * Filter results by deployment ids.
+   *
+   * @type {number[]}
+   * @memberof IAllDeploymentAdvancedFilters
+   */
+  deployment_ids?: number[];
+  /**
+   * Filter results by survey ids.
+   *
+   * @type {number[]}
+   * @memberof IAllDeploymentAdvancedFilters
+   */
+  survey_ids?: number[];
+  /**
+   * Filter results by keyword.
+   *
+   * @type {string}
+   * @memberof IAllDeploymentAdvancedFilters
+   */
+  keyword?: string;
+  /**
+   * Filter results by device serial number.
+   *
+   * @type {string}
+   * @memberof IAllDeploymentAdvancedFilters
+   */
+  device_serial?: string;
+  /**
+   * Filter results by species (ITIS TSN).
+   *
+   * @type {number}
+   * @memberof IAllDeploymentAdvancedFilters
+   */
+  species?: number;
+  /**
+   * Filter results by animal alias/nickname.
+   *
+   * @type {string}
+   * @memberof IAllDeploymentAdvancedFilters
+   */
+  animal_alias?: string;
+}
+
+/**
+ * Response object for findTelemetryDeployment.
+ */
+export interface IFindTelemetryDeploymentResponse {
+  deployments: TelemetryDeployment[];
+  pagination: ApiPaginationResponseParams;
+}
+
+/**
  * Create telemetry deployment record.
  */
 export type CreateTelemetryDeployment = {
