@@ -52,22 +52,6 @@ export const DeploymentListFilterForm = (props: IAllDeploymentListFilterFormProp
       {(formikProps) => (
         <FilterFieldsContainer
           fields={[
-            <CustomTextField
-              name="keyword"
-              label="Keyword"
-              other={{
-                placeholder: 'Search by keyword'
-              }}
-              key="deployment-keyword-filter"
-            />,
-            <CustomTextField
-              name="device_serial"
-              label="Device Serial"
-              other={{
-                placeholder: 'Search by device serial number'
-              }}
-              key="deployment-device-serial-filter"
-            />,
             <SpeciesAutocompleteField
               formikFieldName="species"
               label="Species"
@@ -86,6 +70,14 @@ export const DeploymentListFilterForm = (props: IAllDeploymentListFilterFormProp
                 formikProps.setFieldValue('species', undefined);
               }}
               key="deployment-species-filter"
+            />,
+            <CustomTextField
+              name="device_serial"
+              label="Device Serial"
+              other={{
+                placeholder: 'Search by device serial number'
+              }}
+              key="deployment-device-serial-filter"
             />,
             <AnimalAutocompleteField
               formikFieldName="animal_alias"
