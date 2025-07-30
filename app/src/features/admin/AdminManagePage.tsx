@@ -17,8 +17,8 @@ const AdminManagePage = () => {
     biohubApi.admin.getAdministrativeActivities(
       [AdministrativeActivityType.SYSTEM_ACCESS],
       [
-        AdministrativeActivityStatusType.INVITED,
         AdministrativeActivityStatusType.PENDING,
+        AdministrativeActivityStatusType.INVITED,
         AdministrativeActivityStatusType.REJECTED,
         AdministrativeActivityStatusType.ACTIONED
       ]

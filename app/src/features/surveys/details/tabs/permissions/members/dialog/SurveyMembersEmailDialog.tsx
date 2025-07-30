@@ -9,7 +9,6 @@ import {
   SurveyMembersFormInitialValues
 } from 'features/surveys/components/member/SurveyMembersEmailsForm';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { pluralize } from 'utils/Utils';
@@ -34,8 +33,6 @@ const SurveyMemberEmailDialog = (props: ISurveyMemberEmailDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dialogContext = useDialogContext();
   const codesContext = useCodesContext();
-
-  const biohubApi = useBiohubApi();
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
