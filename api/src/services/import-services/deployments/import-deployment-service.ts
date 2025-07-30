@@ -8,7 +8,6 @@ import { CSVConfig, CSVError, CSVRowState } from '../../../utils/csv-utils/csv-c
 import {
   getDateCellValidator,
   getPositiveNumberCellValidator,
-  getSurveyCritterAliasCellValidator,
   getTimeCellSetter,
   getTimeCellValidator
 } from '../../../utils/csv-utils/csv-header-configs';
@@ -20,7 +19,11 @@ import { TelemetryDeploymentService } from '../../telemetry-services/telemetry-d
 import { TelemetryDeviceService } from '../../telemetry-services/telemetry-device-service';
 import { TelemetryVendorService } from '../../telemetry-services/telemetry-vendor-service';
 import { getTelemetryVendorCellValidator } from '../telemetry/telemetry-header-configs';
-import { getDeviceSerialCellValidator, getFrequencyUnitCellValidator } from './deployment-header-configs';
+import {
+  getDeploymentCritterAliasCellValidator,
+  getDeviceSerialCellValidator,
+  getFrequencyUnitCellValidator
+} from './deployment-header-configs';
 
 const defaultLog = getLogger('services/import-services/import-telemetry-service');
 
@@ -136,7 +139,7 @@ export class ImportDeploymentService extends DBService {
       deployments.push({
         survey_id: this.surveyId,
         critter_id: row[CSVRowState]?.critterId,
-        device_id: row.SERIAL,
+        device_id: row[CSVRowState]?.deviceId,
         frequency: row.FREQUENCY,
         frequency_unit_id: frequencyUnitId,
         attachment_start_date: row.CAPTURE_DATE,
@@ -169,8 +172,8 @@ export class ImportDeploymentService extends DBService {
    * @returns {Promise<CSVConfig<DeploymentCSVStaticHeader>>}
    */
   async getCSVConfig(): Promise<CSVConfig<DeploymentCSVStaticHeader>> {
-    const [surveyCritterAliasMap, devices, vendors, frequency_units] = await Promise.all([
-      this.surveyCritterService.getSurveyCritterAliasMap(this.surveyId),
+    const [deploymentAliasMap, devices, vendors, frequency_units] = await Promise.all([
+      this.getDeploymentCritterAliasMap(),
       this.deviceService.getDevicesForSurvey(this.surveyId),
       this.codeRepository.getActiveTelemetryDeviceMakes(),
       this.codeRepository.getFrequencyUnits()
@@ -185,7 +188,7 @@ export class ImportDeploymentService extends DBService {
     // Update individual static header configs to preserve the optional settings
     this.utils.setStaticHeaderConfig('SERIAL', { validateCell: getDeviceSerialCellValidator(devices, this.utils) });
     this.utils.setStaticHeaderConfig('ALIAS', {
-      validateCell: getSurveyCritterAliasCellValidator(surveyCritterAliasMap)
+      validateCell: getDeploymentCritterAliasCellValidator(deploymentAliasMap)
     });
     this.utils.setStaticHeaderConfig('VENDOR', { validateCell: getTelemetryVendorCellValidator(vendorsSet) });
     this.utils.setStaticHeaderConfig('CAPTURE_DATE', { validateCell: getDateCellValidator() });
@@ -205,6 +208,48 @@ export class ImportDeploymentService extends DBService {
 
     // Return the final CSV config
     return this.utils.getConfig();
+  }
+
+  /**
+   * Get alias-to-SIMS-critter-ID mapping for deployments.
+   * This creates a direct mapping from alias → SIMS internal critter_id (integer).
+   *
+   * @returns {Promise<Map<string, number>>} Map of alias (lowercase) → SIMS critter_id (integer)
+   */
+  async getDeploymentCritterAliasMap(): Promise<Map<string, number>> {
+    // Get SIMS critters for this survey (has both critter_id and critterbase_critter_id)
+    const simsCritters = await this.surveyCritterService.getCrittersInSurvey(this.surveyId);
+
+    if (!simsCritters.length) {
+      return new Map();
+    }
+
+    // Get Critterbase data to get the aliases (animal_id)
+    const critterbaseCritterUUIDs = simsCritters.map((critter) => critter.critterbase_critter_id);
+    const critterbaseCritters =
+      await this.surveyCritterService.critterbaseService.getMultipleCrittersByIdsDetailed(critterbaseCritterUUIDs);
+
+    // Create a map: critterbase UUID → SIMS critter_id
+    const uuidToSimsIdMap = new Map<string, number>();
+    for (const simsCritter of simsCritters) {
+      uuidToSimsIdMap.set(simsCritter.critterbase_critter_id, simsCritter.critter_id);
+    }
+
+    // Create final mapping: alias → SIMS critter_id
+    const aliasToSimsIdMap = new Map<string, number>();
+
+    for (const critterbaseData of critterbaseCritters) {
+      if (critterbaseData.animal_id) {
+        const alias = critterbaseData.animal_id.toLowerCase();
+        const simsId = uuidToSimsIdMap.get(critterbaseData.critter_id);
+
+        if (simsId !== undefined) {
+          aliasToSimsIdMap.set(alias, simsId);
+        }
+      }
+    }
+
+    return aliasToSimsIdMap;
   }
 
   /**
