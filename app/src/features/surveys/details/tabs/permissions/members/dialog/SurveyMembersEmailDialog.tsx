@@ -1,6 +1,7 @@
 import Typography from '@mui/material/Typography';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { CreateCollectionSurveyI18N } from 'constants/i18n';
 import { ISnackbarProps } from 'contexts/dialogContext';
 import {
@@ -9,6 +10,7 @@ import {
   SurveyMembersFormInitialValues
 } from 'features/surveys/components/member/SurveyMembersEmailsForm';
 import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { pluralize } from 'utils/Utils';
@@ -32,6 +34,7 @@ interface ISurveyMemberEmailDialogProps {
 const SurveyMemberEmailDialog = (props: ISurveyMemberEmailDialogProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dialogContext = useDialogContext();
+  const biohubApi = useBiohubApi();
   const codesContext = useCodesContext();
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
@@ -49,12 +52,37 @@ const SurveyMemberEmailDialog = (props: ISurveyMemberEmailDialogProps) => {
     });
   };
 
-  const handleSubmitCollectionService = async (values: any) => {
+  const handleSubmit = async (values: any) => {
     try {
       setIsSubmitting(true);
 
-      //TECH DEBT: UPDATE API ENDPOINT
-      console.log('Email members to invite:', values.members);
+      const createdUsers: { system_user_id: number; survey_role_name: string }[] = [];
+
+      // Step 1: Create system users for each email
+      for (const member of values.members) {
+        try {
+          const response = await biohubApi.admin.addSystemUser(
+            member.email, // user identifier, using email as placeholder until we get name from keycloak
+            SYSTEM_IDENTITY_SOURCE.UNVERIFIED, // unverified source until keycloak confirms
+            member.email, // email as display name until keycloak overwrites it
+            member.email, // email
+            2 // roleId (assign them a creator role)
+          );
+
+          createdUsers.push({
+            system_user_id: response.system_user_id,
+            survey_role_name: member.survey_role_name
+          });
+        } catch (userError) {
+          console.error(`Failed to create user for ${member.email}:`, userError);
+          // Continue with other users even if one fails
+        }
+      }
+
+      // Step 2: Add created users to the survey
+      if (createdUsers.length > 0) {
+        await biohubApi.survey.addSurveyMembers(props.surveyId, createdUsers);
+      }
 
       props.onSubmit();
 
@@ -62,7 +90,8 @@ const SurveyMemberEmailDialog = (props: ISurveyMemberEmailDialogProps) => {
         snackbarMessage: (
           <>
             <Typography variant="body2" component="span">
-              Would invite {values.members.length} {pluralize(values.members.length, 'user')} to survey
+              Successfully invited {createdUsers.length} of {values.members.length}{' '}
+              {pluralize(values.members.length, 'user')} to survey
             </Typography>
           </>
         ),
@@ -91,7 +120,7 @@ const SurveyMemberEmailDialog = (props: ISurveyMemberEmailDialogProps) => {
       dialogSaveButtonLabel="Add"
       onCancel={() => props.onClose && props.onClose()}
       onSave={(formValues) => {
-        handleSubmitCollectionService(formValues);
+        handleSubmit(formValues);
       }}
     />
   );
