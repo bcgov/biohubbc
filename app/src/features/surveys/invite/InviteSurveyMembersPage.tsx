@@ -30,7 +30,7 @@ export interface ITrimmedPayload {
 const manageUsersYupSchema = yup.object().shape({
   selectedSurveys: yup.array(yup.number()).min(1, 'You must select at least one survey.'),
   selectedMembers: yup
-    .array(yup.object().shape({ system_user_id: yup.number(), collection_role_name: yup.string() }))
+    .array(yup.object().shape({ system_user_id: yup.number(), survey_role_name: yup.string() }))
     .min(1, 'Invite a team member and assign them a role.')
 });
 
