@@ -47,9 +47,13 @@ export const SurveyAuthStateContextProvider: React.FC<React.PropsWithChildren> =
 
       const member = getSurveyMember();
 
+      console.log('#MEMBER', member);
+
       if (!member) {
         return false;
       }
+
+      console.log('MEMBER#', member);
 
       return member?.survey_id === getSurveyId() && validSurveyRoles.includes(member?.survey_role_name);
     },

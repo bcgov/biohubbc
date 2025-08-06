@@ -88,7 +88,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
    * @param {IPostCollectionMember[]} members
    * @return {*}  {Promise<void>}
    */
-  const addParticipants = async (collectionId: number, members: IPostCollectionMember[]): Promise<void> => {
+  const addMembers = async (collectionId: number, members: IPostCollectionMember[]): Promise<void> => {
     const { data } = await axios.post(`/api/collection/${collectionId}/member`, {
       members
     });
@@ -149,7 +149,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
    * Get collection members
    * @param {number} collectionId
    */
-  const getParticipants = async (
+  const getMembers = async (
     collectionId: number,
     pagination?: ApiPaginationRequestOptions,
     filterFieldData?: ICollectionMembersAdvancedFilters
@@ -264,14 +264,14 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     createSubcollection,
     getCollectionParents,
     addToCollections,
-    getParticipants,
+    getMembers,
     updateCollection,
     addSurveys,
     findCollections,
     findSubcollections,
     getSurveysInCollection,
     getObservations,
-    addParticipants,
+    addMembers,
     getCollection,
     deleteCollection
   };

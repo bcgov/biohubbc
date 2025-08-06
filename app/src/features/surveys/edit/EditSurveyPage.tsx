@@ -184,9 +184,8 @@ const EditSurveyPage = () => {
       />
 
       <Container maxWidth="xl" sx={{ py: 3 }}>
-        <Paper sx={{ p: 0 }}>
+        <Paper sx={{ p: 2 }}>
           <EditSurveyForm
-            // Add the permit_used and funding_used properties
             initialSurveyData={{
               survey_details: surveyData.survey_details,
               purpose_and_methodology: surveyData.purpose_and_methodology,
@@ -195,7 +194,7 @@ const EditSurveyPage = () => {
               locations: surveyData.locations,
               participants: surveyData.participants,
               members: surveyData.members,
-              collections: surveyData.collections,
+              collections: surveyData.collections.map((collection) => ({ collection_id: collection.collection_id })),
               partnerships: surveyData.partnerships,
               blocks: surveyData.blocks,
               proprietor: surveyData.proprietor,

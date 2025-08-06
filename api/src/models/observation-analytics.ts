@@ -32,10 +32,6 @@ export const ObservationCountByGroupWithNamedMeasurementsSchema = ObservationCou
   quantitative_measurements: z.array(QuantitativeMeasurementAnalyticsSchema)
 });
 
-export type ObservationCountByGroupWithNamedMeasurements = z.infer<
-  typeof ObservationCountByGroupWithNamedMeasurementsSchema
->;
-
 export const ObservationCountByGroupWithMeasurementsSchema = z.object({
   quant_measurements: z.array(
     z.object({

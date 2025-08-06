@@ -27,7 +27,7 @@ describe('getSurveySampleSitesForSurvey', () => {
       surveyId: '1'
     };
 
-    sinon.stub(SampleSiteService.prototype, 'getSampleSitesForSurveyId').rejects(new Error('an error'));
+    sinon.stub(SampleSiteService.prototype, 'getSampleSitesForSurveyIds').rejects(new Error('an error'));
 
     try {
       const requestHandler = get_survey_sample_site_record.getSurveySampleSitesForSurvey();
@@ -61,8 +61,8 @@ describe('getSurveySampleSitesForSurvey', () => {
       stratums: []
     };
 
-    sinon.stub(SampleSiteService.prototype, 'getSampleSitesCountBySurveyId').resolves(1);
-    sinon.stub(SampleSiteService.prototype, 'getSampleSitesForSurveyId').resolves([sampleSite]);
+    sinon.stub(SampleSiteService.prototype, 'getSampleSitesCountBySurveyIds').resolves(1);
+    sinon.stub(SampleSiteService.prototype, 'getSampleSitesForSurveyIds').resolves([sampleSite]);
 
     const requestHandler = get_survey_sample_site_record.getSurveySampleSitesForSurvey();
 

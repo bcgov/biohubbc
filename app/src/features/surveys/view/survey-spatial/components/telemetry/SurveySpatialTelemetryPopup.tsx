@@ -1,12 +1,12 @@
 import { IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import dayjs from 'dayjs';
 import { SurveyMapPopup } from 'features/surveys/view/SurveyMapPopup';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IAllTelemetry } from 'interfaces/useTelemetryApi.interface';
 import { Popup } from 'react-leaflet';
-import { getFormattedDate } from 'utils/Utils';
 
 export interface ISurveySpatialTelemetryPopupProps {
   feature: IStaticLayerFeature;
@@ -44,7 +44,11 @@ export const SurveySpatialTelemetryPopup = (props: ISurveySpatialTelemetryPopupP
       },
       {
         label: 'Date',
-        value: getFormattedDate(DATE_FORMAT.LongDateTimeFormat, telemetry.acquisition_date)
+        value: dayjs(telemetry.acquisition_date).format(DATE_FORMAT.MediumDateFormat)
+      },
+      {
+        label: 'Time',
+        value: dayjs(telemetry.acquisition_date).format(DATE_FORMAT.TimeFormat)
       }
     ];
   };

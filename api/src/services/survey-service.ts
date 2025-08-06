@@ -394,7 +394,6 @@ export class SurveyService extends DBService {
     );
 
     // Handle survey collections
-    console.log('COLLECTIONS@@@@@@', postSurveyData.collections);
     const collectionSurveyService = new CollectionSurveyService(this.connection);
     await collectionSurveyService.addSurveyToMultipleCollections({
       survey_id: surveyId,
@@ -624,6 +623,7 @@ export class SurveyService extends DBService {
    */
   async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
     const promises: Promise<any>[] = [];
+
     if (putSurveyData?.survey_details || putSurveyData?.purpose_and_methodology) {
       promises.push(this.updateSurveyDetailsData(surveyId, putSurveyData));
     }
@@ -921,6 +921,7 @@ export class SurveyService extends DBService {
    * @memberof SurveyService
    */
   async updateCollectionData(surveyId: number, surveyData: PutSurveyObject): Promise<void> {
+    console.log('COLLECTIONS@@', surveyData.collections);
     const collectionSurveyService = new CollectionSurveyService(this.connection);
 
     // Get existing collections for the survey from DB

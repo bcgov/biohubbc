@@ -9,7 +9,7 @@ export const CreateCollectionMemberSchema: OpenAPIV3.SchemaObject = {
     collection_role_name: {
       type: 'string',
       enum: ['Admin', 'Member'],
-      description: 'Name of a collection role for the participant'
+      description: 'Name of a collection role for the member'
     }
   }
 };
@@ -18,11 +18,11 @@ export const CreateCollectionMemberSchema: OpenAPIV3.SchemaObject = {
 export const CreateCollectionSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: ['name', 'description', 'participants'],
+  required: ['name', 'description', 'members'],
   properties: {
     name: { type: 'string', description: 'The name of the collection to create' },
     description: { type: 'string', description: 'The description of the collection to create', nullable: true },
-    participants: {
+    members: {
       type: 'array',
       description: 'List of users to add to the collection',
       minItems: 1,
@@ -35,11 +35,11 @@ export const CreateCollectionSchema: OpenAPIV3.SchemaObject = {
 export const CreateSubcollectionSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: ['name', 'description', 'participants'],
+  required: ['name', 'description', 'members'],
   properties: {
     name: { type: 'string', description: 'The name of the collection to create' },
     description: { type: 'string', description: 'The description of the collection to create', nullable: true },
-    participants: {
+    members: {
       type: 'array',
       description: 'List of users to add to the collection',
       items: CreateCollectionMemberSchema
@@ -54,7 +54,7 @@ export const UpdateCollectionSchema: OpenAPIV3.SchemaObject = {
   properties: {
     name: { type: 'string', description: 'The name of the collection to create' },
     description: { type: 'string', description: 'The description of the collection to create', nullable: true },
-    participants: {
+    members: {
       type: 'array',
       description: 'List of users to add to the collection',
       items: {
@@ -66,7 +66,7 @@ export const UpdateCollectionSchema: OpenAPIV3.SchemaObject = {
           collection_role_name: {
             type: 'string',
             enum: ['Admin', 'Member'],
-            description: 'Name of a collection role for the participant'
+            description: 'Name of a collection role for the member'
           }
         }
       }
@@ -151,7 +151,15 @@ export const CollectionAndSystemUserSchema: OpenAPIV3.SchemaObject = {
 export const GetCollectionSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: ['collection_id', 'parent_collection_id', 'name', 'description', 'participants', 'subcollections'],
+  required: [
+    'collection_id',
+    'parent_collection_id',
+    'name',
+    'description',
+    'members',
+    'subcollections',
+    'subcollection_count'
+  ],
   properties: {
     collection_id: {
       type: 'integer',
@@ -171,7 +179,7 @@ export const GetCollectionSchema: OpenAPIV3.SchemaObject = {
       description: 'The description of the collection to create',
       nullable: true
     },
-    participants: {
+    members: {
       type: 'array',
       description: 'List of users to add to the collection',
       items: CollectionAndSystemUserSchema
@@ -180,6 +188,10 @@ export const GetCollectionSchema: OpenAPIV3.SchemaObject = {
       // type: 'array',
       // description: 'List of child collections',
       // items: {} as OpenAPIV3.SchemaObject // TODO: Add children recursively
+    },
+    subcollection_count: {
+      type: 'number',
+      description: 'The number of immediate subcollections (one generation below) in the collection'
     }
   }
 };

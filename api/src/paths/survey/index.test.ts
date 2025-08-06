@@ -28,6 +28,7 @@ describe('findSurveys', () => {
         start_date: '2021-01-01',
         end_date: '2021-01-31',
         focal_species: [123, 456],
+        progress_percentage: 1,
         types: [1, 2]
       }
     ];
@@ -101,6 +102,7 @@ describe('findSurveys', () => {
         start_date: '2021-01-01',
         end_date: '2021-01-31',
         focal_species: [123, 456],
+        progress_percentage: 1,
         types: [1, 2]
       }
     ];

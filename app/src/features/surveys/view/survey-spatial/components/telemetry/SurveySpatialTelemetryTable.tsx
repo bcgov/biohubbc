@@ -1,4 +1,3 @@
-import { mdiArrowTopRight } from '@mdi/js';
 import { GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -139,9 +138,8 @@ export const SurveySpatialTelemetryTable = () => {
         <NoDataOverlay
           minHeight="400px"
           height="100%"
-          title="Add Telemetry"
-          subtitle="Add telemetry devices to animals and upload device data"
-          icon={mdiArrowTopRight}
+          title="Telemetry"
+          subtitle="Add telemetry devices to animals and upload device data. Telemetry data that belongs to the surveys in this collection will show here."
         />
       }
       hasNoDataFallbackDelay={100}>

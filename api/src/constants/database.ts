@@ -13,10 +13,6 @@ export enum SYSTEM_IDENTITY_SOURCE {
   SYSTEM = 'SYSTEM'
 }
 
-export enum SCHEMAS {
-  DATA = 'BIOHUB'
-}
-
 /**
  * The source system for a dataset submission.
  *

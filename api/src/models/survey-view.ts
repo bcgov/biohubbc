@@ -74,7 +74,7 @@ export interface ISurveyAdvancedFilters {
 export const FindSurveysResponse = z.object({
   survey_id: z.number(),
   name: z.string(),
-  progress_id: z.number(),
+  progress_id: z.number().nullable(),
   regions: z.array(z.string()),
   start_date: z.string().nullable(),
   end_date: z.string().nullable().optional().nullable(),

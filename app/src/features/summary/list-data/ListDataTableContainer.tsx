@@ -17,7 +17,7 @@ import { SidebarLayout } from 'layouts/SidebarLayout';
 import { useState } from 'react';
 import { Link as NavLink } from 'react-router-dom';
 import { TabularDataTableContainer } from '../tabular-data/TabularDataTableContainer';
-import CollectionsListContainer from './collection/CollectionListContainer';
+import { CollectionListContainer } from './collection/CollectionListContainer';
 import { CreateCollectionButton } from './collection/create/CreateCollectionButton';
 import { CreateSurveyButton } from './survey/create/CreateSurveyButton';
 
@@ -86,7 +86,7 @@ export const ListDataTableContainer = () => {
   return (
     <SidebarLayout
       sidebar={
-        <Box p={2}>
+        <Box p={2} sx={{ minWidth: '250px', overflowY: 'auto', height: '100%', flexShrink: 0 }}>
           <CustomToggleButtonGroup
             views={views}
             activeView={activeView}
@@ -122,7 +122,7 @@ export const ListDataTableContainer = () => {
         </>
       }>
       {activeView === SUMMARY_ACTIVE_VIEW_VALUE.surveys && <SurveysListContainer showSearch={showSearch} />}
-      {activeView === SUMMARY_ACTIVE_VIEW_VALUE.collections && <CollectionsListContainer showSearch={showSearch} />}
+      {activeView === SUMMARY_ACTIVE_VIEW_VALUE.collections && <CollectionListContainer showSearch={showSearch} />}
       {activeView === SUMMARY_ACTIVE_VIEW_VALUE.data && <TabularDataTableContainer />}
     </SidebarLayout>
   );

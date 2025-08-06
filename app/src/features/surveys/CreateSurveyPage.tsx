@@ -10,13 +10,15 @@ import { CreateSurveyI18N } from 'constants/i18n';
 import { CodesContext } from 'contexts/codesContext';
 import { DialogContext } from 'contexts/dialogContext';
 
+import { SURVEY_ROLE } from 'constants/roles';
 import { ISurveyPermitForm, SurveyPermitFormInitialValues } from 'features/surveys/components/permit/SurveyPermitForm';
 import { SurveyPartnershipsFormInitialValues } from 'features/surveys/view/components/SurveyPartnershipsForm';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
+import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
-import { ICreateSurveyRequest, IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
+import { ICreateSurveyRequest, IEditSurveyRequest, ISurveyMember } from 'interfaces/useSurveyApi.interface';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
 import { AgreementsInitialValues } from './components/agreements/AgreementsForm';
@@ -64,6 +66,7 @@ const CreateSurveyPage = () => {
   const biohubApi = useBiohubApi();
   const history = useHistory();
 
+  const authStateContext = useAuthStateContext();
   const codesContext = useContext(CodesContext);
   useEffect(() => {
     codesContext.codesDataLoader.load();
@@ -191,7 +194,22 @@ const CreateSurveyPage = () => {
       <Container maxWidth="xl" sx={{ py: 3 }}>
         <Paper sx={{ p: 2 }}>
           <EditSurveyForm
-            initialSurveyData={defaultSurveyDataFormValues}
+            initialSurveyData={{
+              ...defaultSurveyDataFormValues,
+              // Add the logged in user as an admin of the survey
+              members: authStateContext.simsUserWrapper.systemUserId
+                ? [
+                    {
+                      system_user_id: authStateContext.simsUserWrapper?.systemUserId,
+                      survey_role_name: SURVEY_ROLE.ADMIN,
+                      display_name: authStateContext.simsUserWrapper?.displayName,
+                      email: authStateContext.simsUserWrapper?.email,
+                      agency: authStateContext.simsUserWrapper?.agency,
+                      identity_source: authStateContext.simsUserWrapper?.identitySource
+                    } as ISurveyMember
+                  ]
+                : []
+            }}
             handleSubmit={(formikData) => handleSubmit(formikData as unknown as CreateSurvey)}
             formikRef={formikRef}
           />

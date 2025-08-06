@@ -16,12 +16,13 @@ import Typography from '@mui/material/Typography';
 import YesNoDialog from 'components/dialog/YesNoDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ISurveyCritter } from 'contexts/animalPageContext';
+import dayjs from 'dayjs';
 import { IMortalityWithSupplementaryData } from 'features/surveys/animals/profile/mortality/AnimalMortalityContainer';
 import { AnimalMortalityCardDetailsContainer } from 'features/surveys/animals/profile/mortality/components/mortality-card-details/AnimalMortalityCardDetailsContainer';
 import { useSurveyContext } from 'hooks/useContext';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { getFormattedDate } from 'utils/Utils';
+import { hasRealTime } from 'utils/datetime';
 
 interface IAnimalMortalityCardContainer {
   mortality: IMortalityWithSupplementaryData[];
@@ -117,6 +118,7 @@ export const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContaine
 
       {mortality.length ? (
         mortality.map((mortality) => {
+          const isRealTime = hasRealTime(mortality.mortality_timestamp);
           /* MORTALITY DETAILS */
           return (
             <Accordion
@@ -157,7 +159,9 @@ export const AnimalMortalityCardContainer = (props: IAnimalMortalityCardContaine
                   }}>
                   <Stack gap={0.5} display="flex">
                     <Typography fontWeight={700}>
-                      {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, mortality.mortality_timestamp)}&nbsp;
+                      {isRealTime
+                        ? dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.MediumDateTimeFormat)
+                        : dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.MediumDateFormat)}
                     </Typography>
                     {mortality.location?.latitude && mortality.location?.longitude && (
                       <Box>

@@ -6,7 +6,8 @@ import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
-import { useContext, useState } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import { useContext, useEffect, useState } from 'react';
 import yup from 'utils/YupSchema';
 import CollectionSurveyForm, {
   CollectionSurveyFormInitialValues,
@@ -37,6 +38,13 @@ const CreateCollectionSurveyDialog = (props: ICreateCollectionSurveyDialogProps)
   const surveyContext = useSurveyContext();
 
   const biohubApi = useBiohubApi();
+
+  // Get collections that the survye already belongs to filter out of the autocomplete
+  const surveysDataLoader = useDataLoader(() => biohubApi.survey.getCollectionsBySurveyId(surveyContext.surveyId));
+
+  useEffect(() => {
+    surveysDataLoader.load();
+  }, [surveysDataLoader]);
 
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
@@ -92,7 +100,14 @@ const CreateCollectionSurveyDialog = (props: ICreateCollectionSurveyDialogProps)
       open={props.open}
       dialogLoading={isSubmitting}
       component={{
-        element: <CollectionSurveyForm formikFieldName="collections" />,
+        element: (
+          <CollectionSurveyForm
+            formikFieldName="collections"
+            existingCollectionIds={
+              surveysDataLoader.data?.collections.map((collection) => collection.collection_id) ?? []
+            }
+          />
+        ),
         initialValues: CollectionSurveyFormInitialValues,
         validationSchema: CollectionSurveyYupSchema
       }}
