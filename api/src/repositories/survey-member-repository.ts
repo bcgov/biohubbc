@@ -503,7 +503,9 @@ export class SurveyMemberRepository extends BaseRepository {
       survey_role_name: string;
     }[]
   ): Promise<void> {
-    if (!members.length) return;
+    if (!members.length) {
+      return;
+    }
 
     const rowsSql = members.map(
       (m) =>
