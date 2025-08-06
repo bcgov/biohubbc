@@ -171,24 +171,6 @@ export const DevicesTable = (props: IDevicesTableProps) => {
       flex: 1
     },
     {
-      field: 'animal',
-      headerName: 'Deployed On',
-      description: 'The animal that the device was most recently on',
-      flex: 1,
-      renderCell: (params) => {
-        const serial = params.row.serial;
-        const deviceDeployments = getDeviceDeploymentsForSerial(deployments, serial);
-        if (!deviceDeployments.length) {
-          return null;
-        }
-
-        const latestDeployment = getMostRecentDeployment(deviceDeployments);
-        const animal = surveyContext.critterDataLoader.data?.find((a) => a.critter_id === latestDeployment?.critter_id);
-
-        return animal?.animal_id ?? null;
-      }
-    },
-    {
       field: 'actions',
       type: 'actions',
       sortable: false,

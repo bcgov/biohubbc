@@ -8,6 +8,8 @@ import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
+import Tab from '@mui/material/Tab';
+import Tabs from '@mui/material/Tabs';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
@@ -17,13 +19,17 @@ import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { FOREIGN_KEY_CONSTRAINT_ERROR } from 'constants/errors';
+import dayjs from 'dayjs';
 import { DevicesTable } from 'features/surveys/telemetry/manage/devices/table/DevicesTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
+import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
+import { TelemetryDevice } from 'interfaces/useTelemetryDeviceApi.interface';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getDeviceCSVTemplate } from 'utils/csv-templates';
+import { combineDateTime } from 'utils/datetime';
 import { downloadFile } from 'utils/file-utils';
 import { TelemetryDeviceKeysButton } from '../../device-keys/TelemetryDeviceKeysButton';
 
@@ -33,6 +39,9 @@ export const DevicesContainer = () => {
   const cancelToken = axios.CancelToken.source();
   const [processingRecords, setProcessingRecords] = useState(false);
   const biohubApi = useBiohubApi();
+
+  // State for tabs
+  const [activeTab, setActiveTab] = useState<'active' | 'inactive'>('active');
 
   // State for bulk actions
   const [headerAnchorEl, setHeaderAnchorEl] = useState<null | HTMLElement>(null);
@@ -57,6 +66,30 @@ export const DevicesContainer = () => {
   }, [deploymentsDataLoader, surveyContext.surveyId]);
 
   const deployments = deploymentsDataLoader.data?.deployments ?? [];
+
+  // Helper functions to determine device status
+  const getDeviceDeploymentsForSerial = (deployments: TelemetryDeployment[], serial: string) =>
+    deployments.filter((dep) => dep.device_key?.split(':')[1] === serial);
+
+  const isDeploymentActive = (deployment: TelemetryDeployment) => {
+    const now = dayjs();
+    const start = combineDateTime(deployment.attachment_start_date, deployment.attachment_start_time);
+    const end = deployment.attachment_end_date
+      ? combineDateTime(deployment.attachment_end_date, deployment.attachment_end_time)
+      : null;
+    return now.isAfter(start) && (!end || now.isBefore(end));
+  };
+
+  const isDeviceActive = (device: TelemetryDevice) => {
+    const deviceDeployments = getDeviceDeploymentsForSerial(deployments, device.serial);
+    return deviceDeployments.some(isDeploymentActive);
+  };
+
+  // Filter devices based on active tab
+  const activeDevices = devices.filter(isDeviceActive);
+  const inactiveDevices = devices.filter((device) => !isDeviceActive(device));
+  const currentDevices = activeTab === 'active' ? activeDevices : inactiveDevices;
+  const currentDevicesCount = currentDevices.length;
 
   // Handler for bulk delete operation
   const handleBulkDelete = async () => {
@@ -210,22 +243,38 @@ export const DevicesContainer = () => {
 
       <Divider flexItem />
 
+      {/* Tabs for Active/Inactive devices */}
+      <Tabs
+        value={activeTab}
+        onChange={(_, newValue) => {
+          setActiveTab(newValue);
+          setSelectedRows([]); // Clear selection when switching tabs
+        }}
+        sx={{ borderBottom: 1, borderColor: 'divider', flex: '0 0 auto' }}>
+        <Tab label={<Typography variant="body2">Active ({activeDevices.length})</Typography>} value="active" />
+        <Tab label={<Typography variant="body2">Inactive ({inactiveDevices.length})</Typography>} value="inactive" />
+      </Tabs>
+
       <LoadingGuard
         isLoading={devicesDataLoader.isLoading || !devicesDataLoader.isReady}
         isLoadingFallback={<SkeletonTable />}
         isLoadingFallbackDelay={100}
-        hasNoData={!devicesCount}
+        hasNoData={!currentDevicesCount}
         hasNoDataFallback={
           <NoDataOverlay
-            title="Add Telemetry Devices"
-            subtitle="Add your telemetry devices, so they can be used in a deployment."
+            title={activeTab === 'active' ? 'No Active Devices' : 'No Inactive Devices'}
+            subtitle={
+              activeTab === 'active'
+                ? 'No devices are currently deployed. Deploy devices to see them here.'
+                : 'No inactive devices found. All devices are currently deployed.'
+            }
             icon={mdiArrowTopRight}
           />
         }
         hasNoDataFallbackDelay={100}>
         <DevicesTable
           deployments={deployments}
-          devices={devices}
+          devices={currentDevices}
           selectedRows={selectedRows}
           setSelectedRows={setSelectedRows}
           onDelete={onDelete}
