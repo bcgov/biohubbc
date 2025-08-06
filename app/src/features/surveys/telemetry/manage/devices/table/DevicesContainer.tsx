@@ -1,5 +1,6 @@
 import { mdiArrowTopRight, mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -8,8 +9,6 @@ import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
-import Tab from '@mui/material/Tab';
-import Tabs from '@mui/material/Tabs';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import { GridRowSelectionModel } from '@mui/x-data-grid';
@@ -18,6 +17,7 @@ import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import { FOREIGN_KEY_CONSTRAINT_ERROR } from 'constants/errors';
 import dayjs from 'dayjs';
 import { DevicesTable } from 'features/surveys/telemetry/manage/devices/table/DevicesTable';
@@ -243,17 +243,23 @@ export const DevicesContainer = () => {
 
       <Divider flexItem />
 
-      {/* Tabs for Active/Inactive devices */}
-      <Tabs
-        value={activeTab}
-        onChange={(_, newValue) => {
-          setActiveTab(newValue);
-          setSelectedRows([]); // Clear selection when switching tabs
-        }}
-        sx={{ borderBottom: 1, borderColor: 'divider', flex: '0 0 auto' }}>
-        <Tab label={<Typography variant="body2">Active ({activeDevices.length})</Typography>} value="active" />
-        <Tab label={<Typography variant="body2">Inactive ({inactiveDevices.length})</Typography>} value="inactive" />
-      </Tabs>
+      {/* Toggle buttons for Active/Inactive devices */}
+      <Box p={2} display="flex" justifyContent="flex-start">
+        <CustomToggleButtonGroup
+          views={[
+            { value: 'active', label: `Active (${activeDevices.length})` },
+            { value: 'inactive', label: `Inactive (${inactiveDevices.length})` }
+          ]}
+          activeView={activeTab}
+          onViewChange={(newValue) => {
+            setActiveTab(newValue);
+            setSelectedRows([]); // Clear selection when switching tabs
+          }}
+          orientation="horizontal"
+        />
+      </Box>
+
+      <Divider flexItem />
 
       <LoadingGuard
         isLoading={devicesDataLoader.isLoading || !devicesDataLoader.isReady}
@@ -262,6 +268,8 @@ export const DevicesContainer = () => {
         hasNoData={!currentDevicesCount}
         hasNoDataFallback={
           <NoDataOverlay
+            minHeight="400px"
+            height="200px"
             title={activeTab === 'active' ? 'No Active Devices' : 'No Inactive Devices'}
             subtitle={
               activeTab === 'active'
