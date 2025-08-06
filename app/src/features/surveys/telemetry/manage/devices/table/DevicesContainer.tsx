@@ -173,12 +173,7 @@ export const DevicesContainer = () => {
   };
 
   return (
-    <Stack
-      flexDirection="column"
-      height="100%"
-      sx={{
-        overflow: 'hidden'
-      }}>
+    <>
       {/* Bulk action menu */}
       <CSVSingleImportDialog
         open={showImportDialog}
@@ -261,33 +256,42 @@ export const DevicesContainer = () => {
 
       <Divider flexItem />
 
-      <LoadingGuard
-        isLoading={devicesDataLoader.isLoading || !devicesDataLoader.isReady}
-        isLoadingFallback={<SkeletonTable />}
-        isLoadingFallbackDelay={100}
-        hasNoData={!currentDevicesCount}
-        hasNoDataFallback={
-          <NoDataOverlay
-            minHeight="400px"
-            height="200px"
-            title={activeTab === 'active' ? 'No Active Devices' : 'No Inactive Devices'}
-            subtitle={
-              activeTab === 'active'
-                ? 'No devices are currently deployed. Deploy devices to see them here.'
-                : 'No inactive devices found. All devices are currently deployed.'
-            }
-            icon={mdiArrowTopRight}
-          />
-        }
-        hasNoDataFallbackDelay={100}>
-        <DevicesTable
-          deployments={deployments}
-          devices={currentDevices}
-          selectedRows={selectedRows}
-          setSelectedRows={setSelectedRows}
-          onDelete={onDelete}
-        />
-      </LoadingGuard>
-    </Stack>
+      <Box>
+        <LoadingGuard
+          isLoading={devicesDataLoader.isLoading}
+          isLoadingFallback={<SkeletonTable numberOfLines={5} />}
+          isLoadingFallbackDelay={100}>
+          <Box>
+            <LoadingGuard
+              isLoading={devicesDataLoader.isLoading || !devicesDataLoader.isReady}
+              isLoadingFallback={<SkeletonTable />}
+              isLoadingFallbackDelay={100}
+              hasNoData={!currentDevicesCount}
+              hasNoDataFallback={
+                <NoDataOverlay
+                  minHeight="300px"
+                  height="200px"
+                  title={activeTab === 'active' ? 'No Active Devices' : 'No Inactive Devices'}
+                  subtitle={
+                    activeTab === 'active'
+                      ? 'No devices are currently deployed. Deploy devices to see them here.'
+                      : 'No inactive devices found. All devices are currently deployed.'
+                  }
+                  icon={mdiArrowTopRight}
+                />
+              }
+              hasNoDataFallbackDelay={100}>
+              <DevicesTable
+                deployments={deployments}
+                devices={currentDevices}
+                selectedRows={selectedRows}
+                setSelectedRows={setSelectedRows}
+                onDelete={onDelete}
+              />
+            </LoadingGuard>
+          </Box>
+        </LoadingGuard>
+      </Box>
+    </>
   );
 };
