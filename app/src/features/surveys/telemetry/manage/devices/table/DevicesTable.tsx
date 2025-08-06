@@ -133,7 +133,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
       width: 85,
       renderHeader: (params) => (
         <Tooltip title={params.colDef.description}>
-          <Typography color={grey[500]} variant="body2" fontWeight={700}>
+          <Typography color={grey[500]} variant="body2">
             ID
           </Typography>
         </Tooltip>
@@ -257,16 +257,4 @@ const isDeploymentActive = (deployment: TelemetryDeployment) => {
     ? combineDateTime(deployment.attachment_end_date, deployment.attachment_end_time)
     : null;
   return now.isAfter(start) && (!end || now.isBefore(end));
-};
-
-const getMostRecentDeployment = (deployments: TelemetryDeployment[]) => {
-  if (!deployments.length) {
-    return null;
-  }
-
-  return deployments.reduce((latest, current) => {
-    const latestStart = combineDateTime(latest.attachment_start_date, latest.attachment_start_time);
-    const currentStart = combineDateTime(current.attachment_start_date, current.attachment_start_time);
-    return dayjs(currentStart).isAfter(latestStart) ? current : latest;
-  }, deployments[0]);
 };
