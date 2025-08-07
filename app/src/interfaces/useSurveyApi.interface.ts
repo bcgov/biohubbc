@@ -89,6 +89,11 @@ export interface ISurveyMemberResponse {
 export interface ISurveyMemberForm {
   members: ISurveyMember[];
 }
+
+export interface ISurveyMemberEmailForm {
+  members: ISurveyMember[];
+}
+
 export interface ISurveyMembersAdvancedFilters {
   system_user_id?: number;
   keyword?: string;

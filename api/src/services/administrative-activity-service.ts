@@ -70,6 +70,22 @@ export class AdministrativeActivityService extends DBService {
   }
 
   /**
+   * Create a new administrative activity record with type "System Access" and status "Invited".
+   * Used when users are invited via email to surveys.
+   *
+   * @param {number} systemUserId
+   * @param {(string | object)} data
+   * @return {*}  {Promise<ICreateAdministrativeActivity>}
+   * @memberof AdministrativeActivityService
+   */
+  async createInvitedAccessRequest(
+    systemUserId: number,
+    data: string | object
+  ): Promise<ICreateAdministrativeActivity> {
+    return this.administrativeActivityRepository.createInvitedAccessRequest(systemUserId, data);
+  }
+
+  /**
    * Update the status of an existing administrative activity record.
    *
    * @param {number} administrativeActivityId

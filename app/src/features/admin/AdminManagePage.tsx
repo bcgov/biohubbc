@@ -18,6 +18,7 @@ const AdminManagePage = () => {
       [AdministrativeActivityType.SYSTEM_ACCESS],
       [
         AdministrativeActivityStatusType.PENDING,
+        AdministrativeActivityStatusType.INVITED,
         AdministrativeActivityStatusType.REJECTED,
         AdministrativeActivityStatusType.ACTIONED
       ]

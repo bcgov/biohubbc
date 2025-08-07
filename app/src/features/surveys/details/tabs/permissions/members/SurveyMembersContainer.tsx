@@ -1,5 +1,7 @@
-import { mdiArrowTopRight } from '@mdi/js';
+import { mdiArrowTopRight, mdiEmailPlus } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
@@ -26,6 +28,7 @@ import { useEffect, useState } from 'react';
 import { StringValues } from 'types/misc';
 import { getCodesName } from 'utils/Utils';
 import SurveyMemberDialog from './dialog/SurveyMembersDialog';
+import SurveyMembersEmailDialog from './dialog/SurveyMembersEmailDialog';
 
 type SurveyDataTableURLParams = {
   // filter
@@ -46,6 +49,7 @@ const SurveyMembersContainer = () => {
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<SurveyDataTableURLParams>>();
   const [participantDialogIsOpen, setParticipantDialogIsOpen] = useState(false);
+  const [participantEmailDialogIsOpen, setParticipantEmailDialogIsOpen] = useState(false);
 
   const [advancedFiltersModel, setAdvancedFiltersModel] = useState<ISurveyMembersAdvancedFilters>({
     keyword: searchParams.get('sm_keyword') ?? undefined,
@@ -129,6 +133,13 @@ const SurveyMembersContainer = () => {
               setParticipantDialogIsOpen(true);
             }}
           />
+          <Button
+            variant="outlined"
+            onClick={() => {
+              setParticipantEmailDialogIsOpen(true);
+            }}>
+            <Icon path={mdiEmailPlus} size={1} />
+          </Button>
           <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEYS} />
         </Stack>
       </Toolbar>
@@ -183,6 +194,17 @@ const SurveyMembersContainer = () => {
           setParticipantDialogIsOpen(false);
         }}
         open={participantDialogIsOpen}
+      />
+      <SurveyMembersEmailDialog
+        surveyId={surveyContext.surveyId}
+        onSubmit={() => {
+          surveyMembersDataLoader.refresh(advancedFiltersModel);
+          setParticipantEmailDialogIsOpen(false);
+        }}
+        onClose={() => {
+          setParticipantEmailDialogIsOpen(false);
+        }}
+        open={participantEmailDialogIsOpen}
       />
     </>
   );

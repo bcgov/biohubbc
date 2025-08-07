@@ -186,6 +186,61 @@ export class AdministrativeActivityRepository extends BaseRepository {
   }
 
   /**
+   * Inserts a row in the administrative_activity table reflecting an invited access request.
+   * Used when users are invited via email to surveys.
+   *
+   * @param {number} systemUserId
+   * @param {(string | object)} data
+   * @return {*}  {Promise<ICreateAdministrativeActivity>}
+   * @memberof AdministrativeActivityRepository
+   */
+  async createInvitedAccessRequest(
+    systemUserId: number,
+    data: string | object
+  ): Promise<ICreateAdministrativeActivity> {
+    const sqlStatement = SQL`
+      INSERT INTO administrative_activity (
+        reported_system_user_id,
+        administrative_activity_type_id,
+        administrative_activity_status_type_id,
+        data
+      ) VALUES (
+        ${systemUserId},
+        (
+          SELECT
+            aat.administrative_activity_type_id
+          FROM
+            administrative_activity_type aat
+          WHERE
+            aat.name = ${ADMINISTRATIVE_ACTIVITY_TYPE.SYSTEM_ACCESS}
+        ),
+        (
+          SELECT
+            aast.administrative_activity_status_type_id
+          FROM
+            administrative_activity_status_type aast
+          WHERE
+            aast.name = ${ADMINISTRATIVE_ACTIVITY_STATUS_TYPE.INVITED}
+        ),
+        ${data}
+      )
+      RETURNING
+        administrative_activity_id AS id,
+        create_date::timestamptz AS date
+    `;
+
+    const response = await this.connection.sql(sqlStatement, ICreateAdministrativeActivity);
+
+    if (!response.rows.length) {
+      throw new ApiExecuteSQLError('Failed to create administrative activity record', [
+        'AdministrativeActivityRepository->createInvitedAccessRequest'
+      ]);
+    }
+
+    return response.rows[0];
+  }
+
+  /**
    * SQL query to count pending records in the administrative_activity table for a given user GUID
    *
    * @param {string} userGUID

@@ -115,7 +115,7 @@ const useAdminApi = (axios: AxiosInstance) => {
    * @param {string} displayName
    * @param {string} email
    * @param {number} roleId
-   * @return {*} {boolean} True if the user is successfully added, false otherwise.
+   * @return {*} {{ system_user_id: number }} The created user data.
    */
   const addSystemUser = async (
     userIdentifier: string,
@@ -123,8 +123,8 @@ const useAdminApi = (axios: AxiosInstance) => {
     displayName: string,
     email: string,
     roleId: number
-  ): Promise<boolean> => {
-    const { status } = await axios.post(`/api/user/add`, {
+  ): Promise<{ system_user_id: number }> => {
+    const { data } = await axios.post(`/api/user/add`, {
       identitySource,
       userIdentifier,
       displayName,
@@ -132,7 +132,35 @@ const useAdminApi = (axios: AxiosInstance) => {
       roleId
     });
 
-    return status === 200;
+    return data;
+  };
+
+  /**
+   * Creates an invited access request administrative activity.
+   *
+   * @param {number} systemUserId
+   * @param {object} userData - User information (email, userGuid, name, etc.)
+   * @return {*} {Promise<{ id: number; date: string }>}
+   */
+  const createInvitedAccessRequest = async (
+    systemUserId: number,
+    userData: {
+      email: string;
+      userGuid?: string;
+      name?: string;
+      username?: string;
+      identitySource?: string;
+      company?: string;
+      displayName?: string;
+      reason?: string;
+    }
+  ): Promise<{ id: number; date: string }> => {
+    const { data: response } = await axios.post(`/api/administrative-activity/invited`, {
+      systemUserId,
+      ...userData
+    });
+
+    return response;
   };
 
   return {
@@ -142,7 +170,8 @@ const useAdminApi = (axios: AxiosInstance) => {
     denyAccessRequest,
     createAdministrativeActivity,
     getAdministrativeActivityStanding,
-    addSystemUser
+    addSystemUser,
+    createInvitedAccessRequest
   };
 };
 
