@@ -3,6 +3,7 @@ import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { SYSTEM_IDENTITY_SOURCE } from 'constants/auth';
 import { CreateCollectionSurveyI18N } from 'constants/i18n';
+import { SURVEY_ROLE } from 'constants/roles';
 import { ISnackbarProps } from 'contexts/dialogContext';
 import {
   SurveyMembersEmailsForm,
@@ -12,6 +13,7 @@ import {
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext } from 'hooks/useContext';
+import { IPostSurveyMember } from 'interfaces/useSurveyApi.interface';
 import { useState } from 'react';
 import { pluralize } from 'utils/Utils';
 
@@ -56,7 +58,7 @@ const SurveyMemberEmailDialog = (props: ISurveyMemberEmailDialogProps) => {
     try {
       setIsSubmitting(true);
 
-      const createdUsers: { system_user_id: number; survey_role_name: string }[] = [];
+      const createdUsers: IPostSurveyMember[] = [];
 
       // Step 1: Create system users for each email
       for (const member of values.members) {
@@ -71,7 +73,7 @@ const SurveyMemberEmailDialog = (props: ISurveyMemberEmailDialogProps) => {
 
           createdUsers.push({
             system_user_id: response.system_user_id,
-            survey_role_name: member.survey_role_name
+            survey_role_name: member.survey_role_name as SURVEY_ROLE // Cast to SURVEY_ROLE enum
           });
         } catch (userError) {
           console.error(`Failed to create user for ${member.email}:`, userError);
