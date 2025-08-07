@@ -96,7 +96,23 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Add system user OK.'
+      description: 'System user created successfully.',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['system_user_id'],
+            properties: {
+              system_user_id: {
+                type: 'integer',
+                minimum: 1,
+                description: 'The ID of the created system user'
+              }
+            }
+          }
+        }
+      }
     },
     400: {
       $ref: '#/components/responses/400'
@@ -180,7 +196,7 @@ export function addSystemRoleUser(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).send();
+      return res.status(200).json({ system_user_id: userObject.system_user_id });
     } catch (error) {
       defaultLog.error({ label: 'addSystemRoleUser', message: 'error', error });
       await connection.rollback();
