@@ -135,6 +135,34 @@ const useAdminApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Creates an invited access request administrative activity.
+   *
+   * @param {number} systemUserId
+   * @param {object} userData - User information (email, userGuid, name, etc.)
+   * @return {*} {Promise<{ id: number; date: string }>}
+   */
+  const createInvitedAccessRequest = async (
+    systemUserId: number,
+    userData: {
+      email: string;
+      userGuid?: string;
+      name?: string;
+      username?: string;
+      identitySource?: string;
+      company?: string;
+      displayName?: string;
+      reason?: string;
+    }
+  ): Promise<{ id: number; date: string }> => {
+    const { data: response } = await axios.post(`/api/administrative-activity/invited`, {
+      systemUserId,
+      ...userData
+    });
+
+    return response;
+  };
+
   return {
     sendGCNotification,
     getAdministrativeActivities,
@@ -142,7 +170,8 @@ const useAdminApi = (axios: AxiosInstance) => {
     denyAccessRequest,
     createAdministrativeActivity,
     getAdministrativeActivityStanding,
-    addSystemUser
+    addSystemUser,
+    createInvitedAccessRequest
   };
 };
 

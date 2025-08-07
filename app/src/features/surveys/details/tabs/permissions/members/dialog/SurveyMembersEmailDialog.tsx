@@ -75,6 +75,22 @@ const SurveyMemberEmailDialog = (props: ISurveyMemberEmailDialogProps) => {
             system_user_id: response.system_user_id,
             survey_role_name: member.survey_role_name as SURVEY_ROLE // Cast to SURVEY_ROLE enum
           });
+
+          // Step 1.5: Create an "Invited" administrative activity record for the user
+          try {
+            await biohubApi.admin.createInvitedAccessRequest(response.system_user_id, {
+              email: member.email,
+              userGuid: '', // Will be populated when user actually logs in
+              name: member.email, // Using email as name placeholder
+              username: member.email, // Using email as username placeholder
+              identitySource: SYSTEM_IDENTITY_SOURCE.UNVERIFIED,
+              displayName: member.email,
+              reason: 'Invited via email to survey'
+            });
+          } catch (activityError) {
+            console.error(`Failed to create administrative activity for ${member.email}:`, activityError);
+            // Continue even if activity creation fails
+          }
         } catch (userError) {
           console.error(`Failed to create user for ${member.email}:`, userError);
           // Continue with other users even if one fails

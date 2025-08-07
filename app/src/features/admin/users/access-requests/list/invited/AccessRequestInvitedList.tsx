@@ -62,15 +62,6 @@ const AccessRequestInvitedList = (props: IAccessRequestInvitedListProps) => {
       }
     },
     {
-      field: 'username',
-      headerName: 'Username',
-      flex: 1,
-      disableColumnMenu: true,
-      valueGetter: (params) => {
-        return params.row.data?.username;
-      }
-    },
-    {
       field: 'create_date',
       flex: 1,
       headerName: 'Date of Request',
