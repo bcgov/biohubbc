@@ -12,7 +12,7 @@ import { getLogger } from '../../../utils/logger';
 const defaultLog = getLogger('paths/survey/members/index');
 
 export const POST: Operation = [
-  authorizeRequestHandler((req) => {
+  authorizeRequestHandler((_req) => {
     return {
       or: [
         {
@@ -111,7 +111,7 @@ export function addMembersToSurveys(): RequestHandler {
 
       const data = req.body.selectedMembers as IPostSurveyMember[];
 
-      await surveyMemberService.insertMemberstoSurveys(surveyIds, data);
+      await surveyMemberService.insertMembersToSurveys(surveyIds, data);
 
       await connection.commit();
 

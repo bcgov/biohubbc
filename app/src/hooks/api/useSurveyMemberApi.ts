@@ -27,7 +27,7 @@ const useSurveyMemberApi = (axios: AxiosInstance) => {
    * @param {IManageUsersFormValues} values
    * @return {*}  {Promise<void>}
    */
-  const addBulkSurveysMembers = async (values: ITrimmedPayload): Promise<void> => {
+  const addBulkSurveysMembers = async (values: ITrimmedPayload): Promise<any> => {
     const { data } = await axios.post(`/api/survey/members`, values);
     return data;
   };

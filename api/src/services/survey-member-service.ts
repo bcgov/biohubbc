@@ -102,7 +102,7 @@ export class SurveyMemberService extends DBService {
    * @return {*}  {Promise<void[]>}
    * @memberof SurveyMemberService
    */
-  async insertMemberstoSurveys(surveyIds: number[], members: IPostSurveyMember[]): Promise<void> {
+  async insertMembersToSurveys(surveyIds: number[], members: IPostSurveyMember[]): Promise<void> {
     const promises: Promise<void>[] = [];
 
     for (const surveyId of surveyIds) {

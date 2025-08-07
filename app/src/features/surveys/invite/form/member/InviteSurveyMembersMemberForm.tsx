@@ -68,7 +68,15 @@ export const InviteSurveyMembersMemberForm = () => {
       setFieldValue('selectedMembers', updated);
       clearErrors();
     } else {
-      console.warn(`Invalid role selected: ${roleLabel}`);
+      // Set an error for the participant at this index
+      setErrors((prev: any) => {
+        const newErrors = { ...prev };
+        // Ensure participants is an array
+        const participants = Array.isArray(newErrors.participants) ? [...newErrors.participants] : [];
+        participants[index] = true;
+        newErrors.participants = participants;
+        return newErrors;
+      });
     }
   };
 
