@@ -1,6 +1,5 @@
 import { z } from 'zod';
 import { ObservationSubcountModel, ObservationSubcountRecord } from '../database-models/observation_subcount';
-import { SubcountCritterModel, SubcountCritterRecord } from '../database-models/subcount_critter';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
@@ -40,28 +39,6 @@ export class SubCountRepository extends BaseRepository {
     if (response.rowCount !== 1) {
       throw new ApiExecuteSQLError('Failed to insert observation subcount', [
         'SubCountRepository->insertObservationSubCount',
-        `rowCount was ${response.rowCount}, expected rowCount = 1`
-      ]);
-    }
-
-    return response.rows[0];
-  }
-
-  /**
-   * Inserts a new subcount_critter record.
-   *
-   * @param {SubCountCritterRecord} subcountCritter
-   * @return {*}  {Promise<SubcountCritterModel>}
-   * @memberof SubCountRepository
-   */
-  async insertSubCountCritter(subcountCritter: SubcountCritterRecord): Promise<SubcountCritterModel> {
-    const queryBuilder = getKnex().insert(subcountCritter).into('subcount_critter').returning('*');
-
-    const response = await this.connection.knex(queryBuilder, SubcountCritterModel);
-
-    if (response.rowCount !== 1) {
-      throw new ApiExecuteSQLError('Failed to insert subcount critter', [
-        'SubCountRepository->insertSubCountCritter',
         `rowCount was ${response.rowCount}, expected rowCount = 1`
       ]);
     }

@@ -6,7 +6,6 @@ import { CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
 import { ObservationService } from './observation-services/observation-service';
 import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
-import { SubcountCritterService } from './subcount-critter-service';
 
 export class SubCountService extends DBService {
   subCountRepository: SubCountRepository;
@@ -54,13 +53,10 @@ export class SubCountService extends DBService {
    * @memberof ObservationRepository
    */
   async deleteObservationSubcountRecords(surveyId: number, observationSubcountIds: number[]): Promise<void> {
-    const subCountCritterService = new SubcountCritterService(this.connection);
     const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
 
     // Delete child records
     await Promise.all([
-      // Delete child subcount_critter records, if any
-      subCountCritterService.deleteSubcountCrittersByObservationSubcountId(surveyId, observationSubcountIds),
       // Delete child observation measurements, if any
       observationSubCountMeasurementService.deleteMeasurementsByObservationSubCountId(surveyId, observationSubcountIds)
     ]);
