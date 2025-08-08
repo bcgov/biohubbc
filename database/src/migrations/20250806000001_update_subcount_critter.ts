@@ -17,6 +17,11 @@ export async function up(knex: Knex): Promise<void> {
     ---------------------------------------------------------------------------------------------------
     ALTER TABLE observation_subcount
     ADD COLUMN IF NOT EXISTS critterbase_critter_id uuid;
+
+    ----------------------------------------------
+    --Drop old table set up for subcount critter--
+    ----------------------------------------------
+    DROP TABLE IF EXISTS subcount_critter;
   `);
 }
 
