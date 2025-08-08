@@ -4,7 +4,10 @@ import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { SubcountCountField } from 'features/surveys/observations/form/components/subcounts/subcount/count/SubcountCountField';
 import { SubcountMeasurementsForm } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/SubcountMeasurementsForm';
+import { useFormikContext } from 'formik';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
+import { get } from 'lodash-es';
+import { useEffect } from 'react';
 import { SubcountCommentForm } from './comment/SubcountCommentForm';
 import { CritterSelectField } from './critter/SubcountCritterSelectField';
 
@@ -24,6 +27,22 @@ export interface ISubcountFormProps {
 export const SubcountForm = (props: ISubcountFormProps) => {
   const { formikFieldName, measurementTypeDefinitions, onDeleteMeasurement, enableHeaders } = props;
 
+  const { values, setFieldValue } = useFormikContext();
+
+  // Get the current critter selection for this subcount
+  const critterbaseId = get(values, `${formikFieldName}.critterbase_critter_id`);
+  const currentSubcount = get(values, `${formikFieldName}.subcount`);
+
+  // When a critter is selected, set subcount to 1
+  useEffect(() => {
+    if (critterbaseId && currentSubcount !== 1) {
+      setFieldValue(`${formikFieldName}.subcount`, 1);
+    }
+  }, [critterbaseId, currentSubcount, formikFieldName, setFieldValue]);
+
+  // Determine if the count field should be read-only
+  const isCountReadOnly = Boolean(critterbaseId);
+
   return (
     <Stack flexDirection="column" gap={2} sx={{ flex: '1 1 auto' }}>
       <Paper
@@ -35,7 +54,11 @@ export const SubcountForm = (props: ISubcountFormProps) => {
         sx={{ flex: '1 1 auto', bgcolor: grey[50] }}>
         {/* Render the subcount count field */}
         <Box flex="1 1 auto" minWidth="200px">
-          <SubcountCountField formikFieldName={formikFieldName} displayHeader={enableHeaders} />
+          <SubcountCountField
+            formikFieldName={formikFieldName}
+            displayHeader={enableHeaders}
+            readOnly={isCountReadOnly}
+          />
         </Box>
 
         {/* Render the subcount measurement fields */}

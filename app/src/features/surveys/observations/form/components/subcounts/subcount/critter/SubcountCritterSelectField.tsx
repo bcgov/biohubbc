@@ -2,6 +2,7 @@ import Autocomplete from '@mui/material/Autocomplete';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
@@ -87,14 +88,18 @@ export const CritterSelectField = (props: ICritterSelectFieldProps) => {
     return `${displayName} (${animal.itis_scientific_name})`;
   };
 
-  if (animalsDataLoader.isLoading) {
-    return (
-      <>
-        {displayHeader && (
-          <Typography variant="body2" fontWeight={700} textTransform="uppercase" sx={{ my: 1.75 }}>
+  return (
+    <>
+      {displayHeader && (
+        <HelpButtonStack
+          sx={{ my: 0.5 }}
+          helpText="Select a specific individual animal to associate with this subcount. When an animal is selected, the count will automatically be set to 1 since you're observing that specific individual.">
+          <Typography variant="body2" fontWeight={700} textTransform="uppercase">
             Observed Animal
           </Typography>
-        )}
+        </HelpButtonStack>
+      )}
+      {animalsDataLoader.isLoading ? (
         <TextField
           fullWidth
           placeholder="Loading animals..."
@@ -104,45 +109,36 @@ export const CritterSelectField = (props: ICritterSelectFieldProps) => {
             readOnly: true
           }}
         />
-      </>
-    );
-  }
-
-  return (
-    <>
-      {displayHeader && (
-        <Typography variant="body2" fontWeight={700} textTransform="uppercase" sx={{ my: 1.75 }}>
-          Observed Animal
-        </Typography>
-      )}
-      <Autocomplete
-        options={animalOptions}
-        value={selectedAnimal}
-        onChange={(_, newValue) => handleAnimalChange(newValue)}
-        getOptionLabel={getAnimalLabel}
-        isOptionEqualToValue={(option, value) => option.critterbase_critter_id === value.critterbase_critter_id}
-        renderInput={(params) => (
-          <TextField
-            {...params}
-            placeholder={animalOptions.length === 0 ? 'No animals available' : 'Select an animal'}
-            variant="outlined"
-            fullWidth
-          />
-        )}
-        renderOption={(props, option) => (
-          <Box component="li" {...props}>
-            <Box>
-              <Typography variant="body2" fontWeight={600}>
-                {option.animal_id || option.wlh_id || `Animal ${option.critter_id}`}
-              </Typography>
-              <Typography variant="caption" color="textSecondary">
-                {option.itis_scientific_name}
-              </Typography>
+      ) : (
+        <Autocomplete
+          options={animalOptions}
+          value={selectedAnimal}
+          onChange={(_, newValue) => handleAnimalChange(newValue)}
+          getOptionLabel={getAnimalLabel}
+          isOptionEqualToValue={(option, value) => option.critterbase_critter_id === value.critterbase_critter_id}
+          renderInput={(params) => (
+            <TextField
+              {...params}
+              placeholder={animalOptions.length === 0 ? 'No animals available' : 'Select an animal'}
+              variant="outlined"
+              fullWidth
+            />
+          )}
+          renderOption={(props, option) => (
+            <Box component="li" {...props}>
+              <Box>
+                <Typography variant="body2" fontWeight={600}>
+                  {option.animal_id || option.wlh_id || `Animal ${option.critter_id}`}
+                </Typography>
+                <Typography variant="caption" color="textSecondary">
+                  {option.itis_scientific_name}
+                </Typography>
+              </Box>
             </Box>
-          </Box>
-        )}
-        noOptionsText="No animals found"
-      />
+          )}
+          noOptionsText="No animals found"
+        />
+      )}
     </>
   );
 };

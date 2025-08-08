@@ -5,6 +5,7 @@ import CustomTextField from 'components/fields/CustomTextField';
 export interface ISubcountCountFieldProps {
   formikFieldName: string;
   displayHeader?: boolean;
+  readOnly?: boolean;
 }
 
 /**
@@ -14,7 +15,7 @@ export interface ISubcountCountFieldProps {
  * @return {*}
  */
 export const SubcountCountField = (props: ISubcountCountFieldProps) => {
-  const { formikFieldName, displayHeader } = props;
+  const { formikFieldName, displayHeader, readOnly } = props;
 
   const subcountCountFieldName = `${formikFieldName}.subcount`;
 
@@ -31,7 +32,24 @@ export const SubcountCountField = (props: ISubcountCountFieldProps) => {
           </Typography>
         </HelpButtonStack>
       )}
-      <CustomTextField label="Subcount" name={subcountCountFieldName} other={{ type: 'number', required: true }} />
+      <CustomTextField
+        label="Subcount"
+        name={subcountCountFieldName}
+        other={{
+          type: 'number',
+          required: true,
+          InputProps: readOnly ? { readOnly: true } : undefined,
+          disabled: readOnly,
+          ...(readOnly && {
+            sx: {
+              '& .MuiInputBase-input': {
+                color: 'text.secondary',
+                cursor: 'default'
+              }
+            }
+          })
+        }}
+      />
     </>
   );
 };
