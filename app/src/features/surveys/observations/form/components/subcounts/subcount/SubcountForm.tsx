@@ -6,6 +6,7 @@ import { SubcountCountField } from 'features/surveys/observations/form/component
 import { SubcountMeasurementsForm } from 'features/surveys/observations/form/components/subcounts/subcount/measurements/SubcountMeasurementsForm';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { SubcountCommentForm } from './comment/SubcountCommentForm';
+import { CritterSelectField } from './critter/SubcountCritterSelectField';
 
 export interface ISubcountFormProps {
   formikFieldName: string;
@@ -50,6 +51,14 @@ export const SubcountForm = (props: ISubcountFormProps) => {
         {/* Render the subcount comment field */}
         <Box flex="1 1 auto" minWidth="300px">
           <SubcountCommentForm formikFieldName={formikFieldName} displayHeader={enableHeaders} />
+        </Box>
+
+        {/* Render the critter selection field */}
+        <Box flex="1 1 auto" minWidth="200px">
+          <CritterSelectField
+            formikFieldName={`${formikFieldName}.critterbase_critter_id`}
+            displayHeader={enableHeaders}
+          />
         </Box>
       </Paper>
     </Stack>
