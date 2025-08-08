@@ -1,8 +1,8 @@
 import { AxiosInstance } from 'axios';
+import { IAllDeploymentAdvancedFilters } from 'features/summary/tabular-data/deployments/DeploymentListFilterForm';
 import {
   CreateTelemetryDeployment,
   GetSurveyDeploymentsResponse,
-  IAllDeploymentAdvancedFilters,
   IFindTelemetryDeploymentResponse,
   TelemetryDeployment,
   UpdateTelemetryDeployment
@@ -150,7 +150,7 @@ export const useTelemetryDeploymentApi = (axios: AxiosInstance) => {
       ...filterFieldData
     };
 
-    const { data } = await axios.get('/api/deployments', {
+    const { data } = await axios.get('/api/deployment', {
       params,
       paramsSerializer: (params) => qs.stringify(params)
     });

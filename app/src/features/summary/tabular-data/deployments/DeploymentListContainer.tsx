@@ -16,13 +16,15 @@ import { useCodesContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
-import { IAllDeploymentAdvancedFilters, TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
+import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
+
 import { useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import {
   DeploymentAdvancedFiltersInitialValues,
   DeploymentListFilterForm,
+  IAllDeploymentAdvancedFilters,
   IAllDeploymentAdvancedFilters as IFormDeploymentAdvancedFilters
 } from './DeploymentListFilterForm';
 
