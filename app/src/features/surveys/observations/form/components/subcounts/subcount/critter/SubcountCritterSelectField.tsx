@@ -119,6 +119,7 @@ export const CritterSelectField = (props: ICritterSelectFieldProps) => {
           renderInput={(params) => (
             <TextField
               {...params}
+              label="Observed Animal"
               placeholder={animalOptions.length === 0 ? 'No animals available' : 'Select an animal'}
               variant="outlined"
               fullWidth
