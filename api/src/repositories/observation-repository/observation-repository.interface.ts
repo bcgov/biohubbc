@@ -27,6 +27,7 @@ export interface InsertObservationSubCount {
   observation_subcount_id: number | null;
   comment: string | null;
   subcount: number;
+  critterbase_critter_id: string | null;
   qualitative_measurements: {
     measurement_id: string;
     measurement_option_id: string;

@@ -6,13 +6,14 @@ import { BaseRepository } from './base-repository';
 
 export type InsertObservationSubCount = Pick<
   ObservationSubcountRecord,
-  'survey_observation_id' | 'subcount' | 'comment'
+  'survey_observation_id' | 'subcount' | 'comment' | 'critterbase_critter_id'
 >;
 
 export interface InsertSubCount {
   observation_subcount_id: number | null;
   comment: string | null;
   subcount: number;
+  critterbase_critter_id: string | null;
   qualitative_measurements: {
     measurement_id: string;
     measurement_option_id: string;
