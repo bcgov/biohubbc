@@ -142,9 +142,6 @@ GET.apiDoc = {
                     'attachment_end_date',
                     'attachment_end_time',
                     'attachment_end_timestamp',
-                    'critterbase_start_capture_id',
-                    'critterbase_end_capture_id',
-                    'critterbase_end_mortality_id',
                     // device data
                     'serial',
                     'device_make_id',
@@ -207,7 +204,8 @@ GET.apiDoc = {
                       nullable: true
                     },
                     critterbase_start_capture_id: {
-                      type: 'string'
+                      type: 'string',
+                      nullable: true
                     },
                     critterbase_end_capture_id: {
                       type: 'string',

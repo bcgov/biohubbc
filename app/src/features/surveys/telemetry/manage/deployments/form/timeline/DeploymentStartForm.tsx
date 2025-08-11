@@ -15,14 +15,14 @@ import yup from 'utils/YupSchema';
 export const DeploymentStartFormInitialValues: yup.InferType<typeof DeploymentStartFormYupSchema> = {
   attachment_start_date: null as unknown as string,
   attachment_start_time: null,
-  critterbase_start_capture_id: null as unknown as string
+  critterbase_start_capture_id: ''
 };
 
 export const DeploymentStartFormYupSchema = yup.object({
   attachment_start_date: yup.string().nullable().required('Start date is required'),
   attachment_start_time: yup.string().nullable().default(null),
 
-  critterbase_start_capture_id: yup.string().nullable().required('You must select the initial capture event')
+  critterbase_start_capture_id: yup.string().required('You must select the initial capture event')
 });
 
 interface IDeploymentStartFormProps {

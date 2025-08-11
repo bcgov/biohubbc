@@ -57,7 +57,7 @@ interface IAllDeploymentListContainerProps {
 const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
   page: 0,
   limit: 10,
-  sort: 'acquisition_date',
+  sort: 'attachment_start_date',
   order: 'desc'
 };
 

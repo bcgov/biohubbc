@@ -67,7 +67,7 @@ export const EditDeploymentPage = () => {
     attachment_start_time: deployment.attachment_start_time,
     attachment_end_date: deployment.attachment_end_date,
     attachment_end_time: deployment.attachment_end_time,
-    critterbase_start_capture_id: deployment.critterbase_start_capture_id,
+    critterbase_start_capture_id: deployment.critterbase_start_capture_id || '',
     critterbase_end_capture_id: deployment.critterbase_end_capture_id,
     critterbase_end_mortality_id: deployment.critterbase_end_mortality_id
   };
