@@ -26,7 +26,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { CBMeasurementType, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetSurveyFlattenedObservationsResponse, ObservationRecord } from 'interfaces/useObservationApi.interface';
 import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState, useRef } from 'react';
 import { firstOrNull } from 'utils/Utils';
 import { SIMS_OBSERVATIONS_HIDDEN_COLUMNS } from '../constants/session-storage';
 import { SurveyContext } from './surveyContext';
@@ -173,6 +173,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
 
   // Stores critter data for animal aliases
   const [critterData, setCritterData] = useState<Map<string, ICritterSimpleResponse>>(new Map());
+  const fetchedCritterIds = useRef<Set<string>>(new Set());
 
   // Stores the currently selected row ids
   const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
@@ -468,13 +469,13 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
         return;
       }
 
-      // Extract unique critter IDs that we don't already have cached
+      // Extract unique critter IDs that we haven't fetched yet
       const critterIds = Array.from(
         new Set(
           observationsData.surveyObservations
             .map((item) => item.subcount.critterbase_critter_id)
             .filter((id): id is string => Boolean(id))
-            .filter((id) => !critterData.has(id))
+            .filter((id) => !fetchedCritterIds.current.has(id))
         )
       );
 
@@ -483,24 +484,31 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       }
 
       try {
+        // Mark these IDs as being fetched to prevent duplicate requests
+        critterIds.forEach((id) => fetchedCritterIds.current.add(id));
+
         // Fetch critter data for all unique IDs
         const critterResponses = await Promise.all(
           critterIds.map((id) => critterbaseApi.critters.getCritterSimple(id))
         );
 
         // Update the critter data map
-        const newCritterData = new Map(critterData);
-        critterResponses.forEach((critter) => {
-          newCritterData.set(critter.critterbase_critter_id, critter);
+        setCritterData((prevData) => {
+          const newCritterData = new Map(prevData);
+          critterResponses.forEach((critter) => {
+            newCritterData.set(critter.critterbase_critter_id, critter);
+          });
+          return newCritterData;
         });
-        setCritterData(newCritterData);
       } catch (error) {
         console.error('Failed to fetch critter data:', error);
+        // Remove the IDs from the fetched set if the request failed so they can be retried
+        critterIds.forEach((id) => fetchedCritterIds.current.delete(id));
       }
     };
 
     fetchCritterData();
-  }, [observationsData, critterbaseApi.critters, critterData]);
+  }, [observationsData, critterbaseApi.critters]);
 
   /**
    * Runs when the observations data is loaded or refreshed.

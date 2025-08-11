@@ -11,7 +11,7 @@ import { useTaxonomyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
-import { useContext, useEffect, useState } from 'react';
+import { useCallback, useContext, useEffect, useRef, useState } from 'react';
 
 // Set height so the skeleton loader will match table rows
 const rowHeight = 52;
@@ -48,6 +48,7 @@ export const SurveySpatialObservationTable = () => {
   const [pageSize, setPageSize] = useState<number>(10);
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
   const [critterData, setCritterData] = useState<Map<string, ICritterSimpleResponse>>(new Map());
+  const fetchedCritterIds = useRef<Set<string>>(new Set());
 
   const paginatedDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
     biohubApi.observation.getFlattenedObservationRecords(surveyContext.projectId, surveyContext.surveyId, {
@@ -71,50 +72,66 @@ export const SurveySpatialObservationTable = () => {
   }, [page, pageSize, sortModel]);
 
   // Fetch critter data when observations are loaded
-  useEffect(() => {
-    const fetchCritterData = async () => {
-      if (!paginatedDataLoader.data?.surveyObservations) {
-        return;
-      }
+  const fetchCritterData = useCallback(async () => {
+    if (!paginatedDataLoader.data?.surveyObservations) {
+      return;
+    }
 
-      // Extract unique critter IDs that we don't already have cached
-      const critterIds = Array.from(
-        new Set(
-          paginatedDataLoader.data.surveyObservations
-            .map((item) => item.subcount.critterbase_critter_id)
-            .filter((id): id is string => Boolean(id))
-            .filter((id) => !critterData.has(id))
-        )
-      );
+    // Extract all critter IDs from the current page
+    const allCritterIds = paginatedDataLoader.data.surveyObservations
+      .map((item) => item.subcount.critterbase_critter_id)
+      .filter((id): id is string => Boolean(id));
 
-      if (critterIds.length === 0) {
-        return;
-      }
+    // Find critter IDs that we haven't fetched yet
+    const critterIds = Array.from(new Set(allCritterIds.filter((id) => !fetchedCritterIds.current.has(id))));
 
-      try {
-        // Fetch critter data for all unique IDs
-        const critterResponses = await Promise.all(
-          critterIds.map((id) => critterbaseApi.critters.getCritterSimple(id))
-        );
+    console.log('All critter IDs on page:', allCritterIds);
+    console.log('Found critter IDs to fetch:', critterIds);
+    console.log('Already fetched critter IDs:', Array.from(fetchedCritterIds.current));
 
-        // Update the critter data map
-        const newCritterData = new Map(critterData);
+    if (critterIds.length === 0) {
+      return;
+    }
+
+    try {
+      // Mark these IDs as being fetched to prevent duplicate requests
+      critterIds.forEach((id) => fetchedCritterIds.current.add(id));
+
+      // Fetch critter data for all unique IDs
+      const critterResponses = await Promise.all(critterIds.map((id) => critterbaseApi.critters.getCritterSimple(id)));
+
+      console.log('Fetched critter responses:', critterResponses);
+
+      // Update the critter data map
+      setCritterData((prevData) => {
+        const newCritterData = new Map(prevData);
         critterResponses.forEach((critter) => {
           newCritterData.set(critter.critterbase_critter_id, critter);
         });
-        setCritterData(newCritterData);
-      } catch (error) {
-        console.error('Failed to fetch critter data:', error);
-      }
-    };
+        console.log('Updated critter data cache size:', newCritterData.size);
+        return newCritterData;
+      });
+    } catch (error) {
+      console.error('Failed to fetch critter data:', error);
+      // Remove the IDs from the fetched set if the request failed so they can be retried
+      critterIds.forEach((id) => fetchedCritterIds.current.delete(id));
+    }
+  }, [paginatedDataLoader.data, critterbaseApi.critters]);
 
+  useEffect(() => {
     fetchCritterData();
-  }, [paginatedDataLoader.data, critterbaseApi.critters, critterData]);
+  }, [fetchCritterData]);
 
   const rows: IFlattenedObservationTableRow[] =
     paginatedDataLoader.data?.surveyObservations.map((item) => {
       const critterId = item.subcount.critterbase_critter_id;
       const critter = critterId ? critterData.get(critterId) : null;
+
+      console.log(`Row ${item.subcount.observation_subcount_id}:`, {
+        critterId,
+        critter,
+        alias: critter?.animal_id || null
+      });
 
       return {
         observation_subcount_id: item.subcount.observation_subcount_id,
@@ -172,9 +189,9 @@ export const SurveySpatialObservationTable = () => {
     },
     {
       field: 'critter_alias',
-      headerName: 'Animal ID',
+      headerName: 'Observed Animal',
       flex: 1,
-      minWidth: 120,
+      minWidth: 200,
       renderCell: (params) => params.row.critter_alias || '-'
     },
     {
