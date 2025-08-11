@@ -98,12 +98,8 @@ export class SubCountService extends DBService {
   ): Promise<void> {
     const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
 
-    await Promise.all([
-      // Delete child subcount_critter records, if any
-      this.subCountRepository.deleteSubCountCritterRecordsForObservationId(surveyId, surveyObservationIds),
-      // Delete child observation measurements, if any
-      observationSubCountMeasurementService.deleteObservationMeasurements(surveyId, surveyObservationIds)
-    ]);
+    // Delete child observation measurements, if any
+    await observationSubCountMeasurementService.deleteObservationMeasurements(surveyId, surveyObservationIds);
 
     // Delete observation_subcount records, if any
     return this.subCountRepository.deleteObservationSubCountRecordsByObservationId(surveyId, surveyObservationIds);

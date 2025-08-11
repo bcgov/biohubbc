@@ -605,7 +605,7 @@ export class ObservationService extends DBService {
    * @memberof ObservationRepository
    */
   async deleteObservationsByIds(surveyId: number, observationIds: number[]): Promise<number> {
-    // Remove any existing child subcount records (observation_subcount, subcount_critter) before
+    // Remove any existing child subcount records (observation_subcount) before
     // deleting survey_observation records
     const service = new SubCountService(this.connection);
     await service.deleteObservationSubCountRecordsByObservationId(surveyId, observationIds);

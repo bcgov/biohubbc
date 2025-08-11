@@ -102,31 +102,4 @@ export class SubCountRepository extends BaseRepository {
     await this.connection.knex(queryBuilder);
   }
 
-  /**
-   * Delete subcount_critter records for a given set of survey observation ids.
-   *
-   * @param {number} surveyId
-   * @param {number[]} surveyObservationIds
-   * @return {*}
-   * @memberof SubCountRepository
-   */
-  async deleteSubCountCritterRecordsForObservationId(surveyId: number, surveyObservationIds: number[]) {
-    const queryBuilder = getKnex()
-      .delete()
-      .from('subcount_critter')
-      .innerJoin(
-        'observation_subcount',
-        'observation_subcount.observation_subcount_id',
-        'subcount_critter.observation_subcount_id'
-      )
-      .innerJoin(
-        'survey_observation',
-        'observation_subcount.survey_observation_id',
-        'survey_observation.survey_observation_id'
-      )
-      .whereIn('observation_subcount.survey_observation_id', surveyObservationIds)
-      .andWhere('survey_observation.survey_id', surveyId);
-
-    return this.connection.knex(queryBuilder);
-  }
 }
