@@ -22,7 +22,8 @@ import {
   useObservationsPageContext,
   useTaxonomyContext
 } from 'hooks/useContext';
-import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { CBMeasurementType, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetSurveyFlattenedObservationsResponse, ObservationRecord } from 'interfaces/useObservationApi.interface';
 import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
@@ -32,6 +33,7 @@ import { SurveyContext } from './surveyContext';
 
 export interface IObservationTableRow extends Partial<ObservationRecord> {
   id: GridRowId;
+  critter_alias?: string | null;
 }
 
 /**
@@ -164,9 +166,13 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   const { setYesNoDialog, setSnackbar, setErrorDialog } = useDialogContext();
 
   const biohubApi = useBiohubApi();
+  const critterbaseApi = useCritterbaseApi();
 
   // Existing rows
   const [rows, setRows] = useState<IObservationTableRow[]>([]);
+
+  // Stores critter data for animal aliases
+  const [critterData, setCritterData] = useState<Map<string, ICritterSimpleResponse>>(new Map());
 
   // Stores the currently selected row ids
   const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
@@ -388,6 +394,11 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       const rowsToDisplay: IObservationTableRow[] = observationsData.surveyObservations.flatMap((observationRow) => {
         const { subcount, qualitative_environments, quantitative_environments, ...restObservation } = observationRow;
         const { qualitative_measurements, quantitative_measurements, ...restSubcount } = subcount;
+
+        // Get critter alias if available
+        const critterId = restSubcount.critterbase_critter_id;
+        const critter = critterId ? critterData.get(critterId) : null;
+
         return {
           // Set the required datagrid row id
           id: String(restSubcount.observation_subcount_id),
@@ -413,6 +424,9 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
           // Spread the standard subcount data into the row
           ...restSubcount,
 
+          // Add critter alias
+          critter_alias: critter?.animal_id || null,
+
           // Reduce the array of subcount qualitative measurements into an object and spread into the row
           ...qualitative_measurements.reduce((acc, cur) => {
             return {
@@ -433,7 +447,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
 
       return rowsToDisplay;
     },
-    []
+    [critterData]
   );
 
   /**
@@ -444,6 +458,49 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
     // Should not re-run this effect on `refreshRows` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paginationModel, sortModel]);
+
+  /**
+   * Fetch critter data when observations are loaded
+   */
+  useEffect(() => {
+    const fetchCritterData = async () => {
+      if (!observationsData?.surveyObservations) {
+        return;
+      }
+
+      // Extract unique critter IDs that we don't already have cached
+      const critterIds = Array.from(
+        new Set(
+          observationsData.surveyObservations
+            .map((item) => item.subcount.critterbase_critter_id)
+            .filter((id): id is string => Boolean(id))
+            .filter((id) => !critterData.has(id))
+        )
+      );
+
+      if (critterIds.length === 0) {
+        return;
+      }
+
+      try {
+        // Fetch critter data for all unique IDs
+        const critterResponses = await Promise.all(
+          critterIds.map((id) => critterbaseApi.critters.getCritterSimple(id))
+        );
+
+        // Update the critter data map
+        const newCritterData = new Map(critterData);
+        critterResponses.forEach((critter) => {
+          newCritterData.set(critter.critterbase_critter_id, critter);
+        });
+        setCritterData(newCritterData);
+      } catch (error) {
+        console.error('Failed to fetch critter data:', error);
+      }
+    };
+
+    fetchCritterData();
+  }, [observationsData, critterbaseApi.critters, critterData]);
 
   /**
    * Runs when the observations data is loaded or refreshed.
