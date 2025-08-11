@@ -98,7 +98,8 @@ export class ObservationService extends DBService {
         const observationSubCountRecord = await subCountService.insertObservationSubCount({
           survey_observation_id: surveyObservationId,
           subcount: subcount.subcount,
-          comment: subcount.comment
+          comment: subcount.comment,
+          critterbase_critter_id: subcount.critterbase_critter_id ?? null
         });
 
         // -- Subcount Measurement Data --------------------------------------------------------------
@@ -187,7 +188,8 @@ export class ObservationService extends DBService {
       const observationSubCountRecord = await subCountService.insertObservationSubCount({
         survey_observation_id: surveyObservationId,
         subcount: subcount.subcount,
-        comment: subcount.comment
+        comment: subcount.comment,
+        critterbase_critter_id: subcount.critterbase_critter_id ?? null
       });
 
       // -- Subcount Measurement Data --------------------------------------------------------------

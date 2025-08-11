@@ -8,7 +8,9 @@ import { SurveyContext } from 'contexts/surveyContext';
 import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useTaxonomyContext } from 'hooks/useContext';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
+import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { useContext, useEffect, useState } from 'react';
 
 // Set height so the skeleton loader will match table rows
@@ -26,6 +28,8 @@ interface IFlattenedObservationTableRow extends GridValidRowModel {
   observation_time: string | null;
   latitude: number | null;
   longitude: number | null;
+  critterbase_critter_id: string | null;
+  critter_alias: string | null;
 }
 
 /**
@@ -38,10 +42,12 @@ export const SurveySpatialObservationTable = () => {
   const taxonomyContext = useTaxonomyContext();
 
   const biohubApi = useBiohubApi();
+  const critterbaseApi = useCritterbaseApi();
 
   const [page, setPage] = useState<number>(0);
   const [pageSize, setPageSize] = useState<number>(10);
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
+  const [critterData, setCritterData] = useState<Map<string, ICritterSimpleResponse>>(new Map());
 
   const paginatedDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
     biohubApi.observation.getFlattenedObservationRecords(surveyContext.projectId, surveyContext.surveyId, {
@@ -64,8 +70,48 @@ export const SurveySpatialObservationTable = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [page, pageSize, sortModel]);
 
+  // Fetch critter data when observations are loaded
+  useEffect(() => {
+    const fetchCritterData = async () => {
+      if (!paginatedDataLoader.data?.surveyObservations) return;
+
+      // Extract unique critter IDs that we don't already have cached
+      const critterIds = Array.from(
+        new Set(
+          paginatedDataLoader.data.surveyObservations
+            .map((item) => item.subcount.critterbase_critter_id)
+            .filter((id): id is string => Boolean(id))
+            .filter((id) => !critterData.has(id))
+        )
+      );
+
+      if (critterIds.length === 0) return;
+
+      try {
+        // Fetch critter data for all unique IDs
+        const critterResponses = await Promise.all(
+          critterIds.map((id) => critterbaseApi.critters.getCritterSimple(id))
+        );
+
+        // Update the critter data map
+        const newCritterData = new Map(critterData);
+        critterResponses.forEach((critter) => {
+          newCritterData.set(critter.critterbase_critter_id, critter);
+        });
+        setCritterData(newCritterData);
+      } catch (error) {
+        console.error('Failed to fetch critter data:', error);
+      }
+    };
+
+    fetchCritterData();
+  }, [paginatedDataLoader.data, critterbaseApi.critters, critterData]);
+
   const rows: IFlattenedObservationTableRow[] =
     paginatedDataLoader.data?.surveyObservations.map((item) => {
+      const critterId = item.subcount.critterbase_critter_id;
+      const critter = critterId ? critterData.get(critterId) : null;
+
       return {
         observation_subcount_id: item.subcount.observation_subcount_id,
         itis_tsn: item.itis_tsn,
@@ -78,7 +124,9 @@ export const SurveySpatialObservationTable = () => {
         observation_date: dayjs(item.observation_date).format('YYYY-MM-DD'),
         observation_time: item.observation_time,
         latitude: item.latitude,
-        longitude: item.longitude
+        longitude: item.longitude,
+        critterbase_critter_id: item.subcount.critterbase_critter_id,
+        critter_alias: critter?.animal_id || null
       };
     }) ?? [];
 
@@ -117,6 +165,13 @@ export const SurveySpatialObservationTable = () => {
       headerAlign: 'left',
       align: 'left',
       maxWidth: 100
+    },
+    {
+      field: 'critter_alias',
+      headerName: 'Animal ID',
+      flex: 1,
+      minWidth: 120,
+      renderCell: (params) => params.row.critter_alias || '-'
     },
     {
       field: 'observation_date',

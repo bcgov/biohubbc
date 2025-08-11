@@ -20,6 +20,7 @@ describe('SubCountRepository', () => {
       const mockSubcount: ObservationSubcountRecord = {
         observation_subcount_id: 1,
         survey_observation_id: 1,
+        critterbase_critter_id: null,
         comment: 'comment',
         subcount: 5
       };

@@ -25,6 +25,7 @@ describe('SubCountService', () => {
         survey_observation_id: 2,
         subcount: 3,
         comment: 'comment',
+        critterbase_critter_id: null,
         create_user: 1,
         create_date: '2021-01-01',
         update_user: null,
@@ -35,7 +36,8 @@ describe('SubCountService', () => {
       const mockInsertObservationSubCount: InsertObservationSubCount = {
         survey_observation_id: 2,
         subcount: 3,
-        comment: 'comment'
+        comment: 'comment',
+        critterbase_critter_id: null
       };
 
       const insertObservationSubCountStub = sinon
