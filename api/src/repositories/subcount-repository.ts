@@ -102,5 +102,4 @@ export class SubCountRepository extends BaseRepository {
     // Delete observation_subcount records, if any
     await this.connection.knex(queryBuilder);
   }
-
 }

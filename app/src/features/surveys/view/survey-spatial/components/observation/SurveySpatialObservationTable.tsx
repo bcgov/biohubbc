@@ -73,7 +73,9 @@ export const SurveySpatialObservationTable = () => {
   // Fetch critter data when observations are loaded
   useEffect(() => {
     const fetchCritterData = async () => {
-      if (!paginatedDataLoader.data?.surveyObservations) return;
+      if (!paginatedDataLoader.data?.surveyObservations) {
+        return;
+      }
 
       // Extract unique critter IDs that we don't already have cached
       const critterIds = Array.from(
@@ -85,7 +87,9 @@ export const SurveySpatialObservationTable = () => {
         )
       );
 
-      if (critterIds.length === 0) return;
+      if (critterIds.length === 0) {
+        return;
+      }
 
       try {
         // Fetch critter data for all unique IDs
