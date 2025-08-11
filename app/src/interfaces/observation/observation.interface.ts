@@ -158,6 +158,7 @@ export interface ICreateObservation {
     qualitative_measurements: SubcountQualitativeMeasurement[];
     quantitative_measurements: SubcountQuantitativeMeasurement[];
     comment: string | null;
+    critterbase_critter_id: string | null;
   }[];
 }
 
@@ -182,5 +183,6 @@ export interface IEditObservation {
     qualitative_measurements: SubcountQualitativeMeasurement[];
     quantitative_measurements: SubcountQuantitativeMeasurement[];
     comment: string | null;
+    critterbase_critter_id: string | null;
   }[];
 }
