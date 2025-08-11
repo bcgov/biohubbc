@@ -11,7 +11,7 @@ import { useTaxonomyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
-import { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import { useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 
 // Set height so the skeleton loader will match table rows
 const rowHeight = 52;
@@ -85,10 +85,6 @@ export const SurveySpatialObservationTable = () => {
     // Find critter IDs that we haven't fetched yet
     const critterIds = Array.from(new Set(allCritterIds.filter((id) => !fetchedCritterIds.current.has(id))));
 
-    console.log('All critter IDs on page:', allCritterIds);
-    console.log('Found critter IDs to fetch:', critterIds);
-    console.log('Already fetched critter IDs:', Array.from(fetchedCritterIds.current));
-
     if (critterIds.length === 0) {
       return;
     }
@@ -100,15 +96,15 @@ export const SurveySpatialObservationTable = () => {
       // Fetch critter data for all unique IDs
       const critterResponses = await Promise.all(critterIds.map((id) => critterbaseApi.critters.getCritterSimple(id)));
 
-      console.log('Fetched critter responses:', critterResponses);
-
       // Update the critter data map
       setCritterData((prevData) => {
         const newCritterData = new Map(prevData);
         critterResponses.forEach((critter) => {
-          newCritterData.set(critter.critterbase_critter_id, critter);
+          // The observation data uses critterbase_critter_id (string) but API returns critter_id (string UUID)
+          // These should be the same value, so use critter_id as the key
+          const critterId = String(critter.critter_id);
+          newCritterData.set(critterId, critter);
         });
-        console.log('Updated critter data cache size:', newCritterData.size);
         return newCritterData;
       });
     } catch (error) {
@@ -122,16 +118,14 @@ export const SurveySpatialObservationTable = () => {
     fetchCritterData();
   }, [fetchCritterData]);
 
-  const rows: IFlattenedObservationTableRow[] =
-    paginatedDataLoader.data?.surveyObservations.map((item) => {
+  const rows: IFlattenedObservationTableRow[] = useMemo(() => {
+    if (!paginatedDataLoader.data?.surveyObservations) {
+      return [];
+    }
+
+    return paginatedDataLoader.data.surveyObservations.map((item) => {
       const critterId = item.subcount.critterbase_critter_id;
       const critter = critterId ? critterData.get(critterId) : null;
-
-      console.log(`Row ${item.subcount.observation_subcount_id}:`, {
-        critterId,
-        critter,
-        alias: critter?.animal_id || null
-      });
 
       return {
         observation_subcount_id: item.subcount.observation_subcount_id,
@@ -149,7 +143,8 @@ export const SurveySpatialObservationTable = () => {
         critterbase_critter_id: item.subcount.critterbase_critter_id,
         critter_alias: critter?.animal_id || null
       };
-    }) ?? [];
+    });
+  }, [paginatedDataLoader.data, critterData, taxonomyContext]);
 
   const rowCount = paginatedDataLoader.data?.pagination.total ?? 0;
 
@@ -192,7 +187,7 @@ export const SurveySpatialObservationTable = () => {
       headerName: 'Observed Animal',
       flex: 1,
       minWidth: 200,
-      renderCell: (params) => params.row.critter_alias || '-'
+      renderCell: (params) => params.row.critter_alias || ''
     },
     {
       field: 'observation_date',

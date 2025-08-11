@@ -26,7 +26,7 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import { CBMeasurementType, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetSurveyFlattenedObservationsResponse, ObservationRecord } from 'interfaces/useObservationApi.interface';
 import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState, useRef } from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { firstOrNull } from 'utils/Utils';
 import { SIMS_OBSERVATIONS_HIDDEN_COLUMNS } from '../constants/session-storage';
 import { SurveyContext } from './surveyContext';
@@ -496,7 +496,10 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
         setCritterData((prevData) => {
           const newCritterData = new Map(prevData);
           critterResponses.forEach((critter) => {
-            newCritterData.set(critter.critterbase_critter_id, critter);
+            // The observation data uses critterbase_critter_id (string) but API returns critter_id (string UUID)
+            // These should be the same value, so use critter_id as the key
+            const critterId = String(critter.critter_id);
+            newCritterData.set(critterId, critter);
           });
           return newCritterData;
         });

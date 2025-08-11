@@ -289,6 +289,6 @@ export const AnimalIDColDef = (): GridColDef<IObservationTableRow> => {
     minWidth: 200,
     disableColumnMenu: true,
     headerAlign: 'left',
-    renderCell: (params) => <Typography variant="body2">{params.row.critter_alias || '-'}</Typography>
+    renderCell: (params) => <Typography variant="body2">{params.row.critter_alias || ''}</Typography>
   };
 };
