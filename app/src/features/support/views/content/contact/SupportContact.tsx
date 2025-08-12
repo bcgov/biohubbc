@@ -3,7 +3,7 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 
 /**
- * General information about the Species Inventory Management System
+ * Contact Information for the Species Inventory Management System - main componente being email address so a user can reach out for further support.
  *
  * @returns {*} {JSX.Element}
  */
