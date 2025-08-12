@@ -240,18 +240,26 @@ export const DevicesContainer = () => {
 
       {/* Toggle buttons for Active/Inactive devices */}
       <Box p={2} display="flex" justifyContent="flex-start">
-        <CustomToggleButtonGroup
-          views={[
-            { value: 'active', label: `Active (${activeDevices.length})` },
-            { value: 'inactive', label: `Inactive (${inactiveDevices.length})` }
-          ]}
-          activeView={activeTab}
-          onViewChange={(newValue) => {
-            setActiveTab(newValue);
-            setSelectedRows([]); // Clear selection when switching tabs
-          }}
-          orientation="horizontal"
-        />
+        <Box
+          sx={{
+            '& .MuiToggleButton-root': {
+              whiteSpace: 'nowrap',
+              minWidth: 'auto'
+            }
+          }}>
+          <CustomToggleButtonGroup
+            views={[
+              { value: 'active', label: `Active (${activeDevices.length})` },
+              { value: 'inactive', label: `Inactive (${inactiveDevices.length})` }
+            ]}
+            activeView={activeTab}
+            onViewChange={(newValue) => {
+              setActiveTab(newValue);
+              setSelectedRows([]); // Clear selection when switching tabs
+            }}
+            orientation="horizontal"
+          />
+        </Box>
       </Box>
 
       <Divider flexItem />
