@@ -18,7 +18,7 @@ import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
 
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import {
@@ -111,11 +111,27 @@ const DeploymentListContainer = (props: IAllDeploymentListContainerProps) => {
       biohubApi.telemetryDeployment.findTelemetryDeployment(pagination, filter)
   );
 
+  const animalDataLoader = useDataLoader(() => biohubApi.animal.findAnimals());
+
   useDeepCompareEffect(() => {
     deploymentDataLoader.refresh(paginationSort, advancedFiltersModel);
+    animalDataLoader.refresh();
   }, [advancedFiltersModel, paginationSort]);
 
-  const rows = deploymentDataLoader.data?.deployments ?? [];
+  const rows = useMemo(() => deploymentDataLoader.data?.deployments ?? [], [deploymentDataLoader.data]);
+
+  // Create a mapping from critterbase_critter_id to animal_id
+  const critterIdToAnimalIdMap = useMemo(() => {
+    const animals = animalDataLoader.data?.animals ?? [];
+    const map = new Map<string, string>();
+
+    animals.forEach((animal) => {
+      if (animal.critterbase_critter_id && animal.animal_id) {
+        map.set(animal.critterbase_critter_id, animal.animal_id);
+      }
+    });
+    return map;
+  }, [animalDataLoader.data]);
 
   const columns: GridColDef<TelemetryDeployment>[] = [
     {
@@ -139,14 +155,21 @@ const DeploymentListContainer = (props: IAllDeploymentListContainerProps) => {
       headerName: 'Device Serial',
       flex: 1,
       sortable: false,
-      renderCell: (params) => <Typography variant="body2">{params.row.serial}</Typography>
+      renderCell: (params) => {
+        return <Typography variant="body2">{params.row.serial || ''}</Typography>;
+      }
     },
     {
       field: 'critterbase_critter_id',
       headerName: 'Animal Alias',
       flex: 1,
       sortable: false,
-      renderCell: (params) => <Typography variant="body2">{params.row.critterbase_critter_id || 'N/A'}</Typography>
+      renderCell: (params) => {
+        const animalId = critterIdToAnimalIdMap.get(params.row.critterbase_critter_id);
+        // Show animal_id if found, otherwise show critterbase_critter_id as fallback, otherwise empty
+        const displayValue = animalId || params.row.critterbase_critter_id || '';
+        return <Typography variant="body2">{displayValue}</Typography>;
+      }
     },
     {
       field: 'device_make_id',
@@ -157,7 +180,7 @@ const DeploymentListContainer = (props: IAllDeploymentListContainerProps) => {
         const deviceMake = codesContext.codesDataLoader.data?.telemetry_device_makes?.find(
           (make) => make.id === params.row.device_make_id
         );
-        return <Typography variant="body2">{deviceMake?.name || 'N/A'}</Typography>;
+        return <Typography variant="body2">{deviceMake?.name || ''}</Typography>;
       }
     },
     {
@@ -185,7 +208,7 @@ const DeploymentListContainer = (props: IAllDeploymentListContainerProps) => {
       )
     },
     {
-      field: 'survey_id',
+      field: 'survey_id', // techdebt: when collections is merged into dev and project ids are no longer in urls, make this survey id into a link to the survey instead
       headerName: 'Survey ID',
       flex: 1,
       sortable: false,
@@ -217,10 +240,15 @@ const DeploymentListContainer = (props: IAllDeploymentListContainerProps) => {
 
       <Box height="100vh" maxHeight="800px">
         <LoadingGuard
-          isLoading={!rows.length && (deploymentDataLoader.isLoading || !deploymentDataLoader.isReady)}
+          isLoading={
+            deploymentDataLoader.isLoading ||
+            !deploymentDataLoader.isReady ||
+            animalDataLoader.isLoading ||
+            !animalDataLoader.isReady
+          }
           isLoadingFallback={<SkeletonTable />}
           isLoadingFallbackDelay={100}
-          hasNoData={!rows.length}
+          hasNoData={!rows.length && deploymentDataLoader.isReady && animalDataLoader.isReady}
           hasNoDataFallback={
             <NoDataOverlay
               height="500px"
@@ -232,7 +260,7 @@ const DeploymentListContainer = (props: IAllDeploymentListContainerProps) => {
           hasNoDataFallbackDelay={100}>
           <StyledDataGrid
             noRowsMessage="No deployments found"
-            loading={!rows.length && (deploymentDataLoader.isLoading || !deploymentDataLoader.isReady)}
+            loading={deploymentDataLoader.isLoading || animalDataLoader.isLoading}
             // Columns
             columns={columns}
             // Rows
