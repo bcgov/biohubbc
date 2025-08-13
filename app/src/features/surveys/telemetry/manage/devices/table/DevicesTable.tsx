@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCog, mdiDotsVertical, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
   Box,
@@ -48,7 +48,7 @@ interface IDevicesTableProps {
  * @returns {*}
  */
 export const DevicesTable = (props: IDevicesTableProps) => {
-  const { devices, deployments, selectedRows, setSelectedRows, onDelete } = props;
+  const { devices, deployments, selectedRows, onDelete } = props;
   const biohubApi = useBiohubApi();
   const codesContext = useCodesContext();
   const dialogContext = useDialogContext();
@@ -221,11 +221,27 @@ export const DevicesTable = (props: IDevicesTableProps) => {
             <ListItemText>Edit Details</ListItemText>
           </RouterLink>
         </MenuItem>
-        <MenuItem onClick={handleCloseMenu}>
-          <ListItemIcon>
-            <Icon path={mdiTrashCanOutline} size={1} />
-          </ListItemIcon>
-          <ListItemText>Delete</ListItemText>
+        <MenuItem
+          sx={{
+            p: 0,
+            '& a': {
+              display: 'flex',
+              px: 2,
+              py: '6px',
+              textDecoration: 'none',
+              color: 'text.primary',
+              borderRadius: 0,
+              '&:focus': {
+                outline: 'none'
+              }
+            }
+          }}>
+          <RouterLink to={`/admin/surveys/${surveyContext.surveyId}/telemetry/manage/`}>
+            <ListItemIcon>
+              <Icon path={mdiCog} size={1} />
+            </ListItemIcon>
+            <ListItemText>Manage</ListItemText>
+          </RouterLink>
         </MenuItem>
       </Menu>
 
@@ -236,8 +252,6 @@ export const DevicesTable = (props: IDevicesTableProps) => {
         getRowId={(row) => row.id}
         columns={columns}
         rowSelectionModel={selectedRows}
-        onRowSelectionModelChange={setSelectedRows}
-        checkboxSelection
         initialState={{
           pagination: { paginationModel: { page: 0, pageSize: 10 } }
         }}
