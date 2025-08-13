@@ -263,16 +263,23 @@ export const DevicesContainer = () => {
 
       <Divider flexItem />
 
-      <Box>
+      <Box
+        sx={{
+          flex: '1 1 auto',
+          display: 'flex',
+          flexDirection: 'column',
+          minHeight: 0,
+          height: '100%'
+        }}>
         <LoadingGuard
           isLoading={devicesDataLoader.isLoading || !devicesDataLoader.isReady}
           isLoadingFallback={<SkeletonTable numberOfLines={5} />}
-          isLoadingFallbackDelay={10000}
+          isLoadingFallbackDelay={100}
           hasNoData={devicesDataLoader.data?.count === 0}
           hasNoDataFallback={
             <NoDataOverlay
               minHeight="300px"
-              height="200px"
+              height="100%"
               title={activeTab === 'active' ? 'No Active Devices' : 'No Inactive Devices'}
               subtitle={
                 activeTab === 'active'
@@ -280,12 +287,13 @@ export const DevicesContainer = () => {
                   : 'No inactive devices found. All devices are currently deployed.'
               }
               icon={mdiArrowTopRight}
+              sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             />
           }>
           {currentDevices.length === 0 ? (
             <NoDataOverlay
               minHeight="300px"
-              height="200px"
+              height="100%"
               title={activeTab === 'active' ? 'No Active Devices' : 'No Inactive Devices'}
               subtitle={
                 activeTab === 'active'
@@ -293,6 +301,7 @@ export const DevicesContainer = () => {
                   : 'No inactive devices found. All devices are currently deployed.'
               }
               icon={mdiArrowTopRight}
+              sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             />
           ) : (
             <DevicesTable
