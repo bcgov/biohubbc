@@ -1,5 +1,5 @@
 import { mdiCog } from '@mdi/js';
-import { Icon } from '@mdi/react';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
@@ -19,7 +19,7 @@ import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useEffect, useMemo } from 'react';
-import { useHistory } from 'react-router';
+import { Link as RouterLink } from 'react-router-dom';
 
 /**
  * Component to display telemetry data on a map and in a table.
@@ -28,7 +28,6 @@ import { useHistory } from 'react-router';
  */
 export const SurveySpatialTelemetry = () => {
   const surveyContext = useSurveyContext();
-  const history = useHistory();
 
   const biohubApi = useBiohubApi();
 
@@ -91,9 +90,9 @@ export const SurveySpatialTelemetry = () => {
             <Button
               variant="contained"
               color="primary"
-              aria-label="Manage Survey Data"
-              onClick={() => history.push('/observations/manage')}
-              startIcon={<Icon path={mdiCog} size={0.75}></Icon>}>
+              component={RouterLink}
+              to={`/admin/surveys/${surveyContext.surveyId}/telemetry/details`}
+              startIcon={<Icon path={mdiCog} size={0.8} />}>
               Manage
             </Button>
           </SurveyRoleRouteGuard>
