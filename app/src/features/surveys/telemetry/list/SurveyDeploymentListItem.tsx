@@ -4,7 +4,6 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
 import green from '@mui/material/colors/green';
 import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
@@ -32,7 +31,7 @@ export interface ISurveyDeploymentListItemProps {
  * @return {*}
  */
 export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) => {
-  const { animal, deployment, isChecked, handleDeploymentMenuClick, handleCheckboxChange } = props;
+  const { animal, deployment, handleDeploymentMenuClick } = props;
 
   const isDeploymentOver =
     deployment.critterbase_end_mortality_id ||
@@ -79,16 +78,6 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
               pr: 2,
               overflow: 'hidden'
             }}>
-            <Checkbox
-              edge="start"
-              checked={isChecked}
-              sx={{ py: 0 }}
-              onClick={(event) => {
-                event.stopPropagation();
-                handleCheckboxChange(deployment.deployment_id);
-              }}
-              inputProps={{ 'aria-label': 'controlled' }}
-            />
             <Box>
               <Stack gap={1} direction="row">
                 <Typography

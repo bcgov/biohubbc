@@ -1,13 +1,8 @@
-import { mdiArrowTopRight, mdiCog, mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiArrowTopRight, mdiCog, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import Checkbox from '@mui/material/Checkbox';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormGroup from '@mui/material/FormGroup';
-import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -19,7 +14,7 @@ import { SkeletonList } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { SurveyDeploymentListItem } from 'features/surveys/telemetry/list/SurveyDeploymentListItem';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
+import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -31,16 +26,12 @@ import { ApiPaginationRequestOptions } from 'types/misc';
  * @returns {*}
  */
 export const SurveyDeploymentList = () => {
-  const dialogContext = useDialogContext();
   const codesContext = useCodesContext();
   const surveyContext = useSurveyContext();
 
   const biohubApi = useBiohubApi();
 
-  const [bulkDeploymentAnchorEl, setBulkDeploymentAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [deploymentAnchorEl, setDeploymentAnchorEl] = useState<MenuProps['anchorEl']>(null);
-
-  const [checkboxSelectedIds, setCheckboxSelectedIds] = useState<number[]>([]);
   const [selectedDeploymentId, setSelectedDeploymentId] = useState<number | null>();
 
   const deploymentDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
@@ -57,10 +48,6 @@ export const SurveyDeploymentList = () => {
     deploymentDataLoader.load();
   }, [deploymentDataLoader]);
 
-  const handleBulkActionMenuClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    setBulkDeploymentAnchorEl(event.currentTarget);
-  };
-
   /**
    * Callback for when a deployment action menu is clicked.
    *
@@ -72,171 +59,8 @@ export const SurveyDeploymentList = () => {
     setDeploymentAnchorEl(event.currentTarget);
   };
 
-  /**
-   * Callback for when a checkbox is toggled.
-   *
-   * @param {number} deploymentId
-   */
-  const handleCheckboxChange = (deploymentId: number) => {
-    setCheckboxSelectedIds((prev) => {
-      if (prev.includes(deploymentId)) {
-        return prev.filter((item) => item !== deploymentId);
-      } else {
-        return [...prev, deploymentId];
-      }
-    });
-  };
-
-  /**
-   * Callback for when the bulk delete deployment action is confirmed.
-   */
-  const handleBulkDeleteDeployment = async () => {
-    await biohubApi.telemetryDeployment
-      .deleteDeployments(surveyContext.surveyId, checkboxSelectedIds)
-      .then(() => {
-        dialogContext.setYesNoDialog({ open: false });
-        setBulkDeploymentAnchorEl(null);
-        deploymentDataLoader.refresh();
-      })
-      .catch((error: any) => {
-        dialogContext.setYesNoDialog({ open: false });
-        setBulkDeploymentAnchorEl(null);
-        dialogContext.setSnackbar({
-          snackbarMessage: (
-            <>
-              <Typography variant="body2" component="div">
-                <strong>Error Deleting Deployments</strong>
-              </Typography>
-              <Typography variant="body2" component="div">
-                {String(error)}
-              </Typography>
-            </>
-          ),
-          open: true
-        });
-      });
-  };
-
-  /**
-   * Callback for when the delete deployment action is confirmed.
-   */
-  const handleDeleteDeployment = async (deploymentId: number) => {
-    await biohubApi.telemetryDeployment
-      .deleteDeployment(surveyContext.surveyId, deploymentId)
-      .then(() => {
-        dialogContext.setYesNoDialog({ open: false });
-        setDeploymentAnchorEl(null);
-        deploymentDataLoader.refresh();
-      })
-      .catch((error: any) => {
-        dialogContext.setYesNoDialog({ open: false });
-        setDeploymentAnchorEl(null);
-        dialogContext.setSnackbar({
-          snackbarMessage: (
-            <>
-              <Typography variant="body2" component="div">
-                <strong>Error Deleting Deployment</strong>
-              </Typography>
-              <Typography variant="body2" component="div">
-                {String(error)}
-              </Typography>
-            </>
-          ),
-          open: true
-        });
-      });
-  };
-
-  /**
-   * Display the bulk delete deployments confirmation dialog.
-   */
-  const renderBulkDeleteDeploymentDialog = () => {
-    dialogContext.setYesNoDialog({
-      dialogTitle: 'Delete Deployments?',
-      dialogContent: (
-        <Typography variant="body1" component="div" color="textSecondary">
-          Are you sure you want to delete these deployments? All telemetry data from these deployment will also be
-          permanently deleted.
-        </Typography>
-      ),
-      yesButtonLabel: 'Delete Deployments',
-      noButtonLabel: 'Cancel',
-      yesButtonProps: { color: 'error' },
-      onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      open: true,
-      onYes: () => {
-        handleBulkDeleteDeployment();
-      }
-    });
-  };
-
-  /**
-   * Display the delete deployment confirmation dialog.
-   */
-  const renderDeleteDeploymentDialog = (deploymentId?: number) => {
-    dialogContext.setYesNoDialog({
-      dialogTitle: 'Delete Deployment?',
-      dialogContent: (
-        <Typography variant="body1" component="div" color="textSecondary">
-          Are you sure you want to delete this deployment? All telemetry data from the deployment will also be
-          permanently deleted.
-        </Typography>
-      ),
-      yesButtonLabel: 'Delete Deployment',
-      noButtonLabel: 'Cancel',
-      yesButtonProps: { color: 'error' },
-      onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      open: true,
-      onYes: () => {
-        const deploymentIdToDelete = deploymentId ?? selectedDeploymentId;
-
-        if (!deploymentIdToDelete) {
-          return;
-        }
-
-        handleDeleteDeployment(deploymentIdToDelete);
-      }
-    });
-  };
-
   return (
     <>
-      <Menu
-        open={Boolean(bulkDeploymentAnchorEl)}
-        onClose={() => {
-          setBulkDeploymentAnchorEl(null);
-        }}
-        anchorEl={bulkDeploymentAnchorEl}
-        anchorOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'right'
-        }}>
-        <MenuItem
-          onClick={() => {
-            renderBulkDeleteDeploymentDialog();
-            setBulkDeploymentAnchorEl(null);
-          }}>
-          <ListItemIcon>
-            <Icon path={mdiTrashCanOutline} size={1} />
-          </ListItemIcon>
-          Delete
-        </MenuItem>
-      </Menu>
-
       <Menu
         open={Boolean(deploymentAnchorEl)}
         onClose={() => {
@@ -261,14 +85,15 @@ export const SurveyDeploymentList = () => {
           Edit Details
         </MenuItem>
         <MenuItem
+          component={RouterLink}
+          to={`/admin/surveys/${surveyContext.surveyId}/telemetry/manage/`}
           onClick={() => {
-            renderDeleteDeploymentDialog();
             setDeploymentAnchorEl(null);
           }}>
           <ListItemIcon>
-            <Icon path={mdiTrashCanOutline} size={1} />
+            <Icon path={mdiCog} size={1} />
           </ListItemIcon>
-          Delete
+          Manage
         </MenuItem>
       </Menu>
 
@@ -297,19 +122,10 @@ export const SurveyDeploymentList = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
-            to={'manage'}
+            to={`/admin/surveys/${surveyContext.surveyId}/telemetry/manage/`}
             startIcon={<Icon path={mdiCog} size={0.75} />}>
-            Add
+            Manage
           </Button>
-
-          <IconButton
-            edge="end"
-            aria-label="header-settings"
-            disabled={!checkboxSelectedIds.length}
-            onClick={handleBulkActionMenuClick}
-            title="Bulk Actions">
-            <Icon path={mdiDotsVertical} size={1} />
-          </IconButton>
         </Toolbar>
         <Divider flexItem />
         <LoadingGuard
@@ -329,43 +145,6 @@ export const SurveyDeploymentList = () => {
           }
           hasNoDataFallbackDelay={100}>
           <Stack height="100%" position="relative" sx={{ overflowY: 'auto' }}>
-            <Box flex="0 0 auto" display="flex" alignItems="center" px={2} height={55}>
-              <FormGroup>
-                <FormControlLabel
-                  label={
-                    <Typography
-                      variant="body2"
-                      component="span"
-                      color="textSecondary"
-                      fontWeight={700}
-                      sx={{ textTransform: 'uppercase' }}>
-                      Select All
-                    </Typography>
-                  }
-                  control={
-                    <Checkbox
-                      sx={{
-                        mr: 0.75
-                      }}
-                      checked={checkboxSelectedIds.length > 0 && checkboxSelectedIds.length === deploymentsCount}
-                      indeterminate={checkboxSelectedIds.length >= 1 && checkboxSelectedIds.length < deploymentsCount}
-                      onClick={() => {
-                        if (checkboxSelectedIds.length === deploymentsCount) {
-                          // Unselect all
-                          setCheckboxSelectedIds([]);
-                          return;
-                        }
-
-                        // Select all
-                        const deploymentIds = deployments.map((deployment) => deployment.deployment_id);
-                        setCheckboxSelectedIds([...deploymentIds]);
-                      }}
-                      inputProps={{ 'aria-label': 'controlled' }}
-                    />
-                  }
-                />
-              </FormGroup>
-            </Box>
             <Divider flexItem />
             <Stack
               flex="1 1 auto"
@@ -391,9 +170,9 @@ export const SurveyDeploymentList = () => {
                     key={deployment.deployment_id}
                     animal={animal}
                     deployment={hydratedDeployment}
-                    isChecked={checkboxSelectedIds.includes(deployment.deployment_id)}
                     handleDeploymentMenuClick={handledDeploymentMenuClick}
-                    handleCheckboxChange={handleCheckboxChange}
+                    isChecked={false}
+                    handleCheckboxChange={() => {}}
                   />
                 );
               })}
