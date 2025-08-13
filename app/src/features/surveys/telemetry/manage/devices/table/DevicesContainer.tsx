@@ -89,7 +89,6 @@ export const DevicesContainer = () => {
   const activeDevices = devices.filter(isDeviceActive);
   const inactiveDevices = devices.filter((device) => !isDeviceActive(device));
   const currentDevices = activeTab === 'active' ? activeDevices : inactiveDevices;
-  const currentDevicesCount = currentDevices.length;
 
   // Handler for bulk delete operation
   const handleBulkDelete = async () => {
@@ -266,38 +265,44 @@ export const DevicesContainer = () => {
 
       <Box>
         <LoadingGuard
-          isLoading={devicesDataLoader.isLoading}
+          isLoading={devicesDataLoader.isLoading || !devicesDataLoader.isReady}
           isLoadingFallback={<SkeletonTable numberOfLines={5} />}
-          isLoadingFallbackDelay={100}>
-          <Box>
-            <LoadingGuard
-              isLoading={devicesDataLoader.isLoading || !devicesDataLoader.isReady}
-              isLoadingFallback={<SkeletonTable />}
-              isLoadingFallbackDelay={100}
-              hasNoData={!currentDevicesCount}
-              hasNoDataFallback={
-                <NoDataOverlay
-                  minHeight="300px"
-                  height="200px"
-                  title={activeTab === 'active' ? 'No Active Devices' : 'No Inactive Devices'}
-                  subtitle={
-                    activeTab === 'active'
-                      ? 'No devices are currently deployed. Deploy devices to see them here.'
-                      : 'No inactive devices found. All devices are currently deployed.'
-                  }
-                  icon={mdiArrowTopRight}
-                />
+          isLoadingFallbackDelay={10000}
+          hasNoData={devicesDataLoader.data?.count === 0}
+          hasNoDataFallback={
+            <NoDataOverlay
+              minHeight="300px"
+              height="200px"
+              title={activeTab === 'active' ? 'No Active Devices' : 'No Inactive Devices'}
+              subtitle={
+                activeTab === 'active'
+                  ? 'No devices are currently deployed. Deploy devices to see them here.'
+                  : 'No inactive devices found. All devices are currently deployed.'
               }
-              hasNoDataFallbackDelay={100}>
-              <DevicesTable
-                deployments={deployments}
-                devices={currentDevices}
-                selectedRows={selectedRows}
-                setSelectedRows={setSelectedRows}
-                onDelete={onDelete}
-              />
-            </LoadingGuard>
-          </Box>
+              icon={mdiArrowTopRight}
+            />
+          }>
+          {currentDevices.length === 0 ? (
+            <NoDataOverlay
+              minHeight="300px"
+              height="200px"
+              title={activeTab === 'active' ? 'No Active Devices' : 'No Inactive Devices'}
+              subtitle={
+                activeTab === 'active'
+                  ? 'No devices are currently deployed. Deploy devices to see them here.'
+                  : 'No inactive devices found. All devices are currently deployed.'
+              }
+              icon={mdiArrowTopRight}
+            />
+          ) : (
+            <DevicesTable
+              deployments={deployments}
+              devices={currentDevices}
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
+              onDelete={onDelete}
+            />
+          )}
         </LoadingGuard>
       </Box>
     </>
