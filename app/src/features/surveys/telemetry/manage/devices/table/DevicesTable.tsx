@@ -12,12 +12,10 @@ import {
   Typography
 } from '@mui/material';
 import grey from '@mui/material/colors/grey';
-import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { FOREIGN_KEY_CONSTRAINT_ERROR } from 'constants/errors';
 import dayjs from 'dayjs';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
+import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
 import { TelemetryDevice } from 'interfaces/useTelemetryDeviceApi.interface';
 import { useEffect, useState } from 'react';
@@ -37,9 +35,6 @@ export interface IDeviceRowData {
 interface IDevicesTableProps {
   devices: TelemetryDevice[];
   deployments: TelemetryDeployment[];
-  selectedRows: GridRowSelectionModel;
-  setSelectedRows: (selection: GridRowSelectionModel) => void;
-  onDelete?: () => void;
 }
 
 /**
@@ -47,11 +42,8 @@ interface IDevicesTableProps {
  * @param {IDevicesTableProps} props
  * @returns {*}
  */
-export const DevicesTable = (props: IDevicesTableProps) => {
-  const { devices, deployments, selectedRows, onDelete } = props;
-  const biohubApi = useBiohubApi();
+export const DevicesTable: React.FC<IDevicesTableProps> = ({ devices, deployments }) => {
   const codesContext = useCodesContext();
-  const dialogContext = useDialogContext();
   const surveyContext = useSurveyContext();
 
   const [actionMenuDeviceId, setActionMenuDeviceId] = useState<number>();
@@ -61,57 +53,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const handleDeleteDevice = async () => {
-    if (!actionMenuDeviceId) {
-      return;
-    }
-
-    try {
-      await biohubApi.telemetryDevice.deleteDevice(surveyContext.surveyId, actionMenuDeviceId);
-      dialogContext.setYesNoDialog({ open: false });
-      setActionMenuAnchorEl(null);
-      onDelete?.();
-    } catch (error: any) {
-      dialogContext.setYesNoDialog({ open: false });
-      setActionMenuAnchorEl(null);
-      dialogContext.setSnackbar({
-        open: true,
-        snackbarMessage: (
-          <>
-            <Typography variant="body2" component="div">
-              <strong>Error Deleting Device</strong>
-            </Typography>
-            <Typography variant="body2" component="div">
-              {String(error).includes(FOREIGN_KEY_CONSTRAINT_ERROR)
-                ? 'You must delete the deployments involving this device before deleting the device.'
-                : String(error)}
-            </Typography>
-          </>
-        )
-      });
-    }
-  };
-
-  const confirmDeleteDeviceDialog = () => {
-    dialogContext.setYesNoDialog({
-      dialogTitle: 'Delete device?',
-      dialogText: 'Are you sure you want to permanently delete this device?',
-      yesButtonLabel: 'Delete Device',
-      noButtonLabel: 'Cancel',
-      yesButtonProps: { color: 'error' },
-      onYes: handleDeleteDevice,
-      onNo: () => dialogContext.setYesNoDialog({ open: false }),
-      onClose: () => dialogContext.setYesNoDialog({ open: false }),
-      open: true
-    });
-  };
-
-  const handleCloseMenu = () => {
-    setActionMenuAnchorEl(null);
-    confirmDeleteDeviceDialog();
-  };
-
-  const rows: IDeviceRowData[] = devices.map((device) => {
+  const rows: IDeviceRowData[] = devices.map((device: TelemetryDevice) => {
     const deviceDeployments = getDeviceDeploymentsForSerial(deployments, device.serial);
     const deployed = deviceDeployments.some(isDeploymentActive);
 
@@ -194,7 +136,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
     <>
       <Menu
         open={Boolean(actionMenuAnchorEl)}
-        onClose={handleCloseMenu}
+        onClose={() => setActionMenuAnchorEl(null)}
         anchorEl={actionMenuAnchorEl}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
@@ -251,7 +193,6 @@ export const DevicesTable = (props: IDevicesTableProps) => {
         rows={rows}
         getRowId={(row) => row.id}
         columns={columns}
-        rowSelectionModel={selectedRows}
         initialState={{
           pagination: { paginationModel: { page: 0, pageSize: 10 } }
         }}
