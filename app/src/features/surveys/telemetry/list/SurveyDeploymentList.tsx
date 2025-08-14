@@ -111,7 +111,7 @@ export const SurveyDeploymentList = () => {
             pr: 3,
             pl: 2
           }}>
-          <Typography variant="h3" component="h2" flexGrow={1}>
+          <Typography variant="h3" component="h2" flexGrow={1} sx={{ ml: 1.5 }}>
             Deployments &zwnj;
             <Typography sx={{ fontWeight: '400' }} component="span" variant="inherit" color="textSecondary">
               ({deploymentsCount})

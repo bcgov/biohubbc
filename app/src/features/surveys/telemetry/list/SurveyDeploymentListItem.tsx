@@ -58,13 +58,13 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
             flex: '1 1 auto',
             py: 0,
             pr: 7,
-            pl: 0,
+            pl: 1.5, // add left padding to move content right
             height: 75,
             overflow: 'hidden',
             '& .MuiAccordionSummary-content': {
               flex: '1 1 auto',
               py: 0,
-              pl: 0,
+              pl: 0.5, // add a bit of left padding to the content
               overflow: 'hidden',
               whiteSpace: 'nowrap'
             }
