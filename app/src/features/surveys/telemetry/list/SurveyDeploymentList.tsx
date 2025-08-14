@@ -171,8 +171,6 @@ export const SurveyDeploymentList = () => {
                     animal={animal}
                     deployment={hydratedDeployment}
                     handleDeploymentMenuClick={handledDeploymentMenuClick}
-                    isChecked={false}
-                    handleCheckboxChange={() => {}}
                   />
                 );
               })}

@@ -19,9 +19,7 @@ import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interf
 export interface ISurveyDeploymentListItemProps {
   animal?: ICritterSimpleResponse;
   deployment: Omit<TelemetryDeployment, 'frequency_unit'> & { frequency_unit: string | null };
-  isChecked: boolean;
   handleDeploymentMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, deploymentId: number) => void;
-  handleCheckboxChange: (deploymentId: number) => void;
 }
 
 /**
@@ -58,13 +56,13 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
             flex: '1 1 auto',
             py: 0,
             pr: 7,
-            pl: 1.5, // add left padding to move content right
+            pl: 1.5,
             height: 75,
             overflow: 'hidden',
             '& .MuiAccordionSummary-content': {
               flex: '1 1 auto',
               py: 0,
-              pl: 0.5, // add a bit of left padding to the content
+              pl: 0.5,
               overflow: 'hidden',
               whiteSpace: 'nowrap'
             }
