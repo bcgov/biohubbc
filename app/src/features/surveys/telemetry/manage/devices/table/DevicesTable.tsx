@@ -15,6 +15,7 @@ import grey from '@mui/material/colors/grey';
 import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import dayjs from 'dayjs';
+import { getDeviceDeploymentsForSerial } from 'features/surveys/telemetry/table/utils/GridColumnDefinitions';
 import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
 import { TelemetryDevice } from 'interfaces/useTelemetryDeviceApi.interface';
@@ -201,9 +202,6 @@ export const DevicesTable: React.FC<IDevicesTableProps> = ({ devices, deployment
     </>
   );
 };
-
-const getDeviceDeploymentsForSerial = (deployments: TelemetryDeployment[], serial: string) =>
-  deployments.filter((dep) => dep.device_key?.split(':')[1] === serial);
 
 const isDeploymentActive = (deployment: TelemetryDeployment) => {
   const now = dayjs();

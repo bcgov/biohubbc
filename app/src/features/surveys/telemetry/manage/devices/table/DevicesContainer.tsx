@@ -12,6 +12,7 @@ import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import CustomToggleButtonGroup from 'components/toggle/CustomToggleButtonGroup';
 import dayjs from 'dayjs';
 import { DevicesTable } from 'features/surveys/telemetry/manage/devices/table/DevicesTable';
+import { getDeviceDeploymentsForSerial } from 'features/surveys/telemetry/table/utils/GridColumnDefinitions';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
@@ -47,10 +48,6 @@ export const DevicesContainer = () => {
   }, [deploymentsDataLoader, surveyContext.surveyId]);
 
   const deployments = useMemo(() => deploymentsDataLoader.data?.deployments ?? [], [deploymentsDataLoader.data]);
-
-  // Helper functions to determine device status
-  const getDeviceDeploymentsForSerial = (deployments: TelemetryDeployment[], serial: string) =>
-    deployments.filter((dep) => dep.device_key?.split(':')[1] === serial);
 
   const isDeploymentActive = (deployment: TelemetryDeployment) => {
     const now = dayjs();
