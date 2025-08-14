@@ -4,7 +4,6 @@ import Accordion from '@mui/material/Accordion';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import Box from '@mui/material/Box';
-import Checkbox from '@mui/material/Checkbox';
 import green from '@mui/material/colors/green';
 import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
@@ -20,9 +19,7 @@ import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interf
 export interface ISurveyDeploymentListItemProps {
   animal?: ICritterSimpleResponse;
   deployment: Omit<TelemetryDeployment, 'frequency_unit'> & { frequency_unit: string | null };
-  isChecked: boolean;
   handleDeploymentMenuClick: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>, deploymentId: number) => void;
-  handleCheckboxChange: (deploymentId: number) => void;
 }
 
 /**
@@ -32,7 +29,7 @@ export interface ISurveyDeploymentListItemProps {
  * @return {*}
  */
 export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) => {
-  const { animal, deployment, isChecked, handleDeploymentMenuClick, handleCheckboxChange } = props;
+  const { animal, deployment, handleDeploymentMenuClick } = props;
 
   const isDeploymentOver =
     deployment.critterbase_end_mortality_id ||
@@ -59,13 +56,13 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
             flex: '1 1 auto',
             py: 0,
             pr: 7,
-            pl: 0,
+            pl: 1.5,
             height: 75,
             overflow: 'hidden',
             '& .MuiAccordionSummary-content': {
               flex: '1 1 auto',
               py: 0,
-              pl: 0,
+              pl: 0.5,
               overflow: 'hidden',
               whiteSpace: 'nowrap'
             }
@@ -79,16 +76,6 @@ export const SurveyDeploymentListItem = (props: ISurveyDeploymentListItemProps) 
               pr: 2,
               overflow: 'hidden'
             }}>
-            <Checkbox
-              edge="start"
-              checked={isChecked}
-              sx={{ py: 0 }}
-              onClick={(event) => {
-                event.stopPropagation();
-                handleCheckboxChange(deployment.deployment_id);
-              }}
-              inputProps={{ 'aria-label': 'controlled' }}
-            />
             <Box>
               <Stack gap={1} direction="row">
                 <Typography

@@ -98,3 +98,8 @@ export const DeviceColDef = (): GridColDef<IManualTelemetryTableRow> => {
     renderCell: (params) => <Typography>{params.value}</Typography>
   };
 };
+
+//Helper functions that are used in both DevicesContainer and DevicesTable. Used here and imported to reduce duplication
+
+export const getDeviceDeploymentsForSerial = (deployments: TelemetryDeployment[], serial: string) =>
+  deployments.filter((dep) => dep.device_key?.split(':')[1] === serial);

@@ -1,4 +1,4 @@
-import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiCog, mdiDotsVertical, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import {
   Box,
@@ -12,12 +12,11 @@ import {
   Typography
 } from '@mui/material';
 import grey from '@mui/material/colors/grey';
-import { GridColDef, GridRowSelectionModel } from '@mui/x-data-grid';
+import { GridColDef } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { FOREIGN_KEY_CONSTRAINT_ERROR } from 'constants/errors';
 import dayjs from 'dayjs';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
+import { getDeviceDeploymentsForSerial } from 'features/surveys/telemetry/table/utils/GridColumnDefinitions';
+import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
 import { TelemetryDevice } from 'interfaces/useTelemetryDeviceApi.interface';
 import { useEffect, useState } from 'react';
@@ -37,9 +36,6 @@ export interface IDeviceRowData {
 interface IDevicesTableProps {
   devices: TelemetryDevice[];
   deployments: TelemetryDeployment[];
-  selectedRows: GridRowSelectionModel;
-  setSelectedRows: (selection: GridRowSelectionModel) => void;
-  onDelete?: () => void;
 }
 
 /**
@@ -47,11 +43,8 @@ interface IDevicesTableProps {
  * @param {IDevicesTableProps} props
  * @returns {*}
  */
-export const DevicesTable = (props: IDevicesTableProps) => {
-  const { devices, deployments, selectedRows, setSelectedRows, onDelete } = props;
-  const biohubApi = useBiohubApi();
+export const DevicesTable: React.FC<IDevicesTableProps> = ({ devices, deployments }) => {
   const codesContext = useCodesContext();
-  const dialogContext = useDialogContext();
   const surveyContext = useSurveyContext();
 
   const [actionMenuDeviceId, setActionMenuDeviceId] = useState<number>();
@@ -61,57 +54,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
     codesContext.codesDataLoader.load();
   }, [codesContext.codesDataLoader]);
 
-  const handleDeleteDevice = async () => {
-    if (!actionMenuDeviceId) {
-      return;
-    }
-
-    try {
-      await biohubApi.telemetryDevice.deleteDevice(surveyContext.surveyId, actionMenuDeviceId);
-      dialogContext.setYesNoDialog({ open: false });
-      setActionMenuAnchorEl(null);
-      onDelete?.();
-    } catch (error: any) {
-      dialogContext.setYesNoDialog({ open: false });
-      setActionMenuAnchorEl(null);
-      dialogContext.setSnackbar({
-        open: true,
-        snackbarMessage: (
-          <>
-            <Typography variant="body2" component="div">
-              <strong>Error Deleting Device</strong>
-            </Typography>
-            <Typography variant="body2" component="div">
-              {String(error).includes(FOREIGN_KEY_CONSTRAINT_ERROR)
-                ? 'You must delete the deployments involving this device before deleting the device.'
-                : String(error)}
-            </Typography>
-          </>
-        )
-      });
-    }
-  };
-
-  const confirmDeleteDeviceDialog = () => {
-    dialogContext.setYesNoDialog({
-      dialogTitle: 'Delete device?',
-      dialogText: 'Are you sure you want to permanently delete this device?',
-      yesButtonLabel: 'Delete Device',
-      noButtonLabel: 'Cancel',
-      yesButtonProps: { color: 'error' },
-      onYes: handleDeleteDevice,
-      onNo: () => dialogContext.setYesNoDialog({ open: false }),
-      onClose: () => dialogContext.setYesNoDialog({ open: false }),
-      open: true
-    });
-  };
-
-  const handleCloseMenu = () => {
-    setActionMenuAnchorEl(null);
-    confirmDeleteDeviceDialog();
-  };
-
-  const rows: IDeviceRowData[] = devices.map((device) => {
+  const rows: IDeviceRowData[] = devices.map((device: TelemetryDevice) => {
     const deviceDeployments = getDeviceDeploymentsForSerial(deployments, device.serial);
     const deployed = deviceDeployments.some(isDeploymentActive);
 
@@ -133,7 +76,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
       width: 85,
       renderHeader: (params) => (
         <Tooltip title={params.colDef.description}>
-          <Typography color={grey[500]} variant="body2" fontWeight={700}>
+          <Typography color={grey[500]} variant="body2">
             ID
           </Typography>
         </Tooltip>
@@ -171,24 +114,6 @@ export const DevicesTable = (props: IDevicesTableProps) => {
       flex: 1
     },
     {
-      field: 'animal',
-      headerName: 'Deployed On',
-      description: 'The animal that the device was most recently on',
-      flex: 1,
-      renderCell: (params) => {
-        const serial = params.row.serial;
-        const deviceDeployments = getDeviceDeploymentsForSerial(deployments, serial);
-        if (!deviceDeployments.length) {
-          return null;
-        }
-
-        const latestDeployment = getMostRecentDeployment(deviceDeployments);
-        const animal = surveyContext.critterDataLoader.data?.find((a) => a.critter_id === latestDeployment?.critter_id);
-
-        return animal?.animal_id ?? null;
-      }
-    },
-    {
       field: 'actions',
       type: 'actions',
       sortable: false,
@@ -212,7 +137,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
     <>
       <Menu
         open={Boolean(actionMenuAnchorEl)}
-        onClose={handleCloseMenu}
+        onClose={() => setActionMenuAnchorEl(null)}
         anchorEl={actionMenuAnchorEl}
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
@@ -239,11 +164,27 @@ export const DevicesTable = (props: IDevicesTableProps) => {
             <ListItemText>Edit Details</ListItemText>
           </RouterLink>
         </MenuItem>
-        <MenuItem onClick={handleCloseMenu}>
-          <ListItemIcon>
-            <Icon path={mdiTrashCanOutline} size={1} />
-          </ListItemIcon>
-          <ListItemText>Delete</ListItemText>
+        <MenuItem
+          sx={{
+            p: 0,
+            '& a': {
+              display: 'flex',
+              px: 2,
+              py: '6px',
+              textDecoration: 'none',
+              color: 'text.primary',
+              borderRadius: 0,
+              '&:focus': {
+                outline: 'none'
+              }
+            }
+          }}>
+          <RouterLink to={`/admin/surveys/${surveyContext.surveyId}/telemetry/manage/`}>
+            <ListItemIcon>
+              <Icon path={mdiCog} size={1} />
+            </ListItemIcon>
+            <ListItemText>Manage</ListItemText>
+          </RouterLink>
         </MenuItem>
       </Menu>
 
@@ -253,9 +194,6 @@ export const DevicesTable = (props: IDevicesTableProps) => {
         rows={rows}
         getRowId={(row) => row.id}
         columns={columns}
-        rowSelectionModel={selectedRows}
-        onRowSelectionModelChange={setSelectedRows}
-        checkboxSelection
         initialState={{
           pagination: { paginationModel: { page: 0, pageSize: 10 } }
         }}
@@ -265,9 +203,6 @@ export const DevicesTable = (props: IDevicesTableProps) => {
   );
 };
 
-const getDeviceDeploymentsForSerial = (deployments: TelemetryDeployment[], serial: string) =>
-  deployments.filter((dep) => dep.device_key?.split(':')[1] === serial);
-
 const isDeploymentActive = (deployment: TelemetryDeployment) => {
   const now = dayjs();
   const start = combineDateTime(deployment.attachment_start_date, deployment.attachment_start_time);
@@ -275,16 +210,4 @@ const isDeploymentActive = (deployment: TelemetryDeployment) => {
     ? combineDateTime(deployment.attachment_end_date, deployment.attachment_end_time)
     : null;
   return now.isAfter(start) && (!end || now.isBefore(end));
-};
-
-const getMostRecentDeployment = (deployments: TelemetryDeployment[]) => {
-  if (!deployments.length) {
-    return null;
-  }
-
-  return deployments.reduce((latest, current) => {
-    const latestStart = combineDateTime(latest.attachment_start_date, latest.attachment_start_time);
-    const currentStart = combineDateTime(current.attachment_start_date, current.attachment_start_time);
-    return dayjs(currentStart).isAfter(latestStart) ? current : latest;
-  }, deployments[0]);
 };
