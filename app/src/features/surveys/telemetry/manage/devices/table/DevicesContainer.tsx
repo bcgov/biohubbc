@@ -16,8 +16,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
-import { TelemetryDevice } from 'interfaces/useTelemetryDeviceApi.interface';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { combineDateTime } from 'utils/datetime';
 import { TelemetryDeviceKeysButton } from '../../device-keys/TelemetryDeviceKeysButton';
@@ -35,7 +34,7 @@ export const DevicesContainer = () => {
     devicesDataLoader.load(surveyContext.surveyId);
   }, [devicesDataLoader, surveyContext.surveyId]);
 
-  const devices = devicesDataLoader.data?.devices ?? [];
+  const devices = useMemo(() => devicesDataLoader.data?.devices ?? [], [devicesDataLoader.data]);
   const devicesCount = devicesDataLoader.data?.count ?? 0;
 
   // Deployments data loader
@@ -47,7 +46,7 @@ export const DevicesContainer = () => {
     deploymentsDataLoader.load(surveyContext.surveyId);
   }, [deploymentsDataLoader, surveyContext.surveyId]);
 
-  const deployments = deploymentsDataLoader.data?.deployments ?? [];
+  const deployments = useMemo(() => deploymentsDataLoader.data?.deployments ?? [], [deploymentsDataLoader.data]);
 
   // Helper functions to determine device status
   const getDeviceDeploymentsForSerial = (deployments: TelemetryDeployment[], serial: string) =>
@@ -62,15 +61,40 @@ export const DevicesContainer = () => {
     return now.isAfter(start) && (!end || now.isBefore(end));
   };
 
-  const isDeviceActive = (device: TelemetryDevice) => {
-    const deviceDeployments = getDeviceDeploymentsForSerial(deployments, device.serial);
-    return deviceDeployments.some(isDeploymentActive);
-  };
-
-  // Filter devices based on active tab
-  const activeDevices = devices.filter(isDeviceActive);
-  const inactiveDevices = devices.filter((device) => !isDeviceActive(device));
+  // Memoized filtered devices
+  const activeDevices = useMemo(
+    () =>
+      devices.filter((device) => {
+        const deviceDeployments = getDeviceDeploymentsForSerial(deployments, device.serial);
+        return deviceDeployments.some(isDeploymentActive);
+      }),
+    [devices, deployments]
+  );
+  const inactiveDevices = useMemo(
+    () =>
+      devices.filter((device) => {
+        const deviceDeployments = getDeviceDeploymentsForSerial(deployments, device.serial);
+        return !deviceDeployments.some(isDeploymentActive);
+      }),
+    [devices, deployments]
+  );
   const currentDevices = activeTab === 'active' ? activeDevices : inactiveDevices;
+
+  // Extracted NoDataOverlay
+  const noDataOverlay = (
+    <NoDataOverlay
+      minHeight="300px"
+      height="100%"
+      title={activeTab === 'active' ? 'No Active Devices' : 'No Inactive Devices'}
+      subtitle={
+        activeTab === 'active'
+          ? 'No devices are currently deployed. Deploy devices to see them here.'
+          : 'No inactive devices found. All devices are currently deployed.'
+      }
+      icon={mdiArrowTopRight}
+      sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+    />
+  );
 
   return (
     <>
@@ -134,33 +158,9 @@ export const DevicesContainer = () => {
           isLoadingFallback={<SkeletonTable numberOfLines={5} />}
           isLoadingFallbackDelay={100}
           hasNoData={devicesDataLoader.data?.count === 0}
-          hasNoDataFallback={
-            <NoDataOverlay
-              minHeight="300px"
-              height="100%"
-              title={activeTab === 'active' ? 'No Active Devices' : 'No Inactive Devices'}
-              subtitle={
-                activeTab === 'active'
-                  ? 'No devices are currently deployed. Deploy devices to see them here.'
-                  : 'No inactive devices found. All devices are currently deployed.'
-              }
-              icon={mdiArrowTopRight}
-              sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            />
-          }>
+          hasNoDataFallback={noDataOverlay}>
           {currentDevices.length === 0 ? (
-            <NoDataOverlay
-              minHeight="300px"
-              height="100%"
-              title={activeTab === 'active' ? 'No Active Devices' : 'No Inactive Devices'}
-              subtitle={
-                activeTab === 'active'
-                  ? 'No devices are currently deployed. Deploy devices to see them here.'
-                  : 'No inactive devices found. All devices are currently deployed.'
-              }
-              icon={mdiArrowTopRight}
-              sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            />
+            noDataOverlay
           ) : (
             <DevicesTable deployments={deployments} devices={currentDevices} />
           )}
