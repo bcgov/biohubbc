@@ -5,8 +5,8 @@ export async function seed(knex: Knex): Promise<void> {
 
   const [collection] = await knex('collection')
     .insert({
-      name: 'Andrews test collection',
-      description: 'A collection of stores I visit for fun',
+      name: 'Test collection',
+      description: 'lorem ipsum dolor sit amet, consectetur adipiscing elit',
       parent_collection_id: null,
       create_date: knex.fn.now(),
       create_user: 8,
@@ -20,45 +20,18 @@ export async function seed(knex: Knex): Promise<void> {
 
   await knex('collection_links').insert([
     {
-      name: 'Canadian Tire',
-      description: 'Best hardware store on the planet',
-      url: 'https://www.canadiantire.ca',
+      name: 'BC Gov',
+      description: 'BC Gov Homepage',
+      url: 'https://www2.gov.bc.ca/gov/content/governments/government-id',
       collection_id: collectionId,
       create_date: knex.fn.now(),
       create_user: 8
     },
     {
-      name: 'Costco',
-      description: 'Cheap hotdogs',
-      url: 'https://www.costco.ca',
+      name: 'Species & Ecosystems Data & Information Security',
+      description: 'The policy and procedures explain how secure species and ecosystems data and information will be handled, protected and distributed.',
+      url: 'https://www2.gov.bc.ca/gov/content/governments/government-id',
       collection_id: collectionId,
-      create_date: knex.fn.now(),
-      create_user: 8
-    }
-  ]);
-
-  // Get user IDs for Annika and Macgregor
-  const [annikaUser] = await knex('system_user')
-    .select('system_user_id')
-    .where('user_identifier', 'ameijer');
-    
-  const [macgregorUser] = await knex('system_user')
-    .select('system_user_id')
-    .where('user_identifier', 'mauberti');
-
-  // Add collection members
-  await knex('collection_member').insert([
-    {
-      collection_id: collectionId,
-      system_user_id: annikaUser.system_user_id,
-      collection_role_id: 2, // Member role
-      create_date: knex.fn.now(),
-      create_user: 8
-    },
-    {
-      collection_id: collectionId,
-      system_user_id: macgregorUser.system_user_id,
-      collection_role_id: 2, // Member role
       create_date: knex.fn.now(),
       create_user: 8
     }
