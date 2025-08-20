@@ -30,7 +30,7 @@ export class CollectionLinkRepository extends BaseRepository {
 
       sqlStatement = SQL`
         SELECT 
-          cl.id as collection_links_id,
+          cl.collection_link_id as collection_link_id,
           cl.name,
           cl.description,
           cl.url,
@@ -39,7 +39,7 @@ export class CollectionLinkRepository extends BaseRepository {
           cl.create_date,
           cl.create_user
         FROM 
-          collection_links cl
+          collection_link cl
         WHERE 
           cl.collection_id = ${collectionId}
           AND cl.record_end_date IS NULL
@@ -49,7 +49,7 @@ export class CollectionLinkRepository extends BaseRepository {
     } else {
       sqlStatement = SQL`
         SELECT 
-          cl.id as collection_links_id,
+          cl.collection_link_id as collection_link_id,
           cl.name,
           cl.description,
           cl.url,
@@ -58,7 +58,7 @@ export class CollectionLinkRepository extends BaseRepository {
           cl.create_date,
           cl.create_user
         FROM 
-          collection_links cl
+          collection_link cl
         WHERE 
           cl.collection_id = ${collectionId}
           AND cl.record_end_date IS NULL
@@ -81,7 +81,7 @@ export class CollectionLinkRepository extends BaseRepository {
       SELECT 
         COUNT(*)::integer as count
       FROM 
-        collection_links cl
+        collection_link cl
       WHERE 
         cl.collection_id = ${collectionId}
         AND cl.record_end_date IS NULL;
@@ -102,7 +102,7 @@ export class CollectionLinkRepository extends BaseRepository {
    */
   async createCollectionLink(collectionId: number, linkData: IPostCollectionLinkRequest): Promise<CollectionLink> {
     const sqlStatement = SQL`
-      INSERT INTO collection_links (
+      INSERT INTO collection_link (
         name,
         description,
         url,
@@ -116,7 +116,7 @@ export class CollectionLinkRepository extends BaseRepository {
         ${this.connection.systemUserId()}
       )
       RETURNING
-        id as collection_links_id,
+        collection_link_id as collection_link_id,
         name,
         description,
         url,
@@ -153,17 +153,17 @@ export class CollectionLinkRepository extends BaseRepository {
     linkData: IPutCollectionLinkRequest
   ): Promise<CollectionLink> {
     const sqlStatement = SQL`
-      UPDATE collection_links 
+      UPDATE collection_link 
       SET 
         name = ${linkData.name},
         description = ${linkData.description || null},
         url = ${linkData.url}
       WHERE 
-        id = ${linkId}
+        collection_link_id = ${linkId}
         AND collection_id = ${collectionId}
         AND record_end_date IS NULL
       RETURNING
-        id as collection_links_id,
+        collection_link_id as collection_link_id,
         name,
         description,
         url,
@@ -195,11 +195,11 @@ export class CollectionLinkRepository extends BaseRepository {
    */
   async deleteCollectionLink(collectionId: number, linkId: number): Promise<void> {
     const sqlStatement = SQL`
-      UPDATE collection_links 
+      UPDATE collection_link 
       SET 
         record_end_date = NOW()
       WHERE 
-        id = ${linkId}
+        collection_link_id = ${linkId}
         AND collection_id = ${collectionId}
         AND record_end_date IS NULL;
     `;
@@ -225,15 +225,15 @@ export class CollectionLinkRepository extends BaseRepository {
    */
   async endCollectionLink(collectionId: number, linkId: number, recordEndDate: string): Promise<CollectionLink> {
     const sqlStatement = SQL`
-      UPDATE collection_links 
+      UPDATE collection_link 
       SET 
         record_end_date = ${recordEndDate}
       WHERE 
-        id = ${linkId}
+        collection_link_id = ${linkId}
         AND collection_id = ${collectionId}
         AND record_end_date IS NULL
       RETURNING
-        id as collection_links_id,
+        collection_link_id as collection_link_id,
         name,
         description,
         url,
