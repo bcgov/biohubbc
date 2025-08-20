@@ -279,7 +279,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
       ...pagination
     };
 
-    const { data } = await axios.get(`/api/collection/${collectionId}/links`, {
+    const { data } = await axios.get(`/api/collection/${collectionId}/link`, {
       params,
       paramsSerializer: (params) => qs.stringify(params)
     });
@@ -298,7 +298,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     collectionId: number,
     link: ICreateCollectionLinkRequest
   ): Promise<ICollectionLink> => {
-    const { data } = await axios.post(`/api/collection/${collectionId}/links`, link);
+    const { data } = await axios.post(`/api/collection/${collectionId}/link`, link);
 
     return data;
   };
@@ -316,7 +316,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     linkId: number,
     link: IUpdateCollectionLinkRequest
   ): Promise<ICollectionLink> => {
-    const { data } = await axios.put(`/api/collection/${collectionId}/links/${linkId}`, link);
+    const { data } = await axios.put(`/api/collection/${collectionId}/link/${linkId}`, link);
     return data;
   };
 
@@ -331,7 +331,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     const requestData: IEndCollectionLinkRequest = {
       record_end_date: new Date().toISOString()
     };
-    await axios.put(`/api/collection/${collectionId}/links/${linkId}`, requestData);
+    await axios.put(`/api/collection/${collectionId}/link/${linkId}`, requestData);
   };
 
   return {

@@ -84,7 +84,7 @@ export interface IPostCollectionMember {
 }
 
 export interface ICollectionLink {
-  collection_links_id: number;
+  collection_link_id: number;
   name: string;
   description: string | null;
   url: string;

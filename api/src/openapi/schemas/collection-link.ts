@@ -6,7 +6,7 @@ export const CollectionLinkSchema: OpenAPIV3.SchemaObject = {
   additionalProperties: false,
   required: ['collection_links_id', 'name', 'url', 'collection_id', 'create_date', 'create_user'],
   properties: {
-    collection_links_id: {
+    collection_link_id: {
       type: 'integer',
       minimum: 1,
       description: 'Collection link ID'

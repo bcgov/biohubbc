@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { ApiPaginationResults } from '../zod-schema/pagination';
 
 export const CollectionLink = z.object({
-  collection_links_id: z.number(),
+  collection_link_id: z.number(),
   name: z.string(),
   description: z.string().nullable(),
   url: z.string(),
@@ -27,6 +27,6 @@ export interface IEndCollectionLinkRequest {
 }
 
 export interface IGetCollectionLinksResponse {
-  links: CollectionLink[];
+  link: CollectionLink[];
   pagination: ApiPaginationResults;
 }

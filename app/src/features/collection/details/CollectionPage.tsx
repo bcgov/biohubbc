@@ -17,7 +17,7 @@ import { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { CollectionDataContainer } from './data/CollectionDataContainer';
 import CollectionHeader from './header/CollectionHeader';
-import { CollectionLinkContainer } from './links/CollectionLinkContainer';
+import { CollectionLinkContainer } from './link/CollectionLinkContainer';
 import CollectionParticipantsContainer from './members/CollectionMembersContainer';
 import CollectionSurveyContainer from './survey/CollectionSurveyContainer';
 import { SubcollectionContainer } from './tags/SubcollectionContainer';
