@@ -34,10 +34,7 @@ export class CollectionLinkRepository extends BaseRepository {
           cl.name,
           cl.description,
           cl.url,
-          cl.collection_id,
-          cl.record_end_date,
-          cl.create_date,
-          cl.create_user
+          cl.collection_id
         FROM 
           collection_link cl
         WHERE 
@@ -53,10 +50,7 @@ export class CollectionLinkRepository extends BaseRepository {
           cl.name,
           cl.description,
           cl.url,
-          cl.collection_id,
-          cl.record_end_date,
-          cl.create_date,
-          cl.create_user
+          cl.collection_id
         FROM 
           collection_link cl
         WHERE 
@@ -120,10 +114,7 @@ export class CollectionLinkRepository extends BaseRepository {
         name,
         description,
         url,
-        collection_id,
-        record_end_date,
-        create_date,
-        create_user;
+        collection_id;
     `;
 
     const response = await this.connection.sql(sqlStatement, CollectionLink);
@@ -167,10 +158,7 @@ export class CollectionLinkRepository extends BaseRepository {
         name,
         description,
         url,
-        collection_id,
-        record_end_date,
-        create_date,
-        create_user;
+        collection_id;
     `;
 
     const response = await this.connection.sql(sqlStatement, CollectionLink);
@@ -237,10 +225,7 @@ export class CollectionLinkRepository extends BaseRepository {
         name,
         description,
         url,
-        collection_id,
-        record_end_date,
-        create_date,
-        create_user;
+        collection_id;
     `;
 
     const response = await this.connection.sql(sqlStatement, CollectionLink);

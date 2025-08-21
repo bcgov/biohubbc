@@ -89,9 +89,6 @@ export interface ICollectionLink {
   description: string | null;
   url: string;
   collection_id: number;
-  record_end_date: string | null;
-  create_date: string;
-  create_user: number;
 }
 
 export interface ICreateCollectionLinkRequest {
