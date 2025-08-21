@@ -26,6 +26,9 @@ export async function up(knex: Knex): Promise<void> {
     record_end_date          timestamptz(6),
     create_date              timestamptz(6)     DEFAULT now() NOT NULL,
     create_user              integer            NOT NULL,
+    update_date              timestamptz(6)     DEFAULT now() NOT NULL,
+    update_user              integer,
+    revision_count            integer            DEFAULT 0 NOT NULL,
     CONSTRAINT collection_link_id_pk PRIMARY KEY (collection_link_id),
     CONSTRAINT collection_fk1
       FOREIGN KEY (collection_id)
@@ -40,6 +43,15 @@ export async function up(knex: Knex): Promise<void> {
   COMMENT ON COLUMN collection_link.record_end_date IS 'The date the record was ended';
   COMMENT ON COLUMN collection_link.create_date IS 'The date the record was created';
   COMMENT ON COLUMN collection_link.create_user IS 'The user who created the record';
+
+     ----------------------------------------------------------------------------------------
+    -- Create audit/journal triggers
+    ----------------------------------------------------------------------------------------
+
+    CREATE TRIGGER audit_collection_link BEFORE INSERT OR UPDATE OR DELETE ON biohub.collection_link FOR EACH ROW EXECUTE PROCEDURE tr_audit_trigger();
+    CREATE TRIGGER journal_collection_link AFTER INSERT OR UPDATE OR DELETE ON biohub.collection_link FOR EACH ROW EXECUTE PROCEDURE tr_journal_trigger();
+
+    CREATE INDEX collection_link_collection_id_idx ON collection_link(collection_id);
 
   `);
 }

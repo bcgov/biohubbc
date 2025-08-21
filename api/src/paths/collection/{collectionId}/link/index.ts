@@ -137,9 +137,6 @@ export function getCollectionLinks(): RequestHandler {
 }
 
 
-
-
-
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
     return {
