@@ -1,17 +1,12 @@
-import LoadingButton from '@mui/lab/LoadingButton';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogTitle from '@mui/material/DialogTitle';
-import { FormikProps } from 'formik';
+import EditDialog from 'components/dialog/EditDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
   ICollectionLink,
   ICreateCollectionLinkRequest,
   IUpdateCollectionLinkRequest
 } from 'interfaces/useCollectionApi.interface';
-import { ReactNode, useState } from 'react';
+import { useState } from 'react';
+import yup from 'utils/YupSchema';
 import CollectionLinkForm, { ICollectionLinkFormData } from './form/CollectionLinkForm';
 
 interface ICollectionLinkDialogProps {
@@ -22,19 +17,30 @@ interface ICollectionLinkDialogProps {
   open: boolean;
 }
 
-/**
- * Dialog for creating or editing collection links
- */
 const CollectionLinkDialog = (props: ICollectionLinkDialogProps) => {
   const { collectionId, link, onSubmit, onClose, open } = props;
 
   const biohubApi = useBiohubApi();
   const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState<string | undefined>(undefined);
 
   const isEditing = Boolean(link);
 
-  const handleSubmit = async (formData: ICollectionLinkFormData) => {
+  const validationSchema = yup.object().shape({
+    name: yup.string().required('Name is required'),
+    url: yup.string().url('Invalid URL').required('URL is required'),
+    description: yup.string()
+  });
+
+  const initialValues: ICollectionLinkFormData = {
+    name: link?.name ?? '',
+    description: link?.description ?? '',
+    url: link?.url ?? ''
+  };
+
+  const handleSave = async (formData: ICollectionLinkFormData) => {
     setIsLoading(true);
+    setError(undefined);
 
     try {
       if (isEditing && link) {
@@ -52,51 +58,31 @@ const CollectionLinkDialog = (props: ICollectionLinkDialogProps) => {
         };
         await biohubApi.collection.createCollectionLink(collectionId, createData);
       }
-
       onSubmit();
-    } catch (error) {
+    } catch (error: any) {
+      setError('Error saving collection link');
       console.error('Error saving collection link:', error);
     } finally {
       setIsLoading(false);
     }
   };
 
-  const handleClose = () => {
-    if (!isLoading) {
-      onClose();
-    }
-  };
-
   return (
-    <Dialog fullWidth maxWidth="sm" open={open} onClose={handleClose} aria-labelledby="collection-link-dialog-title">
-      <DialogTitle id="collection-link-dialog-title">
-        {isEditing ? 'Edit External Resource' : 'Add External Resource'}
-      </DialogTitle>
-
-      <DialogContent>
-        <CollectionLinkForm
-          initialValues={{
-            name: link?.name ?? '',
-            description: link?.description ?? '',
-            url: link?.url ?? ''
-          }}
-          onSubmit={handleSubmit}
-          renderForm={(formikProps: FormikProps<ICollectionLinkFormData> & { children: ReactNode }) => (
-            <>
-              {formikProps.children}
-              <DialogActions>
-                <Button onClick={handleClose} disabled={isLoading}>
-                  Cancel
-                </Button>
-                <LoadingButton type="submit" variant="contained" loading={isLoading} onClick={formikProps.submitForm}>
-                  {isEditing ? 'Update' : 'Create'}
-                </LoadingButton>
-              </DialogActions>
-            </>
-          )}
-        />
-      </DialogContent>
-    </Dialog>
+    <EditDialog<ICollectionLinkFormData>
+      dialogTitle={isEditing ? 'Edit External Resource' : 'Add External Resource'}
+      open={open}
+      size="sm"
+      dialogLoading={isLoading}
+      dialogError={error}
+      component={{
+        element: <CollectionLinkForm />,
+        initialValues,
+        validationSchema: validationSchema
+      }}
+      dialogSaveButtonLabel={isEditing ? 'Update' : 'Create'}
+      onCancel={onClose}
+      onSave={handleSave}
+    />
   );
 };
 
