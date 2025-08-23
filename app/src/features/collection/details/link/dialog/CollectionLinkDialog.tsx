@@ -1,5 +1,6 @@
 import EditDialog from 'components/dialog/EditDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useDialogContext } from 'hooks/useContext'; // Add this import
 import {
   ICollectionLink,
   ICreateCollectionLinkRequest,
@@ -21,6 +22,7 @@ const CollectionLinkDialog = (props: ICollectionLinkDialogProps) => {
   const { collectionId, link, onSubmit, onClose, open } = props;
 
   const biohubApi = useBiohubApi();
+  const dialogContext = useDialogContext(); // Add this line
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
 
@@ -59,9 +61,12 @@ const CollectionLinkDialog = (props: ICollectionLinkDialogProps) => {
         await biohubApi.collection.createCollectionLink(collectionId, createData);
       }
       onSubmit();
-    } catch (error: any) {
+    } catch (_error: any) {
       setError('Error saving collection link');
-      console.error('Error saving collection link:', error);
+      dialogContext.setSnackbar({
+        snackbarMessage: 'Error saving collection link',
+        open: true
+      });
     } finally {
       setIsLoading(false);
     }
