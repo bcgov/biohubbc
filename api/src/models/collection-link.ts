@@ -18,7 +18,7 @@ export interface IPostCollectionLinkRequest {
 
 export interface IPutCollectionLinkRequest {
   name: string;
-  description?: string;
+  description: string | null;
   url: string;
 }
 
