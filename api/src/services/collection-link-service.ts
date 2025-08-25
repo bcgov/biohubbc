@@ -76,18 +76,6 @@ export class CollectionLinkService extends DBService {
   }
 
   /**
-   * Delete a collection link.
-   *
-   * @param {number} collectionId
-   * @param {number} linkId
-   * @return {*}  {Promise<void>}
-   * @memberof CollectionLinkService
-   */
-  async deleteCollectionLink(collectionId: number, linkId: number): Promise<void> {
-    return this.collectionLinkRepository.deleteCollectionLink(collectionId, linkId);
-  }
-
-  /**
    * End a collection link by setting record_end_date.
    *
    * @param {number} collectionId
