@@ -1,6 +1,6 @@
 import EditDialog from 'components/dialog/EditDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext } from 'hooks/useContext'; // Add this import
+import { useDialogContext } from 'hooks/useContext';
 import {
   ICollectionLink,
   ICreateCollectionLinkRequest,
@@ -12,7 +12,7 @@ import CollectionLinkForm, { ICollectionLinkFormData } from './form/CollectionLi
 
 interface ICollectionLinkDialogProps {
   collectionId: number;
-  link?: ICollectionLink | null;
+  link: ICollectionLink | null;
   onSubmit: () => void;
   onClose: () => void;
   open: boolean;
@@ -22,7 +22,7 @@ const CollectionLinkDialog = (props: ICollectionLinkDialogProps) => {
   const { collectionId, link, onSubmit, onClose, open } = props;
 
   const biohubApi = useBiohubApi();
-  const dialogContext = useDialogContext(); // Add this line
+  const dialogContext = useDialogContext();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | undefined>(undefined);
 
