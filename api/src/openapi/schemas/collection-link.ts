@@ -91,6 +91,7 @@ export const UpdateCollectionLinkSchema: OpenAPIV3.SchemaObject = {
     description: {
       type: 'string',
       maxLength: 500,
+      nullable: true,
       description: 'Collection link description'
     },
     url: {
