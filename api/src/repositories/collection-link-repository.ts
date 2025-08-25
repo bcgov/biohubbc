@@ -100,15 +100,13 @@ export class CollectionLinkRepository extends BaseRepository {
         name,
         description,
         url,
-        collection_id,
-        create_user
+        collection_id
       ) VALUES (
         ${linkData.name},
         ${linkData.description || null},
         ${linkData.url},
-        ${collectionId},
-        ${this.connection.systemUserId()}
-      )
+        ${collectionId}
+        )
       RETURNING
         collection_link_id as collection_link_id,
         name,
@@ -173,34 +171,7 @@ export class CollectionLinkRepository extends BaseRepository {
     return response.rows[0];
   }
 
-  /**
-   * Delete a collection link by setting record_end_date.
-   *
-   * @param {number} collectionId
-   * @param {number} linkId
-   * @return {*}  {Promise<void>}
-   * @memberof CollectionLinkRepository
-   */
-  async deleteCollectionLink(collectionId: number, linkId: number): Promise<void> {
-    const sqlStatement = SQL`
-      UPDATE collection_link 
-      SET 
-        record_end_date = NOW()
-      WHERE 
-        collection_link_id = ${linkId}
-        AND collection_id = ${collectionId}
-        AND record_end_date IS NULL;
-    `;
 
-    const response = await this.connection.sql(sqlStatement);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to delete collection link', [
-        'CollectionLinkRepository->deleteCollectionLink',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-  }
 
   /**
    * End a collection link by setting record_end_date to specified date.
