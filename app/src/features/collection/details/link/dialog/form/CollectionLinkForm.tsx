@@ -1,14 +1,7 @@
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { useFormikContext } from 'formik';
-
-//TECH DEBT:
-//TO-DO:
-// - ENSURE ALL ASPECTS OF THIS FORM AND OTHER FILES ARE COVERED BY UNIT TESTS
-// - REMOVE SEED FILES BEFORE MERGING ANYWHERE
-// - DO WE NEED THE ABILITY TO MULTI-DELETE LINKS?
-// - DELETING IS A BIT BROKEN AND DOESNT RENDER PROPERLY? this might just be the docker status issue
-// - Do we want to able to see the links in the collection details page? Without having to click into external resourses?
+import { PropsWithChildren } from 'react';
 
 export interface ICollectionLinkFormData {
   name: string;
@@ -19,7 +12,7 @@ export interface ICollectionLinkFormData {
 /**
  * Form for creating or editing collection links
  */
-const CollectionLinkForm = () => {
+const CollectionLinkForm = (props: PropsWithChildren<{}>) => {
   const { values, touched, errors, handleChange, handleBlur } = useFormikContext<ICollectionLinkFormData>();
 
   return (
@@ -64,6 +57,7 @@ const CollectionLinkForm = () => {
         placeholder="https://example.com"
         required
       />
+      {props.children}
     </Box>
   );
 };
