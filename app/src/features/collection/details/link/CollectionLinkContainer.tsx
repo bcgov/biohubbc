@@ -22,6 +22,7 @@ import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useDialogContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
@@ -54,6 +55,13 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
   order: 'desc'
 };
 
+const deleteLinkText = {
+  deleteTitle: 'Delete Link',
+  deleteText: 'Are you sure you want to delete this link? This action cannot be undone',
+  yesButtonLabel: 'Delete',
+  noButtonLabel: 'Cancel'
+};
+
 /**
  * Displays a list of collection links.
  *
@@ -61,6 +69,7 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
  */
 export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) => {
   const { collectionId, showSearch = false } = props;
+  const dialogContext = useDialogContext();
 
   const biohubApi = useBiohubApi();
 
@@ -99,7 +108,6 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
 
   const rows = collectionLinksDataLoader.data?.links ?? [];
 
-
   const handleEdit = (link: ICollectionLink) => {
     setEditingLink(link);
     setLinkDialogIsOpen(true);
@@ -112,6 +120,27 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
     } catch (error) {
       console.error('Error ending collection link:', error);
     }
+  };
+
+  const deleteLinkDialog = (linkId: number) => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: deleteLinkText.deleteTitle,
+      dialogText: deleteLinkText.deleteText,
+      yesButtonLabel: deleteLinkText.yesButtonLabel,
+      noButtonLabel: deleteLinkText.noButtonLabel,
+      yesButtonProps: { color: 'error' },
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      open: true,
+      onYes: async () => {
+        await handleDeleteLink(linkId);
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
   };
 
   // Define the columns for the DataGrid
@@ -211,7 +240,7 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
             </IconButton>
           }
           label="Delete"
-          onClick={() => handleDeleteLink(params.row.collection_link_id)}
+          onClick={() => deleteLinkDialog(params.row.collection_link_id)}
         />
       ]
     }
