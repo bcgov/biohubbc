@@ -94,26 +94,11 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
 
   // Fetch collection links when pagination or sort changes
   useDeepCompareEffect(() => {
-    console.log(
-      'CollectionLinkContainer: Fetching links for collection',
-      collectionId,
-      'with pagination:',
-      paginationSort
-    );
     collectionLinksDataLoader.refresh(paginationSort);
   }, [paginationSort]);
 
   const rows = collectionLinksDataLoader.data?.links ?? [];
 
-  // Debug logging
-  console.log('CollectionLinkContainer: Data loader state:', {
-    isLoading: collectionLinksDataLoader.isLoading,
-    isReady: collectionLinksDataLoader.isReady,
-    hasError: !!collectionLinksDataLoader.error,
-    error: collectionLinksDataLoader.error,
-    data: collectionLinksDataLoader.data,
-    rowsCount: rows.length
-  });
 
   const handleEdit = (link: ICollectionLink) => {
     setEditingLink(link);
