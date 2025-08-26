@@ -24,7 +24,7 @@ export async function up(knex: Knex): Promise<void> {
     --------------------------------------------------------------------------------------------------
 
     ALTER TABLE survey_sample_period
-    ADD COLUMN comment TEXT;
+    ADD COLUMN comment VARCHAR(1000);
   `);
 }
 
