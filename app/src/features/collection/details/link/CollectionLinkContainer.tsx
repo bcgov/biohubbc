@@ -31,6 +31,7 @@ import { useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
 import CollectionLinkDialog from './dialog/CollectionLinkDialog';
+import { deleteLinkDialog, deleteLinkText } from './delete/DeleteLink';
 
 type CollectionLinkDataTableURLParams = {
   // pagination
@@ -55,12 +56,6 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
   order: 'desc'
 };
 
-const deleteLinkText = {
-  deleteTitle: 'Delete Link',
-  deleteText: 'Are you sure you want to delete this link? This action cannot be undone',
-  yesButtonLabel: 'Delete',
-  noButtonLabel: 'Cancel'
-};
 
 /**
  * Displays a list of collection links.
@@ -113,35 +108,8 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
     setLinkDialogIsOpen(true);
   };
 
-  const handleDeleteLink = async (linkId: number) => {
-    try {
-      await biohubApi.collection.endCollectionLink(collectionId, linkId);
-      collectionLinksDataLoader.refresh(paginationSort);
-    } catch (error) {
-      console.error('Error ending collection link:', error);
-    }
-  };
 
-  const deleteLinkDialog = (linkId: number) => {
-    dialogContext.setYesNoDialog({
-      dialogTitle: deleteLinkText.deleteTitle,
-      dialogText: deleteLinkText.deleteText,
-      yesButtonLabel: deleteLinkText.yesButtonLabel,
-      noButtonLabel: deleteLinkText.noButtonLabel,
-      yesButtonProps: { color: 'error' },
-      onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
-      },
-      open: true,
-      onYes: async () => {
-        await handleDeleteLink(linkId);
-        dialogContext.setYesNoDialog({ open: false });
-      }
-    });
-  };
+
 
   // Define the columns for the DataGrid
   const columns: GridColDef<ICollectionLink>[] = [
@@ -311,7 +279,6 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
               setSearchParams(searchParams.set('l_page', String(model.page)).set('l_limit', String(model.pageSize)));
               setPaginationModel(model);
             }}
-            // Sorting
             sortingMode="server"
             sortModel={sortModel}
             sortingOrder={['asc', 'desc']}
@@ -322,15 +289,12 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
               setSearchParams(searchParams.set('l_sort', model[0].field).set('l_order', model[0].sort ?? 'desc'));
               setSortModel(model);
             }}
-            // Row options
             rowSelection={false}
             checkboxSelection={false}
             disableRowSelectionOnClick
-            // Column options
             disableColumnSelector
             disableColumnFilter
             disableColumnMenu
-            // Styling
             rowHeight={70}
             getRowHeight={() => 'auto'}
             autoHeight={false}

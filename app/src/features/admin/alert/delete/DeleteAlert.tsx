@@ -23,11 +23,6 @@ const DeleteAlert = (props: IDeleteAlertProps) => {
   const dialogContext = useContext(DialogContext);
   const biohubApi = useBiohubApi();
 
-  const alertDataLoader = useDataLoader(() => biohubApi.alert.getAlertById(alertId));
-
-  useEffect(() => {
-    alertDataLoader.load();
-  }, [alertDataLoader]);
 
   // API Error dialog
   const showDeleteErrorDialog = () => {
@@ -65,10 +60,6 @@ const DeleteAlert = (props: IDeleteAlertProps) => {
       showDeleteErrorDialog();
     }
   };
-
-  if (!alertDataLoader.isReady || !alertDataLoader.data) {
-    return <></>;
-  }
 
   return (
     <YesNoDialog
