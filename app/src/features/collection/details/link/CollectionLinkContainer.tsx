@@ -29,8 +29,9 @@ import { ICollectionLink } from 'interfaces/useCollectionApi.interface';
 import { useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
+import { useCreateLinkDialog } from './create/CreateLink';
 import { useDeleteLinkDialog } from './delete/DeleteLink';
-import CollectionLinkDialog from './dialog/CollectionLinkDialog';
+import { useEditLinkDialog } from './edit/EditLink';
 
 type CollectionLinkDataTableURLParams = {
   // pagination
@@ -65,10 +66,15 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
 
   const biohubApi = useBiohubApi();
   const { deleteLinkDialog } = useDeleteLinkDialog();
+  const { openDialog: openCreateDialog, CreateLinkDialog } = useCreateLinkDialog(collectionId, () =>
+    collectionLinksDataLoader.refresh(paginationSort)
+  );
+  const { openDialog: openEditDialog, EditLinkDialog } = useEditLinkDialog(collectionId, () =>
+    collectionLinksDataLoader.refresh(paginationSort)
+  );
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<CollectionLinkDataTableURLParams>>();
-  const [linkDialogIsOpen, setLinkDialogIsOpen] = useState(false);
-  const [editingLink, setEditingLink] = useState<ICollectionLink | null>(null);
+  // Removed: linkDialogIsOpen, setLinkDialogIsOpen, editingLink, setEditingLink
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('l_limit') ?? initialPaginationParams.limit),
@@ -101,10 +107,7 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
 
   const rows = collectionLinksDataLoader.data?.links ?? [];
 
-  const handleEdit = (link: ICollectionLink) => {
-    setEditingLink(link);
-    setLinkDialogIsOpen(true);
-  };
+  // Removed: handleEdit
 
   // Define the columns for the DataGrid
   const columns: GridColDef<ICollectionLink>[] = [
@@ -194,7 +197,7 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
             </IconButton>
           }
           label="Edit"
-          onClick={() => handleEdit(params.row)}
+          onClick={() => openEditDialog(params.row)}
         />,
         <GridActionsCellItem
           icon={
@@ -223,13 +226,7 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
           </Typography>
         </Typography>
         <Stack gap={1} direction="row">
-          <CreateButton
-            label="Add Link"
-            onClick={() => {
-              setEditingLink(null);
-              setLinkDialogIsOpen(true);
-            }}
-          />
+          <CreateButton label="Add Link" onClick={openCreateDialog} />
         </Stack>
       </Toolbar>
       <Divider />
@@ -301,22 +298,8 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
         </LoadingGuard>
       </Box>
 
-      {linkDialogIsOpen && (
-        <CollectionLinkDialog
-          collectionId={collectionId}
-          link={editingLink}
-          onSubmit={() => {
-            collectionLinksDataLoader.refresh(paginationSort);
-            setLinkDialogIsOpen(false);
-            setEditingLink(null);
-          }}
-          onClose={() => {
-            setLinkDialogIsOpen(false);
-            setEditingLink(null);
-          }}
-          open={linkDialogIsOpen}
-        />
-      )}
+      {CreateLinkDialog}
+      {EditLinkDialog}
     </>
   );
 };
