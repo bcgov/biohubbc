@@ -42,6 +42,7 @@ const CollectionLinkForm = (props: PropsWithChildren<{}>) => {
         helperText={touched.description && errors.description}
         multiline
         rows={3}
+        required
       />
 
       <TextField
