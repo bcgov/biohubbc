@@ -22,7 +22,6 @@ import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
@@ -30,8 +29,8 @@ import { ICollectionLink } from 'interfaces/useCollectionApi.interface';
 import { useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
+import { deleteLinkDialog } from './delete/DeleteLink';
 import CollectionLinkDialog from './dialog/CollectionLinkDialog';
-import { deleteLinkDialog, deleteLinkText } from './delete/DeleteLink';
 
 type CollectionLinkDataTableURLParams = {
   // pagination
@@ -43,7 +42,7 @@ type CollectionLinkDataTableURLParams = {
 
 const pageSizeOptions = [10, 25, 50];
 
-interface ICollectionLinkContainerProps {
+export interface ICollectionLinkContainerProps {
   collectionId: number;
   showSearch?: boolean;
 }
@@ -56,7 +55,6 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
   order: 'desc'
 };
 
-
 /**
  * Displays a list of collection links.
  *
@@ -64,7 +62,6 @@ const initialPaginationParams: Required<ApiPaginationRequestOptions> = {
  */
 export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) => {
   const { collectionId, showSearch = false } = props;
-  const dialogContext = useDialogContext();
 
   const biohubApi = useBiohubApi();
 
@@ -107,9 +104,6 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
     setEditingLink(link);
     setLinkDialogIsOpen(true);
   };
-
-
-
 
   // Define the columns for the DataGrid
   const columns: GridColDef<ICollectionLink>[] = [
@@ -208,7 +202,11 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
             </IconButton>
           }
           label="Delete"
-          onClick={() => deleteLinkDialog(params.row.collection_link_id)}
+          onClick={() =>
+            deleteLinkDialog(collectionId, params.row.collection_link_id, () =>
+              collectionLinksDataLoader.refresh(paginationSort)
+            )
+          }
         />
       ]
     }
