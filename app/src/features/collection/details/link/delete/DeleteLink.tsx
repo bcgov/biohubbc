@@ -8,36 +8,40 @@ export const deleteLinkText = {
   noButtonLabel: 'Cancel'
 };
 
-const biohubApi = useBiohubApi();
-
-export const handleDeleteLink = async (collectionId: number, linkId: number, refreshCallback: () => void) => {
-  useBiohubApi();
-  try {
-    await biohubApi.collection.endCollectionLink(collectionId, linkId);
-    refreshCallback();
-  } catch (error) {
-    console.error('Error ending collection link:', error);
-  }
-};
-
-export const deleteLinkDialog = (collectionId: number, linkId: number, refreshCallback: () => void) => {
+// Custom hook to provide the delete link dialog logic
+export function useDeleteLinkDialog() {
+  const biohubApi = useBiohubApi();
   const dialogContext = useDialogContext();
-  dialogContext.setYesNoDialog({
-    dialogTitle: deleteLinkText.deleteTitle,
-    dialogText: deleteLinkText.deleteText,
-    yesButtonLabel: deleteLinkText.yesButtonLabel,
-    noButtonLabel: deleteLinkText.noButtonLabel,
-    yesButtonProps: { color: 'error' },
-    onClose: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    onNo: () => {
-      dialogContext.setYesNoDialog({ open: false });
-    },
-    open: true,
-    onYes: async () => {
-      await handleDeleteLink(collectionId, linkId, refreshCallback);
-      dialogContext.setYesNoDialog({ open: false });
+
+  const handleDeleteLink = async (collectionId: number, linkId: number, refreshCallback: () => void) => {
+    try {
+      await biohubApi.collection.endCollectionLink(collectionId, linkId);
+      refreshCallback();
+    } catch (error) {
+      console.error('Error ending collection link:', error);
     }
-  });
-};
+  };
+
+  const deleteLinkDialog = (collectionId: number, linkId: number, refreshCallback: () => void) => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: deleteLinkText.deleteTitle,
+      dialogText: deleteLinkText.deleteText,
+      yesButtonLabel: deleteLinkText.yesButtonLabel,
+      noButtonLabel: deleteLinkText.noButtonLabel,
+      yesButtonProps: { color: 'error' },
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      open: true,
+      onYes: async () => {
+        await handleDeleteLink(collectionId, linkId, refreshCallback);
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
+  };
+
+  return { deleteLinkDialog };
+}

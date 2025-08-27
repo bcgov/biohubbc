@@ -29,7 +29,7 @@ import { ICollectionLink } from 'interfaces/useCollectionApi.interface';
 import { useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
 import { firstOrNull } from 'utils/Utils';
-import { deleteLinkDialog } from './delete/DeleteLink';
+import { useDeleteLinkDialog } from './delete/DeleteLink';
 import CollectionLinkDialog from './dialog/CollectionLinkDialog';
 
 type CollectionLinkDataTableURLParams = {
@@ -64,6 +64,7 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
   const { collectionId, showSearch = false } = props;
 
   const biohubApi = useBiohubApi();
+  const { deleteLinkDialog } = useDeleteLinkDialog();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<CollectionLinkDataTableURLParams>>();
   const [linkDialogIsOpen, setLinkDialogIsOpen] = useState(false);
