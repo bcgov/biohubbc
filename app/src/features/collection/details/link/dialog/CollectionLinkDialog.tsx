@@ -16,6 +16,7 @@ interface ICollectionLinkDialogProps {
   onSubmit: () => void;
   onClose: () => void;
   open: boolean;
+  onSave?: (formData: ICollectionLinkFormData) => void | Promise<void>;
 }
 
 const CollectionLinkDialog = (props: ICollectionLinkDialogProps) => {
@@ -41,6 +42,10 @@ const CollectionLinkDialog = (props: ICollectionLinkDialogProps) => {
   };
 
   const handleSave = async (formData: ICollectionLinkFormData) => {
+    if (props.onSave) {
+      await props.onSave(formData);
+      return;
+    }
     setIsLoading(true);
     setError(undefined);
 
