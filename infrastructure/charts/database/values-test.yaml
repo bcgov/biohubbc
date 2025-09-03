@@ -1,0 +1,22 @@
+# Test environment values for SIMS
+environment:
+  name: test
+  id: deploy
+
+# Database configuration
+app:
+  nodeEnv: production
+
+# Openshift Resources
+replicas: 1
+resources:
+  requests:
+    cpu: 50m
+    memory: 100Mi
+  limits:
+    cpu: 2000m
+    memory: 5Gi
+
+# Volume for persistent data
+persistence:
+  size: 20Gi

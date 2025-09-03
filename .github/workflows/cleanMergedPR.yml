@@ -20,35 +20,11 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
     steps:
-      # Install Node - for `node` and `npm` commands
-      # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-
       # Install oc, which was removed from the ubuntu-latest image in v24.04
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          oc: "4.14"
+          oc: "4.16"
 
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
@@ -56,34 +32,19 @@ jobs:
       - name: Log in to OpenShift
         run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
 
-      # Clean the app deployment artifacts
-      - name: Clean APP Deployment
-        working-directory: "app/.pipeline/"
-        run: |
-          npm ci
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
-
-      # Clean the database build/deployment artifacts
-      - name: Clean Database Artifacts
-        working-directory: "database/.pipeline/"
-        run: |
-          npm ci
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
-
-      # Clean the api deployment artifacts
-      - name: Clean API Deployment
-        working-directory: "api/.pipeline/"
-        run: |
-          npm ci
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=build
-          DEBUG=* npm run clean -- --pr=$PR_NUMBER --env=dev
-
-      # Clean the reamaining build/deployment artifacts
-      - name: Clean remaining Artifacts
+      # Clean all deployment artifacts for the PR
+      - name: Clean Deployment Artifacts
         env:
           POD_SELECTOR: biohubbc
         run: |
-          oc --namespace af2668-dev   get all,pvc,secret,pods,ReplicationController,DeploymentConfig,Deployment,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash
-          oc --namespace af2668-tools get all,pvc,secret,pods,ReplicationController,DeploymentConfig,Deployment,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash
+          echo "Cleaning deployment artifacts for PR $PR_NUMBER"
+          
+          # Clean from dev namespace
+          echo "Cleaning from af2668-dev namespace..."
+          oc --namespace af2668-dev get all,pvc,secret,pods,ReplicationController,Deployment,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash || echo "No resources found in dev namespace"
+          
+          # Clean from tools namespace
+          echo "Cleaning from af2668-tools namespace..."
+          oc --namespace af2668-tools get all,pvc,secret,pods,ReplicationController,Deployment,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash || echo "No resources found in tools namespace"
+          
+          echo "Cleanup completed for PR $PR_NUMBER"

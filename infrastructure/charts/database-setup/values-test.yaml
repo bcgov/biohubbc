@@ -1,0 +1,8 @@
+# Test environment values for SIMS
+environment:
+  name: test
+  id: deploy
+
+# Database configuration
+app:
+  nodeEnv: production

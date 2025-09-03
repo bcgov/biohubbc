@@ -1,0 +1,33 @@
+# Pull Request environment values for SIMS. This template will be used for dynamic PR deployments
+environment:
+  name: dev
+  # id will be dynamically set: "1234"
+
+# App configuration
+app:
+  nodeEnv: development
+  # apiHost will be dynamically set: "biohubbc-api-1234-af2668-dev.apps.silver.devops.gov.bc.ca"
+  featureFlags: ""
+
+  # BioHub Platform (aka: Backbone)
+  backbonePublicApiHost: "https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca"
+
+  # Siteminder
+  siteminderLogoutURL: "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi"
+
+  # Keycloak
+  keycloak:
+    host: "https://dev.loginproxy.gov.bc.ca/auth"
+
+# Openshift Resources
+replicas: 1
+resources:
+  requests:
+    cpu: 50m
+    memory: 100Mi
+  limits:
+    cpu: 300m
+    memory: 500Mi
+
+# Route configuration
+# route.host will be dynamically set: "biohubbc-1234-af2668-dev.apps.silver.devops.gov.bc.ca"

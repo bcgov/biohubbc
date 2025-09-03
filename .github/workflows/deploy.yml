@@ -7,12 +7,15 @@ on:
     types: [opened, reopened, synchronize, ready_for_review]
     branches-ignore:
       - test
-      - test-spi
       - prod
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number }}
   cancel-in-progress: true
+
+env:
+  IMAGE_TAG: build-1.0.0-${{ github.event.number }}
+  VERSION: ${{ github.base_ref }}-1.0.0-${{ github.event.number }}
 
 jobs:
   # Print variables for logging and debugging purposes
@@ -133,8 +136,8 @@ jobs:
           node-version: 20
 
   # Build the web frontend app image
-  buildAPP:
-    name: Build APP Image
+  buildAndPushApp:
+    name: Build App Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false &&
@@ -149,12 +152,6 @@ jobs:
       - checkoutRepo
       - skipDuplicateActions
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v4
@@ -174,34 +171,54 @@ jobs:
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          oc: "4.14"
+          oc: "4.16"
 
-      # Log in to OpenShift.
+      # Log in to OpenShift with retry logic.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+        run: |
+          MAX_ATTEMPTS=3
+          ATTEMPT=1
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS: Logging in to OpenShift..."
+            if oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443; then
+              echo "Successfully logged in to OpenShift on attempt $ATTEMPT"
+              break
+            else
+              echo "Failed to log in to OpenShift on attempt $ATTEMPT"
+              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+                WAIT_TIME=$((ATTEMPT * 10))
+                echo "Waiting $WAIT_TIME seconds before retry..."
+                sleep $WAIT_TIME
+              else
+                echo "All $MAX_ATTEMPTS attempts failed. Exiting."
+                exit 1
+              fi
+            fi
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+
+      # Authenticate Docker with OpenShift registry
+      - name: Authenticate Docker with OpenShift registry
+        run: |
+          echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
 
       # Scale down any existing OpenShift pods for this PR deployment
       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
       - name: Scale down app pods
-        run: oc get DeploymentConfig,Deployment --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
+        run: oc get Deployment --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
 
-      # Install app pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: app/.pipeline/
-        run: npm ci
-
-      # Build the app image
-      - name: Build APP Image
-        working-directory: app/.pipeline/
+      # Build and push the app image
+      - name: Build and Push App Image
+        working-directory: app
         run: |
-          DEBUG=* npm run build -- --pr=$PR_NUMBER
+          docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} .
+          docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
   # Build the Database image
-  buildDatabase:
+  buildAndPushDatabase:
     name: Build Database Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -217,12 +234,6 @@ jobs:
       - checkoutRepo
       - skipDuplicateActions
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v4
@@ -242,35 +253,55 @@ jobs:
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          oc: "4.14"
+          oc: "4.16"
 
-      # Log in to OpenShift.
+      # Log in to OpenShift with retry logic.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+        run: |
+          MAX_ATTEMPTS=3
+          ATTEMPT=1
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS: Logging in to OpenShift..."
+            if oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443; then
+              echo "Successfully logged in to OpenShift on attempt $ATTEMPT"
+              break
+            else
+              echo "Failed to log in to OpenShift on attempt $ATTEMPT"
+              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+                WAIT_TIME=$((ATTEMPT * 10))
+                echo "Waiting $WAIT_TIME seconds before retry..."
+                sleep $WAIT_TIME
+              else
+                echo "All $MAX_ATTEMPTS attempts failed. Exiting."
+                exit 1
+              fi
+            fi
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+
+      # Authenticate Docker with OpenShift registry
+      - name: Authenticate Docker with OpenShift registry
+        run: |
+          echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
 
       # Scale down any existing OpenShift pods for this PR deployment
       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
       - name: Scale down database pods
-        run: oc get DeploymentConfig,Deployment --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
+        run: oc get Deployment --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
 
-      # Install database pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: database/.pipeline/
-        run: npm ci
-
-      # Build the database image
-      - name: Build Database Image
-        working-directory: database/.pipeline/
+      # Build and push the database image using Docker
+      - name: Build and Push Database Image
+        working-directory: database
         run: |
-          DEBUG=* npm run db:build -- --pr=$PR_NUMBER
+          docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} .
+          docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
   # Build the Database Setup image
-  buildDatabaseSetup:
-    name: Build Database Setup Image
+  buildAndPushDatabaseSetup:
+    name: Build and Database Setup Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false &&
@@ -280,16 +311,11 @@ jobs:
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
+      APP_NAME: "biohubbc-db-setup"
     needs:
       - checkoutRepo
       - skipDuplicateActions
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v4
@@ -309,28 +335,48 @@ jobs:
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          oc: "4.14"
+          oc: "4.16"
 
-      # Log in to OpenShift.
+      # Log in to OpenShift with retry logic.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      # Install database pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: database/.pipeline/
-        run: npm ci
-
-      # Build the database image
-      - name: Build Database Setup Image
-        working-directory: database/.pipeline/
         run: |
-          DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER
+          MAX_ATTEMPTS=3
+          ATTEMPT=1
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS: Logging in to OpenShift..."
+            if oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443; then
+              echo "Successfully logged in to OpenShift on attempt $ATTEMPT"
+              break
+            else
+              echo "Failed to log in to OpenShift on attempt $ATTEMPT"
+              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+                WAIT_TIME=$((ATTEMPT * 10))
+                echo "Waiting $WAIT_TIME seconds before retry..."
+                sleep $WAIT_TIME
+              else
+                echo "All $MAX_ATTEMPTS attempts failed. Exiting."
+                exit 1
+              fi
+            fi
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+
+      # Authenticate Docker with OpenShift registry
+      - name: Authenticate Docker with OpenShift registry
+        run: |
+          echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
+
+      # Build and push the database setup image using Docker
+      - name: Build and Push Database Setup Image
+        working-directory: database
+        run: |
+          docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} -f .docker/db/Dockerfile.setup .
+          docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
   # Build the API image
-  buildAPI:
+  buildAndPushAPI:
     name: Build API Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -346,12 +392,6 @@ jobs:
       - checkoutRepo
       - skipDuplicateActions
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v4
@@ -371,35 +411,55 @@ jobs:
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          oc: "4.14"
+          oc: "4.16"
 
-      # Log in to OpenShift.
+      # Log in to OpenShift with retry logic.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+        run: |
+          MAX_ATTEMPTS=3
+          ATTEMPT=1
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS: Logging in to OpenShift..."
+            if oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443; then
+              echo "Successfully logged in to OpenShift on attempt $ATTEMPT"
+              break
+            else
+              echo "Failed to log in to OpenShift on attempt $ATTEMPT"
+              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+                WAIT_TIME=$((ATTEMPT * 10))
+                echo "Waiting $WAIT_TIME seconds before retry..."
+                sleep $WAIT_TIME
+              else
+                echo "All $MAX_ATTEMPTS attempts failed. Exiting."
+                exit 1
+              fi
+            fi
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+
+      # Authenticate Docker with OpenShift registry
+      - name: Authenticate Docker with OpenShift registry
+        run: |
+          echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
 
       # Scale down any existing OpenShift pods for this PR deployment
       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
       - name: Scale down api pods
-        run: oc get DeploymentConfig,Deployment --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
+        run: oc get Deployment --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
 
-      # Install api pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: api/.pipeline/
-        run: npm ci
-
-      # Build the api image
-      - name: Build API Image
-        working-directory: api/.pipeline/
+      # Build and push the API image
+      - name: Build and Push API Image
+        working-directory: api
         run: |
-          DEBUG=* npm run build -- --pr=$PR_NUMBER
+          docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} .
+          docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
-  # Deploy APP image
-  deployAPP:
-    name: Deploy APP Image
+  # Deploy App image
+  deployApp:
+    name: Deploy App Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false &&
@@ -407,17 +467,12 @@ jobs:
       ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == false ||
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref ) }}
+    environment: dev
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
-      - buildAPP
+      - buildAndPushApp
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v4
@@ -437,25 +492,55 @@ jobs:
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          oc: "4.14"
+          oc: "4.16"
 
-      # Log in to OpenShift.
+      # Log in to OpenShift with retry logic.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      # Install app pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: app/.pipeline
-        run: npm ci
-
-      # Deploy the app image
-      - name: Deploy APP Image
-        working-directory: app/.pipeline
         run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
+          MAX_ATTEMPTS=3
+          ATTEMPT=1
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS: Logging in to OpenShift..."
+            if oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443; then
+              echo "Successfully logged in to OpenShift on attempt $ATTEMPT"
+              break
+            else
+              echo "Failed to log in to OpenShift on attempt $ATTEMPT"
+              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+                WAIT_TIME=$((ATTEMPT * 10))
+                echo "Waiting $WAIT_TIME seconds before retry..."
+                sleep $WAIT_TIME
+              else
+                echo "All $MAX_ATTEMPTS attempts failed. Exiting."
+                exit 1
+              fi
+            fi
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+
+      # Install Helm
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: '3.12.0'
+
+      # Deploy the app image using Helm
+      - name: Deploy App Image
+        working-directory: infrastructure/charts/app
+        run: |
+          echo "Deploying App for PR $PR_NUMBER"
+          
+          TS=$(date +%s)
+          helm upgrade --install $PR_NUMBER . \
+            -f values.yaml \
+            -f values-pr.yaml \
+            --set-string environment.ts=${TS} \
+            --set-string environment.id=$PR_NUMBER \
+            --wait --timeout=300s
+          
+          echo "App deployment completed for PR $PR_NUMBER"
 
   # Deploy Database image
   deployDatabase:
@@ -467,17 +552,12 @@ jobs:
       ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
+    environment: dev
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
-      - buildDatabase
+      - buildAndPushDatabase
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v4
@@ -497,27 +577,64 @@ jobs:
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          oc: "4.14"
+          oc: "4.16"
 
-      # Log in to OpenShift.
+      # Log in to OpenShift with retry logic.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      # Install database pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: database/.pipeline/
-        run: npm ci
-
-      # Deploy the database image
-      - name: Deploy Database Image
-        working-directory: database/.pipeline/
         run: |
-          DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --env=dev
+          MAX_ATTEMPTS=3
+          ATTEMPT=1
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS: Logging in to OpenShift..."
+            if oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443; then
+              echo "Successfully logged in to OpenShift on attempt $ATTEMPT"
+              break
+            else
+              echo "Failed to log in to OpenShift on attempt $ATTEMPT"
+              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+                WAIT_TIME=$((ATTEMPT * 10))
+                echo "Waiting $WAIT_TIME seconds before retry..."
+                sleep $WAIT_TIME
+              else
+                echo "All $MAX_ATTEMPTS attempts failed. Exiting."
+                exit 1
+              fi
+            fi
+            ATTEMPT=$((ATTEMPT + 1))
+          done
 
-  # Deploy Database image
+      # Install Helm
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: '3.12.0'
+
+      # Deploy the database image using Helm
+      - name: Deploy Database Image
+        working-directory: infrastructure/charts/database
+        run: |
+          echo "Deploying Database for PR $PR_NUMBER"
+          
+          TS=$(date +%s)
+          helm upgrade --install $PR_NUMBER . \
+            -f values.yaml \
+            -f values-pr.yaml \
+            --set-string environment.ts=${TS} \
+            --set-string environment.id=$PR_NUMBER \
+            --set app.postgresAdmin=${{ secrets.POSTGRES_ADMIN }} \
+            --set app.postgresAdminPassword=${{ secrets.POSTGRES_ADMIN_PASSWORD }} \
+            --set app.postgresUser=${{ secrets.POSTGRES_USER }} \
+            --set app.postgresUserPassword=${{ secrets.POSTGRES_USER_PASSWORD }} \
+            --set app.postgresUserApi=${{ secrets.POSTGRES_USER_API }} \
+            --set app.postgresUserApiPassword=${{ secrets.POSTGRES_USER_API_PASSWORD }} \
+            --set app.postgresDb=${{ secrets.POSTGRES_DB }} \
+            --wait --timeout=300s
+          
+          echo "Database deployment completed for PR $PR_NUMBER"
+
+  # Deploy Database Setup image
   deployDatabaseSetup:
     name: Deploy Database Setup Image
     runs-on: ubuntu-latest
@@ -527,18 +644,13 @@ jobs:
       ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
+    environment: dev
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
-      - buildDatabaseSetup
+      - buildAndPushDatabaseSetup
       - deployDatabase
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v4
@@ -558,25 +670,55 @@ jobs:
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          oc: "4.14"
+          oc: "4.16"
 
-      # Log in to OpenShift.
+      # Log in to OpenShift with retry logic.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      # Install database pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: database/.pipeline/
-        run: npm ci
-
-      # Deploy the database setup image
-      - name: Deploy Database Setup Image
-        working-directory: database/.pipeline/
         run: |
-          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=dev
+          MAX_ATTEMPTS=3
+          ATTEMPT=1
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS: Logging in to OpenShift..."
+            if oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443; then
+              echo "Successfully logged in to OpenShift on attempt $ATTEMPT"
+              break
+            else
+              echo "Failed to log in to OpenShift on attempt $ATTEMPT"
+              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+                WAIT_TIME=$((ATTEMPT * 10))
+                echo "Waiting $WAIT_TIME seconds before retry..."
+                sleep $WAIT_TIME
+              else
+                echo "All $MAX_ATTEMPTS attempts failed. Exiting."
+                exit 1
+              fi
+            fi
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+
+      # Install Helm
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: '3.12.0'
+
+      # Deploy the database setup image using Helm
+      - name: Deploy Database Setup Image
+        working-directory: infrastructure/charts/database-setup
+        run: |
+          echo "Deploying Database Setup for PR $PR_NUMBER"
+
+          TS=$(date +%s)
+          helm upgrade --install $PR_NUMBER . \
+            -f values.yaml \
+            -f values-pr.yaml \
+            --set-string environment.ts=${TS} \
+            --set-string environment.id=$PR_NUMBER \
+            --wait --timeout=300s
+          
+          echo "Database setup deployment completed for PR $PR_NUMBER"
 
   # Deploy API image
   deployAPI:
@@ -590,19 +732,14 @@ jobs:
       ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip == false ||
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch != github.head_ref ) }}
+    environment: dev
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
-      - buildAPI
+      - buildAndPushAPI
       - deployDatabase
       - deployDatabaseSetup
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v4
@@ -622,25 +759,55 @@ jobs:
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          oc: "4.14"
+          oc: "4.16"
 
-      # Log in to OpenShift.
+      # Log in to OpenShift with retry logic.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      # Install api pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: api/.pipeline/
-        run: npm ci
-
-      # Deploy the api image
-      - name: Deploy API Image
-        working-directory: api/.pipeline/
         run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
+          MAX_ATTEMPTS=3
+          ATTEMPT=1
+          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
+            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS: Logging in to OpenShift..."
+            if oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443; then
+              echo "Successfully logged in to OpenShift on attempt $ATTEMPT"
+              break
+            else
+              echo "Failed to log in to OpenShift on attempt $ATTEMPT"
+              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
+                WAIT_TIME=$((ATTEMPT * 10))
+                echo "Waiting $WAIT_TIME seconds before retry..."
+                sleep $WAIT_TIME
+              else
+                echo "All $MAX_ATTEMPTS attempts failed. Exiting."
+                exit 1
+              fi
+            fi
+            ATTEMPT=$((ATTEMPT + 1))
+          done
+
+      # Install Helm
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+        with:
+          version: '3.12.0'
+
+      # Deploy the api image using Helm
+      - name: Deploy API Image
+        working-directory: infrastructure/charts/api
+        run: |
+          echo "Deploying API for PR $PR_NUMBER"
+          
+          TS=$(date +%s)
+          helm upgrade --install $PR_NUMBER . \
+            -f values.yaml \
+            -f values-pr.yaml \
+            --set-string environment.ts=${TS} \
+            --set-string environment.id=$PR_NUMBER \
+            --wait --timeout=300s
+          
+          echo "API deployment completed for PR $PR_NUMBER"
 
   # Report the overall status of all jobs.
   # Why? Skipped jobs are not considered successes when specifying requird jobs in the GitHub PR settings. Rather than
@@ -657,11 +824,11 @@ jobs:
       - checkEnv
       - skipDuplicateActions
       - checkoutRepo
-      - buildAPP
-      - buildDatabase
-      - buildDatabaseSetup
-      - buildAPI
-      - deployAPP
+      - buildAndPushApp
+      - buildAndPushDatabase
+      - buildAndPushDatabaseSetup
+      - buildAndPushAPI
+      - deployApp
       - deployDatabase
       - deployDatabaseSetup
       - deployAPI
@@ -671,11 +838,11 @@ jobs:
           echo needs.checkEnv.result: ${{ needs.checkEnv.result }}
           echo needs.skipDuplicateActions.result: ${{ needs.skipDuplicateActions.result }}
           echo needs.checkoutRepo.result: ${{ needs.checkoutRepo.result }}
-          echo needs.buildAPP.result: ${{ needs.buildAPP.result }}
-          echo needs.buildDatabase.result: ${{ needs.buildDatabase.result }}
-          echo needs.buildDatabaseSetup.result: ${{ needs.buildDatabaseSetup.result }}
-          echo needs.buildAPI.result: ${{ needs.buildAPI.result }}
-          echo needs.deployAPP.result: ${{ needs.deployAPP.result }}
+          echo needs.buildAndPushApp.result: ${{ needs.buildAndPushApp.result }}
+          echo needs.buildAndPushDatabase.result: ${{ needs.buildAndPushDatabase.result }}
+          echo needs.buildAndPushDatabaseSetup.result: ${{ needs.buildAndPushDatabaseSetup.result }}
+          echo needs.buildAndPushAPI.result: ${{ needs.buildAndPushAPI.result }}
+          echo needs.deployApp.result: ${{ needs.deployApp.result }}
           echo needs.deployDatabase.result: ${{ needs.deployDatabase.result }}
           echo needs.deployDatabaseSetup.result: ${{ needs.deployDatabaseSetup.result }}
           echo needs.deployAPI.result: ${{ needs.deployAPI.result }}
