@@ -177,27 +177,11 @@ jobs:
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: |
-          MAX_ATTEMPTS=3
-          ATTEMPT=1
-          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS: Logging in to OpenShift..."
-            if oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443; then
-              echo "Successfully logged in to OpenShift on attempt $ATTEMPT"
-              break
-            else
-              echo "Failed to log in to OpenShift on attempt $ATTEMPT"
-              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
-                WAIT_TIME=$((ATTEMPT * 10))
-                echo "Waiting $WAIT_TIME seconds before retry..."
-                sleep $WAIT_TIME
-              else
-                echo "All $MAX_ATTEMPTS attempts failed. Exiting."
-                exit 1
-              fi
-            fi
-            ATTEMPT=$((ATTEMPT + 1))
-          done
+        uses: redhat-actions/oc-login@v1.3
+        with:
+          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
+          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
       # Authenticate Docker with OpenShift registry
       - name: Authenticate Docker with OpenShift registry
@@ -255,31 +239,15 @@ jobs:
         with:
           oc: "4.16"
 
-      # Log in to OpenShift with retry logic.
+      # Log in to OpenShift
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: |
-          MAX_ATTEMPTS=3
-          ATTEMPT=1
-          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS: Logging in to OpenShift..."
-            if oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443; then
-              echo "Successfully logged in to OpenShift on attempt $ATTEMPT"
-              break
-            else
-              echo "Failed to log in to OpenShift on attempt $ATTEMPT"
-              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
-                WAIT_TIME=$((ATTEMPT * 10))
-                echo "Waiting $WAIT_TIME seconds before retry..."
-                sleep $WAIT_TIME
-              else
-                echo "All $MAX_ATTEMPTS attempts failed. Exiting."
-                exit 1
-              fi
-            fi
-            ATTEMPT=$((ATTEMPT + 1))
-          done
+        uses: redhat-actions/oc-login@v1.3
+        with:
+          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
+          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
       # Authenticate Docker with OpenShift registry
       - name: Authenticate Docker with OpenShift registry
@@ -301,7 +269,7 @@ jobs:
 
   # Build the Database Setup image
   buildAndPushDatabaseSetup:
-    name: Build and Database Setup Image
+    name: Build Database Setup Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false &&
@@ -337,31 +305,15 @@ jobs:
         with:
           oc: "4.16"
 
-      # Log in to OpenShift with retry logic.
+      # Log in to OpenShift with retry
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: |
-          MAX_ATTEMPTS=3
-          ATTEMPT=1
-          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS: Logging in to OpenShift..."
-            if oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443; then
-              echo "Successfully logged in to OpenShift on attempt $ATTEMPT"
-              break
-            else
-              echo "Failed to log in to OpenShift on attempt $ATTEMPT"
-              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
-                WAIT_TIME=$((ATTEMPT * 10))
-                echo "Waiting $WAIT_TIME seconds before retry..."
-                sleep $WAIT_TIME
-              else
-                echo "All $MAX_ATTEMPTS attempts failed. Exiting."
-                exit 1
-              fi
-            fi
-            ATTEMPT=$((ATTEMPT + 1))
-          done
+        uses: redhat-actions/oc-login@v1.3
+        with:
+          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
+          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
       # Authenticate Docker with OpenShift registry
       - name: Authenticate Docker with OpenShift registry
@@ -413,31 +365,15 @@ jobs:
         with:
           oc: "4.16"
 
-      # Log in to OpenShift with retry logic.
+      # Log in to OpenShift
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: |
-          MAX_ATTEMPTS=3
-          ATTEMPT=1
-          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS: Logging in to OpenShift..."
-            if oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443; then
-              echo "Successfully logged in to OpenShift on attempt $ATTEMPT"
-              break
-            else
-              echo "Failed to log in to OpenShift on attempt $ATTEMPT"
-              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
-                WAIT_TIME=$((ATTEMPT * 10))
-                echo "Waiting $WAIT_TIME seconds before retry..."
-                sleep $WAIT_TIME
-              else
-                echo "All $MAX_ATTEMPTS attempts failed. Exiting."
-                exit 1
-              fi
-            fi
-            ATTEMPT=$((ATTEMPT + 1))
-          done
+        uses: redhat-actions/oc-login@v1.3
+        with:
+          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
+          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
       # Authenticate Docker with OpenShift registry
       - name: Authenticate Docker with OpenShift registry
@@ -494,37 +430,15 @@ jobs:
         with:
           oc: "4.16"
 
-      # Log in to OpenShift with retry logic.
+      # Log in to OpenShift
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: |
-          MAX_ATTEMPTS=3
-          ATTEMPT=1
-          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS: Logging in to OpenShift..."
-            if oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443; then
-              echo "Successfully logged in to OpenShift on attempt $ATTEMPT"
-              break
-            else
-              echo "Failed to log in to OpenShift on attempt $ATTEMPT"
-              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
-                WAIT_TIME=$((ATTEMPT * 10))
-                echo "Waiting $WAIT_TIME seconds before retry..."
-                sleep $WAIT_TIME
-              else
-                echo "All $MAX_ATTEMPTS attempts failed. Exiting."
-                exit 1
-              fi
-            fi
-            ATTEMPT=$((ATTEMPT + 1))
-          done
-
-      # Install Helm
-      - name: Install Helm
-        uses: azure/setup-helm@v3
+        uses: redhat-actions/oc-login@v1.3
         with:
-          version: '3.12.0'
+          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
+          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
       # Deploy the app image using Helm
       - name: Deploy App Image
@@ -579,37 +493,15 @@ jobs:
         with:
           oc: "4.16"
 
-      # Log in to OpenShift with retry logic.
+      # Log in to OpenShift
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: |
-          MAX_ATTEMPTS=3
-          ATTEMPT=1
-          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS: Logging in to OpenShift..."
-            if oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443; then
-              echo "Successfully logged in to OpenShift on attempt $ATTEMPT"
-              break
-            else
-              echo "Failed to log in to OpenShift on attempt $ATTEMPT"
-              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
-                WAIT_TIME=$((ATTEMPT * 10))
-                echo "Waiting $WAIT_TIME seconds before retry..."
-                sleep $WAIT_TIME
-              else
-                echo "All $MAX_ATTEMPTS attempts failed. Exiting."
-                exit 1
-              fi
-            fi
-            ATTEMPT=$((ATTEMPT + 1))
-          done
-
-      # Install Helm
-      - name: Install Helm
-        uses: azure/setup-helm@v3
+        uses: redhat-actions/oc-login@v1.3
         with:
-          version: '3.12.0'
+          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
+          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
       # Deploy the database image using Helm
       - name: Deploy Database Image
@@ -672,37 +564,15 @@ jobs:
         with:
           oc: "4.16"
 
-      # Log in to OpenShift with retry logic.
+      # Log in to OpenShift
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: |
-          MAX_ATTEMPTS=3
-          ATTEMPT=1
-          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS: Logging in to OpenShift..."
-            if oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443; then
-              echo "Successfully logged in to OpenShift on attempt $ATTEMPT"
-              break
-            else
-              echo "Failed to log in to OpenShift on attempt $ATTEMPT"
-              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
-                WAIT_TIME=$((ATTEMPT * 10))
-                echo "Waiting $WAIT_TIME seconds before retry..."
-                sleep $WAIT_TIME
-              else
-                echo "All $MAX_ATTEMPTS attempts failed. Exiting."
-                exit 1
-              fi
-            fi
-            ATTEMPT=$((ATTEMPT + 1))
-          done
-
-      # Install Helm
-      - name: Install Helm
-        uses: azure/setup-helm@v3
+        uses: redhat-actions/oc-login@v1.3
         with:
-          version: '3.12.0'
+          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
+          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
       # Deploy the database setup image using Helm
       - name: Deploy Database Setup Image
@@ -761,37 +631,15 @@ jobs:
         with:
           oc: "4.16"
 
-      # Log in to OpenShift with retry logic.
+      # Log in to OpenShift
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: |
-          MAX_ATTEMPTS=3
-          ATTEMPT=1
-          while [ $ATTEMPT -le $MAX_ATTEMPTS ]; do
-            echo "Attempt $ATTEMPT of $MAX_ATTEMPTS: Logging in to OpenShift..."
-            if oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443; then
-              echo "Successfully logged in to OpenShift on attempt $ATTEMPT"
-              break
-            else
-              echo "Failed to log in to OpenShift on attempt $ATTEMPT"
-              if [ $ATTEMPT -lt $MAX_ATTEMPTS ]; then
-                WAIT_TIME=$((ATTEMPT * 10))
-                echo "Waiting $WAIT_TIME seconds before retry..."
-                sleep $WAIT_TIME
-              else
-                echo "All $MAX_ATTEMPTS attempts failed. Exiting."
-                exit 1
-              fi
-            fi
-            ATTEMPT=$((ATTEMPT + 1))
-          done
-
-      # Install Helm
-      - name: Install Helm
-        uses: azure/setup-helm@v3
+        uses: redhat-actions/oc-login@v1.3
         with:
-          version: '3.12.0'
+          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
+          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
       # Deploy the api image using Helm
       - name: Deploy API Image
