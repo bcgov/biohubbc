@@ -280,22 +280,6 @@ format-fix: ## Runs `npm run format-fix` for all projects
 	@echo "==============================================="
 	@cd database && npm run format-fix && cd ..
 
-## ------------------------------------------------------------------------------
-## Run `npm` commands for all projects ./.pipeline
-## ------------------------------------------------------------------------------
-pipeline-install: ## Runs `npm install` for all projects
-	@echo "==============================================="
-	@echo "Running /api/.pipeline install"
-	@echo "==============================================="
-	@cd api/.pipeline && npm install && cd ../..
-	@echo "==============================================="
-	@echo "Running /app/.pipeline install"
-	@echo "==============================================="
-	@cd app/.pipeline && npm install && cd ../..
-	@echo "==============================================="
-	@echo "Running /database/.pipeline install"
-	@echo "==============================================="
-	@cd database/.pipeline && npm install && cd ../..
 
 ## ------------------------------------------------------------------------------
 ## Run `docker logs <container> -f` commands for all projects

@@ -1,0 +1,7 @@
+environment:
+  name: dev
+  id: deploy
+
+# Database configuration
+app:
+  nodeEnv: development

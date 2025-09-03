@@ -1,0 +1,22 @@
+# Pull Request environment values for SIMS. This template will be used for dynamic PR deployments
+environment:
+  name: dev
+  # id will be dynamically set: "1234"
+
+# Database configuration
+app:
+  nodeEnv: development
+
+# Openshift Resources
+replicas: 1
+resources:
+  requests:
+    cpu: 50m
+    memory: 100Mi
+  limits:
+    cpu: 600m
+    memory: 4Gi
+
+# Volume for persistent data
+persistence:
+  size: 500Mi  # Smaller for PR environments

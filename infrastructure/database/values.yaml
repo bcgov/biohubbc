@@ -1,0 +1,49 @@
+# Default values for database chart
+environment:
+  licensePlate: "af2668" # License plate of the project
+  name: "" # Environment name (dev, test, prod)
+  id: "" # Environment id (PR, deploy)
+  changeId: "" # Change id (PR number)
+  ts: "" # Timestamp of the deployment
+
+image:
+  registry: "image-registry.openshift-image-registry.svc:5000" # The base image registry URL
+  image: af2668-tools/biohubbc-db # Always pull from tools namespace
+
+# Database configuration
+app:
+  name: biohubbc-db
+  nodeEnv: "" # NODE_ENV specification variable
+  timezone: America/Vancouver # Application timezone
+  postgresAdmin: "" # Username for PostgreSQL admin user that will be used for accessing the database.
+  postgresAdminPassword: "" # Password for the PostgreSQL admin connection user.
+  postgresUser: "" # Username for PostgreSQL user that will be used for accessing the database.
+  postgresUserPassword: "" # Password for the PostgreSQL connection user.
+  postgresUserApi: "" # Username for PostgreSQL user that will be used for accessing the database.
+  postgresUserApiPassword: "" # Password for the PostgreSQL connection user.
+  postgresDb: "" # Name of the PostgreSQL database accessed.
+  pgData: /var/lib/postgresql/data/17 # Path to PostgreSQL data directory
+
+# Openshift Resources
+replicas: 1
+resources:
+  requests:
+    cpu: ""
+    memory: ""
+  limits:
+    cpu: ""
+    memory: ""
+
+# Volume for persistent data
+persistence:
+  size: "" # Volume space available for data, e.g. 512Mi, 2Gi.
+  storageClass: ""
+  accessMode: ReadWriteMany
+  mountPath: /opt/app-root/app/data
+
+# Service configuration
+service:
+  type: ClusterIP
+  name: postgresql
+  port: 5432
+  targetPort: 5432

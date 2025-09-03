@@ -1,0 +1,103 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: biohubbc-telemetry-cronjob{{ include "app.suffix" . }}
+  namespace: {{ include "environment.namespace" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+    role: telemetry-cronjob
+  annotations:
+    {{- include "app.annotations" . | nindent 4 }}
+spec:
+  schedule: {{ .Values.app.telemetry.schedule }}
+  # By default the PR cronjobs are disabled
+  suspend: {{ .Values.app.telemetry.disabled }}
+  concurrencyPolicy: "Forbid"
+  successfulJobsHistoryLimit: 1
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      backoffLimit: 0
+      template:
+        spec:
+          containers:
+            - name: api
+              image: "{{ .Values.image.registry }}/{{ .Values.image.image }}:{{ include "app.imageTag" . }}"
+              imagePullPolicy: Always
+              env:
+                - name: NODE_ENV
+                  value: {{ .Values.app.nodeEnv }}
+                - name: NODE_OPTIONS
+                  value: {{ .Values.app.nodeOptions }}
+                # Database
+                - name: TZ
+                  value: {{ .Values.app.timezone }}
+                - name: DB_HOST
+                  value: {{ include "dbHost" . }}
+                - name: DB_USER_API
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user-api
+                      name: {{ include "dbHost" . }}
+                - name: DB_USER_API_PASS
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user-api-password
+                      name: {{ include "dbHost" . }}
+                - name: DB_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-name
+                      name: {{ include "dbHost" . }}
+                - name: DB_PORT
+                  value: {{ .Values.app.database.port | quote }}
+                # Telemetry
+                - name: LOTEK_API_HOST
+                  value: {{ .Values.app.lotekApiHost }}
+                - name: LOTEK_ACCOUNT_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      key: lotek_account_username
+                      name: {{ .Values.app.telemetry.secretKey }}
+                - name: LOTEK_ACCOUNT_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: lotek_account_password
+                      name: {{ .Values.app.telemetry.secretKey }}
+                - name: VECTRONIC_API_HOST
+                  value: {{ .Values.app.vectronicApiHost }}
+                # Logging
+                - name: LOG_LEVEL
+                  value: debug
+                - name: LOG_LEVEL_FILE
+                  value: debug
+                - name: LOG_FILE_DIR
+                  value: data/cronjob-logs
+                - name: LOG_FILE_NAME
+                  value: sims-telemetry-cronjob-%DATE%.log
+                - name: LOG_FILE_DATE_PATTERN
+                  value: {{ .Values.app.logging.fileDatePattern }}
+                - name: LOG_FILE_MAX_SIZE
+                  value: {{ .Values.app.logging.fileMaxSize | quote }}
+                - name: LOG_FILE_MAX_FILES
+                  value: {{ .Values.app.logging.fileMaxFiles | quote }}
+                # Api Validation
+                - name: API_RESPONSE_VALIDATION_ENABLED
+                  value: {{ .Values.app.apiResponseValidationEnabled | quote }}
+                - name: DATABASE_RESPONSE_VALIDATION_ENABLED
+                  value: {{ .Values.app.databaseResponseValidationEnabled | quote }}
+              command: [
+                'node',
+                'src/cronjobs/telemetry/index',
+                '--batchSize=1001',
+                '--concurrently=101',
+                '--deviceLimit={{ .Values.app.telemetry.deviceLimit }}',
+              ]
+              volumeMounts:
+                - name: {{ include "app.fullname" . }}
+                  mountPath: /opt/app-root/src/data
+          restartPolicy: Never
+          volumes:
+            - name: {{ include "app.fullname" . }}
+              persistentVolumeClaim:
+                claimName: {{ include "app.fullname" . }}

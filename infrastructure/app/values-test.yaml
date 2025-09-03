@@ -1,0 +1,34 @@
+# Test environment values for SIMS
+environment:
+  name: test
+  id: deploy
+  
+# App configuration
+app:
+  nodeEnv: production
+  apiHost: api-test-biohubbc.apps.silver.devops.gov.bc.ca
+  featureFlags: ""
+
+  # BioHub Platform (aka: Backbone)
+  backbonePublicApiHost: "https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca"
+
+  # Siteminder
+  siteminderLogoutURL: "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi" # Siteminder URL to log out and clear the session for the logged in user
+
+  # Keycloak
+  keycloak:
+    host: "https://test.loginproxy.gov.bc.ca/auth"
+
+# Openshift Resources
+replicas: 2
+resources:
+  requests:
+    cpu: 50m
+    memory: 100Mi
+  limits:
+    cpu: 500m
+    memory: 500Mi
+
+# Route configuration
+route:
+  host: test-biohubbc.apps.silver.devops.gov.bc.ca

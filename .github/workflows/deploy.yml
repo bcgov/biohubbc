@@ -7,12 +7,14 @@ on:
     types: [opened, reopened, synchronize, ready_for_review]
     branches-ignore:
       - test
-      - test-spi
       - prod
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.number }}
   cancel-in-progress: true
+
+env:
+  IMAGE_TAG: build-1.0.0-${{ github.event.number }}
 
 jobs:
   # Print variables for logging and debugging purposes
@@ -133,8 +135,8 @@ jobs:
           node-version: 20
 
   # Build the web frontend app image
-  buildAPP:
-    name: Build APP Image
+  buildAndPushApp:
+    name: Build App Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false &&
@@ -149,12 +151,6 @@ jobs:
       - checkoutRepo
       - skipDuplicateActions
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v4
@@ -174,34 +170,38 @@ jobs:
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          oc: "4.14"
+          oc: "4.16"
 
-      # Log in to OpenShift.
+      # Log in to OpenShift with retry logic
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+        uses: ./.github/actions/openshift-login-retry
+        with:
+          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
+          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
+
+      # Authenticate Docker with OpenShift registry
+      - name: Authenticate Docker with OpenShift registry
+        run: |
+          echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
 
       # Scale down any existing OpenShift pods for this PR deployment
       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
       - name: Scale down app pods
-        run: oc get DeploymentConfig,Deployment --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
+        run: oc get Deployment --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
 
-      # Install app pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: app/.pipeline/
-        run: npm ci
-
-      # Build the app image
-      - name: Build APP Image
-        working-directory: app/.pipeline/
+      # Build and push the app image
+      - name: Build and Push App Image
+        working-directory: app
         run: |
-          DEBUG=* npm run build -- --pr=$PR_NUMBER
+          docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} .
+          docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
   # Build the Database image
-  buildDatabase:
+  buildAndPushDatabase:
     name: Build Database Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -217,12 +217,6 @@ jobs:
       - checkoutRepo
       - skipDuplicateActions
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v4
@@ -242,34 +236,38 @@ jobs:
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          oc: "4.14"
+          oc: "4.16"
 
-      # Log in to OpenShift.
+      # Log in to OpenShift with retry logic
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+        uses: ./.github/actions/openshift-login-retry
+        with:
+          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
+          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
+
+      # Authenticate Docker with OpenShift registry
+      - name: Authenticate Docker with OpenShift registry
+        run: |
+          echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
 
       # Scale down any existing OpenShift pods for this PR deployment
       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
       - name: Scale down database pods
-        run: oc get DeploymentConfig,Deployment --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
+        run: oc get Deployment --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
 
-      # Install database pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: database/.pipeline/
-        run: npm ci
-
-      # Build the database image
-      - name: Build Database Image
-        working-directory: database/.pipeline/
+      # Build and push the database image using Docker
+      - name: Build and Push Database Image
+        working-directory: database
         run: |
-          DEBUG=* npm run db:build -- --pr=$PR_NUMBER
+          docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} .
+          docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
   # Build the Database Setup image
-  buildDatabaseSetup:
+  buildAndPushDatabaseSetup:
     name: Build Database Setup Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -280,16 +278,11 @@ jobs:
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
     env:
       PR_NUMBER: ${{ github.event.number }}
+      APP_NAME: "biohubbc-db-setup"
     needs:
       - checkoutRepo
       - skipDuplicateActions
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v4
@@ -309,28 +302,32 @@ jobs:
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          oc: "4.14"
+          oc: "4.16"
 
-      # Log in to OpenShift.
+      # Log in to OpenShift with retry logic
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+        uses: ./.github/actions/openshift-login-retry
+        with:
+          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
+          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
-      # Install database pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: database/.pipeline/
-        run: npm ci
-
-      # Build the database image
-      - name: Build Database Setup Image
-        working-directory: database/.pipeline/
+      # Authenticate Docker with OpenShift registry
+      - name: Authenticate Docker with OpenShift registry
         run: |
-          DEBUG=* npm run db-setup:build -- --pr=$PR_NUMBER
+          echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
+
+      # Build and push the database setup image using Docker
+      - name: Build and Push Database Setup Image
+        working-directory: database
+        run: |
+          docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} -f .docker/db/Dockerfile.setup .
+          docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
   # Build the API image
-  buildAPI:
+  buildAndPushAPI:
     name: Build API Image
     runs-on: ubuntu-latest
     timeout-minutes: 20
@@ -346,12 +343,6 @@ jobs:
       - checkoutRepo
       - skipDuplicateActions
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v4
@@ -371,35 +362,39 @@ jobs:
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          oc: "4.14"
+          oc: "4.16"
 
-      # Log in to OpenShift.
+      # Log in to OpenShift with retry logic
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+        uses: ./.github/actions/openshift-login-retry
+        with:
+          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
+          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
+
+      # Authenticate Docker with OpenShift registry
+      - name: Authenticate Docker with OpenShift registry
+        run: |
+          echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
 
       # Scale down any existing OpenShift pods for this PR deployment
       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
-      - name: Scale down api pods
-        run: oc get DeploymentConfig,Deployment --namespace af2668-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
+      - name: Scale down API pods
+        run: oc get Deployment --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
 
-      # Install api pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: api/.pipeline/
-        run: npm ci
-
-      # Build the api image
-      - name: Build API Image
-        working-directory: api/.pipeline/
+      # Build and push the API image
+      - name: Build and Push API Image
+        working-directory: api
         run: |
-          DEBUG=* npm run build -- --pr=$PR_NUMBER
+          docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} .
+          docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
-  # Deploy APP image
-  deployAPP:
-    name: Deploy APP Image
+  # Deploy Helm chart
+  deployHelmChart:
+    name: Deploy Helm Chart
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false &&
@@ -407,17 +402,15 @@ jobs:
       ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == false ||
       fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref ) }}
+    environment: dev
     env:
       PR_NUMBER: ${{ github.event.number }}
     needs:
-      - buildAPP
+      - buildAndPushApp
+      - buildAndPushDatabase
+      - buildAndPushDatabaseSetup
+      - buildAndPushAPI
     steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
       # Load repo from cache
       - name: Cache repo
         uses: actions/cache@v4
@@ -437,210 +430,61 @@ jobs:
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          oc: "4.14"
+          oc: "4.16"
 
-      # Log in to OpenShift.
+      # Log in to OpenShift with retry logic
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+        uses: ./.github/actions/openshift-login-retry
+        with:
+          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
+          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
-      # Install app pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: app/.pipeline
-        run: npm ci
-
-      # Deploy the app image
-      - name: Deploy APP Image
-        working-directory: app/.pipeline
+      # Deploy the Helm chart
+      - name: Deploy Helm Chart
         run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
+          echo "Deploying Helm chart for PR $PR_NUMBER"
 
-  # Deploy Database image
-  deployDatabase:
-    name: Deploy Database Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ github.event.pull_request.merged == false &&
-      github.event.pull_request.draft == false &&
-      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-    needs:
-      - buildDatabase
-    steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
+          # Generate a timestamp
+          TS=$(date +%s)
+          
+          # Update Helm dependencies
+          echo "Updating Helm dependencies..."
+          helm dependency update ./infrastructure/biohubbc
+          
+          # Build chart
+          echo "Building chart..."
+          helm package ./infrastructure/biohubbc \
+            --version $TS \
+            --app-version 1.0.0
 
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: "4.14"
-
-      # Log in to OpenShift.
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      # Install database pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: database/.pipeline/
-        run: npm ci
-
-      # Deploy the database image
-      - name: Deploy Database Image
-        working-directory: database/.pipeline/
-        run: |
-          DEBUG=* npm run db:deploy -- --pr=$PR_NUMBER --env=dev
-
-  # Deploy Database image
-  deployDatabaseSetup:
-    name: Deploy Database Setup Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == false &&
-      github.event.pull_request.draft == false &&
-      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-    needs:
-      - buildDatabaseSetup
-      - deployDatabase
-    steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: "4.14"
-
-      # Log in to OpenShift.
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      # Install database pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: database/.pipeline/
-        run: npm ci
-
-      # Deploy the database setup image
-      - name: Deploy Database Setup Image
-        working-directory: database/.pipeline/
-        run: |
-          DEBUG=* npm run db-setup:deploy -- --pr=$PR_NUMBER --env=dev
-
-  # Deploy API image
-  deployAPI:
-    name: Deploy API Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ always() &&
-      ( needs.deployDatabase.result == 'success' || needs.deployDatabase.result == 'skipped' ) &&
-      github.event.pull_request.merged == false &&
-      github.event.pull_request.draft == false &&
-      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip == false ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch != github.head_ref ) }}
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-    needs:
-      - buildAPI
-      - deployDatabase
-      - deployDatabaseSetup
-    steps:
-      # Install Node - for `node` and `npm` commands
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: "4.14"
-
-      # Log in to OpenShift.
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
-
-      # Install api pipeline node modules
-      # Note: This already caches node modules internally
-      - name: Install pipeline node modules
-        working-directory: api/.pipeline/
-        run: npm ci
-
-      # Deploy the api image
-      - name: Deploy API Image
-        working-directory: api/.pipeline/
-        run: |
-          DEBUG=* npm run deploy -- --pr=$PR_NUMBER --env=dev
+          helm upgrade --install "pr-$PR_NUMBER" biohubbc-$TS.tgz \
+            -f ./infrastructure/biohubbc/values.yaml \
+            -f ./infrastructure/biohubbc/values-pr.yaml \
+            --set-string biohubbc-app.environment.ts=$TS \
+            --set-string biohubbc-app.environment.id=$PR_NUMBER \
+            --set-string biohubbc-app.environment.changeId=$PR_NUMBER \
+            --set-string biohubbc-db.environment.ts=$TS \
+            --set-string biohubbc-db.environment.id=$PR_NUMBER \
+            --set-string biohubbc-db.environment.changeId=$PR_NUMBER \
+            --set-string biohubbc-db.app.postgresAdmin=${{ secrets.DATABASE_ADMIN }} \
+            --set-string biohubbc-db.app.postgresAdminPassword=${{ secrets.DATABASE_ADMIN_PASSWORD }} \
+            --set-string biohubbc-db.app.postgresUser=${{ secrets.DATABASE_USER }} \
+            --set-string biohubbc-db.app.postgresUserPassword=${{ secrets.DATABASE_USER_PASSWORD }} \
+            --set-string biohubbc-db.app.postgresUserApi=${{ secrets.DATABASE_USER_API }} \
+            --set-string biohubbc-db.app.postgresUserApiPassword=${{ secrets.DATABASE_USER_API_PASSWORD }} \
+            --set-string biohubbc-db.app.postgresDb=${{ secrets.DATABASE_NAME }} \
+            --set-string biohubbc-db-setup.environment.ts=$TS \
+            --set-string biohubbc-db-setup.environment.id=$PR_NUMBER \
+            --set-string biohubbc-db-setup.environment.changeId=$PR_NUMBER \
+            --set-string biohubbc-api.environment.ts=$TS \
+            --set-string biohubbc-api.environment.id=$PR_NUMBER \
+            --set-string biohubbc-api.environment.changeId=$PR_NUMBER \
+            --wait --timeout=300s
+          
+          echo "Helm chart deployment completed for PR $PR_NUMBER"
 
   # Report the overall status of all jobs.
   # Why? Skipped jobs are not considered successes when specifying requird jobs in the GitHub PR settings. Rather than
@@ -657,28 +501,22 @@ jobs:
       - checkEnv
       - skipDuplicateActions
       - checkoutRepo
-      - buildAPP
-      - buildDatabase
-      - buildDatabaseSetup
-      - buildAPI
-      - deployAPP
-      - deployDatabase
-      - deployDatabaseSetup
-      - deployAPI
+      - buildAndPushApp
+      - buildAndPushDatabase
+      - buildAndPushDatabaseSetup
+      - buildAndPushAPI
+      - deployHelmChart
     steps:
       - name: Log result
         run: |
           echo needs.checkEnv.result: ${{ needs.checkEnv.result }}
           echo needs.skipDuplicateActions.result: ${{ needs.skipDuplicateActions.result }}
           echo needs.checkoutRepo.result: ${{ needs.checkoutRepo.result }}
-          echo needs.buildAPP.result: ${{ needs.buildAPP.result }}
-          echo needs.buildDatabase.result: ${{ needs.buildDatabase.result }}
-          echo needs.buildDatabaseSetup.result: ${{ needs.buildDatabaseSetup.result }}
-          echo needs.buildAPI.result: ${{ needs.buildAPI.result }}
-          echo needs.deployAPP.result: ${{ needs.deployAPP.result }}
-          echo needs.deployDatabase.result: ${{ needs.deployDatabase.result }}
-          echo needs.deployDatabaseSetup.result: ${{ needs.deployDatabaseSetup.result }}
-          echo needs.deployAPI.result: ${{ needs.deployAPI.result }}
+          echo needs.buildAndPushApp.result: ${{ needs.buildAndPushApp.result }}
+          echo needs.buildAndPushDatabase.result: ${{ needs.buildAndPushDatabase.result }}
+          echo needs.buildAndPushDatabaseSetup.result: ${{ needs.buildAndPushDatabaseSetup.result }}
+          echo needs.buildAndPushAPI.result: ${{ needs.buildAndPushAPI.result }}
+          echo needs.deployHelmChart.result: ${{ needs.deployHelmChart.result }}
 
       - name: Report success
         if: |

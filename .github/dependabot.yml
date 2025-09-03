@@ -1,0 +1,14 @@
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+      time: "18:00"
+      timezone: "America/Vancouver"
+    commit-message:
+      prefix: "SIMSBIOHUB-000"
+    groups:
+      actions:
+        patterns:
+          - "*" 

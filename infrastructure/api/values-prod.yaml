@@ -1,0 +1,61 @@
+# Production environment values for SIMS
+environment:
+  name: prod
+  id: deploy
+  
+# API configuration
+app:
+  nodeEnv: production
+  nodeOptions: --max_old_space_size=6000  # 75% of 8Gi memory limit
+  appHost: sims.nrs.gov.bc.ca  # Vanity URL for prod
+  featureFlags: API_FF_SUBMIT_BIOHUB,API_FF_DISABLE_MULTIPLE_ACTIVE_DEPLOYMENTS_CHECK # Feature flags
+
+  # BioHub Platform (aka: Backbone)
+  backboneInternalApiHost: "https://api-biohub-platform.apps.silver.devops.gov.bc.ca"
+  backbonePublicApiHost: "https://api-biohub-platform.apps.silver.devops.gov.bc.ca"
+  
+  # Critterbase
+  critterbaseApiHost: "https://moe-critterbase-api-prod.apps.silver.devops.gov.bc.ca/api"
+
+  # Keycloak
+  keycloak:
+    host: "https://loginproxy.gov.bc.ca/auth"
+    cssApi:
+      environment: prod
+
+  # Object Store (S3)
+  objectStore:
+    keyPrefix: sims
+  
+  # Logging
+  logging:
+    level: silent
+    levelFile: debug
+    fileMaxFiles: 10
+
+  # API Validation
+  apiResponseValidationEnabled: false
+  databaseResponseValidationEnabled: false
+
+  # Telemetry
+  telemetry:
+    disabled: false
+    deviceLimit: -1 # -1 means no limit
+
+# Openshift Resources
+replicas: 2
+resources:
+  requests:
+    cpu: 50m
+    memory: 100Mi
+  limits:
+    cpu: 2000m
+    memory: 8Gi
+
+# Volume for logs and persistent data
+persistence:
+  size: 500Mi
+
+# Route configuration (OpenShift)
+route:
+  host: api-biohubbc.apps.silver.devops.gov.bc.ca

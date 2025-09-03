@@ -1,0 +1,34 @@
+# Development environment values for SIMS
+environment:
+  name: dev
+  id: deploy
+
+# App configuration
+app:
+  nodeEnv: development
+  apiHost: api-dev-biohubbc.apps.silver.devops.gov.bc.ca
+  featureFlags: ""
+
+  # BioHub Platform (aka: Backbone)
+  backbonePublicApiHost: "https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca"
+
+  # Siteminder
+  siteminderLogoutURL: "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi"
+
+  # Keycloak
+  keycloak:
+    host: "https://dev.loginproxy.gov.bc.ca/auth"
+
+# Openshift Resources
+replicas: 1
+resources:
+  requests:
+    cpu: 50m
+    memory: 100Mi
+  limits:
+    cpu: 300m
+    memory: 500Mi
+
+# Route configuration
+route:
+  host: dev-biohubbc.apps.silver.devops.gov.bc.ca
