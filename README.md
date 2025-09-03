@@ -130,12 +130,9 @@ Below are all of the relevant files that need to be updated when modifying envir
 
 #### Deployed to OpenShift
 
-- `[api/app/database]/.pipeline/**`
-- `.pipeline/configMaps/sims.configmap.yaml`
-  - Changes to the configmap also need to be reflected in OpenShift. See [.pipeline/configMaps/README.md](.pipeline/configMaps/README.md)
+- `infrastructure/[api/app/database/biohubbc]/**`
 - `server/index.js`
 - `app/src/contexts/configContext.tsx`
-- OpenShift Secrets (tools, dev, test, prod)
 
 ## Start all Applications
 

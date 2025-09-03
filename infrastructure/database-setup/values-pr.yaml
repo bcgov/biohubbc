@@ -1,0 +1,8 @@
+# Pull Request environment values for SIMS. This template will be used for dynamic PR deployments
+environment:
+  name: dev
+  # id will be dynamically set: "1234"
+
+# Database configuration
+app:
+  nodeEnv: development
