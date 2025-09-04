@@ -11,23 +11,23 @@
   },
   "scripts": {
     "lint-fix": "npx eslint --fix",
-    "format-fix": "npx prettier --write",
+    "format-fix": "prettier --log-level=warn --check \"./src/**/*.{js,jsx,ts,tsx,css,scss}\"",
     "test:api": "npx --prefix api npm test",
     "test:app": "npx --prefix app npm test",
     "test:all": "npm run test:api && npm run test:app"
   },
   "lint-staged": {
     "app/**/*.{js,ts,tsx}": [
-      "npx eslint --fix --config ./app/eslint.config.mjs",
-      "npx prettier --write app"
+        "npm run lint-fix ",
+        "npm run format-fix"
     ],
     "api/**/*.{js,ts,tsx}": [
-      "npx eslint --fix --config ./api/eslint.config.mjs",
-      "npx prettier --write api"
+      "npm run lint-fix ",
+      "npm run format-fix"
     ],
     "database/**/*.{js,ts,tsx}": [
-      "npx eslint --fix --config ./database/eslint.config.mjs",
-      "npx prettier --write database"
+      "npm run lint-fix ",
+      "npm run format-fix"
     ]
   }
 }

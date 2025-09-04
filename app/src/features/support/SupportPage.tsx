@@ -13,7 +13,7 @@ import {
   SupportPageViews
 } from './views/SupportPageView';
 
-//THIS IS JUST A TESTER FOR THE HUSKY PRE COMMIT HOOK AND PRE PUSH
+//THIS IS JUST A TESTER FOR THE HUSKY PRE COMMIT HOOK AND PRE PUSHflkdnfs
 
 // This is the URL param for the active view
 const VIEW_KEY = 'view';
