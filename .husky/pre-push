@@ -1,0 +1,11 @@
+#!/bin/sh
+
+# Run API tests
+cd api || exit 1
+npm test || exit 1
+cd ..
+
+# Run App tests
+cd app || exit 1
+npm test || exit 1
+cd ..
