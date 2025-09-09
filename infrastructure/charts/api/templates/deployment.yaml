@@ -33,9 +33,9 @@ spec:
             - name: APP_HOST
               value: {{ include "appHost" . }}
             - name: VERSION
-              value: {{ .Values.environment.name }}-{{ .Chart.AppVersion }}-{{ .Values.environment.changeId }}
+              value: {{ .Values.environment.name }}-{{ .Chart.AppVersion }}-{{ .Release.Name }}
             - name: CHANGE_VERSION
-              value: {{ .Values.environment.changeId }}
+              value: {{ .Release.Name }}
             - name: NODE_ENV
               value: {{ .Values.app.nodeEnv }}
             - name: NODE_OPTIONS
@@ -156,7 +156,7 @@ spec:
                   key: object_store_bucket_name
                   name: {{ .Values.app.objectStore.secretName }}
             - name: S3_KEY_PREFIX
-              value: {{ if .Values.app.objectStore.keyPrefix }}{{ .Values.app.objectStore.keyPrefix }}{{ else }}local/{{ .Values.environment.changeId }}/sims{{ end }}
+              value: {{ if .Values.app.objectStore.keyPrefix }}{{ .Values.app.objectStore.keyPrefix }}{{ else }}local/{{ .Release.Name }}/sims{{ end }}
             # Logging
             - name: LOG_LEVEL
               value: {{ .Values.app.logging.level }}

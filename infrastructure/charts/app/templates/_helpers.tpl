@@ -17,7 +17,7 @@ If environment.id is not "deploy", the value should be "-dev-1234"
 {{- else if and .Values.environment.id (eq (toString .Values.environment.id) "deploy") (ne .Values.environment.name "dev") }}
 {{- printf "-%s" .Values.environment.name | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- printf "-%s-%s" .Values.environment.name (toString .Values.environment.changeId) | trunc 63 | trimSuffix "-" }}
+{{- printf "-%s-%s" .Values.environment.name (toString .Release.Name) | trunc 63 | trimSuffix "-" }}
 {{- end }}
 {{- end }}
 
@@ -70,9 +70,9 @@ Image tag
 */}}
 {{- define "app.imageTag" -}}
 {{- if and .Values.environment.id (eq (toString .Values.environment.id) "deploy") }}
-{{- printf "build-%s-%s-%s" .Chart.AppVersion (toString .Values.environment.changeId) .Values.environment.name }}
+{{- printf "build-%s-%s-%s" .Chart.AppVersion (toString .Release.Name) .Values.environment.name }}
 {{- else }}
-{{- printf "build-%s-%s" .Chart.AppVersion (toString .Values.environment.changeId) }}
+{{- printf "build-%s-%s" .Chart.AppVersion (toString .Release.Name) }}
 {{- end }}
 {{- end }}
 
@@ -92,7 +92,7 @@ API Host
 {{- else if and .Values.route.host (eq (toString .Values.app.name) "biohubbc-api") }}
 {{- printf "%s" .Values.route.host }}
 {{- else }}
-{{- printf "biohubbc-api-%s-%s-%s.apps.silver.devops.gov.bc.ca" (toString .Values.environment.changeId) .Values.environment.licensePlate .Values.environment.name }}
+{{- printf "biohubbc-api-%s-%s-%s.apps.silver.devops.gov.bc.ca" (toString .Release.Name) .Values.environment.licensePlate .Values.environment.name }}
 {{- end }}
 {{- end }}
 
@@ -105,6 +105,6 @@ App Host
 {{- else if and .Values.route.host (eq (toString .Values.app.name) "biohubbc-app") }}
 {{- printf "%s" .Values.route.host }}
 {{- else }}
-{{- printf "biohubbc-app-%s-%s-%s.apps.silver.devops.gov.bc.ca" (toString .Values.environment.changeId) .Values.environment.licensePlate .Values.environment.name }}
+{{- printf "biohubbc-app-%s-%s-%s.apps.silver.devops.gov.bc.ca" (toString .Release.Name) .Values.environment.licensePlate .Values.environment.name }}
 {{- end }}
 {{- end }}
