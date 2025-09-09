@@ -452,13 +452,13 @@ jobs:
             -f values.yaml \
             -f values-$BRANCH.yaml \
             --set-string environment.ts=${TS} \
-            --set-string app.postgresAdmin=${{ secrets.POSTGRES_ADMIN }} \
-            --set-string app.postgresAdminPassword=${{ secrets.POSTGRES_ADMIN_PASSWORD }} \
-            --set-string app.postgresUser=${{ secrets.POSTGRES_USER }} \
-            --set-string app.postgresUserPassword=${{ secrets.POSTGRES_USER_PASSWORD }} \
-            --set-string app.postgresUserApi=${{ secrets.POSTGRES_USER_API }} \
-            --set-string app.postgresUserApiPassword=${{ secrets.POSTGRES_USER_API_PASSWORD }} \
-            --set-string app.postgresDb=${{ secrets.POSTGRES_DB }} \
+            --set-string app.postgresAdmin=${{ secrets.DATABASE_ADMIN }} \
+            --set-string app.postgresAdminPassword=${{ secrets.DATABASE_ADMIN_PASSWORD }} \
+            --set-string app.postgresUser=${{ secrets.DATABASE_USER }} \
+            --set-string app.postgresUserPassword=${{ secrets.DATABASE_USER_PASSWORD }} \
+            --set-string app.postgresUserApi=${{ secrets.DATABASE_USER_API }} \
+            --set-string app.postgresUserApiPassword=${{ secrets.DATABASE_USER_API_PASSWORD }} \
+            --set-string app.postgresDb=${{ secrets.DATABASE_NAME }} \
             --wait --timeout=300s
           
           echo "Database deployment completed for branch $BRANCH"
