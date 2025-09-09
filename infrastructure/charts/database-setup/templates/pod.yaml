@@ -2,10 +2,12 @@ apiVersion: v1
 kind: Pod
 metadata:
   name: {{ include "app.fullname" . }}
-  namespace: {{ .Values.environment.licensePlate }}-{{ .Values.environment.name }}
+  namespace: {{ include "environment.namespace" . }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
     role: setup
+  annotations:
+    {{- include "app.annotations" . | nindent 4 }}
 spec:
   containers:
     - name: postgresql

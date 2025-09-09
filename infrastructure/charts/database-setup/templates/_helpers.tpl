@@ -1,8 +1,15 @@
 {{/*
-Expand the name of the chart.
+Expand the name of the chart
 */}}
 {{- define "app.name" -}}
 {{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- end }}
+
+{{/*
+Namespace
+*/}}
+{{- define "environment.namespace" -}}
+{{- printf "%s-%s" .Values.environment.licensePlate .Values.environment.name }}
 {{- end }}
 
 {{/*
@@ -22,7 +29,7 @@ If environment.id is not "deploy", the value should be "-dev-1234"
 {{- end }}
 
 {{/*
-Create a default fully qualified app name.
+Create a default fully qualified app name
 We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
 */}}
 {{- define "app.fullname" -}}
@@ -34,7 +41,7 @@ We truncate at 63 chars because some Kubernetes name fields are limited to this 
 {{- end }}
 
 {{/*
-Create chart name and version as used by the chart label.
+Create chart name and version as used by the chart label
 */}}
 {{- define "app.chart" -}}
 {{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" }}
@@ -55,6 +62,14 @@ helm.sh/chart: {{ include "app.chart" . }}
 app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
 {{- end }}
 app.kubernetes.io/managed-by: {{ .Release.Service }}
+{{- end }}
+
+{{/*
+Common annotations
+*/}}
+{{- define "app.annotations" -}}
+meta.helm.sh/release-name: {{ .Release.Name | quote }}
+meta.helm.sh/release-namespace: {{ include "environment.namespace" . }}
 {{- end }}
 
 {{/*

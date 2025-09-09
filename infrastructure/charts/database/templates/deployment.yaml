@@ -4,9 +4,11 @@ metadata:
   annotations:
     template.alpha.openshift.io/wait-for-ready: 'true'
   name: {{ include "app.fullname" . }}
-  namespace: {{ .Values.environment.licensePlate }}-{{ .Values.environment.name }}
+  namespace: {{ include "environment.namespace" . }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
+  annotations:
+    {{- include "app.annotations" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicas }}
   selector:

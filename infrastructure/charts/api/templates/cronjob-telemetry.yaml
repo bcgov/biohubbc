@@ -2,10 +2,12 @@ apiVersion: batch/v1
 kind: CronJob
 metadata:
   name: biohubbc-telemetry-cronjob{{ include "app.suffix" . }}
-  namespace: {{ .Values.environment.licensePlate }}-{{ .Values.environment.name }}
+  namespace: {{ include "environment.namespace" . }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
     role: telemetry-cronjob
+  annotations:
+    {{- include "app.annotations" . | nindent 4 }}
 spec:
   schedule: {{ .Values.app.telemetry.schedule }}
   # By default the PR cronjobs are disabled

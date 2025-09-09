@@ -4,9 +4,11 @@ metadata:
   annotations:
     template.openshift.io/expose-uri: postgres://{.spec.clusterIP}:{.spec.ports[?(.name=="postgresql")].port}
   name: {{ include "app.fullname" . }}
-  namespace: {{ .Values.environment.licensePlate }}-{{ .Values.environment.name }}
+  namespace: {{ include "environment.namespace" . }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
+  annotations:
+    {{- include "app.annotations" . | nindent 4 }}
 spec:
   ports:
     - name: {{ .Values.service.name }}

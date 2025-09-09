@@ -2,10 +2,12 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ include "app.fullname" . }}
-  namespace: {{ .Values.environment.licensePlate }}-{{ .Values.environment.name }}
+  namespace: {{ include "environment.namespace" . }}
   labels:
     {{- include "app.labels" . | nindent 4 }}
     role: app
+  annotations:
+    {{- include "app.annotations" . | nindent 4 }}
 spec:
   replicas: {{ .Values.replicas }}
   revisionHistoryLimit: 10
