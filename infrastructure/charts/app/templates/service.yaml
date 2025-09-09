@@ -12,6 +12,6 @@ spec:
       port: {{ .Values.service.port }}
       targetPort: {{ .Values.service.targetPort }}
   selector:
-    deployment: {{ include "app.fullname" . }}
+    deployment: {{ include "app.fullname" . | quote }}
   sessionAffinity: None
   type: {{ .Values.service.type }}

@@ -11,7 +11,7 @@ spec:
   revisionHistoryLimit: 10
   selector:
     matchLabels:
-      deployment: {{ include "app.fullname" . }}
+      deployment: {{ include "app.fullname" . | quote }}
   strategy:
     type: RollingUpdate
     rollingUpdate:
@@ -20,7 +20,7 @@ spec:
   template:
     metadata:
       labels:
-        deployment: {{ include "app.fullname" . }}
+        deployment: {{ include "app.fullname" . | quote }}
         role: api
     spec:
       containers:

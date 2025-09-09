@@ -15,6 +15,6 @@ spec:
       protocol: TCP
       targetPort: {{ .Values.service.targetPort }}
   selector:
-    name: {{ include "app.fullname" . }}
+    name: {{ include "app.fullname" . | quote }}
   sessionAffinity: None
   type: {{ .Values.service.type }}
