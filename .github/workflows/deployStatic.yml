@@ -383,7 +383,7 @@ jobs:
             -f values.yaml \
             -f values-$BRANCH.yaml \
             --set-string environment.ts=${TS} \
-            --wait --timeout=300s
+            --debug --dry-run --wait --timeout=300s
           
           echo "App deployment completed for branch $BRANCH"
 
@@ -459,7 +459,7 @@ jobs:
             --set app.postgresUserApi=${{ secrets.POSTGRES_USER_API }} \
             --set app.postgresUserApiPassword=${{ secrets.POSTGRES_USER_API_PASSWORD }} \
             --set app.postgresDb=${{ secrets.POSTGRES_DB }} \
-            --wait --timeout=300s
+            --debug --dry-run --wait --timeout=300s
           
           echo "Database deployment completed for branch $BRANCH"
 
@@ -519,7 +519,7 @@ jobs:
             -f values.yaml \
             -f values-$BRANCH.yaml \
             --set-string environment.ts=${TS} \
-            --wait --timeout=300s
+            --debug --dry-run --wait --timeout=300s
           
           echo "Database setup deployment completed for branch $BRANCH"
 
@@ -590,7 +590,7 @@ jobs:
             -f values.yaml \
             -f values-$BRANCH.yaml \
             --set-string environment.ts=${TS} \
-            --wait --timeout=300s
+            --debug --dry-run --wait --timeout=300s
           
           echo "API deployment completed for branch $BRANCH"
 
