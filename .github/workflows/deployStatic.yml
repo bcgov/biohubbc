@@ -379,7 +379,7 @@ jobs:
           echo "Deploying App for branch $BRANCH"
           
           TS=$(date +%s)
-          helm upgrade --install $PR_NUMBER . \
+          helm upgrade --install "$PR_NUMBER" . \
             -f values.yaml \
             -f values-$BRANCH.yaml \
             --set-string environment.ts=${TS} \
@@ -448,17 +448,17 @@ jobs:
           echo "Deploying Database for branch $BRANCH"
           
           TS=$(date +%s)
-          helm upgrade --install $PR_NUMBER . \
+          helm upgrade --install "$PR_NUMBER" . \
             -f values.yaml \
             -f values-$BRANCH.yaml \
             --set-string environment.ts=${TS} \
-            --set app.postgresAdmin=${{ secrets.POSTGRES_ADMIN }} \
-            --set app.postgresAdminPassword=${{ secrets.POSTGRES_ADMIN_PASSWORD }} \
-            --set app.postgresUser=${{ secrets.POSTGRES_USER }} \
-            --set app.postgresUserPassword=${{ secrets.POSTGRES_USER_PASSWORD }} \
-            --set app.postgresUserApi=${{ secrets.POSTGRES_USER_API }} \
-            --set app.postgresUserApiPassword=${{ secrets.POSTGRES_USER_API_PASSWORD }} \
-            --set app.postgresDb=${{ secrets.POSTGRES_DB }} \
+            --set-string app.postgresAdmin=${{ secrets.POSTGRES_ADMIN }} \
+            --set-string app.postgresAdminPassword=${{ secrets.POSTGRES_ADMIN_PASSWORD }} \
+            --set-string app.postgresUser=${{ secrets.POSTGRES_USER }} \
+            --set-string app.postgresUserPassword=${{ secrets.POSTGRES_USER_PASSWORD }} \
+            --set-string app.postgresUserApi=${{ secrets.POSTGRES_USER_API }} \
+            --set-string app.postgresUserApiPassword=${{ secrets.POSTGRES_USER_API_PASSWORD }} \
+            --set-string app.postgresDb=${{ secrets.POSTGRES_DB }} \
             --debug --dry-run --wait --timeout=300s
           
           echo "Database deployment completed for branch $BRANCH"
@@ -515,7 +515,7 @@ jobs:
           echo "Deploying Database Setup for branch $BRANCH"
           
           TS=$(date +%s)
-          helm upgrade --install $PR_NUMBER . \
+          helm upgrade --install "$PR_NUMBER" . \
             -f values.yaml \
             -f values-$BRANCH.yaml \
             --set-string environment.ts=${TS} \
@@ -586,7 +586,7 @@ jobs:
           echo "Deploying API for branch $BRANCH"
           
           TS=$(date +%s)
-          helm upgrade --install $PR_NUMBER . \
+          helm upgrade --install "$PR_NUMBER" . \
             -f values.yaml \
             -f values-$BRANCH.yaml \
             --set-string environment.ts=${TS} \

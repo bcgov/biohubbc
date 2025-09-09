@@ -46,9 +46,9 @@ Common labels
 {{- define "app.labels" -}}
 app: {{ include "app.fullname" . }}
 app-name: {{ .Values.app.name }}
-env-id: {{ .Values.environment.id }}
-env-name: {{ .Values.environment.name }}
-env-ts: {{ .Values.environment.ts }}
+env-id: {{ .Values.environment.id | quote }}
+env-name: {{ .Values.environment.name | quote }}
+env-ts: {{ .Values.environment.ts | quote }}
 helm.sh/chart: {{ include "app.chart" . }}
 {{ include "app.selectorLabels" . }}
 {{- if .Chart.AppVersion }}
