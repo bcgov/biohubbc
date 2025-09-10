@@ -23,7 +23,7 @@ export function useEditLinkDialog(collectionId: number, refreshCallback: () => v
     try {
       await biohubApi.collection.updateCollectionLink(collectionId, editingLink.collection_link_id, {
         name: formData.name,
-        description: formData.description === null ? undefined : formData.description,
+        description: formData.description ?? undefined,
         url: formData.url
       });
       refreshCallback();
@@ -33,9 +33,10 @@ export function useEditLinkDialog(collectionId: number, refreshCallback: () => v
         snackbarMessage: 'Link updated successfully',
         open: true
       });
-    } catch (_err) {
+    } catch (err: any) {
+      const message = err?.message ? 'Error updating link: ' + err.message : 'Error updating link';
       showSnackBar({
-        snackbarMessage: 'Error updating link',
+        snackbarMessage: message,
         open: true
       });
     }
