@@ -1,0 +1,24 @@
+apiVersion: v2
+name: biohubbc
+description: A Helm umbrella chart for SIMS BioHub BC - deploys app, database, database-setup, and api in proper order
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: biohubbc-app
+    repository: file://../app
+    version: 0.1.0
+    condition: app.enabled
+  - name: biohubbc-db
+    repository: file://../database
+    version: 0.1.0
+    condition: database.enabled
+  - name: biohubbc-db-setup
+    repository: file://../database-setup
+    version: 0.1.0
+    condition: database-setup.enabled
+  - name: biohubbc-api
+    repository: file://../api
+    version: 0.1.0
+    condition: api.enabled

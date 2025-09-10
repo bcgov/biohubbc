@@ -1,0 +1,15 @@
+dependencies:
+- name: biohubbc-app
+  repository: file://../app
+  version: 0.1.0
+- name: biohubbc-db
+  repository: file://../database
+  version: 0.1.0
+- name: biohubbc-db-setup
+  repository: file://../database-setup
+  version: 0.1.0
+- name: biohubbc-api
+  repository: file://../api
+  version: 0.1.0
+digest: sha256:093abd2cb78bacaf7225abdcd925ca29853d456a176dd61eb3ef6ad11f04e861
+generated: "2025-09-09T12:14:15.104752-06:00"

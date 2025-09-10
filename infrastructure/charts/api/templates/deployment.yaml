@@ -8,6 +8,8 @@ metadata:
     role: api
   annotations:
     {{- include "app.annotations" . | nindent 4 }}
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "1"
 spec:
   replicas: {{ .Values.replicas }}
   revisionHistoryLimit: 10

@@ -393,9 +393,9 @@ jobs:
           docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} .
           docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
-  # Deploy App image
-  deployApp:
-    name: Deploy App Image
+  # Deploy Helm chart
+  deployHelmChart:
+    name: Deploy Helm Chart
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false &&
@@ -408,207 +408,9 @@ jobs:
       PR_NUMBER: ${{ github.event.number }}
     needs:
       - buildAndPushApp
-    steps:
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: "4.16"
-
-      # Log in to OpenShift
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        uses: redhat-actions/oc-login@v1.3
-        with:
-          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
-          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
-
-      # Deploy the app image using Helm
-      - name: Deploy App Image
-        working-directory: infrastructure/charts/app
-        run: |
-          echo "Deploying App for PR $PR_NUMBER"
-          
-          TS=$(date +%s)
-          helm upgrade --install "$PR_NUMBER" . \
-            -f values.yaml \
-            -f values-pr.yaml \
-            --set-string environment.ts=${TS} \
-            --set-string environment.id=$PR_NUMBER \
-            --wait --timeout=300s
-          
-          echo "App deployment completed for PR $PR_NUMBER"
-
-  # Deploy Database image
-  deployDatabase:
-    name: Deploy Database Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ github.event.pull_request.merged == false &&
-      github.event.pull_request.draft == false &&
-      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
-    environment: dev
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-    needs:
       - buildAndPushDatabase
-    steps:
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: "4.16"
-
-      # Log in to OpenShift
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        uses: redhat-actions/oc-login@v1.3
-        with:
-          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
-          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
-
-      # Deploy the database image using Helm
-      - name: Deploy Database Image
-        working-directory: infrastructure/charts/database
-        run: |
-          echo "Deploying Database for PR $PR_NUMBER"
-          
-          TS=$(date +%s)
-          helm upgrade --install "$PR_NUMBER" . \
-            -f values.yaml \
-            -f values-pr.yaml \
-            --set-string environment.ts=${TS} \
-            --set-string environment.id=$PR_NUMBER \
-            --set-string app.postgresAdmin=${{ secrets.DATABASE_ADMIN }} \
-            --set-string app.postgresAdminPassword=${{ secrets.DATABASE_ADMIN_PASSWORD }} \
-            --set-string app.postgresUser=${{ secrets.DATABASE_USER }} \
-            --set-string app.postgresUserPassword=${{ secrets.DATABASE_USER_PASSWORD }} \
-            --set-string app.postgresUserApi=${{ secrets.DATABASE_USER_API }} \
-            --set-string app.postgresUserApiPassword=${{ secrets.DATABASE_USER_API_PASSWORD }} \
-            --set-string app.postgresDb=${{ secrets.DATABASE_NAME }} \
-            --wait --timeout=300s
-          
-          echo "Database deployment completed for PR $PR_NUMBER"
-
-  # Deploy Database Setup image
-  deployDatabaseSetup:
-    name: Deploy Database Setup Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == false &&
-      github.event.pull_request.draft == false &&
-      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.should_skip == false ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).database.skipped_by.branch != github.head_ref ) }}
-    environment: dev
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-    needs:
       - buildAndPushDatabaseSetup
-      - deployDatabase
-    steps:
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: "4.16"
-
-      # Log in to OpenShift
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        uses: redhat-actions/oc-login@v1.3
-        with:
-          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
-          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
-
-      # Deploy the database setup image using Helm
-      - name: Deploy Database Setup Image
-        working-directory: infrastructure/charts/database-setup
-        run: |
-          echo "Deploying Database Setup for PR $PR_NUMBER"
-
-          TS=$(date +%s)
-          helm upgrade --install "$PR_NUMBER" . \
-            -f values.yaml \
-            -f values-pr.yaml \
-            --set-string environment.ts=${TS} \
-            --set-string environment.id=$PR_NUMBER \
-            --wait --timeout=300s
-          
-          echo "Database setup deployment completed for PR $PR_NUMBER"
-
-  # Deploy API image
-  deployAPI:
-    name: Deploy API Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ always() &&
-      ( needs.deployDatabase.result == 'success' || needs.deployDatabase.result == 'skipped' ) &&
-      github.event.pull_request.merged == false &&
-      github.event.pull_request.draft == false &&
-      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.should_skip == false ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).api.skipped_by.branch != github.head_ref ) }}
-    environment: dev
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-    needs:
       - buildAndPushAPI
-      - deployDatabase
-      - deployDatabaseSetup
     steps:
       # Load repo from cache
       - name: Cache repo
@@ -641,21 +443,38 @@ jobs:
           openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
           namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
-      # Deploy the api image using Helm
-      - name: Deploy API Image
-        working-directory: infrastructure/charts/api
+      # Deploy the Helm chart
+      - name: Deploy Helm Chart
+        working-directory: infrastructure/charts/biohubbc
         run: |
-          echo "Deploying API for PR $PR_NUMBER"
+          echo "Deploying Helm chart for PR $PR_NUMBER"
+          
+          # Build chart dependencies
+          echo "Building chart dependencies..."
+          helm dependency build
           
           TS=$(date +%s)
           helm upgrade --install "$PR_NUMBER" . \
             -f values.yaml \
             -f values-pr.yaml \
-            --set-string environment.ts=${TS} \
-            --set-string environment.id=$PR_NUMBER \
+            --set-string biohubbc-app.environment.ts=${TS} \
+            --set-string biohubbc-app.environment.id=$PR_NUMBER \
+            --set-string biohubbc-db.environment.ts=${TS} \
+            --set-string biohubbc-db.environment.id=$PR_NUMBER \
+            --set-string biohubbc-db.app.postgresAdmin=${{ secrets.DATABASE_ADMIN }} \
+            --set-string biohubbc-db.app.postgresAdminPassword=${{ secrets.DATABASE_ADMIN_PASSWORD }} \
+            --set-string biohubbc-db.app.postgresUser=${{ secrets.DATABASE_USER }} \
+            --set-string biohubbc-db.app.postgresUserPassword=${{ secrets.DATABASE_USER_PASSWORD }} \
+            --set-string biohubbc-db.app.postgresUserApi=${{ secrets.DATABASE_USER_API }} \
+            --set-string biohubbc-db.app.postgresUserApiPassword=${{ secrets.DATABASE_USER_API_PASSWORD }} \
+            --set-string biohubbc-db.app.postgresDb=${{ secrets.DATABASE_NAME }} \
+            --set-string biohubbc-db-setup.environment.ts=${TS} \
+            --set-string biohubbc-db-setup.environment.id=$PR_NUMBER \
+            --set-string biohubbc-api.environment.ts=${TS} \
+            --set-string biohubbc-api.environment.id=$PR_NUMBER \
             --wait --timeout=300s
           
-          echo "API deployment completed for PR $PR_NUMBER"
+          echo "Helm chart deployment completed for PR $PR_NUMBER"
 
   # Report the overall status of all jobs.
   # Why? Skipped jobs are not considered successes when specifying requird jobs in the GitHub PR settings. Rather than
@@ -676,10 +495,7 @@ jobs:
       - buildAndPushDatabase
       - buildAndPushDatabaseSetup
       - buildAndPushAPI
-      - deployApp
-      - deployDatabase
-      - deployDatabaseSetup
-      - deployAPI
+      - deployHelmChart
     steps:
       - name: Log result
         run: |
@@ -690,10 +506,7 @@ jobs:
           echo needs.buildAndPushDatabase.result: ${{ needs.buildAndPushDatabase.result }}
           echo needs.buildAndPushDatabaseSetup.result: ${{ needs.buildAndPushDatabaseSetup.result }}
           echo needs.buildAndPushAPI.result: ${{ needs.buildAndPushAPI.result }}
-          echo needs.deployApp.result: ${{ needs.deployApp.result }}
-          echo needs.deployDatabase.result: ${{ needs.deployDatabase.result }}
-          echo needs.deployDatabaseSetup.result: ${{ needs.deployDatabaseSetup.result }}
-          echo needs.deployAPI.result: ${{ needs.deployAPI.result }}
+          echo needs.deployHelmChart.result: ${{ needs.deployHelmChart.result }}
 
       - name: Report success
         if: |

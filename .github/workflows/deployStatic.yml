@@ -317,236 +317,21 @@ jobs:
           docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} .
           docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
-  # Deploy App image
-  deployApp:
-    name: Deploy App Image
+  # Deploy Helm chart
+  deployHelmChart:
+    name: Deploy Helm Chart
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true }}
-    strategy:
-      matrix:
-        include:
-          - env: dev
-            branch: dev
-          - env: test
-            branch: test
-          - env: prod
-            branch: prod
-    environment: ${{ matrix.env }}
     env:
       PR_NUMBER: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}
-      APP_NAME: "biohubbc-api"
     needs:
       - scaleDownPods
       - buildAndPushApp
-    steps:
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: "4.16"
-
-      # Log in to OpenShift
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        uses: redhat-actions/oc-login@v1.3
-        with:
-          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
-          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-$BRANCH
-
-      # Deploy the app image using Helm
-      - name: Deploy App Image
-        working-directory: infrastructure/charts/app
-        run: |
-          echo "Deploying App for branch $BRANCH"
-          
-          TS=$(date +%s)
-          helm upgrade --install "$PR_NUMBER" . \
-            -f values.yaml \
-            -f values-$BRANCH.yaml \
-            --set-string environment.ts=${TS} \
-            --wait --timeout=300s
-          
-          echo "App deployment completed for branch $BRANCH"
-
-  # Deploy Database image
-  deployDatabase:
-    name: Deploy Database Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ github.event.pull_request.merged == true }}
-    strategy:
-      matrix:
-        include:
-          - env: dev
-            branch: dev
-          - env: test
-            branch: test
-          - env: prod
-            branch: prod
-    environment: ${{ matrix.env }}
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-      BRANCH: ${{ github.base_ref }}
-    needs:
-      - scaleDownPods
       - buildAndPushDatabase
-    steps:
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: "4.16"
-
-      # Log in to OpenShift
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        uses: redhat-actions/oc-login@v1.3
-        with:
-          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
-          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-$BRANCH
-
-      # Deploy the database image using Helm
-      - name: Deploy Database Image
-        working-directory: infrastructure/charts/database
-        run: |
-          echo "Deploying Database for branch $BRANCH"
-          
-          TS=$(date +%s)
-          helm upgrade --install "$PR_NUMBER" . \
-            -f values.yaml \
-            -f values-$BRANCH.yaml \
-            --set-string environment.ts=${TS} \
-            --set-string app.postgresAdmin=${{ secrets.DATABASE_ADMIN }} \
-            --set-string app.postgresAdminPassword=${{ secrets.DATABASE_ADMIN_PASSWORD }} \
-            --set-string app.postgresUser=${{ secrets.DATABASE_USER }} \
-            --set-string app.postgresUserPassword=${{ secrets.DATABASE_USER_PASSWORD }} \
-            --set-string app.postgresUserApi=${{ secrets.DATABASE_USER_API }} \
-            --set-string app.postgresUserApiPassword=${{ secrets.DATABASE_USER_API_PASSWORD }} \
-            --set-string app.postgresDb=${{ secrets.DATABASE_NAME }} \
-            --wait --timeout=300s
-          
-          echo "Database deployment completed for branch $BRANCH"
-
-  # Deploy Database setup image
-  deployDatabaseSetup:
-    name: Deploy Database Setup Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
-    if: ${{ github.event.pull_request.merged == true }}
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-      BRANCH: ${{ github.base_ref }}
-    needs:
-      - scaleDownPods
       - buildAndPushDatabaseSetup
-      - deployDatabase
-    steps:
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: "4.16"
-
-      # Log in to OpenShift
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        uses: redhat-actions/oc-login@v1.3
-        with:
-          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
-          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-$BRANCH
-
-      # Deploy the database setup image using Helm
-      - name: Deploy Database Setup Image
-        working-directory: infrastructure/charts/database-setup
-        run: |
-          echo "Deploying Database Setup for branch $BRANCH"
-          
-          TS=$(date +%s)
-          helm upgrade --install "$PR_NUMBER" . \
-            -f values.yaml \
-            -f values-$BRANCH.yaml \
-            --set-string environment.ts=${TS} \
-            --wait --timeout=300s
-          
-          echo "Database setup deployment completed for branch $BRANCH"
-
-  # Deploy API image
-  deployAPI:
-    name: Deploy API Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ github.event.pull_request.merged == true }}
-    strategy:
-      matrix:
-        include:
-          - env: dev
-            branch: dev
-          - env: test
-            branch: test
-          - env: prod
-            branch: prod
-    environment: ${{ matrix.env }}
-    env:
-      PR_NUMBER: ${{ github.event.number }}
-      BRANCH: ${{ github.base_ref }}
-    needs:
-      - scaleDownPods
       - buildAndPushAPI
-      - deployDatabase
-      - deployDatabaseSetup
     steps:
       # Load repo from cache
       - name: Cache repo
@@ -579,20 +364,34 @@ jobs:
           openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
           namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-$BRANCH
 
-      # Deploy the API image using Helm
-      - name: Deploy API Image
-        working-directory: infrastructure/charts/api
+      # Deploy the Helm chart
+      - name: Deploy Helm Chart
+        working-directory: infrastructure/charts/biohubbc
         run: |
-          echo "Deploying API for branch $BRANCH"
+          echo "Deploying Helm chart for branch $BRANCH"
+          
+          # Build chart dependencies
+          echo "Building chart dependencies..."
+          helm dependency build
           
           TS=$(date +%s)
           helm upgrade --install "$PR_NUMBER" . \
             -f values.yaml \
             -f values-$BRANCH.yaml \
-            --set-string environment.ts=${TS} \
+            --set-string biohubbc-app.environment.ts=${TS} \
+            --set-string biohubbc-db.environment.ts=${TS} \
+            --set-string biohubbc-db.app.postgresAdmin=${{ secrets.DATABASE_ADMIN }} \
+            --set-string biohubbc-db.app.postgresAdminPassword=${{ secrets.DATABASE_ADMIN_PASSWORD }} \
+            --set-string biohubbc-db.app.postgresUser=${{ secrets.DATABASE_USER }} \
+            --set-string biohubbc-db.app.postgresUserPassword=${{ secrets.DATABASE_USER_PASSWORD }} \
+            --set-string biohubbc-db.app.postgresUserApi=${{ secrets.DATABASE_USER_API }} \
+            --set-string biohubbc-db.app.postgresUserApiPassword=${{ secrets.DATABASE_USER_API_PASSWORD }} \
+            --set-string biohubbc-db.app.postgresDb=${{ secrets.DATABASE_NAME }} \
+            --set-string biohubbc-db-setup.environment.ts=${TS} \
+            --set-string biohubbc-api.environment.ts=${TS} \
             --wait --timeout=300s
           
-          echo "API deployment completed for branch $BRANCH"
+          echo "Helm chart deployment completed for branch $BRANCH"
 
   # Clean deployment artifacts
   clean:
@@ -601,10 +400,7 @@ jobs:
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true }}
     needs:
-      - deployDatabase
-      - deployDatabaseSetup
-      - deployAPI
-      - deployApp
+      - deployHelmChart
     env:
       PR_NUMBER: ${{ github.event.number }}
       BRANCH: ${{ github.base_ref }}

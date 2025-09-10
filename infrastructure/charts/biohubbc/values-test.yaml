@@ -1,0 +1,166 @@
+# Test environment values for biohubbc chart
+environment:
+  name: test
+  id: ""
+  ts: ""
+
+# Component enablement flags
+app:
+  enabled: true
+
+database:
+  enabled: true
+
+database-setup:
+  enabled: true
+
+api:
+  enabled: true
+
+# Values passed to biohubbc-app subchart
+biohubbc-app:
+  environment:
+    licensePlate: "af2668"
+    name: test
+    id: deploy
+    ts: ""
+
+  # App configuration
+  app:
+    nodeEnv: production
+    apiHost: api-biohubbc.apps.silver.devops.gov.bc.ca
+    featureFlags: APP_FF_SUBMIT_BIOHUB
+
+    # BioHub Platform (aka: Backbone)
+    backbonePublicApiHost: "https://api-biohub-platform.apps.silver.devops.gov.bc.ca"
+
+    # Siteminder
+    siteminderLogoutURL: "https://logon7.gov.bc.ca/clp-cgi/logoff.cgi"
+
+    # Keycloak
+    keycloak:
+      host: "https://loginproxy.gov.bc.ca/auth"
+    
+  # Openshift Resources
+  replicas: 2
+  resources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+
+  # Route configuration
+  route:
+    host: biohubbc.apps.silver.devops.gov.bc.ca
+
+# Values passed to biohubbc-db subchart
+biohubbc-db:
+  environment:
+    licensePlate: "af2668"
+    name: test
+    id: deploy
+    ts: ""
+
+  # App configuration
+  app:
+    nodeEnv: test
+    postgresAdmin: ""
+    postgresAdminPassword: ""
+    postgresUser: ""
+    postgresUserPassword: ""
+    postgresUserApi: ""
+    postgresUserApiPassword: ""
+    postgresDb: ""
+
+  # Openshift Resources
+  replicas: 1
+  resources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 2000m
+      memory: 5Gi
+
+  # Volume for persistent data
+  persistence:
+    size: 20Gi
+
+# Values passed to biohubbc-db-setup subchart
+biohubbc-db-setup:
+  environment:
+    licensePlate: "af2668"
+    name: test
+    id: deploy
+    ts: ""
+
+  # App configuration
+  app:
+    nodeEnv: test
+
+# Values passed to biohubbc-api subchart
+biohubbc-api:
+  environment:
+    licensePlate: "af2668"
+    name: test
+    id: deploy
+    ts: ""
+
+  # API configuration
+  app:
+    nodeEnv: production
+    nodeOptions: --max_old_space_size=3000 # 75% of memoryLimit (bytes)
+    appHost: test-biohubbc.apps.silver.devops.gov.bc.ca
+    featureFlags: ""
+
+    # BioHub Platform (aka: Backbone)
+    backboneInternalApiHost: "https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca"
+    backbonePublicApiHost: "https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca"
+    
+    # Critterbase
+    critterbaseApiHost: "https://moe-critterbase-api-test.apps.silver.devops.gov.bc.ca/api"
+
+    # Keycloak
+    keycloak:
+      host: "https://test.loginproxy.gov.bc.ca/auth"
+      cssApi:
+        environment: test
+
+    # Object Store (S3)
+    objectStore:
+      keyPrefix: sims
+      
+    # Logging
+    logging:
+      level: warn
+      levelFile: debug
+      fileMaxFiles: 10
+
+    # API Validation
+    apiResponseValidationEnabled: true
+    databaseResponseValidationEnabled: true
+
+    # Telemetry
+    telemetry:
+      disabled: false
+      deviceLimit: -1 # -1 means no limit
+
+  # Openshift Resources
+  replicas: 2
+  resources:
+    requests:
+      cpu: 50m
+      memory: 100Mi
+    limits:
+      cpu: 1000m
+      memory: 4Gi
+
+  # Volume for logs and persistent data
+  persistence:
+    size: 500Mi
+
+  # Route configuration (OpenShift)
+  route:
+    host: api-test-biohubbc.apps.silver.devops.gov.bc.ca
