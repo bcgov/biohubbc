@@ -108,8 +108,6 @@ export function updateCollectionLink(): RequestHandler {
       const collectionId = Number(req.params.collectionId);
       const linkId = Number(req.params.linkId);
       const collectionLinkService = new CollectionLinkService(connection);
-
-      defaultLog.debug({ label: 'updateCollectionLink' });
       const data = req.body as IPutCollectionLinkRequest;
       const updatedLink = await collectionLinkService.updateCollectionLink(collectionId, linkId, data);
       await connection.commit();
