@@ -4,7 +4,7 @@ A GitHub Action that provides OpenShift login functionality with retry logic and
 
 ## Features
 
-- **Retry Logic**: Configurable number of retry attempts (default: 10)
+- **Retry Logic**: Configurable number of retry attempts (default: 3)
 - **Exponential Backoff**: Increasing delay between retries (5s, 10s, 20s, 40s, etc.)
 - **Comprehensive Logging**: Clear visibility into retry attempts and failures
 - **Flexible Configuration**: Optional namespace parameter

@@ -18,7 +18,11 @@ dependencies:
     repository: file://../database-setup
     version: 0.1.0
     condition: database-setup.enabled
+    dependsOn:
+      - biohubbc-db
   - name: biohubbc-api
     repository: file://../api
     version: 0.1.0
     condition: api.enabled
+    dependsOn:
+      - biohubbc-db-setup

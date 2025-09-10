@@ -9,10 +9,10 @@ This is an umbrella Helm chart that deploys all BioHub BC components together in
 
 ## Deployment Order
 
-The chart uses Helm hooks to ensure proper deployment order:
+The chart uses Helm dependencies and hooks to ensure proper deployment order:
 
-- `database-setup` has a `pre-install` hook with weight `1` to run after the database is deployed
-- `api` has a `post-install` hook with weight `1` to run after database-setup completes
+- `database-setup` depends on `biohubbc-db` and has a `post-install` hook with weight `1` to run after the database is deployed
+- `api` depends on `biohubbc-db-setup` and has a `post-install` hook with weight `2` to run after database-setup completes
 
 ## Usage
 
