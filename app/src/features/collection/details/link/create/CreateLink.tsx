@@ -29,8 +29,9 @@ export function useCreateLinkDialog(collectionId: number, refreshCallback: () =>
         open: true
       });
     } catch (err: any) {
+      const message = err?.message ? 'Error creating link: ' + err.message : 'Error creating link';
       showSnackBar({
-        snackbarMessage: `Error creating link${err?.message ? `: ${err.message}` : ''}`,
+        snackbarMessage: message,
         open: true
       });
     }
