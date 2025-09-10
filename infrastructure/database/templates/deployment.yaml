@@ -16,8 +16,6 @@ spec:
       name: {{ include "app.fullname" . | quote }}
   strategy:
     type: Recreate
-    maxSurge: 50%
-    maxUnavailable: 0
   template:
     metadata:
       labels:

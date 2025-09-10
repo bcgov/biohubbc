@@ -24,8 +24,6 @@ spec:
             - name: api
               image: "{{ .Values.image.registry }}/{{ .Values.image.image }}:{{ include "app.imageTag" . }}"
               imagePullPolicy: Always
-              terminationGracePeriodSeconds: 30
-              activeDeadlineSeconds: 220
               env:
                 - name: NODE_ENV
                   value: {{ .Values.app.nodeEnv }}
@@ -52,7 +50,7 @@ spec:
                       key: database-name
                       name: {{ include "dbHost" . }}
                 - name: DB_PORT
-                  value: {{ .Values.app.database.port }}
+                  value: {{ .Values.app.database.port | quote }}
                 # Telemetry
                 - name: LOTEK_API_HOST
                   value: {{ .Values.app.lotekApiHost }}
@@ -80,14 +78,14 @@ spec:
                 - name: LOG_FILE_DATE_PATTERN
                   value: {{ .Values.app.logging.fileDatePattern }}
                 - name: LOG_FILE_MAX_SIZE
-                  value: {{ .Values.app.logging.fileMaxSize }}
+                  value: {{ .Values.app.logging.fileMaxSize | quote }}
                 - name: LOG_FILE_MAX_FILES
-                  value: {{ .Values.app.logging.fileMaxFiles }}
+                  value: {{ .Values.app.logging.fileMaxFiles | quote }}
                 # Api Validation
                 - name: API_RESPONSE_VALIDATION_ENABLED
-                  value: {{ .Values.app.apiResponseValidationEnabled }}
+                  value: {{ .Values.app.apiResponseValidationEnabled | quote }}
                 - name: DATABASE_RESPONSE_VALIDATION_ENABLED
-                  value: {{ .Values.app.databaseResponseValidationEnabled }}
+                  value: {{ .Values.app.databaseResponseValidationEnabled | quote }}
               command: [
                 'node',
                 'src/cronjobs/telemetry/index',

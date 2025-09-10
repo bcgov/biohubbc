@@ -29,17 +29,17 @@ spec:
         - name: app
           env:
             - name: CHANGE_VERSION
-              value: {{ .Release.Name }}
+              value: {{ .Release.Name | quote }}
             - name: VITE_APP_PORT
-              value: {{ .Values.service.port }}
+              value: {{ .Values.service.port | quote }}
             - name: VITE_APP_API_HOST
               value: {{ include "apiHost" . }}
             - name: VITE_APP_SITEMINDER_LOGOUT_URL
               value: {{ .Values.app.siteminderLogoutURL }}
             - name: VITE_APP_MAX_UPLOAD_NUM_FILES
-              value: {{ .Values.app.requestLimits.uploadNumFiles }}
+              value: {{ .Values.app.requestLimits.uploadNumFiles | quote }}
             - name: VITE_APP_MAX_UPLOAD_FILE_SIZE
-              value: {{ .Values.app.requestLimits.uploadFileSize }}
+              value: {{ .Values.app.requestLimits.uploadFileSize | quote }}
             - name: OBJECT_STORE_URL
               valueFrom:
                 secretKeyRef:

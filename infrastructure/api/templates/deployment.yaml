@@ -33,13 +33,13 @@ spec:
             - name: API_HOST
               value: {{ include "apiHost" . }}
             - name: API_PORT
-              value: {{ .Values.service.port }}
+              value: {{ .Values.service.port | quote }}
             - name: APP_HOST
               value: {{ include "appHost" . }}
             - name: VERSION
               value: {{ .Values.environment.name }}-{{ .Chart.AppVersion }}-{{ .Release.Name }}
             - name: CHANGE_VERSION
-              value: {{ .Release.Name }}
+              value: {{ .Release.Name | quote }}
             - name: NODE_ENV
               value: {{ .Values.app.nodeEnv }}
             - name: NODE_OPTIONS
@@ -60,11 +60,11 @@ spec:
               value: {{ .Values.app.critterbaseApiHost }}
             # Clamav
             - name: ENABLE_FILE_VIRUS_SCAN
-              value: {{ .Values.app.clamav.enabled }}
+              value: {{ .Values.app.clamav.enabled | quote }}
             - name: CLAMAV_HOST
               value: {{ .Values.app.clamav.host }}
             - name: CLAMAV_PORT
-              value: {{ .Values.app.clamav.port }}
+              value: {{ .Values.app.clamav.port | quote }}
             # Database
             - name: TZ
               value: {{ .Values.app.timezone }}
@@ -86,7 +86,7 @@ spec:
                   key: database-name
                   name: {{ include "dbHost" . }}
             - name: DB_PORT
-              value: {{ .Values.app.database.port }}
+              value: {{ .Values.app.database.port | quote }}
             # Telemetry
             - name: LOTEK_API_HOST
               value: {{ .Values.app.lotekApiHost }}
@@ -133,11 +133,11 @@ spec:
               value: {{ .Values.app.keycloak.cssApi.environment }}
             # Request limits
             - name: MAX_REQ_BODY_SIZE
-              value: {{ .Values.app.requestLimits.bodySize }}
+              value: {{ .Values.app.requestLimits.bodySize | quote }}
             - name: MAX_UPLOAD_NUM_FILES
-              value: {{ .Values.app.requestLimits.uploadNumFiles }}
+              value: {{ .Values.app.requestLimits.uploadNumFiles | quote }}
             - name: MAX_UPLOAD_FILE_SIZE
-              value: {{ .Values.app.requestLimits.uploadFileSize }}
+              value: {{ .Values.app.requestLimits.uploadFileSize | quote }}
             # Object Store (S3)
             - name: OBJECT_STORE_URL
               valueFrom:
@@ -173,14 +173,14 @@ spec:
             - name: LOG_FILE_DATE_PATTERN
               value: {{ .Values.app.logging.fileDatePattern }}
             - name: LOG_FILE_MAX_SIZE
-              value: {{ .Values.app.logging.fileMaxSize }}
+              value: {{ .Values.app.logging.fileMaxSize | quote }}
             - name: LOG_FILE_MAX_FILES
-              value: {{ .Values.app.logging.fileMaxFiles }}
+              value: {{ .Values.app.logging.fileMaxFiles | quote }}
             # Api Validation
             - name: API_RESPONSE_VALIDATION_ENABLED
-              value: {{ .Values.app.apiResponseValidationEnabled }}
+              value: {{ .Values.app.apiResponseValidationEnabled | quote }}
             - name: DATABASE_RESPONSE_VALIDATION_ENABLED
-              value: {{ .Values.app.databaseResponseValidationEnabled }}
+              value: {{ .Values.app.databaseResponseValidationEnabled | quote }}
             # GCNotify
             - name: GCNOTIFY_SECRET_API_KEY
               valueFrom:
