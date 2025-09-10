@@ -21,27 +21,27 @@ spec:
           valueFrom:
             secretKeyRef:
               key: database-admin
-              name: {{ include "app.fullname" . }}
+              name: {{ include "dbSecret" . }}
         - name: DB_ADMIN_PASS
           valueFrom:
             secretKeyRef:
               key: database-admin-password
-              name: {{ include "app.fullname" . }}
+              name: {{ include "dbSecret" . }}
         - name: DB_USER_API
           valueFrom:
             secretKeyRef:
               key: database-user-api
-              name: {{ include "app.fullname" . }}
+              name: {{ include "dbSecret" . }}
         - name: DB_USER_API_PASS
           valueFrom:
             secretKeyRef:
               key: database-user-api-password
-              name: {{ include "app.fullname" . }}
+              name: {{ include "dbSecret" . }}
         - name: DB_DATABASE
           valueFrom:
             secretKeyRef:
               key: database-name
-              name: {{ include "app.fullname" . }}
+              name: {{ include "dbSecret" . }}
         - name: DB_PORT
           value: '5432'
         - name: CHANGE_VERSION

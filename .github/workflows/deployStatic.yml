@@ -366,7 +366,7 @@ jobs:
 
       # Deploy the Helm chart
       - name: Deploy Helm Chart
-        working-directory: infrastructure/charts/biohubbc
+        working-directory: infrastructure/biohubbc
         run: |
           echo "Deploying Helm chart for branch $BRANCH"
           
