@@ -7,6 +7,7 @@ global:
     licensePlate: "af2668"
     name: "" # Environment name (dev, test, prod)
     id: "" # Environment id (PR, deploy)
+    changeId: "" # Change id (PR number)
     ts: "" # Timestamp of the deployment
 
 # Component enablement flags
@@ -30,6 +31,7 @@ app:
     licensePlate: "af2668"
     name: ""
     id: ""
+    changeId: ""
     ts: ""
   # Add any app-specific overrides here
 
@@ -39,6 +41,7 @@ database:
     licensePlate: "af2668"
     name: ""
     id: ""
+    changeId: ""
     ts: ""
   app:
     name: biohubbc-db
@@ -60,6 +63,7 @@ database-setup:
     licensePlate: "af2668"
     name: ""
     id: ""
+    changeId: ""
     ts: ""
   # Add any database-setup-specific overrides here
 
@@ -69,5 +73,6 @@ api:
     licensePlate: "af2668"
     name: ""
     id: ""
+    changeId: ""
     ts: ""
   # Add any api-specific overrides here

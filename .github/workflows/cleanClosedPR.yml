@@ -31,19 +31,13 @@ jobs:
           openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
           openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
 
-      # Clean all deployment artifacts for the PR
+      # Clean all deployment artifacts for the PR using Helm
       - name: Clean Deployment Artifacts
-        env:
-          POD_SELECTOR: biohubbc
         run: |
-          echo "Cleaning deployment artifacts for PR $PR_NUMBER"
+          echo "Cleaning deployment artifacts for PR $PR_NUMBER using Helm"
           
-          # Clean from dev namespace
+          # Clean from dev namespace (where Helm releases are deployed)
           echo "Cleaning from af2668-dev namespace..."
-          oc --namespace af2668-dev get all,pvc,secret,pods,ReplicationController,Deployment,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash || echo "No resources found in dev namespace"
-          
-          # Clean from tools namespace
-          echo "Cleaning from af2668-tools namespace..."
-          oc --namespace af2668-tools get all,pvc,secret,pods,ReplicationController,Deployment,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash || echo "No resources found in tools namespace"
+          helm uninstall "pr-$PR_NUMBER" --namespace af2668-dev || echo "No Helm release found in dev namespace for PR $PR_NUMBER"
           
           echo "Cleanup completed for PR $PR_NUMBER"

@@ -7,6 +7,9 @@ metadata:
     {{- include "app.labels" . | nindent 4 }}
   annotations:
     {{- include "app.annotations" . | nindent 4 }}
+    {{- if eq (toString .Values.environment.id) "deploy" }}
+    "helm.sh/resource-policy": keep
+    {{- end }}
 spec:
   accessModes:
     - {{ .Values.persistence.accessMode }}

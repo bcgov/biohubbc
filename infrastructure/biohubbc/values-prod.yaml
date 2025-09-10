@@ -2,6 +2,7 @@
 environment:
   name: prod
   id: ""
+  changeId: ""
   ts: ""
 
 # Component enablement flags
@@ -23,6 +24,7 @@ biohubbc-app:
     licensePlate: "af2668"
     name: prod
     id: deploy
+    # changeId will be dynamically set: "1234"
     ts: ""
 
   # App configuration
@@ -61,6 +63,7 @@ biohubbc-db:
     licensePlate: "af2668"
     name: prod
     id: deploy
+    # changeId will be dynamically set: "1234"
     ts: ""
 
   # App configuration
@@ -87,6 +90,7 @@ biohubbc-db-setup:
     licensePlate: "af2668"
     name: prod
     id: deploy
+    # changeId will be dynamically set: "1234"
     ts: ""
 
   # App configuration
@@ -99,6 +103,7 @@ biohubbc-api:
     licensePlate: "af2668"
     name: prod
     id: deploy
+    # changeId will be dynamically set: "1234"
     ts: ""
 
   # API configuration

@@ -29,7 +29,7 @@ spec:
         - name: app
           env:
             - name: CHANGE_VERSION
-              value: {{ .Release.Name | quote }}
+              value: {{ .Values.environment.changeId | quote }}
             - name: VITE_APP_PORT
               value: {{ .Values.service.port | quote }}
             - name: VITE_APP_API_HOST
@@ -55,7 +55,7 @@ spec:
             - name: VITE_APP_NODE_ENV
               value: {{ .Values.app.nodeEnv }}
             - name: VERSION
-              value: {{ .Values.environment.name }}-{{ .Chart.AppVersion }}-{{ .Release.Name }}
+              value: {{ .Values.environment.name }}-{{ .Chart.AppVersion }}-{{ .Values.environment.changeId }}
             - name: VITE_APP_KEYCLOAK_HOST
               value: {{ .Values.app.keycloak.host }}
             - name: VITE_APP_KEYCLOAK_REALM

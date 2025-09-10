@@ -370,12 +370,14 @@ jobs:
         run: |
           echo "Deploying Helm chart for branch $BRANCH"
           
-          # Build chart dependencies
-          echo "Building chart dependencies..."
-          helm dependency build
+          # Build chart
+          echo "Building chart..."
+          helm package ./infrastructure/biohubbc \
+            --version $PR_NUMBER \
+            --app-version 1.0.0
           
           TS=$(date +%s)
-          helm upgrade --install "$PR_NUMBER" . \
+          helm upgrade --install "$BRANCH" biohubbc-$PR_NUMBER.tgz \
             -f values.yaml \
             -f values-$BRANCH.yaml \
             --set-string biohubbc-app.environment.ts=${TS} \
@@ -437,17 +439,11 @@ jobs:
 
       # Clean deployment artifacts
       - name: Clean deployment artifacts
-        env:
-          POD_SELECTOR: biohubbc
         run: |
-          echo "Cleaning deployment artifacts for PR $PR_NUMBER"
+          echo "Cleaning deployment artifacts for PR $PR_NUMBER using Helm"
           
-          # Clean from dev namespace
-          # echo "Cleaning from ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev namespace..."
-          # oc --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev get all,pvc,secret,pods,ReplicationController,Deployment,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash || echo "No resources found in dev namespace"
-          
-          # Clean from tools namespace
-          # echo "Cleaning from ${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools namespace..."
-          # oc --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools get all,pvc,secret,pods,ReplicationController,Deployment,HorizontalPodAutoscaler,imagestreamtag -o name | grep $POD_SELECTOR | grep $PR_NUMBER | awk '{print "oc delete --ignore-not-found " $1}' | bash || echo "No resources found in tools namespace"
+          # Clean from dev namespace (where Helm releases are deployed)
+          echo "Cleaning from af2668-dev namespace..."
+          helm uninstall "pr-$PR_NUMBER" --namespace af2668-dev || echo "No Helm release found in dev namespace for PR $PR_NUMBER"
           
           echo "Cleanup completed for PR $PR_NUMBER"

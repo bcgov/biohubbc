@@ -3,6 +3,7 @@ environment:
   licensePlate: "af2668" # License plate of the project
   name: "" # Environment name (dev, test, prod)
   id: "" # Environment id (PR, deploy)
+  changeId: "" # Change id (PR number)
   ts: "" # Timestamp of the deployment
 
 image:

@@ -449,12 +449,14 @@ jobs:
         run: |
           echo "Deploying Helm chart for PR $PR_NUMBER"
           
-          # Build chart dependencies
-          echo "Building chart dependencies..."
-          helm dependency build
+          # Build chart
+          echo "Building chart..."
+          helm package ./infrastructure/biohubbc \
+            --version $PR_NUMBER.${TS} \
+            --app-version 1.0.0
           
           TS=$(date +%s)
-          helm upgrade --install "$PR_NUMBER" . \
+          helm upgrade --install "pr-$PR_NUMBER" biohubbc-$PR_NUMBER.${TS}.tgz \
             -f values.yaml \
             -f values-pr.yaml \
             --set-string biohubbc-app.environment.ts=${TS} \

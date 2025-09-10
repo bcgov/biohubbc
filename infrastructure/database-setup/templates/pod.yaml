@@ -45,11 +45,11 @@ spec:
         - name: DB_PORT
           value: '5432'
         - name: CHANGE_VERSION
-          value: {{ .Release.Name | quote }}
+          value: {{ .Values.environment.changeId | quote }}
         - name: NODE_ENV
           value: {{ .Values.app.nodeEnv }}
         - name: VERSION
-          value: {{ .Values.environment.name }}-{{ .Chart.AppVersion }}-{{ .Release.Name }}
+          value: {{ .Values.environment.name }}-{{ .Chart.AppVersion }}-{{ .Values.environment.changeId }}
         - name: DB_SCHEMA
           value: {{ .Values.app.dbSchema }}
       image: "{{ .Values.image.registry }}/{{ .Values.image.image }}:{{ include "app.imageTag" . }}"

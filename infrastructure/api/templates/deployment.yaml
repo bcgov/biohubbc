@@ -10,6 +10,7 @@ metadata:
     {{- include "app.annotations" . | nindent 4 }}
     "helm.sh/hook": post-install,post-upgrade
     "helm.sh/hook-weight": "2"
+    "helm.sh/hook-delete-policy": before-hook-creation,hook-succeeded
 spec:
   replicas: {{ .Values.replicas }}
   revisionHistoryLimit: 10
@@ -37,9 +38,9 @@ spec:
             - name: APP_HOST
               value: {{ include "appHost" . }}
             - name: VERSION
-              value: {{ .Values.environment.name }}-{{ .Chart.AppVersion }}-{{ .Release.Name }}
+              value: {{ .Values.environment.name }}-{{ .Chart.AppVersion }}-{{ .Values.environment.changeId }}
             - name: CHANGE_VERSION
-              value: {{ .Release.Name | quote }}
+              value: {{ .Values.environment.changeId | quote }}
             - name: NODE_ENV
               value: {{ .Values.app.nodeEnv }}
             - name: NODE_OPTIONS
@@ -160,7 +161,7 @@ spec:
                   key: object_store_bucket_name
                   name: {{ .Values.app.objectStore.secretName }}
             - name: S3_KEY_PREFIX
-              value: {{ if .Values.app.objectStore.keyPrefix }}{{ .Values.app.objectStore.keyPrefix }}{{ else }}local/{{ .Release.Name }}/sims{{ end }}
+              value: {{ if .Values.app.objectStore.keyPrefix }}{{ .Values.app.objectStore.keyPrefix }}{{ else }}local/{{ .Values.environment.changeId }}/sims{{ end }}
             # Logging
             - name: LOG_LEVEL
               value: {{ .Values.app.logging.level }}
