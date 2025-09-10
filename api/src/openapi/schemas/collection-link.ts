@@ -4,7 +4,7 @@ export const CollectionLinkSchema: OpenAPIV3.SchemaObject = {
   title: 'Collection Link',
   type: 'object',
   additionalProperties: false,
-  required: ['collection_link_id', 'name', 'url', 'collection_id', 'create_date', 'create_user'],
+  required: ['collection_link_id', 'name', 'url', 'collection_id'],
   properties: {
     collection_link_id: {
       type: 'integer',
@@ -38,16 +38,6 @@ export const CollectionLinkSchema: OpenAPIV3.SchemaObject = {
       format: 'date-time',
       nullable: true,
       description: 'Record end date'
-    },
-    create_date: {
-      type: 'string',
-      format: 'date-time',
-      description: 'Record creation date'
-    },
-    create_user: {
-      type: 'integer',
-      minimum: 1,
-      description: 'User ID that created the record'
     }
   }
 };
