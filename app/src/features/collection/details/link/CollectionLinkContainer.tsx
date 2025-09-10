@@ -190,6 +190,7 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
       width: 100, // Increased back to 100
       getActions: (params) => [
         <GridActionsCellItem
+          key="edit"
           icon={
             <IconButton size="small">
               <Typography variant="body2">Edit</Typography>
@@ -199,6 +200,7 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
           onClick={() => openEditDialog(params.row)}
         />,
         <GridActionsCellItem
+          key="delete"
           icon={
             <IconButton size="small" color="error">
               <Typography variant="body2">Delete</Typography>
