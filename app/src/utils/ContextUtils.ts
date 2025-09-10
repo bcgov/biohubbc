@@ -73,18 +73,6 @@ export const useApiService = () => {
      */
     collection: {
       /**
-       * Delete a collection link
-       */
-      deleteLink: async (collectionId: number, linkId: number): Promise<void> => {
-        try {
-          await biohubApi.collection.endCollectionLink(collectionId, linkId);
-        } catch (error) {
-          console.error('Error deleting collection link:', error);
-          throw error;
-        }
-      },
-
-      /**
        * Update a collection link
        */
       updateLink: async (collectionId: number, linkId: number, updateData: any): Promise<void> => {

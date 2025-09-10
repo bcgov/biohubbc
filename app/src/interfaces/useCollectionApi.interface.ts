@@ -101,10 +101,7 @@ export interface IUpdateCollectionLinkRequest {
   name: string;
   description?: string;
   url: string;
-}
-
-export interface IEndCollectionLinkRequest {
-  record_end_date: string;
+  record_end_date?: string;
 }
 
 export interface IGetCollectionLinksResponse {

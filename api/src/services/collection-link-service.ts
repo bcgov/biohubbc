@@ -75,16 +75,4 @@ export class CollectionLinkService extends DBService {
     return this.collectionLinkRepository.updateCollectionLink(collectionId, linkId, linkData);
   }
 
-  /**
-   * End a collection link by setting record_end_date.
-   *
-   * @param {number} collectionId
-   * @param {number} linkId
-   * @param {string} recordEndDate
-   * @return {*}  {Promise<CollectionLink>}
-   * @memberof CollectionLinkService
-   */
-  async endCollectionLink(collectionId: number, linkId: number, recordEndDate: string): Promise<CollectionLink> {
-    return this.collectionLinkRepository.endCollectionLink(collectionId, linkId, recordEndDate);
-  }
 }

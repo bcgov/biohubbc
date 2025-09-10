@@ -74,7 +74,6 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
   );
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<CollectionLinkDataTableURLParams>>();
-  // Removed: linkDialogIsOpen, setLinkDialogIsOpen, editingLink, setEditingLink
 
   const [paginationModel, setPaginationModel] = useState<GridPaginationModel>({
     pageSize: Number(searchParams.get('l_limit') ?? initialPaginationParams.limit),

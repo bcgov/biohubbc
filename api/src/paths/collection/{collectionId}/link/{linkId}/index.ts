@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../../../../database/db';
-import { IEndCollectionLinkRequest, IPutCollectionLinkRequest } from '../../../../../models/collection-link';
-import { CollectionLinkSchema, EndCollectionLinkSchema, UpdateCollectionLinkSchema } from '../../../../../openapi/schemas/collection-link';
+import { IPutCollectionLinkRequest } from '../../../../../models/collection-link';
+import { CollectionLinkSchema, UpdateCollectionLinkSchema } from '../../../../../openapi/schemas/collection-link';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { CollectionLinkService } from '../../../../../services/collection-link-service';
 import { getLogger } from '../../../../../utils/logger';
@@ -58,16 +58,11 @@ PUT.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Collection link update or end request object.',
+    description: 'Collection link update request object.',
     required: true,
     content: {
       'application/json': {
-        schema: {
-          oneOf: [
-            UpdateCollectionLinkSchema,
-            EndCollectionLinkSchema
-          ]
-        }
+        schema: UpdateCollectionLinkSchema
       }
     }
   },
@@ -99,7 +94,7 @@ PUT.apiDoc = {
 };
 
 /**
- * Update an existing collection link or end it by setting record_end_date
+ * Update an existing collection link (including ending it by setting record_end_date)
  *
  * @returns {RequestHandler}
  */
@@ -114,20 +109,11 @@ export function updateCollectionLink(): RequestHandler {
       const linkId = Number(req.params.linkId);
       const collectionLinkService = new CollectionLinkService(connection);
 
-      // Check if this is an end operation (has record_end_date field)
-      if ('record_end_date' in req.body) {
-        defaultLog.debug({ label: 'endCollectionLink' });
-        const data = req.body as IEndCollectionLinkRequest;
-        const endedLink = await collectionLinkService.endCollectionLink(collectionId, linkId, data.record_end_date);
-        await connection.commit();
-        return res.status(200).json(endedLink);
-      } else {
-        defaultLog.debug({ label: 'updateCollectionLink' });
-        const data = req.body as IPutCollectionLinkRequest;
-        const updatedLink = await collectionLinkService.updateCollectionLink(collectionId, linkId, data);
-        await connection.commit();
-        return res.status(200).json(updatedLink);
-      }
+      defaultLog.debug({ label: 'updateCollectionLink' });
+      const data = req.body as IPutCollectionLinkRequest;
+      const updatedLink = await collectionLinkService.updateCollectionLink(collectionId, linkId, data);
+      await connection.commit();
+      return res.status(200).json(updatedLink);
     } catch (error) {
       defaultLog.error({ label: 'updateCollectionLink', message: 'error', error });
       await connection.rollback();

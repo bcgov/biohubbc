@@ -133,20 +133,22 @@ export class CollectionLinkRepository extends BaseRepository {
    * @param {number} collectionId
    * @param {number} linkId
    * @param {IPutCollectionLinkRequest} linkData
+   * @param {string} recordEndDate
    * @return {*}  {Promise<CollectionLink>}
    * @memberof CollectionLinkRepository
    */
   async updateCollectionLink(
     collectionId: number,
     linkId: number,
-    linkData: IPutCollectionLinkRequest
+    linkData: IPutCollectionLinkRequest,
   ): Promise<CollectionLink> {
     const sqlStatement = SQL`
       UPDATE collection_link 
       SET 
         name = ${linkData.name},
         description = ${linkData.description || null},
-        url = ${linkData.url}
+        url = ${linkData.url},
+        record_end_date = ${linkData.record_end_date || null}
       WHERE 
         collection_link_id = ${linkId}
         AND collection_id = ${collectionId}
@@ -164,46 +166,6 @@ export class CollectionLinkRepository extends BaseRepository {
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to update collection link', [
         'CollectionLinkRepository->updateCollectionLink',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
-
-    return response.rows[0];
-  }
-
-
-
-  /**
-   * End a collection link by setting record_end_date to specified date.
-   *
-   * @param {number} collectionId
-   * @param {number} linkId
-   * @param {string} recordEndDate
-   * @return {*}  {Promise<CollectionLink>}
-   * @memberof CollectionLinkRepository
-   */
-  async endCollectionLink(collectionId: number, linkId: number, recordEndDate: string): Promise<CollectionLink> {
-    const sqlStatement = SQL`
-      UPDATE collection_link 
-      SET 
-        record_end_date = ${recordEndDate}
-      WHERE 
-        collection_link_id = ${linkId}
-        AND collection_id = ${collectionId}
-        AND record_end_date IS NULL
-      RETURNING
-        collection_link_id as collection_link_id,
-        name,
-        description,
-        url,
-        collection_id;
-    `;
-
-    const response = await this.connection.sql(sqlStatement, CollectionLink);
-
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to end collection link', [
-        'CollectionLinkRepository->endCollectionLink',
         'rows was null or undefined, expected rows != null'
       ]);
     }

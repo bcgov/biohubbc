@@ -11,7 +11,6 @@ import {
   ICreateCollectionRequest,
   ICreateCollectionSurveyRequest,
   ICreateSurveyCollectionRequest,
-  IEndCollectionLinkRequest,
   IGetCollectionHierarchyResponse,
   IGetCollectionLinksResponse,
   IGetCollectionsResponse,
@@ -320,20 +319,6 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  /**
-   * End a collection link by setting its record_end_date
-   *
-   * @param {number} collectionId
-   * @param {number} linkId
-   * @return {*} {Promise<void>}
-   */
-  const endCollectionLink = async (collectionId: number, linkId: number): Promise<void> => {
-    const requestData: IEndCollectionLinkRequest = {
-      record_end_date: new Date().toISOString()
-    };
-    await axios.put(`/api/collection/${collectionId}/link/${linkId}`, requestData);
-  };
-
   return {
     createCollection,
     createSubcollection,
@@ -351,7 +336,6 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     deleteCollection,
     getCollectionLinks,
     createCollectionLink,
-    updateCollectionLink, // Now requires linkId as a parameter
-    endCollectionLink
+    updateCollectionLink
   };
 };

@@ -20,10 +20,7 @@ export interface IPutCollectionLinkRequest {
   name: string;
   description: string | null;
   url: string;
-}
-
-export interface IEndCollectionLinkRequest {
-  record_end_date: string;
+  record_end_date?: string;
 }
 
 export interface IGetCollectionLinksResponse {

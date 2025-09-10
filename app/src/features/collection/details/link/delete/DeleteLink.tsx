@@ -20,7 +20,30 @@ export function useDeleteLinkDialog() {
 
   const handleDeleteLink = async (collectionId: number, linkId: number, refreshCallback: () => void) => {
     try {
-      await biohubApi.collection.endCollectionLink(collectionId, linkId);
+      // 1. Fetch all links for the collection
+      const response = await biohubApi.collection.getCollectionLinks(collectionId);
+      // 2. Find the link to delete
+      const currentLink = response.links.find((l) => l.collection_link_id === linkId);
+
+      if (!currentLink) {
+        showSnackBar({
+          snackbarMessage: (
+            <Typography variant="body2" component="span">
+              Link not found
+            </Typography>
+          ),
+          open: true
+        });
+        return;
+      }
+
+      await biohubApi.collection.updateCollectionLink(collectionId, linkId, {
+        name: currentLink.name,
+        description: currentLink.description ?? undefined,
+        url: currentLink.url,
+        record_end_date: new Date().toISOString()
+      });
+
       refreshCallback();
       showSnackBar({
         snackbarMessage: (

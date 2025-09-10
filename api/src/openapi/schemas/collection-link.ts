@@ -99,20 +99,10 @@ export const UpdateCollectionLinkSchema: OpenAPIV3.SchemaObject = {
       maxLength: 500,
       format: 'uri',
       description: 'Collection link URL'
-    }
-  }
-};
-
-export const EndCollectionLinkSchema: OpenAPIV3.SchemaObject = {
-  title: 'End Collection Link',
-  type: 'object',
-  additionalProperties: false,
-  required: ['record_end_date'],
-  properties: {
+    },
     record_end_date: {
       type: 'string',
-      format: 'date-time',
-      description: 'Record end date (typically current timestamp)'
+      format: 'date-time'
     }
   }
 };
