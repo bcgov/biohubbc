@@ -67,9 +67,12 @@ const CollectionLinkDialog = (props: ICollectionLinkDialogProps) => {
       }
       onSubmit();
     } catch (_error: any) {
-      setError('Error saving collection link');
+      const message = _error?.message
+        ? `Error saving collection link: ${_error.message}`
+        : 'Error saving collection link';
+      setError(message);
       dialogContext.setSnackbar({
-        snackbarMessage: 'Error saving collection link',
+        snackbarMessage: message,
         open: true
       });
     } finally {

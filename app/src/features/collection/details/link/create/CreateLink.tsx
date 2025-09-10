@@ -18,7 +18,7 @@ export function useCreateLinkDialog(collectionId: number, refreshCallback: () =>
       // Convert null description to undefined for API compatibility
       const apiData = {
         name: formData.name,
-        description: formData.description === null ? undefined : formData.description,
+        description: formData.description ?? undefined,
         url: formData.url
       };
       await biohubApi.collection.createCollectionLink(collectionId, apiData);
@@ -28,9 +28,9 @@ export function useCreateLinkDialog(collectionId: number, refreshCallback: () =>
         snackbarMessage: 'Link created successfully',
         open: true
       });
-    } catch (_err) {
+    } catch (err: any) {
       showSnackBar({
-        snackbarMessage: 'Error creating link',
+        snackbarMessage: `Error creating link${err?.message ? `: ${err.message}` : ''}`,
         open: true
       });
     }
