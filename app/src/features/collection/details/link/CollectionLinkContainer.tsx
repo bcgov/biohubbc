@@ -142,9 +142,9 @@ export const CollectionLinkContainer = (props: ICollectionLinkContainerProps) =>
               title={params.row.name}
               href={params.row.url}
               target="_blank"
-              rel="noopener noreferrer"
-              children={params.row.name}
-            />
+              rel="noopener noreferrer">
+              {params.row.name}
+            </Link>
           </Stack>
         );
       }
