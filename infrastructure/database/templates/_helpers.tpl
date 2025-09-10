@@ -95,7 +95,7 @@ Image tag
 DB Host
 */}}
 {{- define "dbHost" -}}
-biohubbc-db-postgresql{{ include "app.suffix" . }}
+biohubbc-db{{ include "app.suffix" . }}
 {{- end }}
 
 {{/*

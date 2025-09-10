@@ -383,7 +383,7 @@ jobs:
       # Scale down any existing OpenShift pods for this PR deployment
       # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
       # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
-      - name: Scale down api pods
+      - name: Scale down API pods
         run: oc get Deployment --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
 
       # Build and push the API image

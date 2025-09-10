@@ -21,27 +21,27 @@ spec:
           valueFrom:
             secretKeyRef:
               key: database-admin
-              name: {{ include "dbSecret" . }}
+              name: {{ include "dbHost" . }}
         - name: DB_ADMIN_PASS
           valueFrom:
             secretKeyRef:
               key: database-admin-password
-              name: {{ include "dbSecret" . }}
+              name: {{ include "dbHost" . }}
         - name: DB_USER_API
           valueFrom:
             secretKeyRef:
               key: database-user-api
-              name: {{ include "dbSecret" . }}
+              name: {{ include "dbHost" . }}
         - name: DB_USER_API_PASS
           valueFrom:
             secretKeyRef:
               key: database-user-api-password
-              name: {{ include "dbSecret" . }}
+              name: {{ include "dbHost" . }}
         - name: DB_DATABASE
           valueFrom:
             secretKeyRef:
               key: database-name
-              name: {{ include "dbSecret" . }}
+              name: {{ include "dbHost" . }}
         - name: DB_PORT
           value: '5432'
         - name: CHANGE_VERSION
@@ -49,7 +49,7 @@ spec:
         - name: NODE_ENV
           value: {{ .Values.app.nodeEnv }}
         - name: VERSION
-          value: {{ .Values.environment.name }}-{{ .Chart.AppVersion }}-{{ .Release.Name | quote }}
+          value: {{ .Values.environment.name }}-{{ .Chart.AppVersion }}-{{ .Release.Name }}
         - name: DB_SCHEMA
           value: {{ .Values.app.dbSchema }}
       image: "{{ .Values.image.registry }}/{{ .Values.image.image }}:{{ include "app.imageTag" . }}"
