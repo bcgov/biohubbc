@@ -38,27 +38,23 @@ export const taskQueue = async <TaskType, WorkerResultType>(
   concurrently: number
 ): Promise<QueueResult<TaskType, WorkerResultType>[]> => {
   const start = performance.now();
-  const results: QueueResult<TaskType, WorkerResultType>[] = []; // The resolved values are pushed into this array
-
+  const results: QueueResult<TaskType, WorkerResultType>[] = [];
   const queue = fastq.promise(asyncWorker, concurrently);
-
-  // 1. Queue the tasks
-  for (const task of tasks) {
-    // 2. Push each task into the queue and handle the resolved value or error
+  // Create promises that capture the result handling completion
+  const taskPromises = tasks.map((task) =>
     queue
       .push(task)
-      .then((value) => results.push({ task, value }))
-      .catch((error) => results.push({ task, error })); // Catch errors and push into results
-  }
-
-  // 4. Wait for the queue to drain (all tasks to complete)
-  // WARNING: Use `queue.drainED()` not `queue.drain()`.
-  // The latter will not wait for the tasks to complete.
-  await queue.drained();
-
+      .then((value) => {
+        results.push({ task, value });
+      })
+      .catch((error) => {
+        results.push({ task, error });
+      })
+  );
+  // Wait for ALL task promises to resolve (including result handling)
+  await Promise.all(taskPromises);
   defaultLog.info({
     message: `Completed ${tasks.length} tasks in ${((performance.now() - start) / 1000).toFixed(3)}s.`
   });
-
   return results;
 };
