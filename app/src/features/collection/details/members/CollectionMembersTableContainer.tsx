@@ -127,7 +127,9 @@ export const CollectionMembersTableContainer = (props: ICollectionMembersTableCo
   };
 
   const handleDeleteMember = async () => {
-    if (!selectedMember) return;
+    if (!selectedMember) {
+      return;
+    }
     handleCloseActionMenu();
 
     dialogContext.setYesNoDialog({
