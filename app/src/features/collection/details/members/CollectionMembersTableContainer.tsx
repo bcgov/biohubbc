@@ -1,7 +1,13 @@
-import { mdiArrowTopRight } from '@mdi/js';
+import { mdiArrowTopRight, mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import grey from '@mui/material/colors/grey';
 import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
@@ -15,8 +21,9 @@ import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { getCollectionRoleColour } from 'constants/colours';
 import { COLLECTION_ROLE } from 'constants/roles';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext } from 'hooks/useContext';
+import { useCodesContext, useDialogContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import { useSearchParams } from 'hooks/useSearchParams';
@@ -66,6 +73,7 @@ export const CollectionMembersTableContainer = (props: ICollectionMembersTableCo
 
   const biohubApi = useBiohubApi();
   const codesContext = useCodesContext();
+  const dialogContext = useDialogContext();
 
   const { searchParams, setSearchParams } = useSearchParams<StringValues<SurveyDataTableURLParams>>();
   const [memberDialogIsOpen, setmemberDialogIsOpen] = useState(false);
@@ -87,6 +95,9 @@ export const CollectionMembersTableContainer = (props: ICollectionMembersTableCo
     system_user_id: searchParams.get('c_system_user_id') ? Number(searchParams.get('c_system_user_id')) : undefined
   });
 
+  const [actionMenuEl, setActionMenuEl] = useState<null | HTMLElement>(null);
+  const [selectedMember, setSelectedMember] = useState<ICollectionMember | null>(null);
+
   const sort = firstOrNull(sortModel);
   const paginationSort: ApiPaginationRequestOptions = {
     limit: paginationModel.pageSize,
@@ -105,6 +116,48 @@ export const CollectionMembersTableContainer = (props: ICollectionMembersTableCo
     collectionMembersDataLoader.refresh(paginationSort, advancedFiltersModel);
   }, [advancedFiltersModel, paginationSort]);
 
+  const handleOpenActionMenu = (event: React.MouseEvent, member: ICollectionMember) => {
+    setActionMenuEl(event.currentTarget as HTMLElement);
+    setSelectedMember(member);
+  };
+
+  const handleCloseActionMenu = () => {
+    setActionMenuEl(null);
+    setSelectedMember(null);
+  };
+
+  const handleDeleteMember = async () => {
+    if (!selectedMember) return;
+    handleCloseActionMenu();
+
+    dialogContext.setYesNoDialog({
+      dialogTitle: 'Remove Member',
+      dialogText: `Are you sure you want to remove ${selectedMember.display_name} from this collection?`,
+      yesButtonLabel: 'Remove',
+      yesButtonProps: { color: 'error' },
+      noButtonLabel: 'Cancel',
+      open: true,
+      onYes: async () => {
+        dialogContext.setYesNoDialog({ open: false });
+        try {
+          await biohubApi.collection.deleteMember(collectionId, selectedMember.collection_member_id);
+          collectionMembersDataLoader.refresh(paginationSort, advancedFiltersModel);
+        } catch (error) {
+          dialogContext.setErrorDialog({
+            dialogTitle: 'Error Removing Member',
+            dialogText: (error as APIError).message,
+            open: true,
+            onClose: () => dialogContext.setErrorDialog({ open: false }),
+            onOk: () => dialogContext.setErrorDialog({ open: false })
+          });
+        }
+      },
+      onNo: () => dialogContext.setYesNoDialog({ open: false }),
+      onClose: () => dialogContext.setYesNoDialog({ open: false })
+    });
+  };
+
+  // Add actions column
   const columns: GridColDef<ICollectionMember>[] = [
     {
       field: 'collection_member_id',
@@ -140,6 +193,20 @@ export const CollectionMembersTableContainer = (props: ICollectionMembersTableCo
         ) as COLLECTION_ROLE;
         return <ColouredRectangleChip label={role} colour={getCollectionRoleColour(role)} />;
       }
+    },
+    {
+      field: 'actions',
+      headerName: '',
+      sortable: false,
+      width: 50,
+      align: 'right',
+      renderCell: (params) => (
+        <>
+          <IconButton onClick={(event) => handleOpenActionMenu(event, params.row)}>
+            <Icon path={mdiDotsVertical} size={1} />
+          </IconButton>
+        </>
+      )
     }
   ];
 
@@ -245,6 +312,20 @@ export const CollectionMembersTableContainer = (props: ICollectionMembersTableCo
           autoHeight={false}
         />
       </LoadingGuard>
+
+      <Menu
+        open={Boolean(actionMenuEl)}
+        onClose={handleCloseActionMenu}
+        anchorEl={actionMenuEl}
+        anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
+        <MenuItem onClick={handleDeleteMember}>
+          <ListItemIcon>
+            <Icon path={mdiTrashCanOutline} size={1} />
+          </ListItemIcon>
+          <ListItemText>Delete</ListItemText>
+        </MenuItem>
+      </Menu>
 
       <CollectionMemberDialog
         collectionId={collectionId}

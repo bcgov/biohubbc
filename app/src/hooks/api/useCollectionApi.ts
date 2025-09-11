@@ -259,6 +259,15 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Delete a member from a collection
+   */
+  const deleteMember = async (collectionId: number, collectionMemberId: number): Promise<void> => {
+    await axios.delete(`/api/collection/${collectionId}/member`, {
+      params: { collectionMemberId }
+    });
+  };
+
   return {
     createCollection,
     createSubcollection,
@@ -273,6 +282,7 @@ export const useCollectionApi = (axios: AxiosInstance) => {
     getObservations,
     addMembers,
     getCollection,
-    deleteCollection
+    deleteCollection,
+    deleteMember
   };
 };

@@ -256,3 +256,78 @@ export function addMembersToCollection(): RequestHandler {
     }
   };
 }
+
+export const DELETE: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          discriminator: 'CollectionRole',
+          collectionId: Number(req.params.collectionId),
+          validCollectionRoles: [COLLECTION_ROLE.ADMIN]
+        }
+      ]
+    };
+  }),
+  deleteCollectionMember()
+];
+
+DELETE.apiDoc = {
+  description: 'Delete a member from a collection',
+  tags: ['collections'],
+  security: [{ Bearer: [] }],
+  parameters: [
+    {
+      in: 'path',
+      name: 'collectionId',
+      schema: { type: 'integer', minimum: 1 },
+      required: true
+    },
+    {
+      in: 'query',
+      name: 'collectionMemberId',
+      schema: { type: 'integer', minimum: 1 },
+      required: true
+    }
+  ],
+  responses: {
+    200: { description: 'Member deleted.' },
+    400: { $ref: '#/components/responses/400' },
+    401: { $ref: '#/components/responses/401' },
+    403: { $ref: '#/components/responses/403' },
+    500: { $ref: '#/components/responses/500' },
+    default: { $ref: '#/components/responses/default' }
+  }
+};
+
+/**
+ * Delete a member from a collection
+ */
+export function deleteCollectionMember(): RequestHandler {
+  return async (req, res) => {
+    defaultLog.debug({ label: 'deleteCollectionMember' });
+
+    const connection = getDBConnection(req.keycloak_token);
+
+    try {
+      await connection.open();
+
+      const collectionId = Number(req.params.collectionId);
+      const collectionMemberId = Number(req.query.collectionMemberId);
+
+      const collectionMemberService = new CollectionMemberService(connection);
+
+      await collectionMemberService.deleteCollectionMemberRecord(collectionId, collectionMemberId);
+
+      await connection.commit();
+
+      return res.status(200).json({ message: 'Member deleted.' });
+    } catch (error) {
+      defaultLog.error({ label: 'deleteCollectionMember', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
