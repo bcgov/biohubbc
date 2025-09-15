@@ -200,6 +200,23 @@ jobs:
           docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} .
           docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/${{ env.APP_NAME }}:${{ env.IMAGE_TAG }}
+          format: 'sarif'
+          output: 'trivy-${{ env.APP_NAME }}-results.sarif'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          limit-severities-for-sarif: true
+
+      - name: Upload Trivy scan results
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-${{ env.APP_NAME }}-results
+          path: trivy-${{ env.APP_NAME }}-results.sarif
+
   # Build the Database image
   buildAndPushDatabase:
     name: Build Database Image
@@ -266,6 +283,23 @@ jobs:
           docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} .
           docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/${{ env.APP_NAME }}:${{ env.IMAGE_TAG }}
+          format: 'sarif'
+          output: 'trivy-${{ env.APP_NAME }}-results.sarif'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          limit-severities-for-sarif: true
+
+      - name: Upload Trivy scan results
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-${{ env.APP_NAME }}-results
+          path: trivy-${{ env.APP_NAME }}-results.sarif
+
   # Build the Database Setup image
   buildAndPushDatabaseSetup:
     name: Build Database Setup Image
@@ -325,6 +359,23 @@ jobs:
         run: |
           docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} -f .docker/db/Dockerfile.setup .
           docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
+
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/${{ env.APP_NAME }}:${{ env.IMAGE_TAG }}
+          format: 'sarif'
+          output: 'trivy-${{ env.APP_NAME }}-results.sarif'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          limit-severities-for-sarif: true
+
+      - name: Upload Trivy scan results
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-${{ env.APP_NAME }}-results
+          path: trivy-${{ env.APP_NAME }}-results.sarif
 
   # Build the API image
   buildAndPushAPI:
@@ -392,6 +443,23 @@ jobs:
           docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} .
           docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@0.33.1
+        with:
+          image-ref: ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/${{ env.APP_NAME }}:${{ env.IMAGE_TAG }}
+          format: 'sarif'
+          output: 'trivy-${{ env.APP_NAME }}-results.sarif'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'CRITICAL,HIGH'
+          limit-severities-for-sarif: true
+          
+      - name: Upload Trivy scan results
+        uses: actions/upload-artifact@v4
+        with:
+          name: trivy-${{ env.APP_NAME }}-results
+          path: trivy-${{ env.APP_NAME }}-results.sarif
+          
   # Deploy Helm chart
   deployHelmChart:
     name: Deploy Helm Chart
@@ -486,6 +554,115 @@ jobs:
           
           echo "Helm chart deployment completed for PR $PR_NUMBER"
 
+  # Aggregate Trivy scan results and comment on PR
+  commentTrivyResults:
+    name: Comment Trivy Results
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    if: ${{ github.event.pull_request.merged == false &&
+      github.event.pull_request.draft == false }}
+    needs:
+      - buildAndPushApp
+      - buildAndPushDatabase
+      - buildAndPushDatabaseSetup
+      - buildAndPushAPI
+    steps:
+      - name: Download all Trivy scan results
+        uses: actions/download-artifact@v4
+        with:
+          path: trivy-results
+
+      - name: Check for vulnerabilities and comment on PR
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const path = require('path');
+            
+            // Function to parse SARIF file and extract vulnerability counts
+            function parseSarifFile(filePath) {
+              try {
+                if (!fs.existsSync(filePath)) {
+                  return { critical: 0, high: 0, total: 0 };
+                }
+                
+                const sarifData = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+                const results = sarifData.runs?.[0]?.results || [];
+                
+                const counts = { critical: 0, high: 0, total: 0 };
+                
+                results.forEach(result => {
+                  const severity = result.properties?.vulnerability?.severity?.toLowerCase() || 
+                                 result.ruleId?.toLowerCase() || 'unknown';
+                  
+                  counts.total++;
+                  
+                  if (severity.includes('critical')) counts.critical++;
+                  else if (severity.includes('high')) counts.high++;
+                });
+                
+                return counts;
+              } catch (error) {
+                console.log(`Error parsing ${filePath}:`, error.message);
+                return { critical: 0, high: 0, total: 0 };
+              }
+            }
+            
+            // Parse all scan results
+            const appResults = parseSarifFile('trivy-results/trivy-biohubbc-app-results/trivy-biohubbc-app-results.sarif');
+            const databaseResults = parseSarifFile('trivy-results/trivy-biohubbc-db-results/trivy-biohubbc-db-results.sarif');
+            const databaseSetupResults = parseSarifFile('trivy-results/trivy-biohubbc-db-setup-results/trivy-biohubbc-db-setup-results.sarif');
+            const apiResults = parseSarifFile('trivy-results/trivy-biohubbc-api-results/trivy-biohubbc-api-results.sarif');
+            
+            // Calculate totals
+            const totalCritical = appResults.critical + databaseResults.critical + databaseSetupResults.critical + apiResults.critical;
+            const totalHigh = appResults.high + databaseResults.high + databaseSetupResults.high + apiResults.high;
+            const totalVulnerabilities = totalCritical + totalHigh;
+            
+            // Only comment if there are vulnerabilities
+            if (totalVulnerabilities > 0) {
+              const comment = `## 🔍 Trivy Security Scan Results
+              
+              **Total Vulnerabilities Found:** ${totalVulnerabilities}
+              
+              | Severity | Count |
+              |----------|-------|
+              | 🔴 Critical | ${totalCritical} |
+              | 🟠 High | ${totalHigh} |
+              
+              ### Breakdown by Image:
+              
+              **App Image:**
+              - Critical: ${appResults.critical}, High: ${appResults.high}
+              
+              **Database Image:**
+              - Critical: ${databaseResults.critical}, High: ${databaseResults.high}
+              
+              **Database Setup Image:**
+              - Critical: ${databaseSetupResults.critical}, High: ${databaseSetupResults.high}
+              
+              **API Image:**
+              - Critical: ${apiResults.critical}, High: ${apiResults.high}
+              
+              ---
+              
+              **Note:** This scan was performed using Trivy on the container images built for this PR, focusing only on Critical and High severity vulnerabilities with available fixes. Please review the vulnerabilities and consider updating dependencies or base images as needed.
+              
+              For detailed vulnerability information, check the workflow logs for the Trivy scan steps.`;
+              
+              // Post comment to PR
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                body: comment
+              });
+              
+              console.log(`Posted Trivy scan results comment to PR #${context.issue.number}`);
+            } else {
+              console.log('No vulnerabilities found in any of the scanned images');
+            }
+
   # Report the overall status of all jobs.
   # Why? Skipped jobs are not considered successes when specifying requird jobs in the GitHub PR settings. Rather than
   # specify each job, we can specify this final job only, and use its status as an indicator of all previous jobs
@@ -506,6 +683,7 @@ jobs:
       - buildAndPushDatabaseSetup
       - buildAndPushAPI
       - deployHelmChart
+      - commentTrivyResults
     steps:
       - name: Log result
         run: |
@@ -517,6 +695,7 @@ jobs:
           echo needs.buildAndPushDatabaseSetup.result: ${{ needs.buildAndPushDatabaseSetup.result }}
           echo needs.buildAndPushAPI.result: ${{ needs.buildAndPushAPI.result }}
           echo needs.deployHelmChart.result: ${{ needs.deployHelmChart.result }}
+          echo needs.commentTrivyResults.result: ${{ needs.commentTrivyResults.result }}
 
       - name: Report success
         if: |
