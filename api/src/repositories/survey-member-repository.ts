@@ -508,36 +508,32 @@ export class SurveyMemberRepository extends BaseRepository {
       return;
     }
 
-    const rowsSql = members.map(
-      (m) =>
-        SQL`SELECT ${Number(m.survey_id)}::int AS survey_id, ${Number(m.system_user_id)}::int AS system_user_id, ${m.survey_role_name} AS survey_role_name`
-    );
+    const surveyIds = members.map(m => m.survey_id);
+    const systemUserIds = members.map(m => m.system_user_id);
+    const roleNames = members.map(m => m.survey_role_name);
 
-    let sqlStatement = SQL`
-    INSERT INTO survey_member (
-      survey_id,
-      system_user_id,
-      survey_role_id
-    )
-    SELECT
-      val.survey_id,
-      val.system_user_id,
-      sr.survey_role_id
-    FROM (
-  `;
-
-    sqlStatement.append(rowsSql[0]);
-    for (let i = 1; i < rowsSql.length; i++) {
-      sqlStatement.append(SQL` UNION ALL `);
-      sqlStatement.append(rowsSql[i]);
-    }
-
-    sqlStatement.append(SQL`) AS val
-    JOIN survey_role sr
-      ON LOWER(sr.name) = LOWER(val.survey_role_name)
-    WHERE sr.record_end_date IS NULL
-    RETURNING *;
-  `);
+    const sqlStatement = SQL`
+      WITH input_data AS (
+        SELECT
+          unnest(${surveyIds}::int[]) AS survey_id,
+          unnest(${systemUserIds}::int[]) AS system_user_id,
+          unnest(${roleNames}::text[]) AS survey_role_name
+      )
+      INSERT INTO survey_member (
+        survey_id,
+        system_user_id,
+        survey_role_id
+      )
+      SELECT
+        i.survey_id,
+        i.system_user_id,
+        sr.survey_role_id
+      FROM input_data i
+      JOIN survey_role sr
+        ON LOWER(sr.name) = LOWER(i.survey_role_name)
+      WHERE sr.record_end_date IS NULL
+      RETURNING *;
+    `;
 
     const response = await this.connection.sql(sqlStatement);
 
