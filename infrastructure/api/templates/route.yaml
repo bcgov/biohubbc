@@ -1,0 +1,21 @@
+apiVersion: route.openshift.io/v1
+kind: Route
+metadata:
+  name: {{ include "app.fullname" . }}
+  namespace: {{ include "environment.namespace" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+  annotations:
+    {{- include "app.annotations" . | nindent 4 }}
+spec:
+  host: {{ include "apiHost" . }}
+  tls:
+    insecureEdgeTerminationPolicy: Redirect
+    termination: edge
+  port:
+    targetPort: {{ .Values.app.name }}-{{ .Values.service.name }}
+  to:
+    kind: Service
+    name: {{ include "app.fullname" . }}
+    weight: 100
+  wildcardPolicy: None

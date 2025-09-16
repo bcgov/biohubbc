@@ -1,0 +1,320 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "app.fullname" . }}
+  namespace: {{ include "environment.namespace" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+    role: api
+  annotations:
+    {{- include "app.annotations" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      deployment: {{ include "app.fullname" . | quote }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 25%
+      maxUnavailable: 25%
+  template:
+    metadata:
+      labels:
+        deployment: {{ include "app.fullname" . | quote }}
+        role: api
+    spec:
+      initContainers:
+        - name: wait-for-database
+          image: postgres:15-alpine
+          command: ['sh', '-c']
+          args:
+            - |
+              until pg_isready -h {{ include "dbHost" . }} -p {{ .Values.app.database.port }} -U $DB_USER_API; do
+                echo "Waiting for database to be ready..."
+                sleep 5
+              done
+              echo "Database is ready!"
+          env:
+            - name: DB_HOST
+              value: {{ include "dbHost" . }}
+            - name: DB_USER_API
+              valueFrom:
+                secretKeyRef:
+                  key: database-user-api
+                  name: {{ include "dbHost" . }}
+            - name: DB_USER_API_PASS
+              valueFrom:
+                secretKeyRef:
+                  key: database-user-api-password
+                  name: {{ include "dbHost" . }}
+            - name: PGPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-user-api-password
+                  name: {{ include "dbHost" . }}
+        - name: wait-for-database-setup
+          image: postgres:15-alpine
+          command: ['sh', '-c']
+          args:
+            - |
+              echo "Waiting for database-setup job to complete..."
+              until PGPASSWORD=$DB_ADMIN_PASS psql -h {{ include "dbHost" . }} -U $DB_ADMIN -d $DB_DATABASE -c "SELECT 1 FROM pg_roles WHERE rolname='$DB_USER_API';" | grep -q "1"; do
+                echo "Database-setup not complete, waiting..."
+                sleep 5
+              done
+              echo "Database-setup completed successfully!"
+          env:
+            - name: DB_HOST
+              value: {{ include "dbHost" . }}
+            - name: DB_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  key: database-admin
+                  name: {{ include "dbHost" . }}
+            - name: DB_ADMIN_PASS
+              valueFrom:
+                secretKeyRef:
+                  key: database-admin-password
+                  name: {{ include "dbHost" . }}
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  key: database-name
+                  name: {{ include "dbHost" . }}
+            - name: DB_USER_API
+              valueFrom:
+                secretKeyRef:
+                  key: database-user-api
+                  name: {{ include "dbHost" . }}
+      containers:
+        - name: api
+          env:
+            - name: API_HOST
+              value: {{ include "apiHost" . }}
+            - name: API_PORT
+              value: {{ .Values.service.port | quote }}
+            - name: APP_HOST
+              value: {{ include "appHost" . }}
+            - name: VERSION
+              value: {{ .Values.environment.name }}-{{ .Chart.AppVersion }}-{{ .Values.environment.changeId }}
+            - name: CHANGE_VERSION
+              value: {{ .Values.environment.changeId | quote }}
+            - name: NODE_ENV
+              value: {{ .Values.app.nodeEnv }}
+            - name: NODE_OPTIONS
+              value: {{ .Values.app.nodeOptions }}
+            # BioHub Platform (aka: Backbone)
+            - name: BACKBONE_INTERNAL_API_HOST
+              value: {{ .Values.app.backboneInternalApiHost }}
+            - name: BACKBONE_INTAKE_PATH
+              value: {{ .Values.app.backboneIntakePath }}
+            - name: BACKBONE_ARTIFACT_INTAKE_PATH
+              value: {{ .Values.app.backboneArtifactIntakePath }}
+            - name: BIOHUB_TAXON_TSN_PATH
+              value: {{ .Values.app.biohubTaxonTsnPath }}
+            - name: BIOHUB_TAXON_PATH
+              value: {{ .Values.app.biohubTaxonPath }}
+            # Critterbase
+            - name: CB_API_HOST
+              value: {{ .Values.app.critterbaseApiHost }}
+            # Clamav
+            - name: ENABLE_FILE_VIRUS_SCAN
+              value: {{ .Values.app.clamav.enabled | quote }}
+            - name: CLAMAV_HOST
+              value: {{ .Values.app.clamav.host }}
+            - name: CLAMAV_PORT
+              value: {{ .Values.app.clamav.port | quote }}
+            # Database
+            - name: TZ
+              value: {{ .Values.app.timezone }}
+            - name: DB_HOST
+              value: {{ include "dbHost" . }}
+            - name: DB_USER_API
+              valueFrom:
+                secretKeyRef:
+                  key: database-user-api
+                  name: {{ include "dbHost" . }}
+            - name: DB_USER_API_PASS
+              valueFrom:
+                secretKeyRef:
+                  key: database-user-api-password
+                  name: {{ include "dbHost" . }}
+            - name: DB_DATABASE
+              valueFrom:
+                secretKeyRef:
+                  key: database-name
+                  name: {{ include "dbHost" . }}
+            - name: DB_PORT
+              value: {{ .Values.app.database.port | quote }}
+            # Telemetry
+            - name: LOTEK_API_HOST
+              value: {{ .Values.app.lotekApiHost }}
+            - name: LOTEK_ACCOUNT_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: lotek_account_username
+                  name: {{ .Values.app.telemetry.secretKey }}
+            - name: LOTEK_ACCOUNT_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: lotek_account_password
+                  name: {{ .Values.app.telemetry.secretKey }}
+            - name: VECTRONIC_API_HOST
+              value: {{ .Values.app.vectronicApiHost }}
+            # Keycloak
+            - name: KEYCLOAK_HOST
+              value: {{ .Values.app.keycloak.host }}
+            - name: KEYCLOAK_REALM
+              value: {{ .Values.app.keycloak.realm }}
+            - name: KEYCLOAK_CLIENT_ID
+              value: {{ .Values.app.keycloak.clientId }}
+            # Keycloak Service Client
+            - name: KEYCLOAK_ADMIN_USERNAME
+              value: {{ .Values.app.keycloak.serviceClient.name }}
+            - name: KEYCLOAK_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.app.keycloak.keycloakSecret }}
+                  key: {{ .Values.app.keycloak.serviceClient.passwordKey }}
+            # Keycloak CSS API
+            - name: KEYCLOAK_API_TOKEN_URL
+              value: {{ .Values.app.keycloak.cssApi.tokenUrl }}
+            - name: KEYCLOAK_API_CLIENT_ID
+              value: {{ .Values.app.keycloak.cssApi.clientId }}
+            - name: KEYCLOAK_API_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.app.keycloak.keycloakSecret }}
+                  key: {{ .Values.app.keycloak.cssApi.secretKey }}
+            - name: KEYCLOAK_API_HOST
+              value: {{ .Values.app.keycloak.cssApi.host }}
+            - name: KEYCLOAK_API_ENVIRONMENT
+              value: {{ .Values.app.keycloak.cssApi.environment }}
+            # Request limits
+            - name: MAX_REQ_BODY_SIZE
+              value: {{ .Values.app.requestLimits.bodySize | quote }}
+            - name: MAX_UPLOAD_NUM_FILES
+              value: {{ .Values.app.requestLimits.uploadNumFiles | quote }}
+            - name: MAX_UPLOAD_FILE_SIZE
+              value: {{ .Values.app.requestLimits.uploadFileSize | quote }}
+            # Object Store (S3)
+            - name: OBJECT_STORE_URL
+              valueFrom:
+                secretKeyRef:
+                  key: object_store_url
+                  name: {{ .Values.app.objectStore.secretName }}
+            - name: OBJECT_STORE_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  key: object_store_access_key_id
+                  name: {{ .Values.app.objectStore.secretName }}
+            - name: OBJECT_STORE_SECRET_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  key: object_store_secret_key_id
+                  name: {{ .Values.app.objectStore.secretName }}
+            - name: OBJECT_STORE_BUCKET_NAME
+              valueFrom:
+                secretKeyRef:
+                  key: object_store_bucket_name
+                  name: {{ .Values.app.objectStore.secretName }}
+            - name: S3_KEY_PREFIX
+              value: {{ if .Values.app.objectStore.keyPrefix }}{{ .Values.app.objectStore.keyPrefix }}{{ else }}local/{{ .Values.environment.changeId }}/sims{{ end }}
+            # Logging
+            - name: LOG_LEVEL
+              value: {{ .Values.app.logging.level }}
+            - name: LOG_LEVEL_FILE
+              value: {{ .Values.app.logging.levelFile }}
+            - name: LOG_FILE_DIR
+              value: {{ .Values.app.logging.fileDir }}
+            - name: LOG_FILE_NAME
+              value: {{ .Values.app.logging.fileName }}
+            - name: LOG_FILE_DATE_PATTERN
+              value: {{ .Values.app.logging.fileDatePattern }}
+            - name: LOG_FILE_MAX_SIZE
+              value: {{ .Values.app.logging.fileMaxSize | quote }}
+            - name: LOG_FILE_MAX_FILES
+              value: {{ .Values.app.logging.fileMaxFiles | quote }}
+            # Api Validation
+            - name: API_RESPONSE_VALIDATION_ENABLED
+              value: {{ .Values.app.apiResponseValidationEnabled | quote }}
+            - name: DATABASE_RESPONSE_VALIDATION_ENABLED
+              value: {{ .Values.app.databaseResponseValidationEnabled | quote }}
+            # GCNotify
+            - name: GCNOTIFY_SECRET_API_KEY
+              valueFrom:
+                secretKeyRef:
+                  key: key
+                  name: {{ .Values.app.gcnotify.apiSecret }}
+            - name: GCNOTIFY_ADMIN_EMAIL
+              value: {{ .Values.app.gcnotify.adminEmail }}
+            - name: GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE
+              value: {{ .Values.app.gcnotify.onboardingRequestEmailTemplate }}
+            - name: GCNOTIFY_REQUEST_RESUBMIT_TEMPLATE
+              value: {{ .Values.app.gcnotify.requestResubmitTemplate }}
+            - name: GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE
+              value: {{ .Values.app.gcnotify.onboardingRequestSmsTemplate }}
+            - name: GCNOTIFY_EMAIL_URL
+              value: {{ .Values.app.gcnotify.emailUrl }}
+            - name: GCNOTIFY_SMS_URL
+              value: {{ .Values.app.gcnotify.smsUrl }}
+            - name: FEATURE_FLAGS
+              value: {{ .Values.app.featureFlags }}
+          image: "{{ .Values.image.registry }}/{{ .Values.image.image }}:{{ include "app.imageTag" . }}"
+          imagePullPolicy: Always
+          ports:
+            - containerPort: {{ .Values.service.port }}
+              protocol: TCP
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+          startupProbe:
+            httpGet:
+              path: /api/version
+              port: {{ .Values.service.port }}
+              scheme: HTTP
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 10
+            successThreshold: 1
+            failureThreshold: 30
+          readinessProbe:
+            httpGet:
+              path: /api/version
+              port: {{ .Values.service.port }}
+              scheme: HTTP
+            initialDelaySeconds: 0
+            periodSeconds: 30
+            timeoutSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /api/version
+              port: {{ .Values.service.port }}
+              scheme: HTTP
+            initialDelaySeconds: 0
+            periodSeconds: 30
+            timeoutSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+          volumeMounts:
+            - name: {{ include "app.fullname" . }}
+              mountPath: /opt/app-root/src/data
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext: {}
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: {{ include "app.fullname" . }}
+          persistentVolumeClaim:
+            claimName: {{ default (include "app.fullname" .) .Values.persistence.existingClaim }}

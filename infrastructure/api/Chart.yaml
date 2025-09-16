@@ -1,0 +1,6 @@
+apiVersion: v2
+name: biohubbc-api
+description: A Helm chart for SIMS API component
+type: application
+version: 0.1.0
+appVersion: "1.0.0"

@@ -18,13 +18,16 @@ jobs:
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
         with:
-          oc: "4.14"
+          oc: "4.16"
 
-      # Log in to OpenShift.
+      # Log in to OpenShift with retry logic
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+        uses: ./.github/actions/openshift-login-retry
+        with:
+          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
+          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
 
       - name: Scale down
-        run: oc get DeploymentConfig,Deployment --namespace af2668-dev --selector env-id=$PR_NUMBER -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
+        run: oc get Deployment --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev --selector env-id=$PR_NUMBER -o name | awk '{print "oc scale --replicas=0 " $1}' | bash

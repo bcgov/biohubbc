@@ -1,0 +1,27 @@
+# Default values for database chart
+environment:
+  licensePlate: "af2668" # License plate of the project
+  name: "" # Environment name (dev, test, prod)
+  id: "" # Environment id (PR, deploy)
+  changeId: "" # Change id (PR number)
+  ts: "" # Timestamp of the deployment
+
+image:
+  registry: "image-registry.openshift-image-registry.svc:5000" # The base image registry URL
+  image: af2668-tools/biohubbc-db-setup # Always pull from tools namespace
+
+# Database configuration
+app:
+  name: biohubbc-db-setup
+  nodeEnv: "" # NODE_ENV specification variable
+
+  dbSchema: biohub # Database schema
+
+# Openshift Resources
+resources:
+  requests:
+    cpu: 50m
+    memory: 100Mi
+  limits:
+    cpu: 1000m
+    memory: 1792Mi # 1.75Gi

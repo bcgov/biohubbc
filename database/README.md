@@ -53,7 +53,7 @@ The `procedures` directory contains a collection of scripts that, when run, crea
 
    Ex:
 
-   oc port-forward biohubbc-db-postgresql-dev-deploy-100 5555:5432
+   oc port-forward biohubbc-db-dev-deploy-100 5555:5432
    ```
 
 <br />
