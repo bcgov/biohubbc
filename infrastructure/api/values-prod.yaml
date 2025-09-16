@@ -54,7 +54,7 @@ resources:
 
 # Volume for logs and persistent data
 persistence:
-  size: 500Mi
+  existingClaim: "biohubbc-api-prod"
 
 # Route configuration (OpenShift)
 route:

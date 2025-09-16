@@ -89,7 +89,7 @@ biohubbc-db:
 
   # Volume for persistent data
   persistence:
-    size: 20Gi
+    existingClaim: "biohubbc-db-postgresql-test"
 
 # Values passed to biohubbc-db-setup subchart
 biohubbc-db-setup:
@@ -164,7 +164,7 @@ biohubbc-api:
 
   # Volume for logs and persistent data
   persistence:
-    size: 500Mi
+    existingClaim: "biohubbc-api-test"
 
   # Route configuration (OpenShift)
   route:

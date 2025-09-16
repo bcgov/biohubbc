@@ -19,4 +19,4 @@ resources:
 
 # Volume for persistent data
 persistence:
-  size: 20Gi
+  existingClaim: "biohubbc-db-postgresql-test"

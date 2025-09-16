@@ -100,4 +100,4 @@ spec:
           volumes:
             - name: {{ include "app.fullname" . }}
               persistentVolumeClaim:
-                claimName: {{ include "app.fullname" . }}
+                claimName: {{ default (include "app.fullname" .) .Values.persistence.existingClaim }}
