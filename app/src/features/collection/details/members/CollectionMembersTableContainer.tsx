@@ -239,7 +239,7 @@ export const CollectionMembersTableContainer = (props: ICollectionMembersTableCo
             />
           </Box>
           <CreateButton
-            label="Invite Members"
+            label="Add Members"
             onClick={() => {
               setmemberDialogIsOpen(true);
             }}
