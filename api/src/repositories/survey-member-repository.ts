@@ -539,11 +539,11 @@ if (!response?.rowCount) {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response.rowCount) {
+    if (!response?.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert or update one or more survey team members', [
         'SurveyRepository->insertMembersBatch',
         'rows was null or undefined, expected rows must not be null'
       ]);
     }
   }
-}
+};
