@@ -20,14 +20,21 @@ jobs:
         with:
           oc: "4.16"
 
-      # Log in to OpenShift with retry logic
+      # Log in to OpenShift
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
       # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
-        uses: ./.github/actions/openshift-login-retry
+        uses: redhat-actions/oc-login@v1
         with:
           openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
           openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
 
       - name: Scale down
-        run: oc get Deployment --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev --selector env-id=$PR_NUMBER -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
+        run: |
+          echo "Cleaning deployment artifacts for PR $PR_NUMBER using Helm"
+          
+          # Clean from dev namespace (where Helm releases are deployed)
+          echo "Cleaning from ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev namespace..."
+          helm uninstall "pr-$PR_NUMBER" --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev || echo "No Helm release found in dev namespace for PR $PR_NUMBER"
+          
+          echo "Cleanup completed for PR $PR_NUMBER"
