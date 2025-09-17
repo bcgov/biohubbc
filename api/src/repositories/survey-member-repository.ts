@@ -532,13 +532,15 @@ export class SurveyMemberRepository extends BaseRepository {
       JOIN survey_role sr
         ON LOWER(sr.name) = LOWER(i.survey_role_name)
       WHERE sr.record_end_date IS NULL
+      ON CONFLICT (survey_id, system_user_id)
+      DO UPDATE SET survey_role_id = EXCLUDED.survey_role_id
       RETURNING *;
     `;
 
     const response = await this.connection.sql(sqlStatement);
 
     if (!response || !response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to insert one or more survey team members', [
+      throw new ApiExecuteSQLError('Failed to insert or update one or more survey team members', [
         'SurveyRepository->insertMembersBatch',
         'rows was null or undefined, expected rows must not be null'
       ]);
