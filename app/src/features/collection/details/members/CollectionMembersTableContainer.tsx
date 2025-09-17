@@ -203,11 +203,9 @@ export const CollectionMembersTableContainer = (props: ICollectionMembersTableCo
       width: 50,
       align: 'right',
       renderCell: (params) => (
-        <>
-          <IconButton onClick={(event) => handleOpenActionMenu(event, params.row)}>
-            <Icon path={mdiDotsVertical} size={1} />
-          </IconButton>
-        </>
+        <IconButton onClick={(event) => handleOpenActionMenu(event, params.row)}>
+          <Icon path={mdiDotsVertical} size={1} />
+        </IconButton>
       )
     }
   ];

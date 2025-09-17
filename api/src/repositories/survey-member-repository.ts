@@ -374,12 +374,12 @@ export class SurveyMemberRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-if (!response?.rowCount) {
-  throw new ApiExecuteSQLError('Failed to insert or update one or more survey team members', [
-    'SurveyRepository->insertMembersBatch',
-    'rows was null or undefined, expected rows must not be null'
-  ]);
-}
+    if (!response?.rowCount) {
+      throw new ApiExecuteSQLError('Failed to insert or update one or more survey team members', [
+        'SurveyRepository->insertMembersBatch',
+        'rows was null or undefined, expected rows must not be null'
+      ]);
+    }
   }
 
   /**
@@ -508,9 +508,9 @@ if (!response?.rowCount) {
       return;
     }
 
-    const surveyIds = members.map(m => m.survey_id);
-    const systemUserIds = members.map(m => m.system_user_id);
-    const roleNames = members.map(m => m.survey_role_name);
+    const surveyIds = members.map((m) => m.survey_id);
+    const systemUserIds = members.map((m) => m.system_user_id);
+    const roleNames = members.map((m) => m.survey_role_name);
 
     const sqlStatement = SQL`
       WITH input_data AS (
@@ -546,4 +546,4 @@ if (!response?.rowCount) {
       ]);
     }
   }
-};
+}
