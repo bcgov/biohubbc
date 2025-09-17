@@ -374,12 +374,12 @@ export class SurveyMemberRepository extends BaseRepository {
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response || !response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to insert survey team member', [
-        'SurveyRepository->postSurveyMember',
-        'rows was null or undefined, expected rows != null'
-      ]);
-    }
+if (!response?.rowCount) {
+  throw new ApiExecuteSQLError('Failed to insert or update one or more survey team members', [
+    'SurveyRepository->insertMembersBatch',
+    'rows was null or undefined, expected rows must not be null'
+  ]);
+}
   }
 
   /**
