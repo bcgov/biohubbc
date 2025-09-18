@@ -284,7 +284,7 @@ DELETE.apiDoc = {
       required: true
     },
     {
-      in: 'query',
+      in: 'path',
       name: 'collectionMemberId',
       schema: { type: 'integer', minimum: 1 },
       required: true
