@@ -20,6 +20,7 @@ export interface IMember {
   systemUserId: number;
   userIdentifier: string;
   identitySource: string;
+  surveyRoleName: string;
   roleId: number;
   displayName: string;
   email: string;
@@ -331,52 +332,34 @@ export class SurveyMemberRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} systemUserId The system ID of the user.
-   * @param {(number | string)} surveyMemberRole The ID or Name of the role to assign.
+   * @param {string} surveyMemberRole The Name of the role to assign.
    * @return {*}  {Promise<void>}
    * @memberof SurveyMemberRepository
    */
-  async insertSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: number | string): Promise<void> {
-    let sqlStatement;
-
-    // If surveyMemberRole is a string (role name), look up the ID in the insert (case-insensitive)
-    if (isNaN(Number(surveyMemberRole))) {
-      sqlStatement = SQL`
-        INSERT INTO survey_member (
-          survey_id,
-          system_user_id,
-          survey_role_id
-        )
-        SELECT
-          ${surveyId},
-          ${systemUserId},
-          survey_role_id
-        FROM
-          survey_role
-        WHERE
-          LOWER(name) = LOWER(${surveyMemberRole})
-          AND record_end_date IS NULL
-        RETURNING *;
-      `;
-    } else {
-      sqlStatement = SQL`
-        INSERT INTO survey_member (
-          survey_id,
-          system_user_id,
-          survey_role_id
-        ) VALUES (
-          ${surveyId},
-          ${systemUserId},
-          ${surveyMemberRole}
-        )
-        RETURNING *;
-      `;
-    }
+  async insertSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: string): Promise<void> {
+    const sqlStatement = SQL`
+      INSERT INTO survey_member (
+        survey_id,
+        system_user_id,
+        survey_role_id
+      )
+      SELECT
+        ${surveyId},
+        ${systemUserId},
+        survey_role_id
+      FROM
+        survey_role
+      WHERE
+        LOWER(name) = LOWER(${surveyMemberRole})
+        AND record_end_date IS NULL
+      RETURNING *;
+    `;
 
     const response = await this.connection.sql(sqlStatement);
 
     if (!response?.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert or update one or more survey team members', [
-        'SurveyRepository->insertMembersBatch',
+        'SurveyRepository->insertMultipleSurveyMembers',
         'rows was null or undefined, expected rows must not be null'
       ]);
     }
@@ -497,7 +480,7 @@ export class SurveyMemberRepository extends BaseRepository {
    * @return {*} Promise<void>
    * @memberof SurveyMemberRepository
    */
-  async insertMembersBatch(
+  async insertMultipleSurveyMembers(
     members: {
       survey_id: number;
       system_user_id: number;
@@ -541,7 +524,7 @@ export class SurveyMemberRepository extends BaseRepository {
 
     if (!response?.rowCount) {
       throw new ApiExecuteSQLError('Failed to insert or update one or more survey team members', [
-        'SurveyRepository->insertMembersBatch',
+        'SurveyRepository->insertMultipleSurveyMembers',
         'rows was null or undefined, expected rows must not be null'
       ]);
     }

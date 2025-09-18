@@ -34,7 +34,7 @@ export class SurveyMemberService extends DBService {
    * @return {*}  {Promise<void>}
    * @memberof SurveyMemberService
    */
-  async ensureSurveyMember(surveyId: number, systemUserId: number, surveyMemberRoleId: number): Promise<void> {
+  async ensureSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: string): Promise<void> {
     const surveyMemberRecord = await this.getSurveyMember(surveyId, systemUserId);
 
     if (surveyMemberRecord) {
@@ -43,7 +43,7 @@ export class SurveyMemberService extends DBService {
     }
 
     // add new survey participant record
-    await this.insertSurveyMember(surveyId, systemUserId, surveyMemberRoleId);
+    await this.insertSurveyMember(surveyId, systemUserId, surveyMemberRole);
   }
 
   /**
@@ -64,7 +64,7 @@ export class SurveyMemberService extends DBService {
     );
 
     // Add survey role, unless they already have one
-    await this.ensureSurveyMember(surveyId, systemUserObject.system_user_id, participant.roleId);
+    await this.ensureSurveyMember(surveyId, systemUserObject.system_user_id, participant.surveyRoleName);
   }
 
   /**
@@ -86,11 +86,11 @@ export class SurveyMemberService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} systemUserId
-   * @param {(number | string)} surveyMemberRole
+   * @param {(string)} surveyMemberRole
    * @return {*}  {Promise<void>}
    * @memberof SurveyMemberService
    */
-  async insertSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: number | string): Promise<void> {
+  async insertSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: string): Promise<void> {
     return this.surveyMemberRepository.insertSurveyMember(surveyId, systemUserId, surveyMemberRole);
   }
 
@@ -112,7 +112,7 @@ export class SurveyMemberService extends DBService {
         survey_role_name: member.survey_role_name
       }));
 
-      promises.push(this.surveyMemberRepository.insertMembersBatch(memberPayload));
+      promises.push(this.surveyMemberRepository.insertMultipleSurveyMembers(memberPayload));
     }
 
     await Promise.all(promises);
