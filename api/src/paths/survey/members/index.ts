@@ -16,15 +16,9 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validSystemRoles: [SYSTEM_ROLE.PROJECT_CREATOR],
-          discriminator: 'SystemRole'
-        },
-        {
-          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR],
-          discriminator: 'SystemRole'
-        },
-        {
-          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+          validSystemRoles: [
+            SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN
+          ],
           discriminator: 'SystemRole'
         }
       ]
@@ -105,7 +99,7 @@ export function addMembersToSurveys(): RequestHandler {
     try {
       await connection.open();
 
-      const surveyIds = req.body.selectedSurveys;
+      const surveyIds = req.body.selectedSurveys as number[];
 
       const surveyMemberService = new SurveyMemberService(connection);
 
