@@ -1,4 +1,5 @@
 import { AxiosInstance } from 'axios';
+import { ITrimmedPayload } from 'features/surveys/invite/InviteSurveyMembersPage';
 import { IGetUserSurveyMemberResponse } from 'interfaces/useSurveyMemberApi.interface';
 
 /**
@@ -21,6 +22,17 @@ const useSurveyMemberApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Add users to multiple surveys
+   *
+   * @param {IManageUsersFormValues} values
+   * @return {*}  {Promise<void>}
+   */
+  const addBulkSurveysMembers = async (values: ITrimmedPayload): Promise<any> => {
+    const { data } = await axios.post(`/api/survey/members`, values);
+    return data;
+  };
+
+  /**
    * Get all survey mems.
    *
    * @param {number} surveyId
@@ -34,6 +46,7 @@ const useSurveyMemberApi = (axios: AxiosInstance) => {
 
   return {
     getSurveyMembers,
+    addBulkSurveysMembers,
     getUserSurveyMember
   };
 };

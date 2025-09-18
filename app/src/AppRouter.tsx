@@ -11,6 +11,7 @@ import StandardsPage from 'features/standards/StandardsPage';
 import SummaryRouter from 'features/summary/SummaryRouter';
 import { SupportPage } from 'features/support/SupportPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
+import { InviteSurveyMembersPage } from 'features/surveys/invite/InviteSurveyMembersPage';
 import SurveyRouter from 'features/surveys/SurveyRouter';
 import BaseLayout from 'layouts/BaseLayout';
 import AccessDenied from 'pages/403/AccessDenied';
@@ -67,6 +68,16 @@ const AppRouter: React.FC = () => {
           <AuthenticatedRouteGuard>
             <CodesContextProvider>
               <SummaryRouter />
+            </CodesContextProvider>
+          </AuthenticatedRouteGuard>
+        </BaseLayout>
+      </RouteWithTitle>
+
+      <RouteWithTitle path="/admin/invite" title={getTitle('Invite Members')}>
+        <BaseLayout>
+          <AuthenticatedRouteGuard>
+            <CodesContextProvider>
+              <InviteSurveyMembersPage />
             </CodesContextProvider>
           </AuthenticatedRouteGuard>
         </BaseLayout>

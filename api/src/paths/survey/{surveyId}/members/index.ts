@@ -119,11 +119,17 @@ export function getSurveyMembers(): RequestHandler {
 }
 
 export const POST: Operation = [
-  authorizeRequestHandler(() => {
+  authorizeRequestHandler((req) => {
     return {
-      and: [
+      or: [
         {
-          discriminator: 'SystemUser'
+          validSurveyRoles: [SURVEY_ROLE.ADMIN],
+          surveyId: Number(req.params.surveyId),
+          discriminator: 'SurveyRole'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN],
+          discriminator: 'SystemRole'
         }
       ]
     };
@@ -167,7 +173,15 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Survey response object.'
+      description: 'Survey response object.',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            additionalProperties: false
+          }
+        }
+      }
     },
     400: {
       $ref: '#/components/responses/400'
@@ -211,7 +225,7 @@ export function addMembersToSurvey(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json();
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'addMembersToSurvey', message: 'error', error });
       await connection.rollback();

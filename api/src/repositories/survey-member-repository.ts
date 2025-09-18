@@ -20,6 +20,7 @@ export interface IMember {
   systemUserId: number;
   userIdentifier: string;
   identitySource: string;
+  surveyRoleName: string;
   roleId: number;
   displayName: string;
   email: string;
@@ -331,37 +332,35 @@ export class SurveyMemberRepository extends BaseRepository {
    *
    * @param {number} surveyId
    * @param {number} systemUserId The system ID of the user.
-   * @param {(number | string)} surveyMemberRole The ID or Name of the role to assign.
+   * @param {string} surveyMemberRole The Name of the role to assign.
    * @return {*}  {Promise<void>}
    * @memberof SurveyMemberRepository
    */
-  async insertSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: number | string): Promise<void> {
-    let sqlStatement;
-
-    sqlStatement = SQL`
-        INSERT INTO survey_member (
-          survey_id,
-          system_user_id,
-          survey_role_id
-        )
-        (
-          SELECT
-            ${surveyId},
-            ${systemUserId},
-            survey_role_id
-          FROM
-            survey_role
-          WHERE
-            name = ${surveyMemberRole}
-        );
-      `;
+  async insertSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: string): Promise<void> {
+    const sqlStatement = SQL`
+      INSERT INTO survey_member (
+        survey_id,
+        system_user_id,
+        survey_role_id
+      )
+      SELECT
+        ${surveyId},
+        ${systemUserId},
+        survey_role_id
+      FROM
+        survey_role
+      WHERE
+        LOWER(name) = LOWER(${surveyMemberRole})
+        AND record_end_date IS NULL
+      RETURNING *;
+    `;
 
     const response = await this.connection.sql(sqlStatement);
 
-    if (!response.rowCount) {
-      throw new ApiExecuteSQLError('Failed to insert survey team member', [
-        'SurveyRepository->postSurveyMember',
-        'rows was null or undefined, expected rows != null'
+    if (!response?.rowCount) {
+      throw new ApiExecuteSQLError('Failed to insert or update one or more survey team members', [
+        'SurveyRepository->insertMultipleSurveyMembers',
+        'rows was null or undefined, expected rows must not be null'
       ]);
     }
   }
@@ -468,5 +467,66 @@ export class SurveyMemberRepository extends BaseRepository {
     const response = await this.connection.sql(sqlStatement, UserSurveyMember);
 
     return response.rows;
+  }
+
+  /**
+   * Inserts multiple members into the survey member table for different surveys (batch insert).
+   *
+   * @param {{
+   *   survey_id: number;
+   *   system_user_id: number;
+   *   survey_role_name: string;
+   * }[]} members
+   * @return {*} Promise<void>
+   * @memberof SurveyMemberRepository
+   */
+  async insertMultipleSurveyMembers(
+    members: {
+      survey_id: number;
+      system_user_id: number;
+      survey_role_name: string;
+    }[]
+  ): Promise<void> {
+    if (!members.length) {
+      return;
+    }
+
+    const surveyIds = members.map((m) => m.survey_id);
+    const systemUserIds = members.map((m) => m.system_user_id);
+    const roleNames = members.map((m) => m.survey_role_name);
+
+    const sqlStatement = SQL`
+      WITH input_data AS (
+        SELECT
+          unnest(${surveyIds}::int[]) AS survey_id,
+          unnest(${systemUserIds}::int[]) AS system_user_id,
+          unnest(${roleNames}::text[]) AS survey_role_name
+      )
+      INSERT INTO survey_member (
+        survey_id,
+        system_user_id,
+        survey_role_id
+      )
+      SELECT
+        i.survey_id,
+        i.system_user_id,
+        sr.survey_role_id
+      FROM input_data i
+      JOIN survey_role sr
+        ON LOWER(sr.name) = LOWER(i.survey_role_name)
+      WHERE sr.record_end_date IS NULL
+      ON CONFLICT (survey_id, system_user_id)
+      DO UPDATE SET survey_role_id = EXCLUDED.survey_role_id
+      RETURNING *;
+    `;
+
+    const response = await this.connection.sql(sqlStatement);
+
+    if (!response?.rowCount) {
+      throw new ApiExecuteSQLError('Failed to insert or update one or more survey team members', [
+        'SurveyRepository->insertMultipleSurveyMembers',
+        'rows was null or undefined, expected rows must not be null'
+      ]);
+    }
   }
 }

@@ -84,6 +84,9 @@ export const SurveyMembersForm = (props: ISurveyMembersFormProps) => {
     return values.members?.[index]?.survey_role_name || '';
   };
 
+  // Defensive: ensure members is always an array
+  const safeMembers = Array.isArray(values.members) ? values.members : [];
+
   return (
     <form onSubmit={handleSubmit}>
       {errors?.['members'] && !Array.isArray(errors['members']) && (
@@ -95,7 +98,7 @@ export const SurveyMembersForm = (props: ISurveyMembersFormProps) => {
         formikFieldName="members"
         label="Members"
         helpText="Only active users who have requested access to the Species Inventory Management System before can be invited"
-        selectedUsers={values.members.map((member) => member.system_user_id)}
+        selectedUsers={safeMembers.map((member) => member.system_user_id)}
         clearOnSelect
         onSelect={(value) => {
           if (value) {
@@ -111,7 +114,7 @@ export const SurveyMembersForm = (props: ISurveyMembersFormProps) => {
             }
           }}>
           <TransitionGroup>
-            {values.members.map((user: ISystemUser | ISurveyMember, index: number) => {
+            {safeMembers.map((user: ISystemUser | ISurveyMember, index: number) => {
               const error = rowItemError(index);
               return (
                 <Collapse key={user.system_user_id}>

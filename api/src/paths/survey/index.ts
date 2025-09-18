@@ -50,6 +50,20 @@ GET.apiDoc = {
     },
     {
       in: 'query',
+      name: 'survey_roles',
+      required: false,
+      schema: {
+        type: 'array',
+        items: {
+          type: 'string',
+          enum: ['Admin', 'Editor', 'Viewer']
+        }
+      },
+      style: 'form',
+      explode: true
+    },
+    {
+      in: 'query',
       name: 'itis_tsns',
       description: 'ITIS TSN numbers',
       required: false,
@@ -224,6 +238,7 @@ function parseQueryParams(req: Request<unknown, unknown, unknown, ISurveyAdvance
     start_date: req.query.start_date ?? undefined,
     end_date: req.query.end_date ?? undefined,
     survey_name: req.query.survey_name ?? undefined,
-    system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined
+    system_user_id: (req.query.system_user_id && Number(req.query.system_user_id)) ?? undefined,
+    survey_roles: req.query.survey_roles ?? undefined
   };
 }

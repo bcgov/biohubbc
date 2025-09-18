@@ -1,4 +1,10 @@
-import { mdiClipboardOutline, mdiDatabaseSearch, mdiFormatListGroup, mdiMagnify } from '@mdi/js';
+import {
+  mdiAccountMultiplePlus,
+  mdiClipboardOutline,
+  mdiDatabaseSearch,
+  mdiFormatListGroup,
+  mdiMagnify
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -9,6 +15,7 @@ import SurveysListContainer from 'features/summary/list-data/survey/SurveysListC
 import { useSearchParams } from 'hooks/useSearchParams';
 import { SidebarLayout } from 'layouts/SidebarLayout';
 import { useState } from 'react';
+import { Link as NavLink } from 'react-router-dom';
 import { TabularDataTableContainer } from '../tabular-data/TabularDataTableContainer';
 import { CollectionListContainer } from './collection/CollectionListContainer';
 import { CreateCollectionButton } from './collection/create/CreateCollectionButton';
@@ -51,7 +58,19 @@ export const ListDataTableContainer = () => {
       value: SUMMARY_ACTIVE_VIEW_VALUE.surveys,
       label: 'Surveys',
       icon: mdiClipboardOutline,
-      button: <CreateSurveyButton />
+      button: (
+        <Stack direction="row" spacing={1}>
+          <CreateSurveyButton />
+          <Button
+            variant="contained"
+            color="primary"
+            startIcon={<Icon path={mdiAccountMultiplePlus} size={1} />}
+            component={NavLink}
+            to="/admin/invite">
+            Invite
+          </Button>
+        </Stack>
+      )
     },
     {
       value: SUMMARY_ACTIVE_VIEW_VALUE.collections,

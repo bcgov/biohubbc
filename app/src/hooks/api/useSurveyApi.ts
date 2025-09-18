@@ -13,7 +13,7 @@ import {
   IGetSurveyAttachmentsResponse,
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
-  IPostSurveyMember,
+  IPostSurveyMemberRequest,
   ISurveyMemberResponse,
   ISurveyMembersAdvancedFilters,
   IUpdateSurveyRequest,
@@ -149,10 +149,13 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * Add users to a survey
    *
    * @param {number} surveyId
-   * @param {IPostSurveyMember[]} members
+   * @param {IPostSurveyMemberRequest[]} members
    * @return {*}  {Promise<ISurveyMemberResponse>}
    */
-  const addSurveyMembers = async (surveyId: number, members?: IPostSurveyMember[]): Promise<ISurveyMemberResponse> => {
+  const addSurveyMembers = async (
+    surveyId: number,
+    members: IPostSurveyMemberRequest[]
+  ): Promise<ISurveyMemberResponse> => {
     const { data } = await axios.post(`/api/survey/${surveyId}/members`, { members });
 
     return data;

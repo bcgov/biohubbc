@@ -9,6 +9,7 @@ export type ISurveyAdvancedFilters = {
   keyword?: string;
   itis_tsn?: number;
   system_user_id?: number;
+  survey_roles?: string[];
 };
 
 export const SurveyAdvancedFiltersInitialValues: ISurveyAdvancedFilters = {

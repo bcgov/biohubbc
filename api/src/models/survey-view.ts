@@ -19,6 +19,13 @@ export interface ISurveyAdvancedFilters {
    */
   keyword?: string;
   /**
+   * Filter results by survey role.
+   *
+   * @type {string[]}
+   * @memberof ISurveyAdvancedFilters
+   */
+  survey_roles?: string[];
+  /**
    * Filter results by ITIS TSN.
    *
    * @type {number}

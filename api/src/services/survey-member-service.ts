@@ -34,7 +34,7 @@ export class SurveyMemberService extends DBService {
    * @return {*}  {Promise<void>}
    * @memberof SurveyMemberService
    */
-  async ensureSurveyMember(surveyId: number, systemUserId: number, surveyMemberRoleId: number): Promise<void> {
+  async ensureSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: string): Promise<void> {
     const surveyMemberRecord = await this.getSurveyMember(surveyId, systemUserId);
 
     if (surveyMemberRecord) {
@@ -43,7 +43,7 @@ export class SurveyMemberService extends DBService {
     }
 
     // add new survey participant record
-    await this.insertSurveyMember(surveyId, systemUserId, surveyMemberRoleId);
+    await this.insertSurveyMember(surveyId, systemUserId, surveyMemberRole);
   }
 
   /**
@@ -64,7 +64,7 @@ export class SurveyMemberService extends DBService {
     );
 
     // Add survey role, unless they already have one
-    await this.ensureSurveyMember(surveyId, systemUserObject.system_user_id, participant.roleId);
+    await this.ensureSurveyMember(surveyId, systemUserObject.system_user_id, participant.surveyRoleName);
   }
 
   /**
@@ -86,12 +86,36 @@ export class SurveyMemberService extends DBService {
    *
    * @param {number} surveyId
    * @param {number} systemUserId
-   * @param {(number | string)} surveyMemberRole
+   * @param {(string)} surveyMemberRole
    * @return {*}  {Promise<void>}
    * @memberof SurveyMemberService
    */
-  async insertSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: number | string): Promise<void> {
+  async insertSurveyMember(surveyId: number, systemUserId: number, surveyMemberRole: string): Promise<void> {
     return this.surveyMemberRepository.insertSurveyMember(surveyId, systemUserId, surveyMemberRole);
+  }
+
+  /**
+   * Adds multiple survey participants to any number of surveys (bulk permissions).
+   *
+   * @param {number[]} surveyIds
+   * @param {IInsertSurveyMember[]} members
+   * @return {*}  {Promise<void[]>}
+   * @memberof SurveyMemberService
+   */
+  async insertMembersToSurveys(surveyIds: number[], members: IPostSurveyMember[]): Promise<void> {
+    const promises: Promise<void>[] = [];
+
+    for (const surveyId of surveyIds) {
+      const memberPayload = members.map((member) => ({
+        survey_id: surveyId,
+        system_user_id: member.system_user_id,
+        survey_role_name: member.survey_role_name
+      }));
+
+      promises.push(this.surveyMemberRepository.insertMultipleSurveyMembers(memberPayload));
+    }
+
+    await Promise.all(promises);
   }
 
   /**
