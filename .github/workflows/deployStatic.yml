@@ -106,7 +106,7 @@ jobs:
         with:
           openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
           openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-$BRANCH
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-${{ env.BRANCH }}
 
       # Authenticate Docker with OpenShift registry
       - name: Authenticate Docker with OpenShift registry
@@ -162,7 +162,7 @@ jobs:
         with:
           openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
           openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-$BRANCH
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-${{ env.BRANCH }}
 
       # Authenticate Docker with OpenShift registry
       - name: Authenticate Docker with OpenShift registry
@@ -218,7 +218,7 @@ jobs:
         with:
           openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
           openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-$BRANCH
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-${{ env.BRANCH }}
 
       # Authenticate Docker with OpenShift registry
       - name: Authenticate Docker with OpenShift registry
@@ -274,7 +274,7 @@ jobs:
         with:
           openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
           openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-$BRANCH
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-${{ env.BRANCH }}
 
       # Authenticate Docker with OpenShift registry
       - name: Authenticate Docker with OpenShift registry
@@ -332,7 +332,7 @@ jobs:
         with:
           openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
           openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-$BRANCH
+          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-${{ env.BRANCH }}
 
       # Deploy the Helm chart
       - name: Deploy Helm Chart
