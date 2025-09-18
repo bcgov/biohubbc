@@ -16,9 +16,7 @@ export const POST: Operation = [
     return {
       or: [
         {
-          validSystemRoles: [
-            SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN
-          ],
+          validSystemRoles: [SYSTEM_ROLE.PROJECT_CREATOR, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.SYSTEM_ADMIN],
           discriminator: 'SystemRole'
         }
       ]
