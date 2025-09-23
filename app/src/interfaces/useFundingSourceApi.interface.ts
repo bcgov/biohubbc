@@ -24,7 +24,6 @@ export interface IGetFundingSourceResponse {
     survey_id: number;
     funding_source_id: number;
     revision_count: number;
-    project_id: number;
     survey_name: string;
   }[];
 }

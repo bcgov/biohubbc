@@ -40,7 +40,7 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
   const [captureAnchorEl, setCaptureAnchorEl] = useState<MenuProps['anchorEl']>(null);
   const [captureForDelete, setCaptureForDelete] = useState<boolean>();
 
-  const { projectId, surveyId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
 
   return (
     <>
@@ -75,7 +75,7 @@ export const AnimalCaptureCardContainer = (props: IAnimalCaptureCardContainer) =
               }
             }}>
             <RouterLink
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedAnimal.critter_id}/capture/${selectedCapture}/edit`}>
+              to={`/admin/surveys/${surveyId}/animals/${selectedAnimal.critter_id}/capture/${selectedCapture}/edit`}>
               <ListItemIcon>
                 <Icon path={mdiPencilOutline} size={1} />
               </ListItemIcon>

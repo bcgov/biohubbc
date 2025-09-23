@@ -167,7 +167,7 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
     this.type = BiohubFeatureType.DATASET;
     this.properties = {
       survey_id: surveyData.id,
-      project_id: surveyData.project_id,
+
       name: surveyData.survey_name,
       start_date: surveyData.start_date,
       end_date: surveyData.end_date,

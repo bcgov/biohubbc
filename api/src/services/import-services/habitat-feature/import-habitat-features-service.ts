@@ -239,9 +239,9 @@ export class ImportHabitatFeaturesService extends DBService {
   ) {
     // Generate the sample periods, sites, and method techniques
     const [samplePeriods, sampleSites, methodTechniques] = await Promise.all([
-      samplePeriodService.getSamplePeriodsForSurvey(this.surveyId),
-      sampleSiteService.getSampleSitesForSurveyId(this.surveyId),
-      methodTechniqueService.getTechniquesForSurveyId(this.surveyId)
+      samplePeriodService.getSamplePeriodsForSurveys([this.surveyId]),
+      sampleSiteService.getSampleSitesForSurveyIds([this.surveyId]),
+      methodTechniqueService.getTechniquesForSurveyIds([this.surveyId])
     ]);
 
     // Inject the row validators - handles taxon, sampling information and location validation

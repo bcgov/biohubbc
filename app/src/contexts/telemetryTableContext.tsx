@@ -181,7 +181,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
   const dialogContext = useDialogContext();
 
   const telemetryDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
-    biohubApi.telemetry.getTelemetryForSurvey(surveyContext.projectId, surveyContext.surveyId, {}, pagination)
+    biohubApi.telemetry.getTelemetryForSurvey(surveyContext.surveyId, {}, pagination)
   );
 
   const {
@@ -461,11 +461,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
 
       try {
         if (modifiedRowIdsToDelete.length) {
-          await biohubApi.telemetry.deleteManualTelemetry(
-            surveyContext.projectId,
-            surveyContext.surveyId,
-            modifiedRowIdsToDelete
-          );
+          await biohubApi.telemetry.deleteManualTelemetry(surveyContext.surveyId, modifiedRowIdsToDelete);
         }
 
         // Remove row IDs from validation model
@@ -514,7 +510,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
         });
       }
     },
-    [biohubApi.telemetry, dialogContext, surveyContext.projectId, surveyContext.surveyId]
+    [biohubApi.telemetry, dialogContext, surveyContext.surveyId]
   );
 
   /**
@@ -679,11 +675,11 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
         }));
 
         if (createData.length) {
-          await biohubApi.telemetry.createManualTelemetry(surveyContext.projectId, surveyContext.surveyId, createData);
+          await biohubApi.telemetry.createManualTelemetry(surveyContext.surveyId, createData);
         }
 
         if (updateData.length) {
-          await biohubApi.telemetry.updateManualTelemetry(surveyContext.projectId, surveyContext.surveyId, updateData);
+          await biohubApi.telemetry.updateManualTelemetry(surveyContext.surveyId, updateData);
         }
 
         revertRecords();
@@ -719,7 +715,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
       dialogContext,
       refreshTelemetryRecords,
       revertRecords,
-      surveyContext.projectId,
+
       surveyContext.surveyId
     ]
   );

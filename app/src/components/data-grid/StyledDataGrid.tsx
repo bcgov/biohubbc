@@ -27,7 +27,6 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
         ...props.slots
       }}
       sx={{
-        border: 'none',
         '& *:focus-within': {
           outline: 'none !important'
         },
@@ -42,6 +41,9 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
           '& .MuiDataGrid-cell': {
             borderBottom: 'none'
           }
+        },
+        '& .MuiDataGrid-cell:last-of-type': {
+          pr: `10 !important` // Add right padding (you can also use `mr` for margin)
         },
         // Define custom header padding for the first column vs every other column
         '& .MuiDataGrid-columnHeader:first-of-type:not(.MuiDataGrid-columnHeaderCheckbox)': {
@@ -80,6 +82,7 @@ export const StyledDataGrid = <R extends GridValidRowModel = any>(props: StyledD
           py: '22px',
           wordWrap: 'anywhere'
         },
+        border: 'none',
         ...props.sx
       }}
     />

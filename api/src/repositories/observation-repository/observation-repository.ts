@@ -89,21 +89,21 @@ export class ObservationRepository extends BaseRepository {
   /**
    * Get an existing survey observation record, for a survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {number} surveyObservationId
    * @return {*}  {Promise<ObservationRecordWithSamplingAndSubcountData>}
    * @memberof ObservationRepository
    */
   async getSurveyObservationByIdWithSupplementaryData(
-    surveyId: number,
+    surveyIds: number[],
     surveyObservationId: number
   ): Promise<ObservationRecordWithSamplingAndSubcountData> {
     const knex = getKnex();
 
     const getSurveyIdsQuery = knex
-      .select<any, { survey_id: number }>('survey_id')
+      .select<any, { survey_id: number }[]>('survey_id')
       .from('survey')
-      .where('survey_id', surveyId);
+      .whereIn('survey_id', surveyIds);
 
     const query = getSurveyObservationsBaseQuery(knex, getSurveyIdsQuery);
 
@@ -125,20 +125,20 @@ export class ObservationRepository extends BaseRepository {
    * Retrieves a paginated set of observation records for the given survey, including data for
    * associated sampling records.
    *
-   * @param {number} surveyId The ID of the survey.
+   * @param {number[]} surveyIds The ID of the survey.
    * @param {ApiPaginationOptions} [pagination] The pagination options.
    * @return {Promise<ObservationRecordWithSamplingAndSubcountData[]>} A promise resolving to the list of observations.
    * @memberof ObservationRepository
    */
   async getSurveyObservations(
-    surveyId: number,
+    surveyIds: number[],
     pagination?: ApiPaginationOptions
   ): Promise<ObservationRecordWithSamplingAndSubcountData[]> {
     const knex = getKnex();
 
     const query = getSurveyObservationsBaseQuery(
       knex,
-      knex.select<any, { survey_id: number }>('survey_id').from('survey').where('survey_id', surveyId)
+      knex.select<any, { survey_id: number }[]>('survey_id').from('survey').whereIn('survey.survey_id', surveyIds)
     );
 
     if (pagination) {
@@ -158,20 +158,20 @@ export class ObservationRepository extends BaseRepository {
    * Retrieves a paginated set of flattened observation records for the given survey, including data for
    * associated sampling records.
    *
-   * @param {number} surveyId The ID of the survey.
+   * @param {number[]} surveyIds The ID of the survey.
    * @param {ApiPaginationOptions} [pagination] The pagination options.
    * @return {Promise<FlattenedObservationRecordWithSamplingAndSubcountData[]>} A promise resolving to the list of observations.
    * @memberof ObservationRepository
    */
   async getSurveyFlattenedObservations(
-    surveyId: number,
+    surveyIds: number[],
     pagination?: ApiPaginationOptions
   ): Promise<FlattenedObservationRecordWithSamplingAndSubcountData[]> {
     const knex = getKnex();
 
     const query = getSurveyFlattenedObservationsBaseQuery(
       knex,
-      knex.select<any, { survey_id: number }>('survey_id').from('survey').where('survey_id', surveyId)
+      knex.select<any, { survey_id: number }>('survey_id').from('survey').whereIn('survey_id', surveyIds)
     );
 
     if (pagination) {
@@ -351,11 +351,11 @@ export class ObservationRepository extends BaseRepository {
    * Gets a set of GeoJson geometries representing the set of all lat/long points for the
    * given survey's observations.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @return {*}  {Promise<ObservationGeometryRecord[]>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationsGeometry(surveyId: number): Promise<ObservationGeometryRecord[]> {
+  async getSurveyObservationsGeometry(surveyIds: number[]): Promise<ObservationGeometryRecord[]> {
     const knex = getKnex();
 
     const query = knex
@@ -367,7 +367,7 @@ export class ObservationRepository extends BaseRepository {
       // TODO: For observations without lat/lon, get a location from the sampling site?
       .whereNotNull('latitude')
       .whereNotNull('longitude')
-      .where('survey_id', surveyId);
+      .whereIn('survey_id', surveyIds);
 
     const response = await this.connection.knex(query, ObservationGeometryRecord);
 
@@ -470,6 +470,38 @@ export class ObservationRepository extends BaseRepository {
   }
 
   /**
+   * Retrieves all observation records for all surveys in the given collection
+   *
+   * @param {number} collectionId
+   * @return {*}  {Promise<SurveyObservationRecord[]>}
+   * @memberof ObservationRepository
+   */
+  async getAllSurveyObservationsByCollectionId(collectionId: number): Promise<SurveyObservationRecord[]> {
+    const knex = getKnex();
+    const allRowsQuery = knex
+      .queryBuilder()
+      .select([
+        'survey_observation_id',
+        'survey_id',
+        'itis_tsn',
+        'itis_scientific_name',
+        'survey_sample_period_id',
+        'latitude',
+        'longitude',
+        'count',
+        'observation_time',
+        'observation_date',
+        'observation_sign_id'
+      ])
+      .from('survey_observation')
+      .join('collection_survey as cs', 'cs.survey_id', 'survey_observations.survey_id')
+      .where('collection_id', collectionId);
+
+    const response = await this.connection.knex(allRowsQuery, SurveyObservationRecord);
+    return response.rows;
+  }
+
+  /**
    * Retrieves species observed in a given survey.
    *
    * @param {number} surveyId
@@ -491,17 +523,38 @@ export class ObservationRepository extends BaseRepository {
   /**
    * Retrieves the count of survey observations for the given survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
-  async getSurveyObservationsCount(surveyId: number): Promise<number> {
+  async getSurveyObservationsCount(surveyIds: number[]): Promise<number> {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
       .select(knex.raw('COUNT(survey_observation_id)::integer as count'))
       .from('survey_observation')
-      .where('survey_id', surveyId);
+      .whereIn('survey_observation.survey_id', surveyIds);
+
+    const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
+
+    return response.rows[0].count;
+  }
+
+  /**
+   * Retrieves the count of survey observations for surveys in the given collection
+   *
+   * @param {number} collectionId
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationRepository
+   */
+  async getSurveyObservationsCountByCollectonId(collectionId: number): Promise<number> {
+    const knex = getKnex();
+    const sqlStatement = knex
+      .queryBuilder()
+      .select(knex.raw('COUNT(survey_observation_id)::integer as count'))
+      .from('survey_observation')
+      .join('collection_survey as cs', 'cs.survey_id', 'survey_observations.survey_id')
+      .where('collection_id', collectionId);
 
     const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
 
@@ -511,11 +564,11 @@ export class ObservationRepository extends BaseRepository {
   /**
    * Retrieves the count of flattened survey observations for the given survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @return {*}  {Promise<number>}
    * @memberof ObservationRepository
    */
-  async getSurveyFlattenedObservationsCount(surveyId: number): Promise<number> {
+  async getSurveyFlattenedObservationsCount(surveyIds: number[]): Promise<number> {
     const knex = getKnex();
     const sqlStatement = knex
       .queryBuilder()
@@ -526,7 +579,7 @@ export class ObservationRepository extends BaseRepository {
         'observation_subcount.survey_observation_id',
         'survey_observation.survey_observation_id'
       )
-      .where('survey_observation.survey_id', surveyId);
+      .whereIn('survey_observation.survey_id', surveyIds);
 
     const response = await this.connection.knex(sqlStatement, z.object({ count: z.number() }));
 

@@ -13,7 +13,7 @@ import {
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useCodesContext, useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { CreateSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
 import { useEffect, useRef, useState } from 'react';
@@ -63,7 +63,7 @@ export const CreateSamplePeriodPage = () => {
   const history = useHistory();
 
   const surveyContext = useSurveyContext();
-  const projectContext = useProjectContext();
+
   const dialogContext = useDialogContext();
 
   const biohubApi = useBiohubApi();
@@ -78,7 +78,7 @@ export const CreateSamplePeriodPage = () => {
 
   const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -116,15 +116,11 @@ export const CreateSamplePeriodPage = () => {
         });
       }
 
-      await biohubApi.samplingPeriod.createSamplingPeriods(
-        surveyContext.projectId,
-        surveyContext.surveyId,
-        samplePeriodData
-      );
+      await biohubApi.samplingPeriod.createSamplingPeriods(surveyContext.surveyId, samplePeriodData);
 
       // create complete, navigate back to observations page
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
+      history.goBack();
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: SamplePeriodI18N.createErrorTitle,
@@ -149,10 +145,8 @@ export const CreateSamplePeriodPage = () => {
         <Box display="flex" flexDirection="column">
           <FormikErrorSnackbar />
           <SamplingSiteHeader
-            project_id={surveyContext.projectId}
             survey_id={surveyContext.surveyId}
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
-            project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
             is_submitting={isSubmitting}
             title="Add Sampling Period"
             breadcrumb="Add Sampling Periods"

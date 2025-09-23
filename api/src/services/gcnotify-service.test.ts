@@ -67,7 +67,6 @@ describe('GCNotifyService', () => {
     });
 
     const form = {
-      projectId: 1,
       fileName: 'test',
       parentName: 'test',
       formValues: {

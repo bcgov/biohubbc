@@ -56,7 +56,7 @@ export class ObservationSubCountMeasurementService extends DBService {
   /**
    * Get all distinct taxon_measurment_ids for all qualitative measurements for a given survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {{
    *       filterFields?: {
    *         surveyObservationIds?: number[];
@@ -65,8 +65,8 @@ export class ObservationSubCountMeasurementService extends DBService {
    * @return {*}  {Promise<string[]>}
    * @memberof ObservationSubCountMeasurementService
    */
-  async getObservationSubCountQualitativeTaxonMeasurementIdsForSurvey(
-    surveyId: number,
+  async getObservationSubCountQualitativeTaxonMeasurementIdsForSurveys(
+    surveyIds: number[],
     options?: {
       filterFields?: {
         surveyObservationIds?: number[];
@@ -74,7 +74,7 @@ export class ObservationSubCountMeasurementService extends DBService {
     }
   ): Promise<string[]> {
     return this.observationSubCountMeasurementRepository.getObservationSubCountQualitativeTaxonMeasurementIds(
-      surveyId,
+      surveyIds,
       options
     );
   }
@@ -82,7 +82,7 @@ export class ObservationSubCountMeasurementService extends DBService {
   /**
    * Get all distinct taxon_measurment_ids for all quantitative measurements for a given survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {{
    *       filterFields?: {
    *         surveyObservationIds?: number[];
@@ -91,8 +91,8 @@ export class ObservationSubCountMeasurementService extends DBService {
    * @return {*}  {Promise<string[]>}
    * @memberof ObservationSubCountMeasurementService
    */
-  async getObservationSubCountQuantitativeTaxonMeasurementIdsForSurvey(
-    surveyId: number,
+  async getObservationSubCountQuantitativeTaxonMeasurementIdsForSurveys(
+    surveyIds: number[],
     options?: {
       filterFields?: {
         surveyObservationIds?: number[];
@@ -100,7 +100,7 @@ export class ObservationSubCountMeasurementService extends DBService {
     }
   ): Promise<string[]> {
     return this.observationSubCountMeasurementRepository.getObservationSubCountQuantitativeTaxonMeasurementIds(
-      surveyId,
+      surveyIds,
       options
     );
   }

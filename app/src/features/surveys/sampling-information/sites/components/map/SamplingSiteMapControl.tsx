@@ -78,7 +78,7 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
   const { values, errors, setFieldValue, setFieldError } = formikProps;
 
   const samplingSiteDataLoader = useDataLoader(() =>
-    biohubApi.samplingSite.getSampleSitesGeometry(surveyContext.projectId, surveyContext.surveyId)
+    biohubApi.samplingSite.getSampleSitesGeometry(surveyContext.surveyId)
   );
 
   useEffect(() => {

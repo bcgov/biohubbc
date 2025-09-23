@@ -1,18 +1,25 @@
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
+import { SURVEY_ROLE } from '../constants/roles';
 import { SurveyStratum } from '../repositories/site-selection-strategy-repository';
 import { PostSurveyBlock } from '../repositories/survey-block-repository';
 import { ITaxonomyWithEcologicalUnits } from '../services/platform-service';
+import { getLogger } from '../utils/logger';
 import { PostSurveyLocationData } from './survey-update';
+
+const defaultLog = getLogger('models/survey-create');
 
 export class PostSurveyObject {
   survey_details: PostSurveyDetailsData;
   species: PostSpeciesData;
   permit: PostPermitData;
+  collections: PostCollectionsData;
   funding_sources: PostFundingSourceData[];
   proprietor: PostProprietorData;
   purpose_and_methodology: PostPurposeAndMethodologyData;
   locations: PostSurveyLocationData[];
   agreements: PostAgreementsData;
   participants: PostParticipationData[];
+  members: IPostSurveyMember[];
   partnerships: PostPartnershipsData;
   site_selection: PostSiteSelectionData;
   blocks: PostSurveyBlock[];
@@ -21,6 +28,7 @@ export class PostSurveyObject {
     this.survey_details = (obj?.survey_details && new PostSurveyDetailsData(obj.survey_details)) || null;
     this.species = (obj?.species && new PostSpeciesData(obj.species)) || null;
     this.permit = (obj?.permit && new PostPermitData(obj.permit)) || null;
+    this.collections = (obj?.collections && new PostCollectionsData(obj)) || [];
     this.funding_sources =
       (obj?.funding_sources?.length && obj.funding_sources.map((fs: any) => new PostFundingSourceData(fs))) || [];
     this.proprietor = (obj?.proprietor && new PostProprietorData(obj.proprietor)) || null;
@@ -29,6 +37,7 @@ export class PostSurveyObject {
     this.agreements = (obj?.agreements && new PostAgreementsData(obj.agreements)) || null;
     this.participants =
       (obj?.participants?.length && obj.participants.map((p: any) => new PostParticipationData(p))) || [];
+    this.members = (obj?.members?.length && obj.members.map((p: any) => new IPostSurveyMember(p))) || [];
     this.partnerships = (obj?.partnerships && new PostPartnershipsData(obj.partnerships)) || null;
     this.locations = (obj?.locations && obj.locations.map((p: any) => new PostSurveyLocationData(p))) || [];
     this.site_selection = (obj?.site_selection && new PostSiteSelectionData(obj)) || null;
@@ -47,7 +56,7 @@ export class PostSiteSelectionData {
 }
 
 /**
- * Processes POST /project partnerships data
+ * Processes POST /survey partnerships data
  *
  * @export
  * @class PostPartnershipsData
@@ -101,6 +110,15 @@ export class PostPermitData {
     this.permits = obj?.permits || [];
   }
 }
+
+export class PostCollectionsData {
+  collections: { collection_id: number }[];
+
+  constructor(obj?: any) {
+    this.collections = obj?.collections || [];
+  }
+}
+
 export class PostProprietorData {
   prt_id: number;
   fn_id: number;
@@ -134,8 +152,20 @@ export class PostParticipationData {
   survey_job_name: string;
 
   constructor(obj?: any) {
-    this.system_user_id = obj?.system_user_id || null;
-    this.survey_job_name = obj?.survey_job_name || null;
+    this.system_user_id = obj?.system_user_id;
+    this.survey_job_name = obj?.survey_job_name;
+  }
+}
+
+export class IPostSurveyMember {
+  system_user_id: number;
+  survey_role_name: SURVEY_ROLE;
+  survey_member_id: number;
+
+  constructor(obj?: any) {
+    this.system_user_id = obj?.system_user_id;
+    this.survey_role_name = obj?.survey_role_name;
+    this.survey_member_id = obj?.survey_member_id;
   }
 }
 
@@ -146,5 +176,25 @@ export class PostAgreementsData {
   constructor(obj?: any) {
     this.foippa_requirements_accepted = obj?.foippa_requirements_accepted === 'true' || false;
     this.sedis_procedures_accepted = obj?.sedis_procedures_accepted === 'true' || false;
+  }
+}
+
+export class PostMembersData {
+  systemUserId: number;
+  userIdentifier: string;
+  identitySource: SYSTEM_IDENTITY_SOURCE;
+  displayName: string;
+  email: string;
+  roleId: number;
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PostMembersData', message: 'params', obj });
+
+    this.systemUserId = obj?.systemUserId || null;
+    this.userIdentifier = obj?.userIdentifier || null;
+    this.identitySource = obj?.identitySource || null;
+    this.displayName = obj?.displayName || null;
+    this.email = obj?.email || null;
+    this.roleId = obj?.roleId || null;
   }
 }

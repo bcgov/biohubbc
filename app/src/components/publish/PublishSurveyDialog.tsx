@@ -16,12 +16,15 @@ import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useContext, useRef, useState } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import { IPublishSurveyTag } from 'interfaces/usePublishApi.interface';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import yup from 'utils/YupSchema';
-import PublishSurveyIdContent from './components/PublishSurveyContent';
+import { PublishSurveyForm } from './form/PublishSurveyForm';
 
 export interface ISubmitSurvey {
   submissionComment: string;
+  tags: IPublishSurveyTag[];
   agreement1: boolean;
   agreement2: boolean;
   agreement3: boolean;
@@ -34,6 +37,7 @@ interface IPublishSurveyIdDialogProps {
 
 const surveySubmitFormInitialValues: ISubmitSurvey = {
   submissionComment: '',
+  tags: [],
   agreement1: false,
   agreement2: false,
   agreement3: false
@@ -56,6 +60,16 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
   const surveyContext = useContext(SurveyContext);
 
   const surveyWithDetails = surveyContext.surveyDataLoader.data;
+
+  const collectionsDataLoader = useDataLoader((surveyId: number) =>
+    biohubApi.survey.getCollectionsBySurveyId(surveyId)
+  );
+
+  useEffect(() => {
+    if (surveyContext.surveyId) {
+      collectionsDataLoader.load(surveyContext.surveyId);
+    }
+  }, [surveyContext.surveyId, collectionsDataLoader]);
 
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
@@ -102,11 +116,21 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
         });
       })
       .finally(() => {
-        surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+        surveyContext.surveyDataLoader.refresh(surveyContext.surveyId);
         setIsSubmitting(false);
         props.onClose();
       });
   };
+
+  const initialTags = useMemo(
+    () =>
+      collectionsDataLoader.data?.collections.map((collection) => ({
+        // NOTE: collection.name is intentionally both the value and label
+        value: collection.name,
+        label: collection.name
+      })) ?? [],
+    [collectionsDataLoader.data]
+  );
 
   if (!surveyWithDetails) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -127,14 +151,16 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
 
       <Dialog
         fullScreen={fullScreen}
-        maxWidth="xl"
+        maxWidth="md"
         open={props.open}
         aria-labelledby="component-dialog-title"
-        aria-describedby="component-dialog-description"
-        scroll="body">
+        aria-describedby="component-dialog-description">
         <Formik<ISubmitSurvey>
           innerRef={formikRef}
-          initialValues={surveySubmitFormInitialValues}
+          initialValues={{
+            ...surveySubmitFormInitialValues,
+            tags: collectionsDataLoader.data?.collections.map((collection) => ({ name: collection.name })) ?? []
+          }}
           validationSchema={surveySubmitFormYupSchema}
           validateOnBlur={true}
           validateOnChange={false}
@@ -145,7 +171,7 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
                 {SubmitSurveyBiohubI18N.submitSurveyBiohubDialogTitle}
               </DialogTitle>
               <DialogContent>
-                <PublishSurveyIdContent />
+                <PublishSurveyForm tags={initialTags} />
               </DialogContent>
               <DialogActions>
                 <Typography component="span" variant="subtitle2" sx={{ mr: 2 }}>

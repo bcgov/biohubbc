@@ -41,7 +41,7 @@ export interface ISamplePeriodFormProps {
 export const SamplePeriodForm = (props: ISamplePeriodFormProps) => {
   const { isLoading, editData } = props;
 
-  const { projectId, surveyId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
 
   const history = useHistory();
 
@@ -89,7 +89,7 @@ export const SamplePeriodForm = (props: ISamplePeriodFormProps) => {
           variant="outlined"
           color="primary"
           onClick={() => {
-            history.push(`/admin/projects/${projectId}/surveys/${surveyId}/sampling`);
+            history.push(`/admin/surveys/${surveyId}/sampling`);
           }}>
           Cancel
         </Button>

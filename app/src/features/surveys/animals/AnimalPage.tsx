@@ -10,7 +10,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/system/Box';
 import { SurveySpatialAnimal } from 'features/surveys/view/survey-spatial/components/animal/SurveySpatialAnimal';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useAnimalPageContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useAnimalPageContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
@@ -24,23 +24,17 @@ import { AnimalProfileContainer } from './profile/AnimalProfileContainer';
  */
 export const SurveyAnimalPage = () => {
   const biohubApi = useBiohubApi();
-  const projectContext = useProjectContext();
+
   const surveyContext = useSurveyContext();
   const animalPageContext = useAnimalPageContext();
 
-  const crittersDataLoader = useDataLoader(() =>
-    biohubApi.survey.getSurveyCritters(surveyContext.projectId, surveyContext.surveyId)
-  );
+  const crittersDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCritters(surveyContext.surveyId));
 
   useEffect(() => {
     crittersDataLoader.load();
   }, [crittersDataLoader]);
 
-  useEffect(() => {
-    projectContext.projectDataLoader.load(surveyContext.projectId);
-  }, [projectContext.projectDataLoader, surveyContext.projectId]);
-
-  if (!projectContext.projectDataLoader.data || !surveyContext.surveyDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -59,8 +53,6 @@ export const SurveyAnimalPage = () => {
       }}>
       <SurveyManagePageHeader
         page={SurveyManagePageEnum.ANIMALS}
-        project_id={surveyContext.projectId}
-        project_name={projectContext.projectDataLoader.data.projectData.project.project_name}
         survey_id={surveyContext.surveyId}
         survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
       />
@@ -79,7 +71,7 @@ export const SurveyAnimalPage = () => {
                 </Typography>
                 <Button
                   component={RouterLink}
-                  to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/captures`}
+                  to={`/admin/surveys/${surveyContext.surveyId}/animals/captures`}
                   variant="contained"
                   color="primary"
                   aria-label="Manage Captures"

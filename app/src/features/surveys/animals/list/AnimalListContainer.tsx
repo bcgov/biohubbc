@@ -40,7 +40,7 @@ export const AnimalListContainer = () => {
 
   const biohubApi = useBiohubApi();
 
-  const { projectId, surveyId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
 
   const { setSelectedAnimal, selectedAnimal } = useAnimalPageContext();
 
@@ -78,11 +78,11 @@ export const AnimalListContainer = () => {
    */
   const handleDeleteCritter = async (surveyCritterId: number) => {
     await biohubApi.survey
-      .removeCrittersFromSurvey(surveyContext.projectId, surveyContext.surveyId, [surveyCritterId])
+      .removeCrittersFromSurvey(surveyContext.surveyId, [surveyCritterId])
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
         setCritterAnchorEl(null);
-        surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+        surveyContext.critterDataLoader.refresh(surveyContext.surveyId);
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
@@ -109,7 +109,7 @@ export const AnimalListContainer = () => {
    */
   const handleBulkDeleteCritters = async () => {
     await biohubApi.survey
-      .removeCrittersFromSurvey(surveyContext.projectId, surveyContext.surveyId, checkboxSelectedIds)
+      .removeCrittersFromSurvey(surveyContext.surveyId, checkboxSelectedIds)
       .then(() => {
         dialogContext.setYesNoDialog({ open: false });
 
@@ -120,7 +120,7 @@ export const AnimalListContainer = () => {
 
         setCheckboxSelectedIds([]);
         setHeaderAnchorEl(null);
-        surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+        surveyContext.critterDataLoader.refresh(surveyContext.surveyId);
       })
       .catch((error: any) => {
         dialogContext.setYesNoDialog({ open: false });
@@ -235,7 +235,7 @@ export const AnimalListContainer = () => {
               }
             }}>
             <RouterLink
-              to={`/admin/projects/${projectId}/surveys/${surveyId}/animals/${selectedCritterMenu.critter_id}/edit`}
+              to={`/admin/surveys/${surveyId}/animals/${selectedCritterMenu.critter_id}/edit`}
               onClick={() => {
                 setSelectedAnimal(selectedCritterMenu);
               }}>

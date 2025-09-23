@@ -117,7 +117,7 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
 
   const biohubApi = useBiohubApi();
   const codesContext = useCodesContext();
-  const { projectId, surveyId } = useSurveyContext();
+  const { surveyId } = useSurveyContext();
 
   const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
 
@@ -135,7 +135,7 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
   const [sortModel, setSortModel] = useState<GridSortModel>([{ field: 'observed_date', sort: 'desc' }]);
 
   const habitatFeatureDataLoader = useDataLoader((pagination: ApiPaginationRequestOptions) =>
-    biohubApi.habitatFeature.getSurveyHabitatFeaturesWithSupplementaryData(projectId, surveyId, pagination)
+    biohubApi.habitatFeature.getSurveyHabitatFeaturesWithSupplementaryData(surveyId, pagination)
   );
 
   /**
@@ -264,9 +264,8 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
     const standardColumns: GridColDef<IHabitatFeatureRow>[] = [
       {
         field: 'habitat_feature_type_id',
-        headerName: 'Habitat Feature',
+        headerName: 'Feature',
         align: 'left',
-        minWidth: 200,
         flex: 1,
         valueGetter: (params) => habitatFeatureTypeMap.get(params.value)
       },
@@ -274,30 +273,27 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
         field: 'survey_habitat_feature_taxons',
         headerName: 'Species',
         align: 'left',
-        minWidth: 200,
         flex: 1,
         sortable: false, // Not supported by the API
         valueGetter: (params) => params.row.survey_habitat_feature_taxons.join(', ')
       },
       {
         field: 'survey_sample_site_name',
-        headerName: 'Sample Site',
+        headerName: 'Site',
         align: 'left',
-        minWidth: 200,
         flex: 1
       },
       {
         field: 'method_technique_name',
-        headerName: 'Method Technique',
+        headerName: 'Technique',
         align: 'left',
-        minWidth: 200,
         flex: 1
       },
       {
         field: 'survey_sample_period_start_datetime',
-        headerName: 'Sample Period',
+        headerName: 'Period',
         align: 'left',
-        minWidth: 200,
+
         flex: 1
       },
       {
@@ -305,7 +301,7 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
         headerName: 'Count',
         headerAlign: 'left',
         align: 'left',
-        minWidth: 100,
+
         flex: 1
       },
       {
@@ -313,7 +309,7 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
         headerName: 'Lat',
         headerAlign: 'left',
         align: 'left',
-        minWidth: 150,
+
         flex: 1
       },
       {
@@ -321,13 +317,13 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
         headerName: 'Long',
         headerAlign: 'left',
         align: 'left',
-        minWidth: 150,
+
         flex: 1
       },
       {
         field: 'observed_date',
         headerName: 'Date',
-        minWidth: 120,
+
         flex: 1
       },
       {
@@ -335,7 +331,7 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
         headerName: 'Time',
         headerAlign: 'left',
         align: 'left',
-        minWidth: 120,
+
         flex: 1
       }
     ];

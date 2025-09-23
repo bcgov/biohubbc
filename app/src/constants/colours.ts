@@ -15,6 +15,7 @@ import {
   red,
   teal
 } from '@mui/material/colors';
+import { COLLECTION_ROLE, SURVEY_ROLE } from './roles';
 
 type ColourMap = Record<string, { colour: Color }>;
 
@@ -132,3 +133,34 @@ export const SURVEY_MAP_LAYER_COLOURS = {
   HABITAT_FEATURE_COLOUR: '#0fa30a',
   DEFAULT_COLOUR: '#396a91'
 };
+
+/**
+ * Colour map for collection system user roles
+ *
+ */
+const COLLECTION_ROLE_COLOUR_MAP = {
+  [COLLECTION_ROLE.ADMIN]: { colour: blue },
+  [COLLECTION_ROLE.MEMBER]: { colour: grey }
+};
+
+/**
+ * Get collection roles colour mapping.
+ *
+ */
+export const getCollectionRoleColour = generateColourMapGetter(COLLECTION_ROLE_COLOUR_MAP);
+
+/**
+ * Colour map for survey system user roles
+ *
+ */
+const SURVEY_ROLE_COLOUR_MAP = {
+  [SURVEY_ROLE.ADMIN]: { colour: blue },
+  [SURVEY_ROLE.EDITOR]: { colour: orange },
+  [SURVEY_ROLE.VIEWER]: { colour: grey }
+};
+
+/**
+ * Get survey roles colour mapping.
+ *
+ */
+export const getSurveyRoleColour = generateColourMapGetter(SURVEY_ROLE_COLOUR_MAP);

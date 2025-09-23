@@ -1,5 +1,5 @@
 import { useCallback, useMemo, useState } from 'react';
-import { AsyncFunction, useAsync } from './useAsync';
+import { AbortableAsyncFunction, AsyncFunction, useAsync } from './useAsync';
 import useIsMounted from './useIsMounted';
 
 export type DataLoader<AFArgs extends any[], AFResponse = unknown, AFError = unknown> = {
@@ -83,7 +83,9 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
 
   const isMounted = useIsMounted();
 
-  const getData = useAsync(fetchData);
+  const abortableFetchData = makeAbortable(fetchData);
+
+  const getData = useAsync(abortableFetchData);
 
   const loadData = useCallback(
     async (...args: AFArgs): Promise<AFResponse | undefined> => {
@@ -170,4 +172,10 @@ export default function useDataLoader<AFArgs extends any[], AFResponse = unknown
     }),
     [clearData, clearError, data, error, hasLoaded, isLoading, isReady, load, refresh]
   );
+}
+
+function makeAbortable<AFArgs extends any[], AFResponse>(
+  fn: AsyncFunction<AFArgs, AFResponse>
+): AbortableAsyncFunction<AFArgs, AFResponse> {
+  return (_signal: AbortSignal, ...args: AFArgs) => fn(...args);
 }

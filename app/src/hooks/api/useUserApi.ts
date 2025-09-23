@@ -1,6 +1,5 @@
 import { AxiosInstance } from 'axios';
 import { IActiveUserFilters } from 'features/admin/users/active/filters/ActiveUsersFilterForm';
-import { IGetUserProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import { ISystemUser, ISystemUserResponse } from 'interfaces/useUserApi.interface';
 import qs from 'qs';
 import { ApiPaginationRequestOptions } from 'types/misc';
@@ -109,20 +108,8 @@ const useUserApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  /**
-   * Get projects for a system user id.
-   *
-   * @param {number} systemUserId
-   * @return {*} {Promise<IGetUserProjectsListResponse[]>}
-   */
-  const getProjectList = async (systemUserId: number): Promise<IGetUserProjectsListResponse[]> => {
-    const { data } = await axios.get(`/api/user/${systemUserId}/projects/get`);
-    return data;
-  };
-
   return {
     getUser,
-    getProjectList,
     getUserById,
     getUsersList,
     deleteSystemUser,

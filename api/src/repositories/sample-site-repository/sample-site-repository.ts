@@ -124,7 +124,7 @@ export class SampleSiteRepository extends BaseRepository {
   /**
    * Gets a paginated set of Sample sites for the given survey for a given Survey
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {{
    *       keyword?: string;
    *       sampleSiteIds?: number[];
@@ -133,8 +133,8 @@ export class SampleSiteRepository extends BaseRepository {
    * @return {*}  {Promise<SampleSiteRecordExtendedNonSpatial[]>}
    * @memberof SampleSiteRepository
    */
-  async getSampleSitesForSurveyId(
-    surveyId: number,
+  async getSampleSitesForSurveyIds(
+    surveyIds: number[],
     options?: {
       keyword?: string;
       sampleSiteIds?: number[];
@@ -196,7 +196,7 @@ export class SampleSiteRepository extends BaseRepository {
       .from({ sss: 'survey_sample_site' })
       .leftJoin('w_survey_sample_block as wssb', 'wssb.survey_sample_site_id', 'sss.survey_sample_site_id')
       .leftJoin('w_survey_sample_stratum as wsss', 'wsss.survey_sample_site_id', 'sss.survey_sample_site_id')
-      .where('sss.survey_id', surveyId);
+      .whereIn('sss.survey_id', surveyIds);
 
     if (sampleSiteIds) {
       // Filter results by sample site IDs
@@ -225,18 +225,18 @@ export class SampleSiteRepository extends BaseRepository {
   /**
    * Returns the total count of sample sites belonging to the given survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @return {*}  {Promise<number>}
    * @memberof SampleSiteRepository
    */
-  async getSampleSitesCountBySurveyId(surveyId: number): Promise<number> {
+  async getSampleSitesCountBySurveyIds(surveyIds: number[]): Promise<number> {
     const sqlStatement = SQL`
       SELECT
         COUNT(*)::integer AS count
       FROM
         survey_sample_site
       WHERE 
-        survey_id = ${surveyId};
+        survey_id = ANY (${surveyIds});
     `;
 
     const response = await this.connection.sql(sqlStatement, z.object({ count: z.number() }));

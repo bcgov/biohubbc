@@ -17,30 +17,21 @@ import { ApiPaginationRequestOptions } from 'types/misc';
 export const useSamplingPeriodApi = (axios: AxiosInstance) => {
   /**
    * Create Sampling Periods
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {ICreateSamplingSiteRequest} samplePeriods
    * @return {*}  {Promise<void>}
    */
-  const createSamplingPeriods = async (
-    projectId: number,
-    surveyId: number,
-    samplePeriods: CreateSamplingPeriod[]
-  ): Promise<void> => {
-    await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-period`, { sample_periods: samplePeriods });
+  const createSamplingPeriods = async (surveyId: number, samplePeriods: CreateSamplingPeriod[]): Promise<void> => {
+    await axios.post(`/api/survey/${surveyId}/sample-period`, { sample_periods: samplePeriods });
   };
 
   /**
    * Get Sample periods for a survey.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {ApiPaginationRequestOptions} pagination
    * @return {*}  {Promise<GetSamplingPeriodsPaginated>}
    */
   const getSamplePeriodsForSurvey = async (
-    projectId: number,
     surveyId: number,
     options?: {
       pagination?: ApiPaginationRequestOptions;
@@ -50,7 +41,7 @@ export const useSamplingPeriodApi = (axios: AxiosInstance) => {
       ...options?.pagination
     };
 
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/sample-period`, {
+    const { data } = await axios.get(`/api/survey/${surveyId}/sample-period`, {
       params
     });
 
@@ -59,18 +50,12 @@ export const useSamplingPeriodApi = (axios: AxiosInstance) => {
 
   /**
    * Get Sample period by ID.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} samplePeriodId
    * @return {*}  {Promise<GetSamplingPeriod>}
    */
-  const getSamplePeriodById = async (
-    projectId: number,
-    surveyId: number,
-    samplePeriodId: number
-  ): Promise<GetSamplingPeriod> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/sample-period/${samplePeriodId}`);
+  const getSamplePeriodById = async (surveyId: number, samplePeriodId: number): Promise<GetSamplingPeriod> => {
+    const { data } = await axios.get(`/api/survey/${surveyId}/sample-period/${samplePeriodId}`);
 
     return data;
   };
@@ -110,52 +95,37 @@ export const useSamplingPeriodApi = (axios: AxiosInstance) => {
 
   /**
    * Update a Sampling Period.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} surveySamplePeriodId
-   *    * @param {UpdateSamplingPeriod} data
+   * @param {UpdateSamplingPeriod} data
    * @return {*}  {Promise<void>}
    */
   const updateSamplingPeriod = async (
-    projectId: number,
     surveyId: number,
     surveySamplePeriodId: number,
     data: UpdateSamplingPeriod
   ): Promise<void> => {
-    await axios.put(`/api/project/${projectId}/survey/${surveyId}/sample-period/${surveySamplePeriodId}`, data);
+    await axios.put(`/api/survey/${surveyId}/sample-period/${surveySamplePeriodId}`, data);
   };
 
   /**
    * Delete Sample Period
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} sampleSiteId
    * @return {*}  {Promise<void>}
    */
-  const deleteSamplePeriod = async (
-    projectId: number,
-    surveyId: number,
-    surveySamplePeriodId: number
-  ): Promise<void> => {
-    await axios.delete(`/api/project/${projectId}/survey/${surveyId}/sample-period/${surveySamplePeriodId}`);
+  const deleteSamplePeriod = async (surveyId: number, surveySamplePeriodId: number): Promise<void> => {
+    await axios.delete(`/api/survey/${surveyId}/sample-period/${surveySamplePeriodId}`);
   };
 
   /**
    * Delete Sample Periods
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} surveySamplePeriodIds
    * @return {*}  {Promise<void>}
    */
-  const deleteSamplePeriods = async (
-    projectId: number,
-    surveyId: number,
-    surveySamplePeriodIds: number[]
-  ): Promise<void> => {
-    await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-period/delete`, {
+  const deleteSamplePeriods = async (surveyId: number, surveySamplePeriodIds: number[]): Promise<void> => {
+    await axios.post(`/api/survey/${surveyId}/sample-period/delete`, {
       surveySamplePeriodIds
     });
   };
@@ -164,13 +134,13 @@ export const useSamplingPeriodApi = (axios: AxiosInstance) => {
    * Bulk upload sample periods from a CSV file.
    *
    * @param {File} file
-   * @param {number} projectId
+   
    * @param {number} surveyId
    * @return {*} {Promise<void>}
    */
   const importSamplePeriodsFromCsv = async (
     file: File,
-    projectId: number,
+
     surveyId: number,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: AxiosProgressEvent) => void
@@ -179,7 +149,7 @@ export const useSamplingPeriodApi = (axios: AxiosInstance) => {
 
     formData.append('media', file);
 
-    await axios.post(`/api/project/${projectId}/survey/${surveyId}/sample-period/import`, formData, {
+    await axios.post(`/api/survey/${surveyId}/sample-period/import`, formData, {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress
     });

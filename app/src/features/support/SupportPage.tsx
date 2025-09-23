@@ -2,7 +2,7 @@ import { mdiChevronLeft, mdiChevronRight } from '@mdi/js';
 import Icon from '@mdi/react';
 import { Box, Button, Container, Divider, Paper, Stack, Typography } from '@mui/material';
 import PageHeader from 'components/layout/PageHeader';
-import { HierarchicalCustomToggleButtonGroup } from 'components/toolbar/HierarchicalCustomToggleButtonGroup';
+import { HierarchicalCustomToggleButtonGroup } from 'components/toggle/HierarchicalCustomToggleButtonGroup';
 import { useSearchParams } from 'hooks/useSearchParams';
 import { useCallback, useMemo, useState } from 'react';
 import {

@@ -25,12 +25,12 @@ export type IObservationsContext = {
 export const ObservationsContext = createContext<IObservationsContext | undefined>(undefined);
 
 export const ObservationsContextProvider = (props: PropsWithChildren<Record<never, any>>) => {
-  const { projectId, surveyId } = useContext(SurveyContext);
+  const { surveyId } = useContext(SurveyContext);
 
   const biohubApi = useBiohubApi();
 
   const observationsDataLoader = useDataLoader((pagination?: ApiPaginationRequestOptions) =>
-    biohubApi.observation.getFlattenedObservationRecords(projectId, surveyId, pagination)
+    biohubApi.observation.getFlattenedObservationRecords(surveyId, pagination)
   );
 
   const observationsContext: IObservationsContext = {

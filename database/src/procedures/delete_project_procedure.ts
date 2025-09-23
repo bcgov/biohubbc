@@ -34,7 +34,7 @@ export async function seed(knex: Knex): Promise<void> {
       delete from project_report_author where project_report_attachment_id in (select project_report_attachment_id from project_report_attachment where project_id = p_project_id);
       delete from project_report_publish where project_report_attachment_id in (select project_report_attachment_id from project_report_attachment where project_id = p_project_id);
       delete from project_report_attachment where project_id = p_project_id;
-      delete from project_participation where project_id = p_project_id;
+      delete from survey_member where project_id = p_project_id;
       delete from project_metadata_publish where project_id = p_project_id;
       delete from grouping_project where project_id = p_project_id;
       delete from project where project_id = p_project_id;

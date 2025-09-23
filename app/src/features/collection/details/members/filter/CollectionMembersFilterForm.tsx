@@ -1,0 +1,48 @@
+export const MembersAdvancedFiltersInitialValues = {
+  keyword: undefined,
+  system_user_id: undefined
+};
+
+import CustomTextField from 'components/fields/CustomTextField';
+import { FilterFieldsContainer } from 'features/summary/components/FilterFieldsContainer';
+import { Formik } from 'formik';
+import { ICollectionMembersAdvancedFilters } from 'interfaces/useCollectionApi.interface';
+
+interface IMembersFilterFormProps {
+  handleSubmit: (filterValues: ICollectionMembersAdvancedFilters) => void;
+  initialValues?: { keyword?: string; system_user_id?: number };
+}
+
+/**
+ * Survey advanced filters
+ *
+ * @param {IMembersFilterFormProps} props
+ * @return {*}
+ */
+const MembersFilterForm = (props: IMembersFilterFormProps) => {
+  const { handleSubmit, initialValues } = props;
+
+  return (
+    <Formik
+      initialValues={initialValues ?? MembersAdvancedFiltersInitialValues}
+      onSubmit={handleSubmit}
+      validateOnChange={false}
+      validateOnBlur={false}
+      validateOnMount={false}>
+      {() => (
+        <FilterFieldsContainer
+          fields={[
+            <CustomTextField
+              name="keyword"
+              label="Search"
+              other={{ placeholder: "Type a person's name", size: 'small' }}
+              key="collection-member-keyword-filter"
+            />
+          ]}
+        />
+      )}
+    </Formik>
+  );
+};
+
+export default MembersFilterForm;

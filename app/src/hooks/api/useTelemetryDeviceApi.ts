@@ -1,5 +1,5 @@
 import { AxiosInstance, AxiosProgressEvent, CancelTokenSource } from 'axios';
-import { IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
+import { IUploadAttachmentResponse } from 'interfaces/useSurveyApi.interface';
 import { TelemetryDeviceKeyFile } from 'interfaces/useTelemetryApi.interface';
 import {
   CreateTelemetryDevice,
@@ -17,70 +17,52 @@ import { ApiPaginationRequestOptions, ApiPaginationResponseParams } from 'types/
 export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
   /**
    * Create a new telemetry device.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {CreateTelemetryDevice} device
    * @return {*}  {Promise<void>}
    */
-  const createDevice = async (projectId: number, surveyId: number, device: CreateTelemetryDevice): Promise<void> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/devices`, device);
+  const createDevice = async (surveyId: number, device: CreateTelemetryDevice): Promise<void> => {
+    const { data } = await axios.post(`/api/survey/${surveyId}/devices`, device);
 
     return data;
   };
 
   /**
    * Update a telemetry device.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} deviceId
    * @param {UpdateTelemetryDevice} device
    * @return {*}  {Promise<number>}
    */
-  const updateDevice = async (
-    projectId: number,
-    surveyId: number,
-    deviceId: number,
-    device: UpdateTelemetryDevice
-  ): Promise<number> => {
-    const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/devices/${deviceId}`, device);
+  const updateDevice = async (surveyId: number, deviceId: number, device: UpdateTelemetryDevice): Promise<number> => {
+    const { data } = await axios.put(`/api/survey/${surveyId}/devices/${deviceId}`, device);
 
     return data;
   };
 
   /**
    * Get a telemetry device.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} deviceId
    * @return {*}  {Promise<{ device: TelemetryDevice }>}
    */
-  const getDeviceById = async (
-    projectId: number,
-    surveyId: number,
-    deviceId: number
-  ): Promise<{ device: TelemetryDevice }> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/devices/${deviceId}`);
+  const getDeviceById = async (surveyId: number, deviceId: number): Promise<{ device: TelemetryDevice }> => {
+    const { data } = await axios.get(`/api/survey/${surveyId}/devices/${deviceId}`);
 
     return data;
   };
 
   /**
    * Get all telemetry devices associated with the given survey ID.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {ApiPaginationRequestOptions} [pagination]
    * @return {*}  {Promise<{ devices: TelemetryDevice[]; count: number; pagination: ApiPaginationResponseParams }>}
    */
   const getDevicesInSurvey = async (
-    projectId: number,
     surveyId: number,
     pagination?: ApiPaginationRequestOptions
   ): Promise<{ devices: TelemetryDevice[]; count: number; pagination: ApiPaginationResponseParams }> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/devices`, {
+    const { data } = await axios.get(`/api/survey/${surveyId}/devices`, {
       params: {
         ...pagination
       }
@@ -91,28 +73,24 @@ export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
 
   /**
    * Delete a telemetry device.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} deviceId
    * @return {*}  {Promise<void>}
    */
-  const deleteDevice = async (projectId: number, surveyId: number, deviceId: number): Promise<void> => {
-    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/devices/${deviceId}`);
+  const deleteDevice = async (surveyId: number, deviceId: number): Promise<void> => {
+    const { data } = await axios.delete(`/api/survey/${surveyId}/devices/${deviceId}`);
 
     return data;
   };
 
   /**
    * Delete one or more telemetry devices.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number[]} deviceIds
    * @return {*}  {Promise<void>}
    */
-  const deleteDevices = async (projectId: number, surveyId: number, deviceIds: number[]): Promise<void> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/devices/delete`, {
+  const deleteDevices = async (surveyId: number, deviceIds: number[]): Promise<void> => {
+    const { data } = await axios.post(`/api/survey/${surveyId}/devices/delete`, {
       device_ids: deviceIds
     });
 
@@ -121,8 +99,6 @@ export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
 
   /**
    * Upload a telemetry device credential file.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {File} file
    * @param {CancelTokenSource} [cancelTokenSource]
@@ -130,7 +106,6 @@ export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IUploadAttachmentResponse>}
    */
   const uploadTelemetryDeviceCredentialFile = async (
-    projectId: number,
     surveyId: number,
     file: File,
     cancelTokenSource?: CancelTokenSource,
@@ -140,14 +115,10 @@ export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
 
     req_message.append('media', file);
 
-    const { data } = await axios.post(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/telemetry`,
-      req_message,
-      {
-        cancelToken: cancelTokenSource?.token,
-        onUploadProgress: onProgress
-      }
-    );
+    const { data } = await axios.post(`/api/survey/${surveyId}/attachments/telemetry`, req_message, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
+    });
 
     return data;
   };
@@ -155,7 +126,6 @@ export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
   /**
    * Imports a device CSV.
    *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {File} file
    * @param {CancelTokenSource} [cancelTokenSource]
@@ -163,7 +133,6 @@ export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
    * @return {*} {Promise<void>}
    */
   const importTelemetryDeviceCSV = async (
-    projectId: number,
     surveyId: number,
     file: File,
     cancelTokenSource?: CancelTokenSource,
@@ -173,7 +142,7 @@ export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
 
     formData.append('media', file);
 
-    await axios.post(`/api/project/${projectId}/survey/${surveyId}/devices/import`, formData, {
+    await axios.post(`/api/survey/${surveyId}/devices/import`, formData, {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress
     });
@@ -181,14 +150,12 @@ export const useTelemetryDeviceApi = (axios: AxiosInstance) => {
 
   /**
    * Get all uploaded telemetry device credential key files.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @return {*}  {Promise<TelemetryDeviceKeyFile[]>}
    */
-  const getTelemetryDeviceKeyFiles = async (projectId: number, surveyId: number): Promise<TelemetryDeviceKeyFile[]> => {
+  const getTelemetryDeviceKeyFiles = async (surveyId: number): Promise<TelemetryDeviceKeyFile[]> => {
     const { data } = await axios.get<{ telemetryAttachments: TelemetryDeviceKeyFile[] }>(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/telemetry`
+      `/api/survey/${surveyId}/attachments/telemetry`
     );
 
     return data.telemetryAttachments;

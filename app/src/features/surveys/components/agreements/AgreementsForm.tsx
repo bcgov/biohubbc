@@ -3,8 +3,7 @@ import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Grid from '@mui/material/Grid';
-import Typography from '@mui/material/Typography';
-import HelpButtonStack from 'components/buttons/HelpButtonStack';
+import HelpButtonStack from 'components/tooltip/HelpButtonStack';
 import { useFormikContext } from 'formik';
 import { StringBoolean } from 'types/misc';
 import yup from 'utils/YupSchema';
@@ -61,72 +60,62 @@ const AgreementsForm = () => {
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <HelpButtonStack helpText="The SEDIS procedures ensure that data and information regarding species and ecosystems susceptible to persecution and harm are managed appropriately.">
-            <Typography component="h3" variant="h5">
-              Species and Ecosystems Data and Information Security (SEDIS) Procedures
-            </Typography>
+            <FormControl
+              sx={classes.agreementInput}
+              required={true}
+              component="fieldset"
+              error={
+                touched.agreements?.sedis_procedures_accepted && Boolean(errors.agreements?.sedis_procedures_accepted)
+              }>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={values.agreements?.sedis_procedures_accepted === 'true'}
+                    onChange={() =>
+                      setFieldValue(
+                        'agreements.sedis_procedures_accepted',
+                        values.agreements?.sedis_procedures_accepted === 'true' ? 'false' : 'true'
+                      )
+                    }
+                    name="agreements.sedis_procedures_accepted"
+                    color="primary"
+                  />
+                }
+                label="All data and information is collected legally and in accordance with the Species and Ecosystems Data and Information Security (SEDIS) procedures."
+              />
+              <FormHelperText>{errors.agreements?.sedis_procedures_accepted}</FormHelperText>
+            </FormControl>
           </HelpButtonStack>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControl
-            sx={classes.agreementInput}
-            required={true}
-            component="fieldset"
-            error={
-              touched.agreements?.sedis_procedures_accepted && Boolean(errors.agreements?.sedis_procedures_accepted)
-            }>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={values.agreements?.sedis_procedures_accepted === 'true'}
-                  onChange={() =>
-                    setFieldValue(
-                      'agreements.sedis_procedures_accepted',
-                      values.agreements?.sedis_procedures_accepted === 'true' ? 'false' : 'true'
-                    )
-                  }
-                  name="agreements.sedis_procedures_accepted"
-                  color="primary"
-                />
-              }
-              label="All data and information for this survey will be collected legally, and in accordance with Section 1 of the Species and Ecosystems Data and Information Security (SEDIS) procedures."
-            />
-            <FormHelperText>{errors.agreements?.sedis_procedures_accepted}</FormHelperText>
-          </FormControl>
         </Grid>
         <Grid item xs={12}>
           <HelpButtonStack helpText="You must not upload personal information and are responsible for responding to Freedom of Information Requests with relevant information, excluding information that meets the exemption criteria.">
-            <Typography component="h3" variant="h5">
-              Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements
-            </Typography>
+            <FormControl
+              sx={classes.agreementInput}
+              required={true}
+              component="fieldset"
+              error={
+                touched.agreements?.foippa_requirements_accepted &&
+                Boolean(errors.agreements?.foippa_requirements_accepted)
+              }>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={values.agreements?.foippa_requirements_accepted === 'true'}
+                    onChange={() => {
+                      setFieldValue(
+                        'agreements.foippa_requirements_accepted',
+                        values.agreements?.foippa_requirements_accepted === 'true' ? 'false' : 'true'
+                      );
+                    }}
+                    name="agreements.foippa_requirements_accepted"
+                    color="primary"
+                  />
+                }
+                label="All data and information meets or exceeds the Freedom of Information and Protection of Privacy Act (FOIPPA) requirements."
+              />
+              <FormHelperText>{errors.agreements?.foippa_requirements_accepted}</FormHelperText>
+            </FormControl>
           </HelpButtonStack>
-        </Grid>
-        <Grid item xs={12}>
-          <FormControl
-            sx={classes.agreementInput}
-            required={true}
-            component="fieldset"
-            error={
-              touched.agreements?.foippa_requirements_accepted &&
-              Boolean(errors.agreements?.foippa_requirements_accepted)
-            }>
-            <FormControlLabel
-              control={
-                <Checkbox
-                  checked={values.agreements?.foippa_requirements_accepted === 'true'}
-                  onChange={() => {
-                    setFieldValue(
-                      'agreements.foippa_requirements_accepted',
-                      values.agreements?.foippa_requirements_accepted === 'true' ? 'false' : 'true'
-                    );
-                  }}
-                  name="agreements.foippa_requirements_accepted"
-                  color="primary"
-                />
-              }
-              label="All data submitted in this survey will meet or exceed the Freedom of Information and Protection of Privacy Act (FOIPPA) requirements."
-            />
-            <FormHelperText>{errors.agreements?.foippa_requirements_accepted}</FormHelperText>
-          </FormControl>
         </Grid>
       </Grid>
     </form>

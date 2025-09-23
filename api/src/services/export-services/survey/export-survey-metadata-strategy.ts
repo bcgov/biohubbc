@@ -79,7 +79,6 @@ export class ExportSurveyMetadataStrategy extends DBService implements ExportStr
    */
   static readonly metadataCsvTransformation = (item: Record<string, any>): string => {
     return [
-      item.project_id,
       item.survey_id,
       `"${item.name ?? ''}"`,
       item.start_date,

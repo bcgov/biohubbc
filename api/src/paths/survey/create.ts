@@ -1,0 +1,258 @@
+import { RequestHandler } from 'express';
+import { Operation } from 'express-openapi';
+import { SYSTEM_ROLE } from '../../constants/roles';
+import { getDBConnection } from '../../database/db';
+import { PostSurveyObject } from '../../models/survey-create';
+import {
+  surveyBlockSchema,
+  surveyDetailsSchema,
+  surveyLocationSchema,
+  surveyPartnershipsSchema,
+  surveyPermitSchema,
+  surveyProprietorSchema,
+  surveyPurposeAndMethodologySchema,
+  surveySpeciesSchema
+} from '../../openapi/schemas/survey';
+import { surveyMemberAndSystemUserSchema, surveyParticipationAndSystemUserSchema } from '../../openapi/schemas/user';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { SurveyService } from '../../services/survey-service';
+import { getLogger } from '../../utils/logger';
+
+const defaultLog = getLogger('paths/survey/create');
+
+export const POST: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      or: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  createSurvey()
+];
+
+POST.apiDoc = {
+  description: 'Create a new Survey.',
+  tags: ['survey'],
+  security: [
+    {
+      Bearer: []
+    }
+  ],
+  parameters: [],
+  requestBody: {
+    description: 'Survey post request object.',
+    required: true,
+    content: {
+      'application/json': {
+        schema: {
+          title: 'SurveyProject post request object',
+          type: 'object',
+          additionalProperties: false,
+          required: [
+            'survey_details',
+            'species',
+            'permit',
+            'collections',
+            'funding_sources',
+            'partnerships',
+            'proprietor',
+            'purpose_and_methodology',
+            'locations',
+            'site_selection',
+            'agreements',
+            'participants',
+            'members'
+          ],
+          properties: {
+            survey_details: {
+              ...surveyDetailsSchema,
+              properties: {
+                ...surveyDetailsSchema.properties,
+                id: { type: 'integer', nullable: true }
+              }
+            },
+            species: surveySpeciesSchema,
+            permit: surveyPermitSchema,
+            collections: {
+              type: 'array',
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['collection_id'],
+                properties: {
+                  collection_id: { type: 'number', description: 'Primary key of a collection to share the survey to' }
+                }
+              }
+            },
+            funding_sources: {
+              type: 'array',
+              items: {
+                type: 'object',
+                additionalProperties: false,
+                required: ['funding_source_id'],
+                properties: {
+                  funding_source_id: {
+                    description: 'Funding source id',
+                    type: 'integer',
+                    minimum: 1
+                  }
+                }
+              }
+            },
+            partnerships: surveyPartnershipsSchema,
+            proprietor: surveyProprietorSchema,
+            purpose_and_methodology: surveyPurposeAndMethodologySchema,
+            locations: {
+              description: 'Survey location data',
+              type: 'array',
+              items: surveyLocationSchema
+            },
+            site_selection: {
+              title: 'survey site selection response object',
+              type: 'object',
+              additionalProperties: false,
+              required: ['strategies', 'stratums'],
+              properties: {
+                strategies: {
+                  description: 'Strategies',
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
+                },
+                stratums: {
+                  description: 'Stratums',
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    additionalProperties: false,
+                    required: ['name', 'description'],
+                    properties: {
+                      name: {
+                        description: 'Name',
+                        type: 'string'
+                      },
+                      description: {
+                        description: 'Description',
+                        type: 'string',
+                        nullable: true
+                      },
+                      survey_id: {
+                        description: 'Survey id',
+                        type: 'integer',
+                        nullable: true
+                      },
+                      survey_stratum_id: {
+                        description: 'Survey stratum id',
+                        type: 'integer',
+                        nullable: true,
+                        minimum: 1
+                      },
+                      revision_count: {
+                        description: 'Revision count',
+                        type: 'integer'
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            participants: {
+              type: 'array',
+              description: 'List of users who participated in the survey, independent of system users who have access',
+              items: {
+                ...surveyParticipationAndSystemUserSchema
+              }
+            },
+            members: {
+              type: 'array',
+              description: 'List of system users who have access to the survey, with a specific role',
+              items: { ...surveyMemberAndSystemUserSchema }
+            },
+            blocks: {
+              type: 'array',
+              items: surveyBlockSchema
+            },
+            agreements: {
+              type: 'object',
+              additionalProperties: false,
+              required: ['sedis_procedures_accepted', 'foippa_requirements_accepted'],
+              properties: {
+                sedis_procedures_accepted: {
+                  type: 'string'
+                },
+                foippa_requirements_accepted: {
+                  type: 'string'
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  responses: {
+    200: {
+      description: 'Survey response object.',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            additionalProperties: false,
+            required: ['id'],
+            properties: {
+              id: {
+                type: 'integer',
+                minimum: 1
+              }
+            }
+          }
+        }
+      }
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/403'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};
+
+export function createSurvey(): RequestHandler {
+  return async (req, res) => {
+    const sanitizedPostSurveyData = new PostSurveyObject(req.body);
+
+    const connection = getDBConnection(req.keycloak_token);
+
+    try {
+      await connection.open();
+
+      const surveyService = new SurveyService(connection);
+      const surveyId = await surveyService.createSurvey(sanitizedPostSurveyData);
+
+      await connection.commit();
+
+      return res.status(200).json({ id: surveyId });
+    } catch (error) {
+      defaultLog.error({ label: 'createSurvey', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}

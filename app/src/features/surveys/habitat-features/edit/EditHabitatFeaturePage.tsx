@@ -11,7 +11,7 @@ import PageHeader from 'components/layout/PageHeader';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useHabitatFeatureTableContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useHabitatFeatureTableContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useEffect, useRef, useState } from 'react';
@@ -30,7 +30,7 @@ import {
 export const EditHabitatFeaturePage = (): JSX.Element => {
   const biohubApi = useBiohubApi();
   const history = useHistory();
-  const projectContext = useProjectContext();
+
   const surveyContext = useSurveyContext();
   const habitatFeatureContext = useHabitatFeatureTableContext();
   const dialogContext = useDialogContext();
@@ -45,23 +45,14 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const habitatFeatureDataLoader = useDataLoader(() =>
-    biohubApi.habitatFeature.getSurveyHabitatFeatureWithSupplementaryData(
-      surveyContext.projectId,
-      surveyContext.surveyId,
-      habitatFeatureId
-    )
+    biohubApi.habitatFeature.getSurveyHabitatFeatureWithSupplementaryData(surveyContext.surveyId, habitatFeatureId)
   );
 
   useEffect(() => {
     habitatFeatureDataLoader.load();
   }, [habitatFeatureDataLoader]);
 
-  if (
-    !surveyContext.surveyDataLoader.data ||
-    !projectContext.projectDataLoader.data ||
-    !habitatFeatureDataLoader.data ||
-    habitatFeatureDataLoader.isLoading
-  ) {
+  if (!surveyContext.surveyDataLoader.data || !habitatFeatureDataLoader.data || habitatFeatureDataLoader.isLoading) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -93,25 +84,20 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
   const handleSubmit = async (values: UpdateHabitatFeatureFormValues): Promise<void> => {
     try {
       setIsSubmitting(true);
-      await biohubApi.habitatFeature.updateSurveyHabitatFeature(
-        surveyContext.projectId,
-        surveyContext.surveyId,
-        habitatFeatureId,
-        {
-          habitat_feature_type_id: values.habitat_feature_type_id,
-          count: values.count,
-          latitude: values.latitude || null,
-          longitude: values.longitude || null,
-          observed_date: values.observed_date || null,
-          observed_time: values.observed_time || null,
-          survey_sample_period_id: values.survey_sample_period_id || null,
-          survey_habitat_feature_taxons: values.survey_habitat_feature_taxons.map((formTaxon) => ({
-            itis_tsn: formTaxon.itis_tsn,
-            itis_scientific_name: formTaxon.itis_scientific_name,
-            comment: formTaxon.comment || null
-          }))
-        }
-      );
+      await biohubApi.habitatFeature.updateSurveyHabitatFeature(surveyContext.surveyId, habitatFeatureId, {
+        habitat_feature_type_id: values.habitat_feature_type_id,
+        count: values.count,
+        latitude: values.latitude || null,
+        longitude: values.longitude || null,
+        observed_date: values.observed_date || null,
+        observed_time: values.observed_time || null,
+        survey_sample_period_id: values.survey_sample_period_id || null,
+        survey_habitat_feature_taxons: values.survey_habitat_feature_taxons.map((formTaxon) => ({
+          itis_tsn: formTaxon.itis_tsn,
+          itis_scientific_name: formTaxon.itis_scientific_name,
+          comment: formTaxon.comment || null
+        }))
+      });
 
       habitatFeatureContext.refreshHabitatFeatureRecords();
 
@@ -153,21 +139,12 @@ export const EditHabitatFeaturePage = (): JSX.Element => {
             sx={{
               typography: 'body2'
             }}>
-            <Link
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
-              underline="none">
-              {projectContext.projectDataLoader.data?.projectData.project.project_name}
-            </Link>
-            <Link
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
-              underline="none">
+            <Link component={RouterLink} to={`/admin/surveys/${surveyContext.surveyId}/details`} underline="none">
               {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
             </Link>
             <Link
               component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/habitat-features/details`}
+              to={`/admin/surveys/${surveyContext.surveyId}/habitat-features/details`}
               underline="none">
               Manage Habitat Features
             </Link>

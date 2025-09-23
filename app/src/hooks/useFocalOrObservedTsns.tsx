@@ -16,7 +16,7 @@ export const useFocalOrObservedSpeciesTsns = () => {
   const biohubApi = useBiohubApi();
 
   const observedSpeciesDataLoader = useDataLoader(() =>
-    biohubApi.observation.getObservedSpecies(surveyContext.projectId, surveyContext.surveyId)
+    biohubApi.observation.getObservedSpecies(surveyContext.surveyId)
   );
 
   const hierarchyDataLoader = useDataLoader((tsns: number[]) => biohubApi.taxonomy.getTaxonHierarchyByTSNs(tsns));

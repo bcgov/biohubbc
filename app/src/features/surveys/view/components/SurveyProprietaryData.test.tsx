@@ -1,7 +1,8 @@
 import { SurveyContext } from 'contexts/surveyContext';
 import { DataLoader } from 'hooks/useDataLoader';
+import { IGetSurveyChecklistResponse } from 'interfaces/useChecklistApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import { getSurveyChecklistResponse, getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import { cleanup, render } from 'test-helpers/test-utils';
 import SurveyProprietaryData from './SurveyProprietaryData';
 
@@ -15,11 +16,17 @@ describe('SurveyProprietaryData', () => {
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
 
+    const mockSurveyChecklistDataLoader = { data: getSurveyChecklistResponse } as DataLoader<
+      any,
+      IGetSurveyChecklistResponse,
+      any
+    >;
+
     const { getByTestId } = render(
       <SurveyContext.Provider
         value={{
-          projectId: 1,
           surveyId: 1,
+          surveyChecklistDataLoader: mockSurveyChecklistDataLoader,
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
           critterDataLoader: mockCritterDataLoader
@@ -39,12 +46,17 @@ describe('SurveyProprietaryData', () => {
     } as DataLoader<any, IGetSurveyForViewResponse, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockSurveyChecklistDataLoader = { data: getSurveyChecklistResponse } as DataLoader<
+      any,
+      IGetSurveyChecklistResponse,
+      any
+    >;
 
     const { getByTestId } = render(
       <SurveyContext.Provider
         value={{
-          projectId: 1,
           surveyId: 1,
+          surveyChecklistDataLoader: mockSurveyChecklistDataLoader,
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
           critterDataLoader: mockCritterDataLoader
@@ -62,12 +74,17 @@ describe('SurveyProprietaryData', () => {
     const mockSurveyDataLoader = { data: undefined } as DataLoader<any, IGetSurveyForViewResponse, any>;
     const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
     const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
+    const mockSurveyChecklistDataLoader = { data: getSurveyChecklistResponse } as DataLoader<
+      any,
+      IGetSurveyChecklistResponse,
+      any
+    >;
 
     const { container } = render(
       <SurveyContext.Provider
         value={{
-          projectId: 1,
           surveyId: 1,
+          surveyChecklistDataLoader: mockSurveyChecklistDataLoader,
           surveyDataLoader: mockSurveyDataLoader,
           artifactDataLoader: mockArtifactDataLoader,
           critterDataLoader: mockCritterDataLoader

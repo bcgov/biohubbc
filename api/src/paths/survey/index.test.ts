@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { findSurveys } from '.';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
@@ -9,7 +10,6 @@ import { FindSurveysResponse } from '../../models/survey-view';
 import { SurveyService } from '../../services/survey-service';
 import { KeycloakUserInformation } from '../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
-import { findSurveys } from './index';
 
 chai.use(sinonChai);
 
@@ -21,7 +21,6 @@ describe('findSurveys', () => {
   it('finds and returns surveys', async () => {
     const mockFindSurveysResponse: FindSurveysResponse[] = [
       {
-        project_id: 1,
         survey_id: 2,
         name: 'survey name',
         progress_id: 3,
@@ -29,6 +28,7 @@ describe('findSurveys', () => {
         start_date: '2021-01-01',
         end_date: '2021-01-31',
         focal_species: [123, 456],
+        progress_percentage: 1,
         types: [1, 2]
       }
     ];
@@ -95,7 +95,6 @@ describe('findSurveys', () => {
   it('catches and re-throws error', async () => {
     const mockFindSurveysResponse: FindSurveysResponse[] = [
       {
-        project_id: 1,
         survey_id: 2,
         name: 'survey name',
         progress_id: 3,
@@ -103,6 +102,7 @@ describe('findSurveys', () => {
         start_date: '2021-01-01',
         end_date: '2021-01-31',
         focal_species: [123, 456],
+        progress_percentage: 1,
         types: [1, 2]
       }
     ];

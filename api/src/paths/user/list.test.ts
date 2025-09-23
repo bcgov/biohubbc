@@ -39,7 +39,7 @@ describe('users', () => {
           identity_source: 'idir',
           record_end_date: null,
           role_ids: [1, 2],
-          role_names: ['System Admin', 'Coordinator'],
+          role_names: ['System Admin', 'Admin'],
           email: 'email@email.com',
           family_name: 'lname',
           given_name: 'fname',

@@ -1,4 +1,3 @@
-import { mdiArrowTopRight } from '@mdi/js';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
@@ -44,7 +43,7 @@ export const SurveySpatialDeploymentTable = () => {
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   const deploymentsDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
-    biohubApi.telemetryDeployment.getDeploymentsInSurvey(surveyContext.projectId, surveyContext.surveyId, {
+    biohubApi.telemetryDeployment.getDeploymentsInSurvey(surveyContext.surveyId, {
       page: page + 1, // This fixes an off-by-one error between the front end and the back end
       limit,
       sort,
@@ -67,8 +66,8 @@ export const SurveySpatialDeploymentTable = () => {
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
 
   useEffect(() => {
-    critterDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [deploymentsDataLoader, critterDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+    critterDataLoader.load(surveyContext.surveyId);
+  }, [deploymentsDataLoader, critterDataLoader, surveyContext.surveyId]);
 
   /**
    * Merges critters with associated deployments
@@ -194,10 +193,9 @@ export const SurveySpatialDeploymentTable = () => {
       hasNoData={!rows.length}
       hasNoDataFallback={
         <NoDataOverlay
-          height="100%"
-          title="Add Telemetry"
-          subtitle="Add deployments by assigning telemetry devices to animals"
-          icon={mdiArrowTopRight}
+          minHeight="400px"
+          title="Deployments"
+          subtitle="Add deployments by assigning telemetry devices to animals. Deployments that exist in a survey belonging to this collection will be shown here."
         />
       }
       hasNoDataFallbackDelay={100}>

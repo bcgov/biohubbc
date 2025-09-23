@@ -117,7 +117,7 @@ export class SubCountService extends DBService {
    * Returns a unique set of all measurement type definitions for all measurements of all observations in the given
    * survey.
    *
-   * @param {number} surveyId
+   * @param {number[]} surveyIds
    * @param {{
    *       filterFields?: {
    *         surveyObservationIds?: number[];
@@ -126,8 +126,8 @@ export class SubCountService extends DBService {
    * @return {*}  {Promise<ObservationSubcountMeasurements>}
    * @memberof SubCountService
    */
-  async getMeasurementTypeDefinitionsForSurvey(
-    surveyId: number,
+  async getMeasurementTypeDefinitionsForSurveys(
+    surveyIds: number[],
     options?: {
       filterFields?: {
         surveyObservationIds?: number[];
@@ -138,12 +138,12 @@ export class SubCountService extends DBService {
 
     // Fetch all unique taxon_measurement_ids for qualitative and quantitative measurements
     const [qualitativeTaxonMeasurementIds, quantitativeTaxonMeasurementIds] = await Promise.all([
-      observationSubCountMeasurementService.getObservationSubCountQualitativeTaxonMeasurementIdsForSurvey(
-        surveyId,
+      observationSubCountMeasurementService.getObservationSubCountQualitativeTaxonMeasurementIdsForSurveys(
+        surveyIds,
         options
       ),
-      observationSubCountMeasurementService.getObservationSubCountQuantitativeTaxonMeasurementIdsForSurvey(
-        surveyId,
+      observationSubCountMeasurementService.getObservationSubCountQuantitativeTaxonMeasurementIdsForSurveys(
+        surveyIds,
         options
       )
     ]);

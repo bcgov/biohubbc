@@ -50,6 +50,7 @@ describe('SurveyDetails', () => {
       }
     }
   } as DataLoader<any, IGetSurveyForViewResponse, any>;
+  const mockSurveyChecklistDataLoader = { data: null } as DataLoader<any, any, any>;
   const mockArtifactDataLoader = { data: null } as DataLoader<any, any, any>;
   const mockCritterDataLoader = { data: [] } as DataLoader<any, any, any>;
 
@@ -58,11 +59,11 @@ describe('SurveyDetails', () => {
       <Router history={history}>
         <SurveyContext.Provider
           value={{
-            projectId: 1,
             surveyId: 1,
             surveyDataLoader: mockSurveyDataLoader,
             artifactDataLoader: mockArtifactDataLoader,
-            critterDataLoader: mockCritterDataLoader
+            critterDataLoader: mockCritterDataLoader,
+            surveyChecklistDataLoader: mockSurveyChecklistDataLoader
           }}>
           <CodesContext.Provider value={mockCodesContext}>
             <SurveyDetails />

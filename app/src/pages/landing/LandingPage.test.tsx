@@ -111,7 +111,7 @@ describe('LandingPage', () => {
     it('Case 4: Signed in, is added as a project participant, but still has a pending access request', () => {
       const authState = getMockAuthState({
         base: SystemUserAuthState,
-        overrides: { simsUserWrapper: { hasAccessRequest: true, hasOneOrMoreProjectRoles: true } }
+        overrides: { simsUserWrapper: { hasAccessRequest: true, hasOneOrMoreSurveyRoles: true } }
       });
 
       const { getByTestId, queryByText, queryByTestId } = render(
@@ -145,7 +145,7 @@ describe('LandingPage', () => {
     it('Case 5: Signed in, has a viewer role on some project, but not a system role that allows project creation', () => {
       const authState = getMockAuthState({
         base: SystemUserAuthState,
-        overrides: { simsUserWrapper: { hasOneOrMoreProjectRoles: true } }
+        overrides: { simsUserWrapper: { hasOneOrMoreSurveyRoles: true } }
       });
 
       const { getByTestId, queryByText, queryByTestId } = render(
@@ -181,7 +181,7 @@ describe('LandingPage', () => {
         base: SystemUserAuthState,
         overrides: {
           simsUserWrapper: {
-            hasOneOrMoreProjectRoles: true,
+            hasOneOrMoreSurveyRoles: true,
             roleNames: [SYSTEM_ROLE.PROJECT_CREATOR]
           }
         }

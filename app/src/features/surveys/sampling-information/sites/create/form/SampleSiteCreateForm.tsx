@@ -94,7 +94,7 @@ const SampleSiteCreateForm = (props: ISampleSiteCreateFormProps) => {
               variant="outlined"
               color="primary"
               onClick={() => {
-                history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling`);
+                history.push(`/admin/surveys/${surveyContext.surveyId}/sampling`);
               }}>
               Cancel
             </Button>

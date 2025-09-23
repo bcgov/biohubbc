@@ -5,9 +5,10 @@ import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import { ProjectRoleGuard, SystemRoleGuard } from 'components/security/Guards';
+import { SystemRoleGuard } from 'components/security/Guards';
+import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
 import { AttachmentType, PublishStatus } from 'constants/attachments';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { useState } from 'react';
 
 interface IAttachmentsListItemMenuButtonProps {
@@ -82,8 +83,8 @@ const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProp
           )}
 
           {props.attachmentStatus === PublishStatus.UNSUBMITTED && (
-            <ProjectRoleGuard
-              validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+            <SurveyRoleRouteGuard
+              validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
               validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
               <MenuItem
                 onClick={() => {
@@ -96,7 +97,7 @@ const AttachmentsListItemMenuButton = (props: IAttachmentsListItemMenuButtonProp
                 </ListItemIcon>
                 Delete
               </MenuItem>
-            </ProjectRoleGuard>
+            </SurveyRoleRouteGuard>
           )}
 
           {props.attachmentStatus === PublishStatus.SUBMITTED && (

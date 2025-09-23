@@ -11,13 +11,14 @@ import { useAlertApi } from './api/useAlertApi';
 import useAnalyticsApi from './api/useAnalyticsApi';
 import useAnimalApi from './api/useAnimalApi';
 import useAxios from './api/useAxios';
+import { useChecklistApi } from './api/useChecklistApi';
 import useCodesApi from './api/useCodesApi';
+import { useCollectionApi } from './api/useCollectionApi';
 import useExternalApi from './api/useExternalApi';
+import { useFilterApi } from './api/useFilterApi';
 import useFundingSourceApi from './api/useFundingSourceApi';
 import { useMarkdownApi } from './api/useMarkdownApi';
 import useObservationApi from './api/useObservationApi';
-import useProjectApi from './api/useProjectApi';
-import useProjectParticipationApi from './api/useProjectParticipationApi';
 import usePublishApi from './api/usePublishApi';
 import useResourcesApi from './api/useResourcesApi';
 import { useSamplingPeriodApi } from './api/useSamplingPeriodApi';
@@ -25,6 +26,8 @@ import useSamplingSiteApi from './api/useSamplingSiteApi';
 import useSpatialApi from './api/useSpatialApi';
 import useStandardsApi from './api/useStandardsApi';
 import useSurveyApi from './api/useSurveyApi';
+import useSurveyMemberApi from './api/useSurveyMemberApi';
+import useSurveyParticipationApi from './api/useSurveyParticipationApi';
 import useTaxonomyApi from './api/useTaxonomyApi';
 import useTechniqueApi from './api/useTechniqueApi';
 import useTelemetryApi from './api/useTelemetryApi';
@@ -37,15 +40,22 @@ import useUserApi from './api/useUserApi';
  */
 export const useBiohubApi = () => {
   const config = useConfigContext();
+
   const apiAxios = useAxios(config.API_HOST);
 
   const analytics = useAnalyticsApi(apiAxios);
 
-  const project = useProjectApi(apiAxios);
+  const collection = useCollectionApi(apiAxios);
 
-  const projectParticipants = useProjectParticipationApi(apiAxios);
+  const surveyParticipants = useSurveyParticipationApi(apiAxios);
+
+  const surveyMembers = useSurveyMemberApi(apiAxios);
 
   const taxonomy = useTaxonomyApi();
+
+  const filter = useFilterApi(apiAxios);
+
+  const checklist = useChecklistApi(apiAxios);
 
   const survey = useSurveyApi(apiAxios);
 
@@ -96,10 +106,12 @@ export const useBiohubApi = () => {
   return useMemo(
     () => ({
       analytics,
-      project,
-      projectParticipants,
+      surveyParticipants,
+      surveyMembers,
       taxonomy,
+      filter,
       survey,
+      collection,
       observation,
       observationSubcount,
       resources,
@@ -108,6 +120,7 @@ export const useBiohubApi = () => {
       user,
       admin,
       external,
+      checklist,
       publish,
       spatial,
       technique,

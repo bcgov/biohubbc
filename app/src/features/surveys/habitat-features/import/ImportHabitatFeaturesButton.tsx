@@ -48,7 +48,7 @@ export const ImportHabitatFeaturesButton = (props: ImportHabitatFeaturesButtonPr
   ) => {
     await biohubApi.habitatFeature.importHabitatFeaturesFromCsv(
       file,
-      surveyContext.projectId,
+
       surveyContext.surveyId,
       props.samplePeriodId,
       axios.CancelToken.source(),

@@ -108,40 +108,27 @@ export const systemUserSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
-export const projectUserSchema: OpenAPIV3.SchemaObject = {
+export const surveyUserSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: [
-    'project_participation_id',
-    'project_id',
-    'system_user_id',
-    'project_role_ids',
-    'project_role_names',
-    'project_role_permissions'
-  ],
+  required: ['survey_member_id', 'survey_id', 'system_user_id', 'survey_role_ids', 'survey_role_name'],
   properties: {
-    project_participation_id: {
+    survey_member_id: {
       type: 'number'
     },
-    project_id: {
+    survey_id: {
       type: 'number'
     },
     system_user_id: {
       type: 'number'
     },
-    project_role_ids: {
+    survey_role_id: {
       type: 'array',
       items: {
         type: 'number'
       }
     },
-    project_role_names: {
-      type: 'array',
-      items: {
-        type: 'string'
-      }
-    },
-    project_role_permissions: {
+    survey_role_name: {
       type: 'array',
       items: {
         type: 'string'
@@ -150,44 +137,25 @@ export const projectUserSchema: OpenAPIV3.SchemaObject = {
   }
 };
 
-export const projectAndSystemUserSchema: OpenAPIV3.SchemaObject = {
+export const surveyAndSystemUserSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: [
-    'project_participation_id',
-    'project_id',
-    'system_user_id',
-    'project_role_ids',
-    'project_role_names',
-    'project_role_permissions'
-  ],
+  required: ['survey_member_id', 'survey_id', 'system_user_id', 'survey_role_id', 'survey_role_name'],
   properties: {
-    project_participation_id: {
+    survey_member_id: {
       type: 'number'
     },
-    project_id: {
+    survey_id: {
       type: 'number'
     },
     system_user_id: {
       type: 'number'
     },
-    project_role_ids: {
-      type: 'array',
-      items: {
-        type: 'number'
-      }
+    survey_role_id: {
+      type: 'number'
     },
-    project_role_names: {
-      type: 'array',
-      items: {
-        type: 'string'
-      }
-    },
-    project_role_permissions: {
-      type: 'array',
-      items: {
-        type: 'string'
-      }
+    survey_role_name: {
+      type: 'string'
     },
     user_identifier: {
       description: 'The unique user identifier',
@@ -261,6 +229,80 @@ export const surveyParticipationAndSystemUserSchema: OpenAPIV3.SchemaObject = {
       type: 'number'
     },
     survey_job_name: {
+      type: 'string'
+    },
+    user_identifier: {
+      description: 'The unique user identifier',
+      type: 'string'
+    },
+    user_guid: {
+      type: 'string',
+      description: 'The GUID for the user.',
+      nullable: true
+    },
+    identity_source: {
+      description: 'The source of the user identity',
+      type: 'string'
+    },
+    record_end_date: {
+      type: 'string',
+      description: 'Determines if the user record has expired',
+      nullable: true
+    },
+    role_ids: {
+      description: 'list of role ids for the user',
+      type: 'array',
+      items: {
+        type: 'integer',
+        minimum: 1
+      }
+    },
+    role_names: {
+      description: 'list of role names for the user',
+      type: 'array',
+      items: {
+        type: 'string'
+      }
+    },
+    email: {
+      type: 'string'
+    },
+    display_name: {
+      type: 'string'
+    },
+    given_name: {
+      type: 'string',
+      nullable: true
+    },
+    family_name: {
+      type: 'string',
+      nullable: true
+    },
+    agency: {
+      type: 'string',
+      nullable: true
+    }
+  }
+};
+
+export const surveyMemberAndSystemUserSchema: OpenAPIV3.SchemaObject = {
+  type: 'object',
+  additionalProperties: false,
+  required: ['system_user_id', 'survey_role_name'],
+  properties: {
+    survey_participation_id: {
+      type: 'number'
+    },
+    survey_id: {
+      type: 'number'
+    },
+    system_user_id: {
+      type: 'number'
+    },
+    survey_role_id: {
+      type: 'number'
+    },
+    survey_role_name: {
       type: 'string'
     },
     user_identifier: {

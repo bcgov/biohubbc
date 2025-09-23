@@ -17,82 +17,64 @@ import { ApiPaginationRequestOptions } from 'types/misc';
 export const useTelemetryDeploymentApi = (axios: AxiosInstance) => {
   /**
    * Create a new telemetry deployment.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} critterId
    * @param {CreateTelemetryDeployment} deployment
    * @return {*}  {Promise<void>}
    */
   const createDeployment = async (
-    projectId: number,
     surveyId: number,
     critterId: number,
     deployment: CreateTelemetryDeployment
   ): Promise<void> => {
-    const { data } = await axios.post(
-      `/api/project/${projectId}/survey/${surveyId}/critters/${critterId}/deployments`,
-      deployment
-    );
+    const { data } = await axios.post(`/api/survey/${surveyId}/critters/${critterId}/deployments`, deployment);
 
     return data;
   };
 
   /**
    * Update a telemetry deployment.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} deploymentId
    * @param {UpdateTelemetryDeployment} deployment
    * @return {*}  {Promise<void>}
    */
   const updateDeployment = async (
-    projectId: number,
     surveyId: number,
     deploymentId: number,
     deployment: UpdateTelemetryDeployment
   ): Promise<void> => {
-    const { data } = await axios.put(
-      `/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`,
-      deployment
-    );
+    const { data } = await axios.put(`/api/survey/${surveyId}/deployments/${deploymentId}`, deployment);
 
     return data;
   };
 
   /**
    * Get a telemetry deployment by Id.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} deploymentId
    * @return {*}  {Promise<{ deployment: TelemetryDeployment }>}
    */
   const getDeploymentById = async (
-    projectId: number,
     surveyId: number,
     deploymentId: number
   ): Promise<{ deployment: TelemetryDeployment }> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
+    const { data } = await axios.get(`/api/survey/${surveyId}/deployments/${deploymentId}`);
 
     return data;
   };
 
   /**
    * Get all telemetry deployments associated with the given survey ID.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {ApiPaginationRequestOptions} [pagination]
    * @return {*}  {Promise<GetSurveyDeploymentsResponse>}
    */
   const getDeploymentsInSurvey = async (
-    projectId: number,
     surveyId: number,
     pagination?: ApiPaginationRequestOptions
   ): Promise<GetSurveyDeploymentsResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/deployments`, {
+    const { data } = await axios.get(`/api/survey/${surveyId}/deployments`, {
       params: {
         ...pagination
       },
@@ -104,28 +86,24 @@ export const useTelemetryDeploymentApi = (axios: AxiosInstance) => {
 
   /**
    * Delete a telemetry deployment.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number} deploymentId
    * @return {*}  {Promise<void>}
    */
-  const deleteDeployment = async (projectId: number, surveyId: number, deploymentId: number): Promise<void> => {
-    const { data } = await axios.delete(`/api/project/${projectId}/survey/${surveyId}/deployments/${deploymentId}`);
+  const deleteDeployment = async (surveyId: number, deploymentId: number): Promise<void> => {
+    const { data } = await axios.delete(`/api/survey/${surveyId}/deployments/${deploymentId}`);
 
     return data;
   };
 
   /**
    * Delete one ore more telemetry deployments.
-   *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {number[]} deploymentIds
    * @return {*}  {Promise<string>}
    */
-  const deleteDeployments = async (projectId: number, surveyId: number, deploymentIds: number[]): Promise<string> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/deployments/delete`, {
+  const deleteDeployments = async (surveyId: number, deploymentIds: number[]): Promise<string> => {
+    const { data } = await axios.post(`/api/survey/${surveyId}/deployments/delete`, {
       deployment_ids: deploymentIds
     });
 

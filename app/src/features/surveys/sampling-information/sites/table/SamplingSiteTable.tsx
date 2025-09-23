@@ -1,7 +1,7 @@
 import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
-import { blueGrey } from '@mui/material/colors';
+import grey from '@mui/material/colors/grey';
 import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
@@ -9,19 +9,19 @@ import Menu, { MenuProps } from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
 import Typography from '@mui/material/Typography';
 import { GridColDef, GridPaginationModel, GridRowSelectionModel, GridSortModel } from '@mui/x-data-grid';
-import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { CustomTooltip } from 'components/tooltip/CustomTooltip';
+import { getSamplingSiteIcon } from 'features/surveys/observations/sampling-sites/site/utils/SamplingSiteUtils';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { IGetSampleSiteRecordExtendedNonSpatial } from 'interfaces/useSamplingSiteApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { getSamplingSiteSpatialType } from 'utils/spatial-utils';
 
 export interface ISamplingSiteRowData {
   id: number;
   name: string;
   description: string;
-  geometry_type: string;
+  geometry_type: 'Point' | 'LineString' | 'Polygon';
   blocks: string[];
   stratums: string[];
 }
@@ -145,55 +145,18 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
     {
       field: 'name',
       headerName: 'Name',
-      flex: 1
-    },
-    {
-      field: 'geometry_type',
-      headerName: 'Geometry',
-      flex: 0.75,
-      renderCell: (params) => (
-        <Box>
-          <ColouredRectangleChip
-            label={getSamplingSiteSpatialType(params.row.geometry_type) ?? 'Unknown'}
-            colour={blueGrey}
-          />
-        </Box>
-      )
-    },
-    {
-      field: 'description',
-      headerName: 'Description',
-      flex: 1
-    },
-    {
-      field: 'blocks',
-      headerName: 'Blocks',
-      flex: 0.75,
-      sortable: false, // TODO not yet supported by the API
-      renderCell: (params) => (
-        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-          {params.row.blocks.map((block) => (
-            <Box key={block} mr={1} mb={1}>
-              <ColouredRectangleChip label={block} colour={blueGrey} />
+      flex: 1,
+      renderCell: (params) => {
+        const icon = getSamplingSiteIcon(params.row.geometry_type);
+        return (
+          <>
+            <CustomTooltip tooltip={params.row.description}>{params.row.name}</CustomTooltip>
+            <Box sx={{ minWidth: '20px', display: 'flex', alignItems: 'center', ml: 1.5 }}>
+              <Icon size={0.8} color={grey[400]} title={icon.title} path={icon.path} />
             </Box>
-          ))}
-        </Box>
-      )
-    },
-    {
-      field: 'stratums',
-      headerName: 'Strata',
-      flex: 0.75,
-      sortable: false, // TODO not yet supported by the API
-      renderCell: (params) => (
-        <Box sx={{ display: 'flex', flexWrap: 'wrap' }}>
-          {params.row.stratums.map((stratum) => (
-            <Box key={stratum} mr={1} mb={1} sx={{ maxWidth: '14ch' }}>
-              <ColouredRectangleChip label={stratum} colour={blueGrey} />
-            </Box>
-          ))}
-        </Box>
-      )
+          </>
+        );
+      }
     },
     {
       field: 'actions',
@@ -238,8 +201,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
               }
             }
           }}>
-          <RouterLink
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/${actionMenuAnchorEl?.sampleSiteId}/edit`}>
+          <RouterLink to={`/admin/surveys/${surveyContext.surveyId}/sampling/${actionMenuAnchorEl?.sampleSiteId}/edit`}>
             <ListItemIcon>
               <Icon path={mdiPencilOutline} size={1} />
             </ListItemIcon>
@@ -260,8 +222,7 @@ export const SamplingSiteTable = (props: ISamplingSiteTableProps) => {
 
       {/* DATA TABLE */}
       <StyledDataGrid
-        autoHeight={false}
-        getRowHeight={() => 'auto'}
+        rowHeight={52}
         disableColumnMenu
         rows={rows}
         getRowId={(row: ISamplingSiteRowData) => row.id}

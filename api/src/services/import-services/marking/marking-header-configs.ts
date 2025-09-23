@@ -33,8 +33,8 @@ export const getMarkingIdentifierCellValidator = (): CSVCellValidator => {
  *  1. The alias must exist in the surveyAliasMap ie: critter alias -> critter
  *  2. The alias (critter) must have Critterbase captures
  *
- *  @param {Map<string, ICritterDetailed>} surveyAliasMap The survey alias map
- *  @returns {*} {CSVCellValidator} The validate cell callback
+ * @param {Map<string, ICritterDetailed>} surveyAliasMap The survey alias map
+ * @returns {*} {CSVCellValidator} The validate cell callback
  */
 export const getMarkingAliasCellValidator = (surveyAliasMap: Map<string, ICritterDetailed>): CSVCellValidator => {
   return (params: CSVParams) => {

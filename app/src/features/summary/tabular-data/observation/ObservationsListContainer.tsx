@@ -1,4 +1,3 @@
-import { mdiArrowTopRight } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import grey from '@mui/material/colors/grey';
@@ -259,10 +258,10 @@ const ObservationsListContainer = (props: IObservationsListContainerProps) => {
           hasNoData={!rows.length}
           hasNoDataFallback={
             <NoDataOverlay
+              minHeight="400px"
               height="500px"
               title="Create or Join Surveys to See Observations"
               subtitle="You currently have no observations data. Once you create or join surveys with observations data, it will be displayed here"
-              icon={mdiArrowTopRight}
             />
           }
           hasNoDataFallbackDelay={100}>

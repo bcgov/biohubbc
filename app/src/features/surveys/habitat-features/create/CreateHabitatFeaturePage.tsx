@@ -11,7 +11,7 @@ import PageHeader from 'components/layout/PageHeader';
 import { FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useHabitatFeatureTableContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useHabitatFeatureTableContext, useSurveyContext } from 'hooks/useContext';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { useRef, useState } from 'react';
 import { Prompt, useHistory } from 'react-router';
@@ -42,7 +42,7 @@ const initialHabitatFeatureFormValues: CreateHabitatFeatureFormValues = {
 export const CreateHabitatFeaturePage = (): JSX.Element => {
   const biohubApi = useBiohubApi();
   const history = useHistory();
-  const projectContext = useProjectContext();
+
   const surveyContext = useSurveyContext();
   const habitatFeatureContext = useHabitatFeatureTableContext();
   const dialogContext = useDialogContext();
@@ -62,7 +62,7 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
   const handleSubmit = async (values: CreateHabitatFeatureFormValues): Promise<void> => {
     try {
       setIsSubmitting(true);
-      await biohubApi.habitatFeature.createSurveyHabitatFeatures(surveyContext.projectId, surveyContext.surveyId, [
+      await biohubApi.habitatFeature.createSurveyHabitatFeatures(surveyContext.surveyId, [
         {
           habitat_feature_type_id: values.habitat_feature_type_id,
           count: values.count,
@@ -107,7 +107,7 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
     }
   };
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -123,21 +123,12 @@ export const CreateHabitatFeaturePage = (): JSX.Element => {
             sx={{
               typography: 'body2'
             }}>
-            <Link
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
-              underline="none">
-              {projectContext.projectDataLoader.data?.projectData.project.project_name}
-            </Link>
-            <Link
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/details`}
-              underline="none">
+            <Link component={RouterLink} to={`/admin/surveys/${surveyContext.surveyId}/details`} underline="none">
               {surveyContext.surveyDataLoader.data?.surveyData.survey_details.survey_name}
             </Link>
             <Link
               component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/habitat-features/details`}
+              to={`/admin/surveys/${surveyContext.surveyId}/habitat-features/details`}
               underline="none">
               Manage Habitat Features
             </Link>

@@ -1,6 +1,5 @@
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteField, { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 import { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
 import yup from 'utils/YupSchema';
@@ -23,8 +22,8 @@ export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
 
 export const PurposeAndMethodologyYupSchema = yup.object().shape({
   purpose_and_methodology: yup.object().shape({
-    additional_details: yup.string(),
-    intended_outcome_ids: yup.array().min(1, 'One or more Ecological Variables are Required').required('Required')
+    additional_details: yup.string().required('Objectives is required'),
+    intended_outcome_ids: yup.array().min(1, 'One or more ecological variables are required').required('Required')
   })
 });
 
@@ -61,13 +60,6 @@ const PurposeAndMethodologyForm = (props: IPurposeAndMethodologyFormProps) => {
                 description: outcome.description
               }))}
               required={true}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <CustomTextField
-              name="purpose_and_methodology.additional_details"
-              label="Objectives"
-              other={{ multiline: true, rows: 5, required: true }}
             />
           </Grid>
         </Grid>

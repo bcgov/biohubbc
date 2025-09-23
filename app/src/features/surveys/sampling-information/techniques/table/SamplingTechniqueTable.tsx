@@ -1,4 +1,4 @@
-import { mdiArrowTopRight, mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiPencilOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import blueGrey from '@mui/material/colors/blueGrey';
@@ -12,8 +12,7 @@ import { GridRowSelectionModel } from '@mui/x-data-grid';
 import { GridColDef } from '@mui/x-data-grid/models/colDef/gridColDef';
 import ColouredRectangleChip from 'components/chips/ColouredRectangleChip';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
-import { LoadingGuard } from 'components/loading/LoadingGuard';
-import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import { CustomTooltip } from 'components/tooltip/CustomTooltip';
 import { DeleteTechniqueI18N } from 'constants/i18n';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { IGetTechniqueResponse, TechniqueAttractant } from 'interfaces/useTechniqueApi.interface';
@@ -136,35 +135,15 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
       field: 'method_lookup_id',
       flex: 0.4,
       headerName: 'Method',
-      renderCell: (params) => (
-        <ColouredRectangleChip
-          label={getCodesName(codesContext.codesDataLoader.data, 'sample_methods', params.row.method_lookup_id) ?? ''}
-          colour={blueGrey}
-        />
-      )
-    },
-    {
-      field: 'description',
-      headerName: 'Description',
-      flex: 1,
       renderCell: (params) => {
+        const label =
+          getCodesName(codesContext.codesDataLoader.data, 'sample_methods', params.row.method_lookup_id) ?? '';
         return (
-          <Box alignItems="flex-start">
-            <Typography
-              color="textSecondary"
-              variant="body2"
-              flex="0.4"
-              sx={{
-                whiteSpace: 'normal',
-                wordBreak: 'break-word',
-                display: '-webkit-box',
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                textOverflow: 'ellipsis'
-              }}>
-              {params.row.description}
-            </Typography>
-          </Box>
+          <CustomTooltip tooltip={params.row.description ?? ''}>
+            <Box maxWidth="100%">
+              <ColouredRectangleChip label={label} colour={blueGrey} />
+            </Box>
+          </CustomTooltip>
         );
       }
     },
@@ -186,12 +165,6 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
           ))}
         </Box>
       )
-    },
-    {
-      field: 'distance_threshold',
-      headerName: 'Distance threshold',
-      flex: 0.3,
-      renderCell: (params) => (params.row.distance_threshold ? <>{params.row.distance_threshold}&nbsp;m</> : <></>)
     },
     {
       field: 'actions',
@@ -243,7 +216,7 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
             }
           }}>
           <RouterLink
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/sampling/techniques/${actionMenuAnchorEl?.techniqueId}/edit`}>
+            to={`/admin/surveys/${surveyContext.surveyId}/sampling/techniques/${actionMenuAnchorEl?.techniqueId}/edit`}>
             <ListItemIcon>
               <Icon path={mdiPencilOutline} size={1} />
             </ListItemIcon>
@@ -262,35 +235,22 @@ export const SamplingTechniqueTable = <T extends ITechniqueRowData>(props: ISamp
         </MenuItem>
       </Menu>
 
-      <LoadingGuard
-        hasNoData={!rows.length}
-        hasNoDataFallback={
-          <NoDataOverlay
-            height="100%"
-            title="Add Techniques"
-            subtitle="Techniques describe how you collected species observations"
-            icon={mdiArrowTopRight}
-          />
-        }
-        hasNoDataFallbackDelay={100}>
-        <StyledDataGrid
-          rows={rows}
-          columns={columns}
-          getRowHeight={() => 'auto'}
-          autoHeight={false}
-          disableRowSelectionOnClick
-          disableColumnMenu
-          checkboxSelection
-          rowSelectionModel={selectedRows}
-          onRowSelectionModelChange={setSelectedRows}
-          initialState={{
-            pagination: {
-              paginationModel: { page: 0, pageSize: 10 }
-            }
-          }}
-          pageSizeOptions={[10, 25, 50]}
-        />
-      </LoadingGuard>
+      <StyledDataGrid
+        rows={rows}
+        columns={columns}
+        rowHeight={52}
+        disableRowSelectionOnClick
+        disableColumnMenu
+        checkboxSelection
+        rowSelectionModel={selectedRows}
+        onRowSelectionModelChange={setSelectedRows}
+        initialState={{
+          pagination: {
+            paginationModel: { page: 0, pageSize: 10 }
+          }
+        }}
+        pageSizeOptions={[10, 25, 50]}
+      />
     </>
   );
 };

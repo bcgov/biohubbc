@@ -33,6 +33,10 @@ const appTheme = createTheme({
     text: {
       primary: '#313132',
       secondary: '#757575'
+    },
+    action: {
+      selected: grey[100],
+      hover: grey[50]
     }
   },
   typography: {
@@ -198,6 +202,7 @@ const appTheme = createTheme({
       }
     },
     MuiContainer: {
+      defaultProps: { disableGutters: false },
       styleOverrides: {
         root: {
           maxWidth: 'xl',

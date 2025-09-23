@@ -14,7 +14,7 @@ describe('SampleSiteRepository', () => {
     sinon.restore();
   });
 
-  describe('getSampleSitesForSurveyId', () => {
+  describe('getSampleSitesForSurveyIds', () => {
     it('should return non-empty rows', async () => {
       const mockRows: any[] = [{}, {}];
       const mockResponse = { rows: mockRows, rowCount: 2 } as any as Promise<QueryResult<any>>;
@@ -22,7 +22,7 @@ describe('SampleSiteRepository', () => {
 
       const surveySampleSiteId = 1;
       const repo = new SampleSiteRepository(dbConnectionObj);
-      const response = await repo.getSampleSitesForSurveyId(surveySampleSiteId);
+      const response = await repo.getSampleSitesForSurveyIds([surveySampleSiteId]);
 
       expect(response).to.eql(mockRows);
     });
@@ -34,7 +34,7 @@ describe('SampleSiteRepository', () => {
 
       const surveySampleSiteId = 1;
       const repo = new SampleSiteRepository(dbConnectionObj);
-      const response = await repo.getSampleSitesForSurveyId(surveySampleSiteId);
+      const response = await repo.getSampleSitesForSurveyIds([surveySampleSiteId]);
 
       expect(response).to.eql(mockRows);
     });
@@ -46,7 +46,7 @@ describe('SampleSiteRepository', () => {
       const dbConnectionObj = getMockDBConnection({ sql: () => mockResponse });
 
       const repo = new SampleSiteRepository(dbConnectionObj);
-      const response = await repo.getSampleSitesCountBySurveyId(1001);
+      const response = await repo.getSampleSitesCountBySurveyIds([1001]);
 
       expect(response).to.eql(69);
     });
@@ -58,7 +58,7 @@ describe('SampleSiteRepository', () => {
       const repo = new SampleSiteRepository(dbConnectionObj);
 
       try {
-        await repo.getSampleSitesCountBySurveyId(1001);
+        await repo.getSampleSitesCountBySurveyIds([1001]);
       } catch (error) {
         expect(dbConnectionObj.sql).to.have.been.calledOnce;
         expect((error as ApiExecuteSQLError).message).to.be.eql('Failed to get sample site count');

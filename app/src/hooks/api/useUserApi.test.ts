@@ -81,30 +81,4 @@ describe('useUserApi', () => {
     expect(result.pagination.total).toEqual(2);
     expect(result.pagination.current_page).toEqual(1);
   });
-
-  it('getProjectList works as expected', async () => {
-    mock.onGet(`/api/user/${systemUserId}/projects/get`).reply(200, [
-      {
-        project_participation_id: 3,
-        project_id: 321,
-        project_name: 'test',
-        system_user_id: 1,
-        project_role_ids: [2],
-        project_role_names: ['Role1'],
-        project_role_permissions: ['Permission1']
-      }
-    ]);
-
-    const result = await useUserApi(axios).getProjectList(123);
-
-    expect(result[0]).toEqual({
-      project_participation_id: 3,
-      project_id: 321,
-      project_name: 'test',
-      system_user_id: 1,
-      project_role_ids: [2],
-      project_role_names: ['Role1'],
-      project_role_permissions: ['Permission1']
-    });
-  });
 });

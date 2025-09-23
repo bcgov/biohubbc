@@ -103,7 +103,7 @@ describe('AdministrativeActivityService', () => {
 
       const mockRepoResponse = {
         has_pending_access_request: false,
-        has_one_or_more_project_roles: false
+        has_one_or_more_survey_roles: false
       };
       const repoStub = sinon
         .stub(AdministrativeActivityRepository.prototype, 'getAdministrativeActivityStanding')

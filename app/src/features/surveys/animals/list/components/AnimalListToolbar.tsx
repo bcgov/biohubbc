@@ -37,13 +37,13 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
   const handleImportAnimals = async (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => {
     await biohubApi.survey.importCrittersFromCsv(
       file,
-      surveyContext.projectId,
+
       surveyContext.surveyId,
       cancelToken,
       onProgress
     );
 
-    surveyContext.critterDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    surveyContext.critterDataLoader.refresh(surveyContext.surveyId);
 
     setOpenImportDialog(false);
   };
@@ -75,7 +75,7 @@ export const AnimalListToolbar = (props: IAnimaListToolbarProps) => {
         <DualImportButton
           singleImportButtonProps={{
             component: RouterLink,
-            to: `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/create`
+            to: `/admin/surveys/${surveyContext.surveyId}/animals/create`
           }}
           bulkImportButtonProps={{
             onClick: () => setOpenImportDialog(true)

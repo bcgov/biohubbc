@@ -1,4 +1,3 @@
-import { mdiArrowTopRight } from '@mdi/js';
 import { GridColDef, GridSortModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -40,9 +39,8 @@ export const SurveySpatialTelemetryTable = () => {
 
   const telemetryDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
     biohubApi.telemetry.getTelemetryForSurvey(
-      surveyContext.projectId,
       surveyContext.surveyId,
-      {}, // TODO: Pass filters here
+      {},
       {
         page: page + 1, // This fixes an off-by-one error between the front end and the back end
         limit,
@@ -138,10 +136,10 @@ export const SurveySpatialTelemetryTable = () => {
       hasNoData={!rows.length}
       hasNoDataFallback={
         <NoDataOverlay
+          minHeight="400px"
           height="100%"
-          title="Add Telemetry"
-          subtitle="Add telemetry devices to animals and upload device data"
-          icon={mdiArrowTopRight}
+          title="Telemetry"
+          subtitle="Add telemetry devices to animals and upload device data. Telemetry data that belongs to the surveys in this collection will show here."
         />
       }
       hasNoDataFallbackDelay={100}>

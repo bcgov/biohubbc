@@ -1,6 +1,6 @@
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
-import HelpButtonTooltip from 'components/buttons/HelpButtonTooltip';
+import HelpButtonTooltip from 'components/tooltip/HelpButtonTooltip';
 import { useFormikContext } from 'formik';
 import get from 'lodash-es/get';
 import { ChangeEvent } from 'react';
@@ -58,7 +58,7 @@ interface ICustomTextField {
 }
 
 const CustomTextField = (props: React.PropsWithChildren<ICustomTextField>) => {
-  const { touched, errors, values, handleChange, handleBlur } = useFormikContext<any>();
+  const { touched, errors, values, handleChange, handleBlur, setFieldError } = useFormikContext<any>();
 
   const { name, label, other, placeholder, helpText } = props;
 
@@ -87,6 +87,9 @@ const CustomTextField = (props: React.PropsWithChildren<ICustomTextField>) => {
         }
 
         handleChange(event);
+        if (get(errors, name)) {
+          setFieldError(name, undefined);
+        }
       }}
       onBlur={handleBlur}
       variant="outlined"

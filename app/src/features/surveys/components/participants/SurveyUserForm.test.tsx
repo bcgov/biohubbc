@@ -5,7 +5,7 @@ import { ICodeWithDescription } from 'interfaces/useCodesApi.interface';
 import { getMockAuthState, SystemAdminAuthState } from 'test-helpers/auth-helpers';
 import { render, waitFor } from 'test-helpers/test-utils';
 import { Mock } from 'vitest';
-import SurveyUserForm, { SurveyUserJobYupSchema } from './SurveyUserForm';
+import SurveyUserForm, { SurveyParticipantsJobYupSchema } from './SurveyUserForm';
 
 const mockJobs: ICodeWithDescription[] = [
   {
@@ -88,7 +88,7 @@ describe('SurveyUserForm', () => {
       <AuthStateContext.Provider value={authState}>
         <Formik
           initialValues={formikInitialValues}
-          validationSchema={SurveyUserJobYupSchema}
+          validationSchema={SurveyParticipantsJobYupSchema}
           validateOnBlur={true}
           validateOnChange={false}
           onSubmit={async () => {}}>
@@ -129,7 +129,7 @@ describe('SurveyUserForm', () => {
       <AuthStateContext.Provider value={authState}>
         <Formik
           initialValues={formikInitialValues}
-          validationSchema={SurveyUserJobYupSchema}
+          validationSchema={SurveyParticipantsJobYupSchema}
           validateOnBlur={true}
           validateOnChange={false}
           onSubmit={async () => {}}>

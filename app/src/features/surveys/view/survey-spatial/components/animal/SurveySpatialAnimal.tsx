@@ -10,7 +10,6 @@ import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useMemo } from 'react';
 import { coloredCustomMortalityMarker } from 'utils/mapUtils';
-import { SurveySpatialAnimalTable } from './SurveySpatialAnimalTable';
 
 /**
  * Array of additional static layers to be added to the map.
@@ -101,11 +100,6 @@ export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
           staticLayers={[...(props.staticLayers ?? []), captureLayer, mortalityLayer]}
           isLoading={geometryDataLoader.isLoading}
         />
-      </Box>
-
-      {/* Display data table with animal capture details */}
-      <Box height={{ xs: 300, md: 500 }} display="flex" flexDirection="column">
-        <SurveySpatialAnimalTable isLoading={geometryDataLoader.isLoading} />
       </Box>
     </>
   );

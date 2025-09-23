@@ -1,6 +1,5 @@
 import { mdiArrowTopRight, mdiDotsVertical, mdiImport, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
@@ -39,25 +38,23 @@ export const DevicesContainer = () => {
   const [headerAnchorEl, setHeaderAnchorEl] = useState<null | HTMLElement>(null);
   const [selectedRows, setSelectedRows] = useState<GridRowSelectionModel>([]);
 
-  const devicesDataLoader = useDataLoader((projectId: number, surveyId: number) =>
-    biohubApi.telemetryDevice.getDevicesInSurvey(projectId, surveyId)
-  );
+  const devicesDataLoader = useDataLoader((surveyId: number) => biohubApi.telemetryDevice.getDevicesInSurvey(surveyId));
 
   useEffect(() => {
-    devicesDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [devicesDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+    devicesDataLoader.load(surveyContext.surveyId);
+  }, [devicesDataLoader, surveyContext.surveyId]);
 
   const devices = devicesDataLoader.data?.devices ?? [];
   const devicesCount = devicesDataLoader.data?.count ?? 0;
 
   // Deployments data loader
-  const deploymentsDataLoader = useDataLoader((projectId: number, surveyId: number) =>
-    biohubApi.telemetryDeployment.getDeploymentsInSurvey(projectId, surveyId)
+  const deploymentsDataLoader = useDataLoader((surveyId: number) =>
+    biohubApi.telemetryDeployment.getDeploymentsInSurvey(surveyId)
   );
 
   useEffect(() => {
-    deploymentsDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [deploymentsDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+    deploymentsDataLoader.load(surveyContext.surveyId);
+  }, [deploymentsDataLoader, surveyContext.surveyId]);
 
   const deployments = deploymentsDataLoader.data?.deployments ?? [];
 
@@ -65,7 +62,6 @@ export const DevicesContainer = () => {
   const handleBulkDelete = async () => {
     try {
       await biohubApi.telemetryDevice.deleteDevices(
-        surveyContext.projectId,
         surveyContext.surveyId,
         selectedRows.map((id) => Number(id))
       );
@@ -124,7 +120,7 @@ export const DevicesContainer = () => {
   };
 
   const onDelete = () => {
-    devicesDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    devicesDataLoader.refresh(surveyContext.surveyId);
   };
 
   const [showImportDialog, setShowImportDialog] = useState(false);
@@ -132,25 +128,24 @@ export const DevicesContainer = () => {
   // Handle import for devices in bulk
   const handleImportDeviceCSV = async (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => {
     try {
-      await biohubApi.telemetryDevice.importTelemetryDeviceCSV(
-        surveyContext.projectId,
-        surveyContext.surveyId,
-        file,
-        cancelToken,
-        onProgress
-      );
+      await biohubApi.telemetryDevice.importTelemetryDeviceCSV(surveyContext.surveyId, file, cancelToken, onProgress);
 
       setProcessingRecords(true);
 
       // Refresh the device data after a successful import
-      devicesDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+      devicesDataLoader.refresh(surveyContext.surveyId);
     } finally {
       setProcessingRecords(false);
     }
   };
 
   return (
-    <>
+    <Stack
+      flexDirection="column"
+      height="100%"
+      sx={{
+        overflow: 'hidden'
+      }}>
       {/* Bulk action menu */}
       <CSVSingleImportDialog
         open={showImportDialog}
@@ -189,13 +184,14 @@ export const DevicesContainer = () => {
             variant="contained"
             color="primary"
             component={RouterLink}
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/create`}
+            to={`/admin/surveys/${surveyContext.surveyId}/telemetry/manage/device/create`}
             startIcon={<Icon path={mdiPlus} size={0.8} />}>
             Add
           </Button>
           <Button
             variant="contained"
             color="primary"
+            disabled={processingRecords}
             startIcon={<Icon path={mdiImport} size={1} />}
             onClick={() => setShowImportDialog(true)}>
             Import
@@ -214,37 +210,27 @@ export const DevicesContainer = () => {
 
       <Divider flexItem />
 
-      <Box>
-        <LoadingGuard
-          isLoading={devicesDataLoader.isLoading}
-          isLoadingFallback={<SkeletonTable numberOfLines={5} />}
-          isLoadingFallbackDelay={100}>
-          <Box>
-            <LoadingGuard
-              isLoading={devicesDataLoader.isLoading || !devicesDataLoader.isReady || processingRecords}
-              isLoadingFallback={<SkeletonTable />}
-              isLoadingFallbackDelay={100}
-              hasNoData={!devicesCount}
-              hasNoDataFallback={
-                <NoDataOverlay
-                  height="200px"
-                  title="Add Telemetry Devices"
-                  subtitle="Add your telemetry devices, so they can be used in a deployment."
-                  icon={mdiArrowTopRight}
-                />
-              }
-              hasNoDataFallbackDelay={100}>
-              <DevicesTable
-                devices={devices}
-                deployments={deployments}
-                selectedRows={selectedRows}
-                setSelectedRows={setSelectedRows}
-                onDelete={onDelete}
-              />
-            </LoadingGuard>
-          </Box>
-        </LoadingGuard>
-      </Box>
-    </>
+      <LoadingGuard
+        isLoading={devicesDataLoader.isLoading || !devicesDataLoader.isReady}
+        isLoadingFallback={<SkeletonTable />}
+        isLoadingFallbackDelay={100}
+        hasNoData={!devicesCount}
+        hasNoDataFallback={
+          <NoDataOverlay
+            title="Add Telemetry Devices"
+            subtitle="Add your telemetry devices, so they can be used in a deployment."
+            icon={mdiArrowTopRight}
+          />
+        }
+        hasNoDataFallbackDelay={100}>
+        <DevicesTable
+          deployments={deployments}
+          devices={devices}
+          selectedRows={selectedRows}
+          setSelectedRows={setSelectedRows}
+          onDelete={onDelete}
+        />
+      </LoadingGuard>
+    </Stack>
   );
 };

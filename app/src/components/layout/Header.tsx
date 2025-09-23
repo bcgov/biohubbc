@@ -247,9 +247,9 @@ const Header: React.FC = () => {
                   tabIndex={1}
                   component={RouterLink}
                   to="/admin/summary"
-                  id="menu_projects_sm"
+                  id="menu_surveys_sm"
                   onClick={hideMobileMenu}>
-                  Projects
+                  Surveys
                 </MenuItem>
               </SystemRoleGuard>
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
@@ -330,8 +330,8 @@ const Header: React.FC = () => {
                   SYSTEM_ROLE.SYSTEM_ADMIN,
                   SYSTEM_ROLE.DATA_ADMINISTRATOR
                 ]}>
-                <RouterLink to="/admin/summary" id="menu_projects">
-                  Projects
+                <RouterLink to="/admin/summary" id="menu_surveys">
+                  Surveys
                 </RouterLink>
               </SystemRoleGuard>
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>

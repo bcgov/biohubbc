@@ -52,13 +52,7 @@ export const TelemetryDeviceKeysDialog = (props: ITelemetryDeviceKeysDialogProps
     handleFileUploadProgress: (progressEvent: AxiosProgressEvent) => void
   ) => {
     return biohubApi.telemetry
-      .uploadTelemetryDeviceCredentialFile(
-        surveyContext.projectId,
-        surveyContext.surveyId,
-        file,
-        cancelToken,
-        handleFileUploadProgress
-      )
+      .uploadTelemetryDeviceCredentialFile(surveyContext.surveyId, file, cancelToken, handleFileUploadProgress)
       .then(() => {
         if (!isMounted()) {
           return;
@@ -85,7 +79,7 @@ export const TelemetryDeviceKeysDialog = (props: ITelemetryDeviceKeysDialogProps
   );
 
   const telemetryDeviceKeyFileDataLoader = useDataLoader(() =>
-    biohubApi.telemetry.getTelemetryDeviceKeyFiles(surveyContext.projectId, surveyContext.surveyId)
+    biohubApi.telemetry.getTelemetryDeviceKeyFiles(surveyContext.surveyId)
   );
 
   useEffect(() => {

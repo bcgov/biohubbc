@@ -67,7 +67,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
     }
 
     try {
-      await biohubApi.telemetryDevice.deleteDevice(surveyContext.projectId, surveyContext.surveyId, actionMenuDeviceId);
+      await biohubApi.telemetryDevice.deleteDevice(surveyContext.surveyId, actionMenuDeviceId);
       dialogContext.setYesNoDialog({ open: false });
       setActionMenuAnchorEl(null);
       onDelete?.();
@@ -232,7 +232,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
             }
           }}>
           <RouterLink
-            to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/${actionMenuDeviceId}/edit`}>
+            to={`/admin/surveys/${surveyContext.surveyId}/telemetry/manage/device/${actionMenuDeviceId}/edit`}>
             <ListItemIcon>
               <Icon path={mdiPencilOutline} size={1} />
             </ListItemIcon>
@@ -248,8 +248,7 @@ export const DevicesTable = (props: IDevicesTableProps) => {
       </Menu>
 
       <StyledDataGrid
-        autoHeight
-        getRowHeight={() => 'auto'}
+        rowHeight={52}
         disableColumnMenu
         rows={rows}
         getRowId={(row) => row.id}

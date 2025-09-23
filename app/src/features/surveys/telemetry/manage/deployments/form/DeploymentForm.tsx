@@ -62,30 +62,20 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
   const history = useHistory();
 
   // Fetch all devices for the survey
-  const devicesDataLoader = useDataLoader(() =>
-    biohubApi.telemetryDevice.getDevicesInSurvey(surveyContext.projectId, surveyContext.surveyId)
-  );
+  const devicesDataLoader = useDataLoader(() => biohubApi.telemetryDevice.getDevicesInSurvey(surveyContext.surveyId));
 
   // Fetch all critters for the survey
-  const crittersDataLoader = useDataLoader(() =>
-    biohubApi.survey.getSurveyCritters(surveyContext.projectId, surveyContext.surveyId)
-  );
+  const crittersDataLoader = useDataLoader(() => biohubApi.survey.getSurveyCritters(surveyContext.surveyId));
 
   useEffect(() => {
     codesContext.codesDataLoader.load();
     devicesDataLoader.load();
     crittersDataLoader.load();
-  }, [
-    codesContext.codesDataLoader,
-    crittersDataLoader,
-    devicesDataLoader,
-    surveyContext.projectId,
-    surveyContext.surveyId
-  ]);
+  }, [codesContext.codesDataLoader, crittersDataLoader, devicesDataLoader, surveyContext.surveyId]);
 
   // Fetch a single critter's data
   const critterDataLoader = useDataLoader((critterId: number) =>
-    biohubApi.survey.getCritterById(surveyContext.projectId, surveyContext.surveyId, critterId)
+    biohubApi.survey.getCritterById(surveyContext.surveyId, critterId)
   );
 
   // Fetch individual critter data when critter_id changes (ie. when the user selects a critter)
@@ -112,7 +102,7 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
                       textDecoration: 'none'
                     }}
                     component={RouterLink}
-                    to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage/device/create`}>
+                    to={`/admin/surveys/${surveyContext.surveyId}/telemetry/manage/device/create`}>
                     add the device
                   </Typography>
                   &nbsp;and&nbsp;
@@ -121,7 +111,7 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
                       textDecoration: 'none'
                     }}
                     component={RouterLink}
-                    to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/create`}>
+                    to={`/admin/surveys/${surveyContext.surveyId}/animals/create`}>
                     animal
                   </Typography>
                   &nbsp;to your Survey before associating the two in a deployment.
@@ -176,9 +166,7 @@ export const DeploymentForm = (props: IDeploymentFormProps) => {
               variant="outlined"
               color="primary"
               onClick={() => {
-                history.push(
-                  `/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`
-                );
+                history.push(`/admin/surveys/${surveyContext.surveyId}/telemetry/manage`);
               }}>
               Cancel
             </Button>

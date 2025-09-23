@@ -1,5 +1,5 @@
 import { AuthStateContext } from 'contexts/authStateContext';
-import { IProjectContext, ProjectContext } from 'contexts/projectContext';
+
 import { ISurveyContext, SurveyContext } from 'contexts/surveyContext';
 import { createMemoryHistory } from 'history';
 import { DataLoader } from 'hooks/useDataLoader';
@@ -12,20 +12,11 @@ const sidebar = <div>SIDEBAR</div>;
 const main = <div>MAIN_CONTENT</div>;
 
 const mockSurveyContext: ISurveyContext = {
-  projectId: 1,
   surveyDataLoader: {
     data: { surveyData: { survey_details: { survey_name: 'survey-name-1' } } },
     load: vi.fn()
   } as unknown as DataLoader<any, any, any>
 } as unknown as ISurveyContext;
-
-const mockProjectContext: IProjectContext = {
-  projectId: 1,
-  projectDataLoader: {
-    data: { projectData: { project: { project_name: 'name' } } },
-    load: vi.fn()
-  } as unknown as DataLoader<any, any, any>
-} as unknown as IProjectContext;
 
 const authState = getMockAuthState({ base: SystemAdminAuthState });
 const history = createMemoryHistory();
@@ -34,11 +25,9 @@ const _render = (_mockSurveyContext: any) =>
   render(
     <AuthStateContext.Provider value={authState}>
       <Router history={history}>
-        <ProjectContext.Provider value={mockProjectContext}>
-          <SurveyContext.Provider value={_mockSurveyContext}>
-            <SurveySectionFullPageLayout sideBarComponent={sidebar} mainComponent={main} pageTitle={'fullpage-title'} />
-          </SurveyContext.Provider>
-        </ProjectContext.Provider>
+        <SurveyContext.Provider value={_mockSurveyContext}>
+          <SurveySectionFullPageLayout sideBarComponent={sidebar} mainComponent={main} pageTitle={'fullpage-title'} />
+        </SurveyContext.Provider>
       </Router>
     </AuthStateContext.Provider>
   );
@@ -57,7 +46,6 @@ it('should render sidebar and main content', () => {
 
 it('should render loading spinner when no survey data', () => {
   const { getByTestId, queryByText } = _render({
-    projectId: 1,
     surveyDataLoader: {
       data: undefined,
       load: vi.fn()

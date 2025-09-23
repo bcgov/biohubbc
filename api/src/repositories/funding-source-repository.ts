@@ -36,7 +36,6 @@ const SurveyFundingSource = z.object({
 export type SurveyFundingSource = z.infer<typeof SurveyFundingSource>;
 
 const SurveyFundingSourceSupplementaryData = z.object({
-  project_id: z.number(),
   survey_name: z.string()
 });
 
@@ -187,7 +186,6 @@ export class FundingSourceRepository extends BaseRepository {
         survey_funding_source.survey_id,
         survey_funding_source.funding_source_id,
         survey_funding_source.revision_count,
-        survey.project_id,
         survey.name as survey_name
       FROM
         survey_funding_source
@@ -206,7 +204,7 @@ export class FundingSourceRepository extends BaseRepository {
         survey_id: z.number(),
         funding_source_id: z.number(),
         revision_count: z.number(),
-        project_id: z.number(),
+
         survey_name: z.string()
       })
     );

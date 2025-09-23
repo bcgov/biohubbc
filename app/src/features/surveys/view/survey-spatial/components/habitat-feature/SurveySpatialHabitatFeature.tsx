@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import { IStaticLayer, IStaticLayerFeature } from 'components/map/components/StaticLayers';
 import { SURVEY_MAP_LAYER_COLOURS } from 'constants/colours';
-import { HabitatFeatureTableContextProvider } from 'contexts/habitatFeatureTableContext';
 import { SurveySpatialHabitatFeaturePointPopup } from 'features/surveys/view/survey-spatial/components/habitat-feature/SurveySpatialHabitatFeaturePointPopup';
 import SurveyMap from 'features/surveys/view/SurveyMap';
 import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
@@ -32,7 +31,7 @@ export const SurveySpatialHabitatFeature = (props: ISurveySpatialHabitatFeatureP
   const biohubApi = useBiohubApi();
 
   const habitatFeaturesGeometryDataLoader = useDataLoader(() =>
-    biohubApi.habitatFeature.getSurveyHabitatFeaturesGeometry(surveyContext.projectId, surveyContext.surveyId)
+    biohubApi.habitatFeature.getSurveyHabitatFeaturesGeometry(surveyContext.surveyId)
   );
 
   useEffect(() => {
@@ -81,9 +80,7 @@ export const SurveySpatialHabitatFeature = (props: ISurveySpatialHabitatFeatureP
 
       {/* Display data table with habitat feature details */}
       <Box height={{ xs: 300, md: 500 }} display="flex" flexDirection="column">
-        <HabitatFeatureTableContextProvider>
-          <SurveySpatialHabitatFeatureTableContainer />
-        </HabitatFeatureTableContextProvider>
+        <SurveySpatialHabitatFeatureTableContainer />
       </Box>
     </>
   );

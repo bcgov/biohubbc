@@ -1,5 +1,5 @@
-import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import { CreateCapturePage } from 'features/surveys/animals/profile/captures/capture-form/create/CreateCapturePage';
 import { EditCapturePage } from 'features/surveys/animals/profile/captures/capture-form/edit/EditCapturePage';
@@ -15,107 +15,91 @@ import { SurveyAnimalPage } from './AnimalPage';
 import { CreateCSVCapturesPage } from './profile/captures/import-captures/CreateCSVCapturesPage';
 
 /**
- * Router for all `/admin/projects/:id/surveys/:survey_id/animals/*` pages.
+ * Router for all `/admin/surveys/:survey_id/animals/*` pages.
  *
  * @return {*}
  */
 export const AnimalRouter: React.FC = () => {
   return (
     <Switch>
-      <Redirect
-        exact
-        from="/admin/projects/:id/surveys/:survey_id/animals"
-        to="/admin/projects/:id/surveys/:survey_id/animals/details"
-      />
+      <Redirect exact from="/admin/surveys/:survey_id/animals" to="/admin/surveys/:survey_id/animals/details" />
 
-      <RouteWithTitle
-        exact
-        path="/admin/projects/:id/surveys/:survey_id/animals/details"
-        title={getTitle('Manage Animals')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+      <RouteWithTitle exact path="/admin/surveys/:survey_id/animals/details" title={getTitle('Manage Animals')}>
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <SurveyAnimalPage />
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
-      <RouteWithTitle
-        exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/create'}
-        title={getTitle('Create Animal')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+      <RouteWithTitle exact path={'/admin/surveys/:survey_id/animals/create'} title={getTitle('Create Animal')}>
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <CreateAnimalPage />
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
-      <RouteWithTitle
-        exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/captures'}
-        title={getTitle('Create Captures')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+      <RouteWithTitle exact path={'/admin/surveys/:survey_id/animals/captures'} title={getTitle('Create Captures')}>
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <CreateCSVCapturesPage />
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
-      <RouteWithTitle
-        exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/edit'}
-        title={getTitle('Edit Animal')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+      <RouteWithTitle exact path={'/admin/surveys/:survey_id/animals/:critter_id/edit'} title={getTitle('Edit Animal')}>
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <TaxonomyContextProvider>
             <EditAnimalPage />
           </TaxonomyContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/capture/create'}
+        path={'/admin/surveys/:survey_id/animals/:critter_id/capture/create'}
         title={getTitle('Create Capture')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <CreateCapturePage />
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/capture/:capture_id/edit'}
+        path={'/admin/surveys/:survey_id/animals/:critter_id/capture/:capture_id/edit'}
         title={getTitle('Edit Capture')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <EditCapturePage />
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/mortality/create'}
+        path={'/admin/surveys/:survey_id/animals/:critter_id/mortality/create'}
         title={getTitle('Report Mortality')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <CreateMortalityPage />
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
-        path={'/admin/projects/:id/surveys/:survey_id/animals/:critter_id/mortality/:mortality_id/edit'}
+        path={'/admin/surveys/:survey_id/animals/:critter_id/mortality/:mortality_id/edit'}
         title={getTitle('Edit Mortality')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <EditMortalityPage />
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
     </Switch>
   );

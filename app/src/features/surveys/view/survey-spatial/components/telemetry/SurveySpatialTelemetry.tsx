@@ -27,13 +27,17 @@ export const SurveySpatialTelemetry = (props: ISurveySpatialTelemetryProps) => {
 
   const [dateRange, setDateRange] = useState<[Dayjs, Dayjs] | null>(null);
 
-  const telemetrySpatialDataLoader = useDataLoader((projectId: number, surveyId: number, filters?: TelemetryFilters) =>
-    biohubApi.telemetry.getTelemetrySpatialForSurvey(projectId, surveyId, filters)
+  const telemetrySpatialDataLoader = useDataLoader((surveyId: number, filters?: TelemetryFilters) =>
+    biohubApi.telemetry.getTelemetrySpatialForSurvey(surveyId, filters)
   );
 
   useEffect(() => {
+    telemetrySpatialDataLoader.load(surveyContext.surveyId);
+  }, [surveyContext.surveyId, telemetrySpatialDataLoader]);
+
+  useEffect(() => {
     const initializeTelemetry = async () => {
-      const telemetry = await telemetrySpatialDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
+      const telemetry = await telemetrySpatialDataLoader.load(surveyContext.surveyId);
 
       if (telemetry?.supplementaryData && !dateRange) {
         const { start_date, end_date } = telemetry.supplementaryData;
@@ -42,15 +46,15 @@ export const SurveySpatialTelemetry = (props: ISurveySpatialTelemetryProps) => {
     };
 
     initializeTelemetry();
-  }, [surveyContext.projectId, surveyContext.surveyId, telemetrySpatialDataLoader, dateRange]);
+  }, [surveyContext.surveyId, telemetrySpatialDataLoader, dateRange]);
 
   const debouncedRefreshTelemetry = useMemo(() => {
     return debounce((filters: TelemetryFilters) => {
-      telemetrySpatialDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId, filters);
+      telemetrySpatialDataLoader.refresh(surveyContext.surveyId, filters);
     }, 500);
     // Can't include data loader in the dependencies or the debounce triggers prematurely
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [surveyContext.projectId, surveyContext.surveyId]);
+  }, [surveyContext.surveyId]);
 
   const points: IStaticLayerFeature[] = useMemo(() => {
     const points: IStaticLayerFeature[] = [];

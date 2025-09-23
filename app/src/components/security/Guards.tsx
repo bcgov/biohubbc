@@ -1,8 +1,7 @@
-import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from 'constants/roles';
-import { ProjectAuthStateContext } from 'contexts/projectAuthStateContext';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { useAuthStateContext } from 'hooks/useAuthStateContext';
 import { useConfigContext } from 'hooks/useContext';
-import { PropsWithChildren, ReactElement, useContext } from 'react';
+import { PropsWithChildren, ReactElement } from 'react';
 import { hasAtLeastOneValidValue } from 'utils/authUtils';
 
 interface IGuardProps {
@@ -25,28 +24,28 @@ export interface ISystemRoleGuardProps extends IGuardProps {
   validSystemRoles: SYSTEM_ROLE[];
 }
 
-export interface IProjectRoleGuardProps extends IGuardProps {
+export interface ISurveyRoleRouteGuardProps extends IGuardProps {
   /**
    * An array of valid project roles. The user may have 1 or more matching project roles to pass the guard.
    *
-   * @type {PROJECT_ROLE[]}
-   * @memberof IProjectRoleGuardProps
+   * @type {SURVEY_ROLE}
+   * @memberof ISurveyRoleRouteGuardProps
    */
-  validProjectRoles?: PROJECT_ROLE[];
+  validProjectRoles?: SURVEY_ROLE;
   /**
    * An array of valid system roles. The user may have 1 or more matching system roles to override the guard.
    *
    * @type {SYSTEM_ROLE[]}
-   * @memberof IProjectRoleGuardProps
+   * @memberof ISurveyRoleRouteGuardProps
    */
   validSystemRoles?: SYSTEM_ROLE[];
 
   /**
    * An array of valid project permissions. The user must have 1 or more matching permissions to pass the guard
-   * @type {PROJECT_PERMISSION[]}
-   * @memberof IProjectRoleGuardProps
+   * @type {SURVEY_ROLE}
+   * @memberof ISurveyRoleRouteGuardProps
    */
-  validProjectPermissions: PROJECT_PERMISSION[];
+  validSurveyRoles: SURVEY_ROLE[];
 }
 
 export interface IFeatureFlagGuardProps extends IGuardProps {
@@ -80,31 +79,6 @@ export const SystemRoleGuard = (props: PropsWithChildren<ISystemRoleGuardProps>)
   }
 
   return <>{props.children}</>;
-};
-
-/**
- * Renders `props.children` only if the user has the necessary roles as a project participant.
- *
- * @param {*} props
- * @return {*}
- */
-export const ProjectRoleGuard = (props: PropsWithChildren<IProjectRoleGuardProps>) => {
-  const { validProjectRoles, validSystemRoles, validProjectPermissions } = props;
-  const projectAuthStateContext = useContext(ProjectAuthStateContext);
-
-  const hasSystemRole = projectAuthStateContext.hasSystemRole(validSystemRoles);
-  const hasProjectRole = projectAuthStateContext.hasProjectRole(validProjectRoles);
-  const hasProjectPermissions = projectAuthStateContext.hasProjectPermission(validProjectPermissions);
-
-  if (hasSystemRole || hasProjectRole || hasProjectPermissions) {
-    return <>{props.children}</>;
-  }
-
-  if (props.fallback) {
-    return <>{props.fallback}</>;
-  }
-
-  return <></>;
 };
 
 /**

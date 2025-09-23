@@ -11,7 +11,7 @@ import { DeploymentFormHeader } from 'features/surveys/telemetry/manage/deployme
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useDialogContext, useProjectContext, useSurveyContext } from 'hooks/useContext';
+import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { useUnsavedChangesDialog } from 'hooks/useUnsavedChangesDialog';
 import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { useRef, useState } from 'react';
@@ -28,7 +28,7 @@ export const CreateDeploymentPage = () => {
   const biohubApi = useBiohubApi();
 
   const dialogContext = useDialogContext();
-  const projectContext = useProjectContext();
+
   const surveyContext = useSurveyContext();
 
   const { locationChangeInterceptor, skipUnsavedChangesDialog } = useUnsavedChangesDialog();
@@ -37,7 +37,7 @@ export const CreateDeploymentPage = () => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  if (!surveyContext.surveyDataLoader.data || !projectContext.projectDataLoader.data) {
+  if (!surveyContext.surveyDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -45,27 +45,22 @@ export const CreateDeploymentPage = () => {
     setIsSubmitting(true);
 
     try {
-      await biohubApi.telemetryDeployment.createDeployment(
-        surveyContext.projectId,
-        surveyContext.surveyId,
-        values.critter_id,
-        {
-          device_id: values.device_id,
-          frequency: values.frequency,
-          frequency_unit_id: values.frequency_unit_id,
-          attachment_start_date: values.attachment_start_date,
-          attachment_start_time: values.attachment_start_time,
-          attachment_end_date: values.attachment_end_date,
-          attachment_end_time: values.attachment_end_time,
-          critterbase_start_capture_id: values.critterbase_start_capture_id,
-          critterbase_end_capture_id: values.critterbase_end_capture_id,
-          critterbase_end_mortality_id: values.critterbase_end_mortality_id
-        }
-      );
+      await biohubApi.telemetryDeployment.createDeployment(surveyContext.surveyId, values.critter_id, {
+        device_id: values.device_id,
+        frequency: values.frequency,
+        frequency_unit_id: values.frequency_unit_id,
+        attachment_start_date: values.attachment_start_date,
+        attachment_start_time: values.attachment_start_time,
+        attachment_end_date: values.attachment_end_date,
+        attachment_end_time: values.attachment_end_time,
+        critterbase_start_capture_id: values.critterbase_start_capture_id,
+        critterbase_end_capture_id: values.critterbase_end_capture_id,
+        critterbase_end_mortality_id: values.critterbase_end_mortality_id
+      });
 
       // create complete, navigate back to telemetry page
       skipUnsavedChangesDialog();
-      history.push(`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/telemetry/manage`);
+      history.push(`/admin/surveys/${surveyContext.surveyId}/telemetry/manage`);
     } catch (error) {
       dialogContext.setErrorDialog({
         dialogTitle: CreateAnimalDeploymentI18N.createErrorTitle,
@@ -97,8 +92,6 @@ export const CreateDeploymentPage = () => {
         <Box display="flex" flexDirection="column">
           <FormikErrorSnackbar />
           <DeploymentFormHeader
-            project_id={surveyContext.projectId}
-            project_name={projectContext.projectDataLoader.data?.projectData.project.project_name}
             survey_id={surveyContext.surveyId}
             survey_name={surveyContext.surveyDataLoader.data.surveyData.survey_details.survey_name}
             is_submitting={isSubmitting}

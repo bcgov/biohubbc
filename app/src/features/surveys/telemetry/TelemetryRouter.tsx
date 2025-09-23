@@ -1,5 +1,5 @@
-import { ProjectRoleRouteGuard } from 'components/security/RouteGuards';
-import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
+import { SurveyRoleRouteGuard } from 'components/security/RouteGuards';
+import { SURVEY_ROLE, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { CreateDeploymentPage } from 'features/surveys/telemetry/manage/deployments/create/CreateDeploymentPage';
 import { EditDeploymentPage } from 'features/surveys/telemetry/manage/deployments/edit/EditDeploymentPage';
@@ -12,95 +12,88 @@ import RouteWithTitle from 'utils/RouteWithTitle';
 import { getTitle } from 'utils/Utils';
 
 /**
- * Router for all `/admin/projects/:id/surveys/:survey_id/telemetry/*` pages.
+ * Router for all `/admin/surveys/:survey_id/telemetry/*` pages.
  *
  * @return {*}
  */
 export const TelemetryRouter = () => {
   return (
     <Switch>
-      <Redirect
-        exact
-        from="/admin/projects/:id/surveys/:survey_id/telemetry"
-        to="/admin/projects/:id/surveys/:survey_id/telemetry/details"
-      />
+      <Redirect exact from="/admin/surveys/:survey_id/telemetry" to="/admin/surveys/:survey_id/telemetry/details" />
 
-      <RouteWithTitle
-        exact
-        path="/admin/projects/:id/surveys/:survey_id/telemetry/details"
-        title={getTitle('Telemetry')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+      <RouteWithTitle exact path="/admin/surveys/:survey_id/telemetry/details" title={getTitle('Telemetry')}>
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <TelemetryPage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/telemetry/manage"
+        path="/admin/surveys/:survey_id/telemetry/manage"
         title={getTitle('Devices and Deployments')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <DevicesAndDeploymentsManagePage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/telemetry/manage/device/create"
+        path="/admin/surveys/:survey_id/telemetry/manage/device/create"
         title={getTitle('Add Device')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <CreateDevicePage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/telemetry/manage/device/:device_id/edit"
+        path="/admin/surveys/:survey_id/telemetry/manage/device/:device_id/edit"
         title={getTitle('Edit Device')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <EditDevicePage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/telemetry/manage/deployment/create"
+        path="/admin/surveys/:survey_id/telemetry/manage/deployment/create"
         title={getTitle('Add Deployment')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <CreateDeploymentPage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
 
       <RouteWithTitle
         exact
-        path="/admin/projects/:id/surveys/:survey_id/telemetry/manage/deployment/:deployment_id/edit"
+        path="/admin/surveys/:survey_id/telemetry/manage/deployment/:deployment_id/edit"
         title={getTitle('Edit Deployment')}>
-        <ProjectRoleRouteGuard
-          validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
+        <SurveyRoleRouteGuard
+          validSurveyRoles={[SURVEY_ROLE.ADMIN, SURVEY_ROLE.EDITOR]}
           validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
           <DialogContextProvider>
             <EditDeploymentPage />
           </DialogContextProvider>
-        </ProjectRoleRouteGuard>
+        </SurveyRoleRouteGuard>
       </RouteWithTitle>
     </Switch>
   );

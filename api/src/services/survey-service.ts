@@ -1,5 +1,6 @@
 import { flatten } from 'lodash';
 import { IDBConnection } from '../database/db';
+import { CollectionBasic } from '../models/collection';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PostSurveyLocationData, PutPartnershipsData, PutSurveyObject } from '../models/survey-update';
 import {
@@ -21,6 +22,7 @@ import { PostSurveyBlock, SurveyBlockRecordWithCount } from '../repositories/sur
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { ISurveyProprietorModel, SurveyBasicFields, SurveyRepository } from '../repositories/survey-repository';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
+import { CollectionSurveyService } from './collection-survey-service';
 import { DBService } from './db-service';
 import { FundingSourceService } from './funding-source-service';
 import { HistoryPublishService } from './history-publish-service';
@@ -30,6 +32,7 @@ import { RegionService } from './region-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 import { SurveyBlockService } from './survey-block-service';
 import { SurveyLocationService } from './survey-location-service';
+import { SurveyMemberService } from './survey-member-service';
 import { SurveyParticipationService } from './survey-participation-service';
 
 export class SurveyService extends DBService {
@@ -39,6 +42,7 @@ export class SurveyService extends DBService {
   fundingSourceService: FundingSourceService;
   siteSelectionStrategyService: SiteSelectionStrategyService;
   surveyParticipationService: SurveyParticipationService;
+  surveyMemberService: SurveyMemberService;
   regionService: RegionService;
 
   constructor(connection: IDBConnection) {
@@ -50,18 +54,8 @@ export class SurveyService extends DBService {
     this.fundingSourceService = new FundingSourceService(connection);
     this.siteSelectionStrategyService = new SiteSelectionStrategyService(connection);
     this.surveyParticipationService = new SurveyParticipationService(connection);
+    this.surveyMemberService = new SurveyMemberService(connection);
     this.regionService = new RegionService(connection);
-  }
-
-  /**
-   * Get Survey IDs for a project ID
-   *
-   * @param {number} projectId
-   * @returns {*} {Promise<{id: number}[]>}
-   * @memberof SurveyService
-   */
-  async getSurveyIdsByProjectId(projectId: number): Promise<{ id: number }[]> {
-    return this.surveyRepository.getSurveyIdsByProjectId(projectId);
   }
 
   /**
@@ -83,7 +77,8 @@ export class SurveyService extends DBService {
       this.getSurveyLocationsData(surveyId),
       this.surveyParticipationService.getSurveyParticipants(surveyId),
       this.siteSelectionStrategyService.getSiteSelectionDataBySurveyId(surveyId),
-      this.getSurveyBlocksForSurveyId(surveyId)
+      this.getSurveyBlocksForSurveyId(surveyId),
+      this.getCollectionsBySurveyId(surveyId)
     ]);
 
     return {
@@ -97,7 +92,8 @@ export class SurveyService extends DBService {
       locations: surveyData[7],
       participants: surveyData[8],
       site_selection: surveyData[9],
-      blocks: surveyData[10]
+      blocks: surveyData[10],
+      collections: surveyData[11]
     };
   }
 
@@ -158,6 +154,17 @@ export class SurveyService extends DBService {
     const surveyTypeIds = surveyTypesData.map((item) => item.type_id);
 
     return new GetSurveyData({ ...surveyData, survey_types: surveyTypeIds });
+  }
+
+  /**
+   * Get collections that the given survey id belongs to
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<CollectionBasic[]>}
+   * @memberof CollectionService
+   */
+  async getCollectionsBySurveyId(surveyId: number): Promise<CollectionBasic[]> {
+    return this.surveyRepository.getCollectionsBySurveyId(surveyId);
   }
 
   /**
@@ -266,64 +273,33 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Get all surveys by their associated project ID.
+   * Retrieves the count of all surveys in the given collections
    *
-   * @param {number} projectId the ID of the project
-   * @return {*}  {Promise<SurveyObject[]>} The associated surveys
+   * @param {number} collectionId
+   * @param {ISurveyAdvancedFilters} filterFields
+   * @return {*}  {Promise<number>}
    * @memberof SurveyService
    */
-  async getSurveysByProjectId(projectId: number): Promise<SurveyObject[]> {
-    const surveyIds = await this.getSurveyIdsByProjectId(projectId);
-
-    return this.getSurveysByIds(surveyIds.map((survey) => survey.id));
+  async getSurveysByCollectionIdCount(collectionId: number, filterFields?: ISurveyAdvancedFilters): Promise<number> {
+    return this.surveyRepository.getSurveysBasicFieldsByCollectionIdCount(collectionId, filterFields);
   }
 
   /**
    * Fetches a subset of survey fields for a paginated list of surveys under
-   * a given project.
+   * a given collection
    *
-   * @param {number} projectId
+   * @param {number} collectionId
+   * @param {ISurveyAdvancedFilters} filterFields
    * @param {ApiPaginationOptions} [pagination]
    * @return {*}  {Promise<SurveyBasicFields[]>}
    * @memberof SurveyService
    */
-  async getSurveysBasicFieldsByProjectId(
-    projectId: number,
+  async getSurveysByCollectionId(
+    collectionId: number,
+    filterFields?: ISurveyAdvancedFilters,
     pagination?: ApiPaginationOptions
   ): Promise<SurveyBasicFields[]> {
-    const surveys = await this.surveyRepository.getSurveysBasicFieldsByProjectId(projectId, pagination);
-
-    // Build an array of all unique focal species ids from all surveys
-    const uniqueFocalSpeciesIds = Array.from(
-      new Set(surveys.reduce((ids: number[], survey) => ids.concat(survey.focal_species), []))
-    );
-
-    // Fetch focal species data for all species ids
-    const platformService = new PlatformService(this.connection);
-    const focalSpecies = await platformService.getTaxonomyByTsns(uniqueFocalSpeciesIds);
-
-    // Decorate the surveys response with their matching focal species labels
-    const decoratedSurveys: SurveyBasicFields[] = [];
-    for (const survey of surveys) {
-      const matchingFocalSpeciesNames = focalSpecies
-        .filter((item) => survey.focal_species.includes(item.tsn))
-        .map((item) => [item.commonNames, `(${item.scientificName})`].filter(Boolean).join(' '));
-
-      decoratedSurveys.push({ ...survey, focal_species_names: matchingFocalSpeciesNames });
-    }
-
-    return decoratedSurveys;
-  }
-
-  /**
-   * Returns the total number of surveys belonging to the given project.
-   *
-   * @param {number} projectId
-   * @return {*}  {Promise<number>}
-   * @memberof SurveyService
-   */
-  async getSurveyCountByProjectId(projectId: number): Promise<number> {
-    return this.surveyRepository.getSurveyCountByProjectId(projectId);
+    return this.surveyRepository.getSurveysBasicFieldsByCollectionId(collectionId, filterFields, pagination);
   }
 
   /**
@@ -366,14 +342,12 @@ export class SurveyService extends DBService {
 
   /**
    * Creates the survey
-   *
-   * @param {number} projectId
    * @param {PostSurveyObject} postSurveyData
    * @return {*}  {Promise<number>}
    * @memberof SurveyService
    */
-  async createSurvey(projectId: number, postSurveyData: PostSurveyObject): Promise<number> {
-    const surveyId = await this.insertSurveyData(projectId, postSurveyData);
+  async createSurvey(postSurveyData: PostSurveyObject): Promise<number> {
+    const surveyId = await this.insertSurveyData(postSurveyData);
 
     const promises: Promise<any>[] = [];
 
@@ -419,6 +393,13 @@ export class SurveyService extends DBService {
       )
     );
 
+    // Handle survey collections
+    const collectionSurveyService = new CollectionSurveyService(this.connection);
+    await collectionSurveyService.addSurveyToMultipleCollections({
+      survey_id: surveyId,
+      collections: postSurveyData.collections.collections
+    });
+
     // Handle survey funding sources
     promises.push(
       Promise.all(
@@ -440,6 +421,9 @@ export class SurveyService extends DBService {
         )
       )
     );
+
+    // Handle survey members (users with access)
+    await this.surveyMemberService.insertSurveyMembers(surveyId, postSurveyData.members);
 
     // Handle survey proprietor data
     postSurveyData.proprietor && promises.push(this.insertSurveyProprietor(postSurveyData.proprietor, surveyId));
@@ -530,14 +514,12 @@ export class SurveyService extends DBService {
 
   /**
    * Inserts Survey data and returns new survey Id
-   *
-   * @param {number} projectId
    * @param {PostSurveyObject} surveyData
    * @returns {*} {Promise<number>}
    * @memberof SurveyService
    */
-  async insertSurveyData(projectId: number, surveyData: PostSurveyObject): Promise<number> {
-    return this.surveyRepository.insertSurveyData(projectId, surveyData);
+  async insertSurveyData(surveyData: PostSurveyObject): Promise<number> {
+    return this.surveyRepository.insertSurveyData(surveyData);
   }
 
   /**
@@ -610,7 +592,7 @@ export class SurveyService extends DBService {
    * Insert or update association of permit to a given survey
    *
    * @param {number} systemUserId
-   * @param {number} projectId
+   
    * @param {number} surveyId
    * @param {number} permitNumber
    * @param {number} permitType
@@ -619,15 +601,15 @@ export class SurveyService extends DBService {
    */
   async insertOrAssociatePermitToSurvey(
     systemUserId: number,
-    projectId: number,
+
     surveyId: number,
     permitNumber: string,
     permitType: string
   ) {
     if (!permitType) {
-      return this.surveyRepository.associateSurveyToPermit(projectId, surveyId, permitNumber);
+      return this.surveyRepository.associateSurveyToPermit(surveyId, permitNumber);
     } else {
-      return this.surveyRepository.insertSurveyPermit(systemUserId, projectId, surveyId, permitNumber, permitType);
+      return this.surveyRepository.insertSurveyPermit(systemUserId, surveyId, permitNumber, permitType);
     }
   }
 
@@ -641,6 +623,7 @@ export class SurveyService extends DBService {
    */
   async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
     const promises: Promise<any>[] = [];
+
     if (putSurveyData?.survey_details || putSurveyData?.purpose_and_methodology) {
       promises.push(this.updateSurveyDetailsData(surveyId, putSurveyData));
     }
@@ -663,6 +646,10 @@ export class SurveyService extends DBService {
 
     if (putSurveyData?.permit) {
       promises.push(this.updateSurveyPermitData(surveyId, putSurveyData));
+    }
+
+    if (putSurveyData?.collections) {
+      promises.push(this.updateCollectionData(surveyId, putSurveyData));
     }
 
     if (putSurveyData?.funding_sources) {
@@ -923,6 +910,50 @@ export class SurveyService extends DBService {
 
     await this.surveyRepository.insertManySurveyIntendedOutcomes(surveyId, rowsToInsert);
     await this.surveyRepository.deleteManySurveyIntendedOutcomes(surveyId, rowsToDelete);
+  }
+
+  /**
+   * Compares incoming collections data against the existing collections, if any, and determines which need to be
+   * deleted, added, or updated.
+   *
+   * @param {number} surveyId
+   * @param {PutSurveyObject} surveyData
+   * @memberof SurveyService
+   */
+  async updateCollectionData(surveyId: number, surveyData: PutSurveyObject): Promise<void> {
+    console.log('COLLECTIONS@@', surveyData.collections);
+    const collectionSurveyService = new CollectionSurveyService(this.connection);
+
+    // Get existing collections for the survey from DB
+    const existingCollections = await this.getCollectionsBySurveyId(surveyId);
+
+    const incomingCollections = surveyData.collections?.collections || [];
+
+    // Determine which collections need to be removed
+    const collectionsToDelete = existingCollections.filter(
+      (existing) => !incomingCollections.find((incoming) => incoming.collection_id === existing.collection_id)
+    );
+
+    // Delete collections no longer associated with the survey
+    if (collectionsToDelete.length) {
+      await collectionSurveyService.deleteCollectionSurveys({ collections: collectionsToDelete, survey_id: surveyId });
+    }
+
+    // Determine which collections need to be added (i.e., not in DB yet)
+    const existingCollectionIds = existingCollections.map((c) => c.collection_id);
+    const collectionsToAdd = incomingCollections.filter(
+      (incoming) => !existingCollectionIds.includes(incoming.collection_id)
+    );
+
+    // Insert new collections into the survey
+    if (collectionsToAdd.length) {
+      await collectionSurveyService.addSurveyToMultipleCollections({
+        survey_id: surveyId,
+        collections: collectionsToAdd
+      });
+    }
+
+    // No updates needed unless you're updating some metadata on the collection link itself
   }
 
   /**

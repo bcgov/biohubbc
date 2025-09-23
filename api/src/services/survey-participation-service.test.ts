@@ -59,8 +59,8 @@ describe('SurveyParticipationService', () => {
       const service = new SurveyParticipationService(dbConnection);
 
       const data = {
-        projectId: 1,
-        systemUserId: 1
+        systemUserId: 1,
+        survey_id: 1
       };
 
       const repoStub = sinon.stub(SurveyParticipationRepository.prototype, 'getSurveyParticipant').resolves({
@@ -77,12 +77,12 @@ describe('SurveyParticipationService', () => {
         user_guid: '123-456-789',
         user_identifier: 'testuser',
         survey_participation_id: 1,
-        survey_id: 1,
+        survey_id: data.survey_id,
         survey_job_id: 1,
         survey_job_name: 'survey job name'
       });
 
-      const response = await service.getSurveyParticipant(data.projectId, data.systemUserId);
+      const response = await service.getSurveyParticipant(data.survey_id, data.systemUserId);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql({
@@ -111,10 +111,6 @@ describe('SurveyParticipationService', () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyParticipationService(dbConnection);
 
-      const data = {
-        projectId: 1
-      };
-
       const repoStub = sinon.stub(SurveyParticipationRepository.prototype, 'getSurveyParticipants').resolves([
         {
           system_user_id: 2,
@@ -136,7 +132,7 @@ describe('SurveyParticipationService', () => {
         }
       ]);
 
-      const response = await service.getSurveyParticipants(data.projectId);
+      const response = await service.getSurveyParticipants(1);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql([
@@ -213,7 +209,7 @@ describe('SurveyParticipationService', () => {
       const service = new SurveyParticipationService(dbConnection);
 
       const data = {
-        projectParticipationId: 1
+        surveyParticipationId: 1
       };
 
       const mockSurveyId = 1;
@@ -222,7 +218,7 @@ describe('SurveyParticipationService', () => {
         .stub(SurveyParticipationRepository.prototype, 'deleteSurveyParticipationRecord')
         .resolves();
 
-      const response = await service.deleteSurveyParticipationRecord(mockSurveyId, data.projectParticipationId);
+      const response = await service.deleteSurveyParticipationRecord(mockSurveyId, data.surveyParticipationId);
 
       expect(repoStub).to.be.calledOnce;
       expect(response).to.eql(undefined);

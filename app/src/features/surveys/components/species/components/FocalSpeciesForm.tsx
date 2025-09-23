@@ -19,9 +19,11 @@ import { TransitionGroup } from 'react-transition-group';
  * @return {*}
  */
 export const FocalSpeciesForm = () => {
-  const { values } = useFormikContext<ICreateSurveyRequest | IEditSurveyRequest>();
+  const { values, setFieldError, errors } = useFormikContext<ICreateSurveyRequest | IEditSurveyRequest>();
 
   const selectedSpecies: ITaxonomyWithEcologicalUnits[] = get(values, 'species.focal_species') ?? [];
+
+  console.log(errors);
 
   return (
     <FieldArray
@@ -62,6 +64,7 @@ export const FocalSpeciesForm = () => {
                 }
 
                 arrayHelpers.push({ ...species, ecological_units: [] });
+                setFieldError('species.focal_species', undefined);
               }}
               clearOnSelect={true}
             />

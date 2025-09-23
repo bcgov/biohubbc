@@ -96,8 +96,8 @@ describe('import-sample-periods-service', () => {
 
       const service = new ImportSamplePeriodsService(mockConnection, worksheet, surveyId);
 
-      const sampleSiteStub = sinon.stub(SampleSiteService.prototype, 'getSampleSitesForSurveyId').resolves([]);
-      const methodTechniqueStub = sinon.stub(TechniqueService.prototype, 'getTechniquesForSurveyId').resolves([]);
+      const sampleSiteStub = sinon.stub(SampleSiteService.prototype, 'getSampleSitesForSurveyIds').resolves([]);
+      const methodTechniqueStub = sinon.stub(TechniqueService.prototype, 'getTechniquesForSurveyIds').resolves([]);
 
       const config = await service.getCSVConfig();
 

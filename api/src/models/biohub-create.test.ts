@@ -89,7 +89,7 @@ describe('PostSurveyToBiohubObject', () => {
     const survey_obj: GetSurveyData = {
       id: 1,
       uuid: '1',
-      project_id: 1,
+
       survey_name: 'survey_name',
       progress_id: 1,
       start_date: 'start_date',
@@ -124,7 +124,7 @@ describe('PostSurveyToBiohubObject', () => {
     it('sets properties', () => {
       expect(data.properties).to.eql({
         survey_id: 1,
-        project_id: 1,
+
         name: 'survey_name',
         start_date: 'start_date',
         end_date: 'end_date',
@@ -163,7 +163,7 @@ describe('PostSurveySubmissionToBioHubObject', () => {
     const survey_obj: GetSurveyData = {
       id: 1,
       uuid: '1',
-      project_id: 1,
+
       survey_name: 'survey_name',
       progress_id: 1,
       start_date: 'start_date',

@@ -1,14 +1,23 @@
+import { mdiArrowLeft } from '@mdi/js';
+import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import Container from '@mui/material/Container';
+import IconButton from '@mui/material/IconButton';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonHorizontalStack } from 'components/loading/SkeletonLoaders';
+import { Link as NavLink } from 'react-router-dom';
 
 interface IPageHeader {
   title: string;
   subTitleJSX?: JSX.Element;
   breadCrumbJSX?: JSX.Element;
   buttonJSX?: JSX.Element;
+  tabsJSX?: JSX.Element;
+  isLoading?: boolean;
+  backNavigateTo?: string;
 }
 /**
  * Generic header for all views
@@ -16,7 +25,7 @@ interface IPageHeader {
  * @return {*}
  */
 const PageHeader = (props: IPageHeader) => {
-  const { title, subTitleJSX, breadCrumbJSX, buttonJSX } = props;
+  const { title, subTitleJSX, breadCrumbJSX, buttonJSX, isLoading, tabsJSX, backNavigateTo } = props;
 
   return (
     <Paper
@@ -27,17 +36,36 @@ const PageHeader = (props: IPageHeader) => {
         top: 0,
         zIndex: 1002
       }}>
-      <Container maxWidth={'xl'} sx={{ py: { xs: 2, sm: 3 } }}>
-        {breadCrumbJSX}
+      <Container maxWidth="xl" sx={{ pt: 3, px: 3, pb: tabsJSX ? 0 : 3 }}>
+        {breadCrumbJSX && (
+          <Box minHeight="25px">
+            <LoadingGuard
+              isLoadingFallbackDelay={600}
+              isLoading={isLoading}
+              isLoadingFallback={<SkeletonHorizontalStack />}>
+              {breadCrumbJSX}
+            </LoadingGuard>
+          </Box>
+        )}
         <Stack
           flexDirection={{ xs: 'column', md: 'row' }}
           alignItems="flex-start"
           justifyContent="space-between"
-          gap={{ xs: 1, lg: 2 }}>
-          <Box>
-            <Typography variant="h1">{title}</Typography>
+          flex="1 1 auto"
+          gap={0}>
+          <Box flex="1 1 auto">
+            <Stack gap={1} flexDirection="row" alignItems="center">
+              {backNavigateTo && (
+                <IconButton sx={{ borderRadius: '4px' }} component={NavLink} to={backNavigateTo}>
+                  <Icon path={mdiArrowLeft} size={1.25} />
+                </IconButton>
+              )}
+              <Typography variant="h1" mb={0.5}>
+                {title}
+              </Typography>
+            </Stack>
             {subTitleJSX && (
-              <Stack flexDirection="row" alignItems="center" gap={1} mb={1}>
+              <Stack flexDirection="row" alignItems="center" gap={1}>
                 {subTitleJSX}
               </Stack>
             )}
@@ -48,6 +76,7 @@ const PageHeader = (props: IPageHeader) => {
             </Stack>
           )}
         </Stack>
+        {tabsJSX && tabsJSX}
       </Container>
     </Paper>
   );

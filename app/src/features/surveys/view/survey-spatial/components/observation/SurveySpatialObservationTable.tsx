@@ -1,4 +1,3 @@
-import { mdiArrowTopRight } from '@mdi/js';
 import { GridColDef, GridSortModel, GridValidRowModel } from '@mui/x-data-grid';
 import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
@@ -44,7 +43,7 @@ export const SurveySpatialObservationTable = () => {
   const [sortModel, setSortModel] = useState<GridSortModel>([]);
 
   const paginatedDataLoader = useDataLoader((page: number, limit: number, sort?: string, order?: 'asc' | 'desc') =>
-    biohubApi.observation.getFlattenedObservationRecords(surveyContext.projectId, surveyContext.surveyId, {
+    biohubApi.observation.getFlattenedObservationRecords(surveyContext.surveyId, {
       page: page + 1, // This fixes an off-by-one error between the front end and the back end
       limit,
       sort,
@@ -90,26 +89,22 @@ export const SurveySpatialObservationTable = () => {
       field: 'itis_scientific_name',
       headerName: 'Species',
       flex: 1,
-      minWidth: 200,
       renderCell: (params) => <em>{params.row.itis_scientific_name}</em>
     },
     {
       field: 'survey_sample_site_name',
       headerName: 'Sample Site',
-      flex: 1,
-      minWidth: 200
+      flex: 1
     },
     {
       field: 'method_technique_name',
       headerName: 'Technique',
-      flex: 1,
-      minWidth: 200
+      flex: 1
     },
     {
       field: 'survey_sample_period_start_datetime',
       headerName: 'Sample Period',
-      flex: 1,
-      minWidth: 200
+      flex: 1
     },
     {
       field: 'subcount',
@@ -154,10 +149,9 @@ export const SurveySpatialObservationTable = () => {
       hasNoData={!rows.length}
       hasNoDataFallback={
         <NoDataOverlay
-          height="100%"
-          title="Add Observations"
-          subtitle="After adding sampling information, upload observations and link them to sampling efforts"
-          icon={mdiArrowTopRight}
+          title="Species Observations"
+          subtitle="Observations show where and when you observed species. Observations that belong to the surveys in this collection will show here."
+          sx={{ width: '100%', height: '100%', m: 0 }}
         />
       }
       hasNoDataFallbackDelay={100}>
@@ -172,7 +166,7 @@ export const SurveySpatialObservationTable = () => {
         rowHeight={rowHeight}
         rowSelection={false}
         getRowId={(row: IFlattenedObservationTableRow) => row.observation_subcount_id}
-        autoHeight={false}
+        // autoHeight={false}
         // pagination
         paginationMode="server"
         paginationModel={{ pageSize, page }}

@@ -70,14 +70,14 @@ describe('useAdminApi', () => {
   it('getAdministrativeActivityStanding works as expected', async () => {
     mock.onGet('/api/administrative-activity').reply(200, {
       has_pending_acccess_request: true,
-      has_one_or_more_project_roles: true
+      has_one_or_more_survey_roles: true
     });
 
     const result = await useAdminApi(axios).getAdministrativeActivityStanding();
 
     expect(result).toEqual({
       has_pending_acccess_request: true,
-      has_one_or_more_project_roles: true
+      has_one_or_more_survey_roles: true
     });
   });
 

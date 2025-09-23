@@ -13,8 +13,6 @@ import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 
 export interface IDeviceFormHeaderProps {
-  project_id: number;
-  project_name: string;
   survey_id: number;
   survey_name: string;
   is_submitting: boolean;
@@ -32,7 +30,7 @@ export const DeviceFormHeader = (props: IDeviceFormHeaderProps) => {
   const history = useHistory();
   const formikProps = useFormikContext<CreateTelemetryDevice>();
 
-  const { project_id, survey_id, survey_name, project_name, is_submitting, title, breadcrumb } = props;
+  const { survey_id, survey_name, is_submitting, title, breadcrumb } = props;
 
   return (
     <Paper
@@ -50,25 +48,13 @@ export const DeviceFormHeader = (props: IDeviceFormHeaderProps) => {
           sx={{
             typography: 'body2'
           }}>
-          <Link component={RouterLink} to={`/admin/projects/${project_id}`} underline="none">
-            {project_name}
-          </Link>
-          <Link
-            component={RouterLink}
-            to={`/admin/projects/${project_id}/surveys/${survey_id}/details`}
-            underline="none">
+          <Link component={RouterLink} to={`/admin/surveys/${survey_id}/details`} underline="none">
             {survey_name}
           </Link>
-          <Link
-            component={RouterLink}
-            to={`/admin/projects/${project_id}/surveys/${survey_id}/telemetry`}
-            underline="none">
+          <Link component={RouterLink} to={`/admin/surveys/${survey_id}/telemetry`} underline="none">
             Manage Telemetry
           </Link>
-          <Link
-            component={RouterLink}
-            to={`/admin/projects/${project_id}/surveys/${survey_id}/telemetry/manage`}
-            underline="none">
+          <Link component={RouterLink} to={`/admin/surveys/${survey_id}/telemetry/manage`} underline="none">
             Manage Devices and Deployments
           </Link>
           <Typography component="span" variant="body2" color="textSecondary">
@@ -98,7 +84,7 @@ export const DeviceFormHeader = (props: IDeviceFormHeaderProps) => {
               variant="outlined"
               color="primary"
               onClick={() => {
-                history.push(`/admin/projects/${project_id}/surveys/${survey_id}/telemetry/manage`);
+                history.push(`/admin/surveys/${survey_id}/telemetry/manage`);
               }}>
               Cancel
             </Button>
