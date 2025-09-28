@@ -465,11 +465,13 @@ jobs:
     name: Deploy Helm Chart
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: ${{ github.event.pull_request.merged == false &&
+    if: ${{ always() &&
+      github.event.pull_request.merged == false &&
       github.event.pull_request.draft == false &&
-      ( needs.skipDuplicateActions.outputs.ignore_skip == 'true' ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.should_skip == false ||
-      fromJSON(needs.skipDuplicateActions.outputs.paths_result).app.skipped_by.branch != github.head_ref ) }}
+      ( needs.buildAndPushApp.result == 'success' ||
+      needs.buildAndPushDatabase.result == 'success' ||
+      needs.buildAndPushDatabaseSetup.result == 'success' ||
+      needs.buildAndPushAPI.result == 'success' ) }}
     environment: dev
     env:
       PR_NUMBER: ${{ github.event.number }}
