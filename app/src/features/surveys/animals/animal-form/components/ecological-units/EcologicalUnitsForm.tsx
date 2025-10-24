@@ -65,15 +65,6 @@ export const EcologicalUnitsForm = () => {
               onClick={() => arrayHelpers.push(initialEcologicalUnitValues)}
               startIcon={<Icon path={mdiPlus} size={0.75} />}
               aria-label="Add Ecological Unit"
-              disabled={
-                // Disable the button if the species is not selected
-                Boolean(!values.species) ||
-                // Disable the button if the number of ecological units is greater than or equal to the number of available categories
-                (ecologicalUnitsDataLoader.data &&
-                  values.ecological_units.length >= ecologicalUnitsDataLoader.data?.length) ||
-                // Disable the button if the data loader is loading
-                ecologicalUnitsDataLoader.isLoading
-              }
               sx={{ textTransform: 'uppercase' }}>
               Add Ecological Unit
             </Button>

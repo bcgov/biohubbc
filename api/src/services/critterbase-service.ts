@@ -890,4 +890,16 @@ export class CritterbaseService {
 
     return mortalityLocationsDataMap;
   }
+
+  /**
+   * Get detailed mortality information by mortality ID
+   *
+   * @param {string} mortalityId - The mortality ID to fetch details for
+   * @return {Promise<any>} Detailed mortality information
+   * @memberof CritterbaseService
+   */
+  async getDetailedMortalityById(mortalityId: string): Promise<any> {
+    const { data } = await this.axiosInstance.get(`/mortality/${mortalityId}`);
+    return data;
+  }
 }
