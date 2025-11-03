@@ -6,6 +6,7 @@ import {
   PostSurveySubmissionToBioHubObject,
   PostSurveyToBiohubObject
 } from '../models/biohub-create';
+import { GetSurveyPurposeAndMethodologyData } from './survey-view';
 
 describe('Sampling Features BioHub Integration', () => {
   describe('PostSurveySamplingSiteToBiohubObject', () => {
@@ -36,9 +37,9 @@ describe('Sampling Features BioHub Integration', () => {
         }
       };
 
-      const siteFeature = new PostSurveySamplingSiteToBiohubObject(sampleSite, 0);
+      const siteFeature = new PostSurveySamplingSiteToBiohubObject(sampleSite);
 
-      expect(siteFeature.id).to.equal('sample-site-123');
+      expect(siteFeature.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(siteFeature.type).to.equal('sample_site');
       expect(siteFeature.properties.name).to.equal('Test Sampling Site');
       expect(siteFeature.properties.description).to.equal('A test site for sampling');
@@ -85,13 +86,13 @@ describe('Sampling Features BioHub Integration', () => {
         method_technique: null
       };
 
-      const periodFeature = new PostSurveySamplingPeriodToBiohubObject(samplePeriod, 0);
+      const periodFeature = new PostSurveySamplingPeriodToBiohubObject(samplePeriod);
 
-      expect(periodFeature.id).to.equal('sample-period-456');
+      expect(periodFeature.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(periodFeature.type).to.equal('sample_period');
       expect(periodFeature.properties.start_date).to.equal('2024-01-01T00:00:00.000Z');
       expect(periodFeature.properties.end_date).to.equal('2024-01-31T23:59:59.000Z');
-      expect(periodFeature.properties.site_identifier).to.equal('123');
+      expect(periodFeature.properties.site_identifier).to.equal('Test Site');
       expect(periodFeature.properties.comment).to.be.undefined;
       expect(periodFeature.child_features).to.be.an('array').with.length(0);
     });
@@ -158,8 +159,15 @@ describe('Sampling Features BioHub Integration', () => {
         }
       ];
 
+      const surveyPurposeData: GetSurveyPurposeAndMethodologyData = {
+        intended_outcome_ids: [],
+        additional_details: 'Sampling features test objectives',
+        revision_count: 1
+      };
+
       const surveyObj = new PostSurveyToBiohubObject(
         mockSurveyData as any,
+        surveyPurposeData,
         [], // observations
         mockGeometry as any, // geometry
         [], // attachments
@@ -268,7 +276,7 @@ describe('Sampling Features BioHub Integration', () => {
         mockSamplingPeriods // sampling periods
       );
 
-      expect(submissionObj.id).to.equal('survey-uuid');
+      expect(submissionObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(submissionObj.name).to.equal('Test Survey with Sampling');
       expect(submissionObj.comment).to.equal('Test submission comment');
 

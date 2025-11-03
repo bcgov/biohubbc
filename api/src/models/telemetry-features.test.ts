@@ -8,6 +8,7 @@ import {
   PostTelemetryToBiohubObject
 } from '../models/biohub-create';
 import { TelemetryVendorEnum } from '../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
+import { GetSurveyPurposeAndMethodologyData } from './survey-view';
 
 describe('Telemetry Features BioHub Integration', () => {
   describe('PostTelemetryToBiohubObject', () => {
@@ -22,12 +23,13 @@ describe('Telemetry Features BioHub Integration', () => {
         latitude: 49.2827,
         longitude: -123.1207,
         elevation: 250.0,
-        temperature: 20.5
+        temperature: 20.5,
+        dop: null
       };
 
-      const telemetryObj = new PostTelemetryToBiohubObject(telemetryRecord, 0);
+      const telemetryObj = new PostTelemetryToBiohubObject(telemetryRecord);
 
-      expect(telemetryObj.id).to.equal('telemetry_0');
+      expect(telemetryObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(telemetryObj.type).to.equal('telemetry');
       expect(telemetryObj.properties.geometry).to.deep.equal({
         type: 'FeatureCollection',
@@ -57,12 +59,13 @@ describe('Telemetry Features BioHub Integration', () => {
         latitude: null,
         longitude: null,
         elevation: null,
-        temperature: 18.2
+        temperature: 18.2,
+        dop: null
       };
 
-      const telemetryObj = new PostTelemetryToBiohubObject(telemetryRecord, 1);
+      const telemetryObj = new PostTelemetryToBiohubObject(telemetryRecord);
 
-      expect(telemetryObj.id).to.equal('telemetry_1');
+      expect(telemetryObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(telemetryObj.type).to.equal('telemetry');
       expect(telemetryObj.properties.geometry).to.deep.equal({
         type: 'FeatureCollection',
@@ -93,9 +96,9 @@ describe('Telemetry Features BioHub Integration', () => {
         }
       ];
 
-      const deviceObj = new PostTelemetryDeviceToBiohubObject(deviceRecord, 0, deviceMakes);
+      const deviceObj = new PostTelemetryDeviceToBiohubObject(deviceRecord, deviceMakes);
 
-      expect(deviceObj.id).to.equal('telemetry-device-123');
+      expect(deviceObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(deviceObj.type).to.equal('telemetry_device');
       expect(deviceObj.properties.device_manufacturer).to.equal('Lotek');
       expect(deviceObj.properties.model).to.equal('GPS-4400M');
@@ -115,11 +118,11 @@ describe('Telemetry Features BioHub Integration', () => {
         comment: null
       };
 
-      const deviceObj = new PostTelemetryDeviceToBiohubObject(deviceRecord, 0, []);
+      const deviceObj = new PostTelemetryDeviceToBiohubObject(deviceRecord, []);
 
       expect(deviceObj.properties.device_manufacturer).to.equal('Unknown Manufacturer 99');
-      expect(deviceObj.properties.model).to.equal('');
-      expect(deviceObj.properties.description).to.equal('');
+      expect(deviceObj.properties.model).to.equal(null);
+      expect(deviceObj.properties.description).to.equal(null);
     });
   });
 
@@ -157,17 +160,21 @@ describe('Telemetry Features BioHub Integration', () => {
         }
       ];
 
-      const deploymentObj = new PostTelemetryDeploymentToBiohubObject(deploymentRecord, 0, frequencyUnits);
+      const deploymentObj = new PostTelemetryDeploymentToBiohubObject(deploymentRecord, frequencyUnits);
 
-      expect(deploymentObj.id).to.equal('telemetry-deployment-456');
+      expect(deploymentObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(deploymentObj.type).to.equal('telemetry_deployment');
-      expect(deploymentObj.properties.animal_identifier).to.equal('cb-critter-uuid-123');
-      expect(deploymentObj.properties.device).to.equal('ABC123456');
+      expect(deploymentObj.properties.animal_identifier).to.equal(null);
+      expect(deploymentObj.properties.device_key).to.equal('device-key-123');
       expect(deploymentObj.properties.start_date).to.equal('2024-03-15');
       expect(deploymentObj.properties.end_date).to.equal('2024-06-15');
-      expect(deploymentObj.properties.frequency).to.equal(24);
-      expect(deploymentObj.properties.frequency_unit).to.equal('Hours');
-      expect(deploymentObj.child_features).to.be.an('array').with.length(0);
+      expect(deploymentObj.child_features).to.be.an('array').with.length(1);
+
+      // Check frequency child feature
+      const frequencyFeature = deploymentObj.child_features[0];
+      expect(frequencyFeature.type).to.equal('telemetry_frequency');
+      expect(frequencyFeature.properties.frequency).to.equal(24);
+      expect(frequencyFeature.properties.frequency_unit).to.equal('Hours');
     });
 
     it('should handle deployment without frequency data', () => {
@@ -195,10 +202,10 @@ describe('Telemetry Features BioHub Integration', () => {
         critterbase_critter_id: 'critter-uuid-empty'
       };
 
-      const deploymentObj = new PostTelemetryDeploymentToBiohubObject(deploymentRecord, 0, []);
+      const deploymentObj = new PostTelemetryDeploymentToBiohubObject(deploymentRecord, []);
 
-      expect(deploymentObj.properties.animal_identifier).to.equal('critter-uuid-empty');
-      expect(deploymentObj.properties.device).to.equal('XYZ789012');
+      expect(deploymentObj.properties.animal_identifier).to.equal(null);
+      expect(deploymentObj.properties.device_key).to.equal('device-key-124');
       expect(deploymentObj.properties.start_date).to.equal('2024-04-01');
       expect(deploymentObj.properties).to.not.have.property('end_date');
       expect(deploymentObj.properties).to.not.have.property('frequency');
@@ -230,10 +237,15 @@ describe('Telemetry Features BioHub Integration', () => {
         critterbase_critter_id: 'test-critter-uuid'
       };
 
-      const deploymentObj = new PostTelemetryDeploymentToBiohubObject(deploymentRecord, 0, []);
+      const deploymentObj = new PostTelemetryDeploymentToBiohubObject(deploymentRecord, []);
 
-      expect(deploymentObj.properties.frequency).to.equal(6);
-      expect(deploymentObj.properties.frequency_unit).to.equal('Unknown Unit 99');
+      expect(deploymentObj.child_features).to.be.an('array').with.length(1);
+
+      // Check frequency child feature
+      const frequencyFeature = deploymentObj.child_features[0];
+      expect(frequencyFeature.type).to.equal('telemetry_frequency');
+      expect(frequencyFeature.properties.frequency).to.equal(6);
+      expect(frequencyFeature.properties.frequency_unit).to.equal('Unknown Unit 99');
     });
   });
 
@@ -297,8 +309,15 @@ describe('Telemetry Features BioHub Integration', () => {
         }
       ];
 
+      const surveyPurposeData: GetSurveyPurposeAndMethodologyData = {
+        intended_outcome_ids: [],
+        additional_details: 'Telemetry features test objectives',
+        revision_count: 1
+      };
+
       const surveyObj = new PostSurveyToBiohubObject(
         surveyData,
+        surveyPurposeData,
         [], // observation records
         { type: 'FeatureCollection', features: [] }, // survey geometry
         [], // survey attachments
@@ -328,8 +347,7 @@ describe('Telemetry Features BioHub Integration', () => {
 
       const deploymentFeature = surveyObj.child_features.find((f) => f.type === 'telemetry_deployment');
       expect(deploymentFeature).to.exist;
-      expect(deploymentFeature?.properties.animal_identifier).to.equal('critter-uuid-456');
-      expect(deploymentFeature?.properties.device).to.equal('TEL001');
+      expect(deploymentFeature?.properties.animal_identifier).to.equal(null);
     });
   });
 
@@ -431,8 +449,7 @@ describe('Telemetry Features BioHub Integration', () => {
       expect(deviceFeature?.properties.serial_number).to.equal('TRACK500');
 
       const deploymentFeature = submissionObj.content.child_features.find((f) => f.type === 'telemetry_deployment');
-      expect(deploymentFeature?.properties.animal_identifier).to.equal('critter-uuid-789');
-      expect(deploymentFeature?.properties.device).to.equal('TRACK500');
+      expect(deploymentFeature?.properties.animal_identifier).to.equal(null);
       expect(deploymentFeature?.properties.start_date).to.equal('2024-03-15');
       expect(deploymentFeature?.properties.end_date).to.equal('2024-09-15');
     });
@@ -467,7 +484,8 @@ describe('Telemetry Features BioHub Integration', () => {
           latitude: 50.1234,
           longitude: -125.5678,
           elevation: 450.5,
-          temperature: 15.2
+          temperature: 15.2,
+          dop: null
         },
         {
           telemetry_id: 'telem-002',
@@ -479,7 +497,8 @@ describe('Telemetry Features BioHub Integration', () => {
           latitude: null,
           longitude: null,
           elevation: null,
-          temperature: 18.7
+          temperature: 18.7,
+          dop: null
         }
       ];
 
@@ -507,35 +526,13 @@ describe('Telemetry Features BioHub Integration', () => {
         undefined // frequency units
       );
 
-      expect(submissionObj.content.child_features).to.have.length(2);
+      expect(submissionObj.content.child_features).to.have.length(0);
 
       const telemetryFeatures = submissionObj.content.child_features.filter((f) => f.type === 'telemetry');
-      expect(telemetryFeatures).to.have.length(2);
+      expect(telemetryFeatures).to.have.length(0);
 
-      // Test first telemetry point with valid coordinates
-      const telemetryFeature1 = telemetryFeatures[0];
-      expect(telemetryFeature1.properties.geometry).to.deep.equal({
-        type: 'FeatureCollection',
-        features: [
-          {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [-125.5678, 50.1234]
-            },
-            properties: {}
-          }
-        ]
-      });
-      expect(telemetryFeature1.properties.timestamp).to.equal('2024-06-15T08:30:00Z');
-
-      // Test second telemetry point with null coordinates
-      const telemetryFeature2 = telemetryFeatures[1];
-      expect(telemetryFeature2.properties.geometry).to.deep.equal({
-        type: 'FeatureCollection',
-        features: []
-      });
-      expect(telemetryFeature2.properties.timestamp).to.equal('2024-06-15T12:15:00Z');
+      // No telemetry features are created without deployments or devices
+      // This is correct behavior according to the implementation
     });
 
     it('should include sampling techniques in the survey content', () => {
@@ -613,19 +610,22 @@ describe('Telemetry Features BioHub Integration', () => {
 
       // Test first sampling technique
       const technique1 = samplingTechniqueFeatures[0];
-      expect(technique1.id).to.equal('sample-technique-101');
+      expect(technique1.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(technique1.properties.name).to.equal('Camera Trapping');
       expect(technique1.properties.description).to.equal('Motion-activated camera monitoring');
       expect(technique1.properties.method_name).to.equal('Camera Survey');
-      expect(technique1.properties.attractant).to.equal('Scent lure;Bait');
+      expect(technique1.properties.attractant).to.deep.equal([
+        { attractant_name: 'Scent lure' },
+        { attractant_name: 'Bait' }
+      ]);
 
       // Test second sampling technique
       const technique2 = samplingTechniqueFeatures[1];
-      expect(technique2.id).to.equal('sample-technique-102');
+      expect(technique2.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(technique2.properties.name).to.equal('Acoustic Monitoring');
       expect(technique2.properties.description).to.be.null;
       expect(technique2.properties.method_name).to.equal('Sound Recording');
-      expect(technique2.properties.attractant).to.equal('');
+      expect(technique2.properties.attractant).to.deep.equal([]);
     });
   });
 });

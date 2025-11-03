@@ -46,7 +46,8 @@ export class TelemetryVendorRepository extends BaseRepository {
         'telemetry_lotek.latitude',
         'telemetry_lotek.longitude',
         'telemetry_lotek.altitude as elevation',
-        'telemetry_lotek.temperature'
+        'telemetry_lotek.temperature',
+        'telemetry_lotek.pdop as dop'
       )
       .from('telemetry_lotek');
   }
@@ -243,7 +244,8 @@ export class TelemetryVendorRepository extends BaseRepository {
         'telemetry_vectronic.latitude',
         'telemetry_vectronic.longitude',
         'telemetry_vectronic.height as elevation',
-        'telemetry_vectronic.temperature'
+        'telemetry_vectronic.temperature',
+        'telemetry_vectronic.dop'
       )
       .from('telemetry_vectronic');
   }
@@ -407,7 +409,8 @@ export class TelemetryVendorRepository extends BaseRepository {
         'telemetry_ats.latitude',
         'telemetry_ats.longitude',
         knex.raw('NULL as elevation'),
-        knex.raw('telemetry_ats.temperature::float')
+        knex.raw('telemetry_ats.temperature::float'),
+        knex.raw('telemetry_ats.hdop::float as dop')
       )
       .from('telemetry_ats');
   }
@@ -551,7 +554,8 @@ export class TelemetryVendorRepository extends BaseRepository {
         'telemetry_manual.latitude',
         'telemetry_manual.longitude',
         knex.raw('NULL as elevation'),
-        knex.raw('NULL as temperature')
+        knex.raw('NULL as temperature'),
+        knex.raw('NULL as dop')
       )
       .from('telemetry_manual')
       .join('deployment', 'telemetry_manual.deployment_id', 'deployment.deployment_id')

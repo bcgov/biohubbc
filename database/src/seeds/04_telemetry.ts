@@ -336,7 +336,7 @@ const getAtsTelemetry = (deviceSerial: number, numRecords: number) => {
       longitude: longitude,
       cepradius_km: faker.number.int({ min: 0, max: 10 }),
       temperature: String(faker.number.float({ min: -20, max: 40 })), // TODO: Invesitgate why temperature is a string?
-      hdop: faker.string.alpha({ length: { min: 0, max: 10 } }),
+      hdop: faker.number.float({ min: 0, max: 10 }),
       numsats: faker.number.int({ min: 0, max: 10 }),
       fixtime: faker.string.numeric({ length: { min: 0, max: 10 } }),
       activity: faker.string.alpha({ length: { min: 0, max: 10 } })

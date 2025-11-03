@@ -44,7 +44,8 @@ export const TelemetrySchema = z.object({
   latitude: z.number().nullable(), // Latitude of telemetry (Y axis)
   longitude: z.number().nullable(), // Longitude of telemetry (X axis)
   elevation: z.number().nullable(), // Elevation of telemetry in meters
-  temperature: z.number().nullable() // Temperature in Celsius
+  temperature: z.number().nullable(), // Temperature in Celsius
+  dop: z.number().nullable() // Dilution of Precision (pdop for Lotek, dop for Vectronic)
 });
 
 export type Telemetry = z.infer<typeof TelemetrySchema>;

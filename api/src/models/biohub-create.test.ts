@@ -46,7 +46,7 @@ describe('PostSurveyObservationToBiohubObject', () => {
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal('1');
+      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('sets type', () => {
@@ -323,8 +323,6 @@ describe('PostSurveyObservationToBiohubObject', () => {
       const firstSubcountFeature = data.child_features[0];
       expect(firstSubcountFeature.type).to.equal('observation_subcount');
       expect(firstSubcountFeature.properties).to.eql({
-        measurement_type: 'Age Class',
-        measurement_value: 'Adult',
         comment: 'Adult males',
         count: 5
       });
@@ -332,8 +330,6 @@ describe('PostSurveyObservationToBiohubObject', () => {
       const secondSubcountFeature = data.child_features[1];
       expect(secondSubcountFeature.type).to.equal('observation_subcount');
       expect(secondSubcountFeature.properties).to.eql({
-        measurement_type: 'Body Weight',
-        measurement_value: '12.5 kilogram',
         comment: 'Juveniles',
         count: 10
       });
@@ -379,11 +375,11 @@ describe('PostSurveySubcountToBiohubObject', () => {
     };
 
     before(() => {
-      data = new PostSurveySubcountToBiohubObject(qualitativeSubcountData, 0, measurementDefinitions);
+      data = new PostSurveySubcountToBiohubObject(qualitativeSubcountData, measurementDefinitions);
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal('subcount-0');
+      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('sets type', () => {
@@ -392,8 +388,6 @@ describe('PostSurveySubcountToBiohubObject', () => {
 
     it('sets properties for qualitative measurements', () => {
       expect(data.properties).to.eql({
-        measurement_type: 'Age Class',
-        measurement_value: 'Adult',
         comment: 'Adult males with tracking collars',
         count: 8
       });
@@ -436,11 +430,11 @@ describe('PostSurveySubcountToBiohubObject', () => {
     };
 
     before(() => {
-      data = new PostSurveySubcountToBiohubObject(quantitativeSubcountData, 1, measurementDefinitions);
+      data = new PostSurveySubcountToBiohubObject(quantitativeSubcountData, measurementDefinitions);
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal('subcount-1');
+      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('sets type', () => {
@@ -449,15 +443,19 @@ describe('PostSurveySubcountToBiohubObject', () => {
 
     it('sets properties for quantitative measurements', () => {
       expect(data.properties).to.eql({
-        measurement_type: 'Body Weight',
-        measurement_value: '45.7 kilogram',
         comment: 'Weighed individuals',
         count: 3
       });
     });
 
     it('sets empty child_features', () => {
-      expect(data.child_features).to.eql([]);
+      expect(data.child_features).to.have.length(1);
+      const measurementChild = data.child_features[0];
+      expect(measurementChild.type).to.equal('observation_subcount_measurement');
+      expect(measurementChild.properties).to.eql({
+        measurement_type: 'Body Weight',
+        measurement_value: 45.7
+      });
     });
   });
 
@@ -466,43 +464,35 @@ describe('PostSurveySubcountToBiohubObject', () => {
     let quantData: PostSurveySubcountToBiohubObject;
 
     before(() => {
-      qualData = new PostSurveySubcountToBiohubObject(
-        {
-          observation_subcount_id: 3,
-          comment: 'Unknown measurement type',
-          subcount: 2,
-          qualitative_measurements: [
-            {
-              critterbase_taxon_measurement_id: 'unknown-measurement-uuid',
-              critterbase_measurement_qualitative_option_id: 'unknown-option-uuid'
-            }
-          ],
-          quantitative_measurements: []
-        },
-        0
-      );
+      qualData = new PostSurveySubcountToBiohubObject({
+        observation_subcount_id: 3,
+        comment: 'Unknown measurement type',
+        subcount: 2,
+        qualitative_measurements: [
+          {
+            critterbase_taxon_measurement_id: 'unknown-measurement-uuid',
+            critterbase_measurement_qualitative_option_id: 'unknown-option-uuid'
+          }
+        ],
+        quantitative_measurements: []
+      });
 
-      quantData = new PostSurveySubcountToBiohubObject(
-        {
-          observation_subcount_id: 4,
-          comment: 'Unknown quantitative measurement',
-          subcount: 1,
-          qualitative_measurements: [],
-          quantitative_measurements: [
-            {
-              critterbase_taxon_measurement_id: 'unknown-quant-uuid',
-              value: 123.4
-            }
-          ]
-        },
-        1
-      );
+      quantData = new PostSurveySubcountToBiohubObject({
+        observation_subcount_id: 4,
+        comment: 'Unknown quantitative measurement',
+        subcount: 1,
+        qualitative_measurements: [],
+        quantitative_measurements: [
+          {
+            critterbase_taxon_measurement_id: 'unknown-quant-uuid',
+            value: 123.4
+          }
+        ]
+      });
     });
 
     it('uses IDs when measurement names are missing for qualitative', () => {
       expect(qualData.properties).to.eql({
-        measurement_type: 'unknown-measurement-uuid',
-        measurement_value: 'unknown-option-uuid',
         comment: 'Unknown measurement type',
         count: 2
       });
@@ -510,8 +500,6 @@ describe('PostSurveySubcountToBiohubObject', () => {
 
     it('uses ID and no unit when missing for quantitative', () => {
       expect(quantData.properties).to.eql({
-        measurement_type: 'unknown-quant-uuid',
-        measurement_value: '123.4',
         comment: 'Unknown quantitative measurement',
         count: 1
       });
@@ -522,22 +510,17 @@ describe('PostSurveySubcountToBiohubObject', () => {
     let data: PostSurveySubcountToBiohubObject;
 
     before(() => {
-      data = new PostSurveySubcountToBiohubObject(
-        {
-          observation_subcount_id: 5,
-          comment: 'General count',
-          subcount: 20,
-          qualitative_measurements: [],
-          quantitative_measurements: []
-        },
-        0
-      );
+      data = new PostSurveySubcountToBiohubObject({
+        observation_subcount_id: 5,
+        comment: 'General count',
+        subcount: 20,
+        qualitative_measurements: [],
+        quantitative_measurements: []
+      });
     });
 
     it('uses empty strings when no measurements available', () => {
       expect(data.properties).to.eql({
-        measurement_type: '',
-        measurement_value: '',
         comment: 'General count',
         count: 20
       });
@@ -558,11 +541,11 @@ describe('PostSurveyEnvironmentalConditionToBiohubObject', () => {
     };
 
     before(() => {
-      data = new PostSurveyEnvironmentalConditionToBiohubObject(qualitativeEnvData, 0);
+      data = new PostSurveyEnvironmentalConditionToBiohubObject(qualitativeEnvData);
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal('environmental-condition-0');
+      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('sets type', () => {
@@ -593,11 +576,11 @@ describe('PostSurveyEnvironmentalConditionToBiohubObject', () => {
     };
 
     before(() => {
-      data = new PostSurveyEnvironmentalConditionToBiohubObject(quantitativeEnvData, 1);
+      data = new PostSurveyEnvironmentalConditionToBiohubObject(quantitativeEnvData);
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal('environmental-condition-1');
+      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('sets type', () => {
@@ -621,23 +604,17 @@ describe('PostSurveyEnvironmentalConditionToBiohubObject', () => {
     let quantData: PostSurveyEnvironmentalConditionToBiohubObject;
 
     before(() => {
-      qualData = new PostSurveyEnvironmentalConditionToBiohubObject(
-        {
-          type: 'qualitative',
-          environment_qualitative_id: 'env-qual-uuid',
-          environment_qualitative_option_id: 'env-qual-opt-uuid'
-        },
-        0
-      );
+      qualData = new PostSurveyEnvironmentalConditionToBiohubObject({
+        type: 'qualitative',
+        environment_qualitative_id: 'env-qual-uuid',
+        environment_qualitative_option_id: 'env-qual-opt-uuid'
+      });
 
-      quantData = new PostSurveyEnvironmentalConditionToBiohubObject(
-        {
-          type: 'quantitative',
-          environment_quantitative_id: 'env-quant-uuid',
-          value: 42
-        },
-        1
-      );
+      quantData = new PostSurveyEnvironmentalConditionToBiohubObject({
+        type: 'quantitative',
+        environment_quantitative_id: 'env-quant-uuid',
+        value: 42
+      });
     });
 
     it('uses IDs when names are missing for qualitative', () => {
@@ -690,7 +667,7 @@ describe('PostSurveyAnimalToBiohubObject', () => {
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal('animal-uuid-123');
+      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('sets type', () => {
@@ -710,7 +687,7 @@ describe('PostSurveyAnimalToBiohubObject', () => {
       expect(data.child_features).to.have.length(1);
       expect(data.child_features[0].type).to.equal('capture');
       expect(data.child_features[0].properties).to.eql({
-        description: 'Initial capture for tagging',
+        comment: 'Initial capture for tagging',
         timestamp: '2023-06-15T10:30:00',
         geometry: {
           type: 'FeatureCollection',
@@ -749,7 +726,7 @@ describe('PostSurveyAnimalToBiohubObject', () => {
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal('animal-uuid-456');
+      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('sets type', () => {
@@ -806,13 +783,13 @@ describe('PostSurveyAnimalToBiohubObject', () => {
     });
 
     it('includes both capture and release as child features', () => {
-      expect(data.child_features).to.have.length(2);
+      expect(data.child_features).to.have.length(1);
 
       // Check capture feature
-      const captureFeature = data.child_features.find((f) => f.type === 'capture');
-      expect(captureFeature).to.exist;
-      expect(captureFeature?.properties).to.eql({
-        description: 'Capture for research',
+      const captureFeature = data.child_features[0];
+      expect(captureFeature.type).to.equal('capture');
+      expect(captureFeature.properties).to.eql({
+        comment: 'Capture for research',
         timestamp: '2023-07-10T08:15:00',
         geometry: {
           type: 'FeatureCollection',
@@ -829,11 +806,12 @@ describe('PostSurveyAnimalToBiohubObject', () => {
         }
       });
 
-      // Check release feature
-      const releaseFeature = data.child_features.find((f) => f.type === 'release');
-      expect(releaseFeature).to.exist;
-      expect(releaseFeature?.properties).to.eql({
-        description: 'Released after data collection',
+      // Check release feature as child of capture
+      expect(captureFeature.child_features).to.have.length(1);
+      const releaseFeature = captureFeature.child_features[0];
+      expect(releaseFeature.type).to.equal('release');
+      expect(releaseFeature.properties).to.eql({
+        comment: 'Released after data collection',
         timestamp: '2023-07-11T16:30:00',
         geometry: {
           type: 'FeatureCollection',
@@ -922,9 +900,9 @@ describe('PostSurveyAnimalToBiohubObject', () => {
       expect(markingFeature?.properties).to.eql({
         marking_type: 'Ear Tag',
         identifier: 'EAR-TAG-123',
-        colour: 'Blue',
+        primary_colour: 'Blue',
         body_position: 'Ear',
-        description: 'Blue ear tag on left ear'
+        comment: 'Blue ear tag on left ear'
       });
 
       // Check measurement child features
@@ -934,14 +912,14 @@ describe('PostSurveyAnimalToBiohubObject', () => {
       const weightMeasurement = measurementFeatures.find((f) => f.properties.measurement_type === 'Weight');
       expect(weightMeasurement?.properties).to.eql({
         measurement_type: 'Weight',
-        measurement_value: '85',
+        measurement_value: 85,
         description: 'Measured in kilograms'
       });
 
       const lengthMeasurement = measurementFeatures.find((f) => f.properties.measurement_type === 'Body Length');
       expect(lengthMeasurement?.properties).to.eql({
         measurement_type: 'Body Length',
-        measurement_value: '180',
+        measurement_value: 180,
         description: 'Measured in centimeters'
       });
     });
@@ -986,7 +964,7 @@ describe('PostSurveyAnimalToBiohubObject', () => {
       const mortalityFeature = data.child_features.find((f) => f.type === 'mortality');
       expect(mortalityFeature).to.exist;
       expect(mortalityFeature?.properties).to.eql({
-        description: 'Found deceased due to vehicle collision',
+        comment: 'Found deceased due to vehicle collision',
         timestamp: '2025-10-21T16:09:09.000Z',
         geometry: {
           type: 'FeatureCollection',
@@ -1030,7 +1008,7 @@ describe('PostSurveyMortalityToBiohubObject', () => {
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal('mortality-test-1');
+      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('sets type', () => {
@@ -1039,7 +1017,7 @@ describe('PostSurveyMortalityToBiohubObject', () => {
 
     it('sets properties', () => {
       expect(data.properties).to.eql({
-        description: 'Vehicle collision on highway',
+        comment: 'Vehicle collision on highway',
         timestamp: '2025-10-21T14:30:00.000Z',
         geometry: {
           type: 'FeatureCollection',
@@ -1076,7 +1054,7 @@ describe('PostSurveyMortalityToBiohubObject', () => {
 
     it('sets properties with null values', () => {
       expect(data.properties).to.eql({
-        description: null,
+        comment: null,
         timestamp: '2025-10-22T00:00:00.000Z',
         geometry: {
           type: 'FeatureCollection',
@@ -1102,7 +1080,7 @@ describe('PostSurveyMortalityToBiohubObject', () => {
 
     it('handles minimal data correctly', () => {
       expect(data.properties).to.eql({
-        description: null,
+        comment: null,
         timestamp: '2025-10-21T09:09:09-07:00',
         geometry: {
           type: 'FeatureCollection',
@@ -1133,7 +1111,7 @@ describe('PostSurveyMarkingToBiohubObject', () => {
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal('marking-test-1');
+      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('sets type', () => {
@@ -1144,9 +1122,10 @@ describe('PostSurveyMarkingToBiohubObject', () => {
       expect(data.properties).to.eql({
         marking_type: 'Collar',
         identifier: 'COLLAR-456',
-        colour: 'Black/White',
+        primary_colour: 'Black',
+        secondary_colour: 'White',
         body_position: 'Neck',
-        description: 'GPS collar'
+        comment: 'GPS collar'
       });
     });
   });
@@ -1168,7 +1147,7 @@ describe('PostSurveyMeasurementToBiohubObject', () => {
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal('measurement-test-1');
+      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('sets type', () => {
@@ -1178,9 +1157,40 @@ describe('PostSurveyMeasurementToBiohubObject', () => {
     it('sets properties', () => {
       expect(data.properties).to.eql({
         measurement_type: 'Height',
-        measurement_value: '120',
+        measurement_value: 120,
         description: 'Height at shoulder'
       });
+    });
+  });
+
+  describe('Null comment provided', () => {
+    let data: PostSurveyMeasurementToBiohubObject;
+
+    const measurementObj = {
+      measurement_quantitative_id: 'measurement-test-2',
+      measurement_name: 'Weight',
+      value: 85,
+      comment: null
+    };
+
+    before(() => {
+      data = new PostSurveyMeasurementToBiohubObject(measurementObj);
+    });
+
+    it('sets id', () => {
+      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+    });
+
+    it('sets type', () => {
+      expect(data.type).to.equal('measurement');
+    });
+
+    it('sets properties without description when comment is null', () => {
+      expect(data.properties).to.eql({
+        measurement_type: 'Weight',
+        measurement_value: 85
+      });
+      expect(data.properties).to.not.have.property('description');
     });
   });
 });
@@ -1210,7 +1220,7 @@ describe('PostSurveyReleaseToBiohubObject', () => {
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal('capture-uuid-3-release');
+      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('sets type', () => {
@@ -1219,7 +1229,7 @@ describe('PostSurveyReleaseToBiohubObject', () => {
 
     it('sets properties', () => {
       expect(data.properties).to.eql({
-        description: 'Successful release after monitoring',
+        comment: 'Successful release after monitoring',
         timestamp: '2023-08-16T14:45:00',
         geometry: {
           type: 'FeatureCollection',
@@ -1261,15 +1271,15 @@ describe('PostSurveyReleaseToBiohubObject', () => {
       data = new PostSurveyReleaseToBiohubObject(captureObj);
     });
 
-    it('sets properties with null values', () => {
+    it('sets properties without description when release_comment is null', () => {
       expect(data.properties).to.eql({
-        description: null,
         timestamp: '2023-09-02',
         geometry: {
           type: 'FeatureCollection',
           features: []
         }
       });
+      expect(data.properties).to.not.have.property('description');
     });
   });
 });
@@ -1309,9 +1319,16 @@ describe('PostSurveyToBiohubObject', () => {
       geometry: []
     } as GetSurveyData;
 
+    const survey_purpose_obj: GetSurveyPurposeAndMethodologyData = {
+      intended_outcome_ids: [1, 2],
+      additional_details: 'Test survey objectives',
+      revision_count: 1
+    } as GetSurveyPurposeAndMethodologyData;
+
     before(() => {
       data = new PostSurveyToBiohubObject(
         survey_obj,
+        survey_purpose_obj,
         [observation_obj],
         { type: 'FeatureCollection', features: [] },
         [],
@@ -1320,8 +1337,8 @@ describe('PostSurveyToBiohubObject', () => {
       );
     });
 
-    it('sets id', () => {
-      expect(data.id).to.equal('1');
+    it('sets id as UUID', () => {
+      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('sets type', () => {
@@ -1333,17 +1350,273 @@ describe('PostSurveyToBiohubObject', () => {
         survey_id: 1,
         project_id: 1,
         name: 'survey_name',
-        guid: '6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b',
         start_date: 'start_date',
         end_date: 'end_date',
-        survey_types: [9],
-        revision_count: 1,
-        geometry: { type: 'FeatureCollection', features: [] }
+        collected_data: [
+          {
+            survey_type_id: 9
+          }
+        ],
+        objectives: 'Test survey objectives'
       });
     });
 
     it('sets features', () => {
-      expect(data.child_features).to.eql([new PostSurveyObservationToBiohubObject(observation_obj)]);
+      expect(data.child_features).to.have.length(1);
+      const childFeature = data.child_features[0] as PostSurveyObservationToBiohubObject;
+      expect(childFeature).to.be.instanceOf(PostSurveyObservationToBiohubObject);
+
+      // Create a comparison object to check all properties except the id
+      const expectedChild = new PostSurveyObservationToBiohubObject(observation_obj);
+      expect(childFeature.type).to.equal(expectedChild.type);
+      expect(childFeature.properties).to.deep.equal(expectedChild.properties);
+      expect(childFeature.child_features).to.deep.equal(expectedChild.child_features);
+    });
+  });
+
+  describe('With focal species provided', () => {
+    let data: PostSurveyToBiohubObject;
+
+    const survey_obj: GetSurveyData = {
+      id: 1,
+      uuid: '1',
+      survey_name: 'survey_name',
+      project_id: 1,
+      progress_id: 1,
+      start_date: 'start_date',
+      end_date: 'end_date',
+      survey_types: [9],
+      revision_count: 1,
+      geometry: []
+    } as GetSurveyData;
+
+    const survey_purpose_obj: GetSurveyPurposeAndMethodologyData = {
+      intended_outcome_ids: [1, 2],
+      additional_details: 'Test survey objectives',
+      revision_count: 1
+    } as GetSurveyPurposeAndMethodologyData;
+
+    const focalSpecies = {
+      focal_species: [
+        {
+          tsn: 1234,
+          scientificName: 'Species 1',
+          commonNames: [],
+          rank: 'Species',
+          kingdom: 'Animalia',
+          ecological_units: [
+            {
+              critterbase_collection_category_id: 'category-1',
+              critterbase_collection_unit_id: 'unit-1'
+            }
+          ]
+        },
+        {
+          tsn: 5678,
+          scientificName: 'Species 2',
+          commonNames: [],
+          rank: 'Species',
+          kingdom: 'Animalia',
+          ecological_units: [
+            {
+              critterbase_collection_category_id: 'category-2',
+              critterbase_collection_unit_id: 'unit-2'
+            }
+          ]
+        },
+        {
+          tsn: 90123,
+          scientificName: 'Species 3',
+          commonNames: [],
+          rank: 'Species',
+          kingdom: 'Animalia',
+          ecological_units: []
+        }
+      ]
+    };
+
+    // Create animal records that match the focal species
+    const animalRecords = [
+      {
+        critter_id: 'animal-1',
+        animal_id: 'ANIMAL-001',
+        itis_tsn: 1234, // Matches first focal species
+        critter_comment: 'Test animal 1',
+        sex: { label: 'Male' },
+        captures: [],
+        mortality: null
+      },
+      {
+        critter_id: 'animal-2',
+        animal_id: 'ANIMAL-002',
+        itis_tsn: 5678, // Matches second focal species
+        critter_comment: 'Test animal 2',
+        sex: { label: 'Female' },
+        captures: [],
+        mortality: null
+      }
+    ] as any[];
+
+    before(() => {
+      data = new PostSurveyToBiohubObject(
+        survey_obj,
+        survey_purpose_obj,
+        [],
+        { type: 'FeatureCollection', features: [] },
+        [],
+        [],
+        animalRecords, // Now passing animal records
+        undefined, // observationSigns
+        undefined, // environmentDefinitions
+        undefined, // measurementDefinitions
+        undefined, // samplingSites
+        undefined, // samplingPeriods
+        undefined, // habitatFeatures
+        undefined, // habitatFeatureTypes
+        undefined, // telemetryDevices
+        undefined, // telemetryDeployments
+        undefined, // telemetry
+        undefined, // samplingTechniques
+        undefined, // deviceMakes
+        undefined, // frequencyUnits
+        undefined, // partnerships
+        focalSpecies, // focalSpecies
+        undefined, // surveyLocation
+        undefined, // firstNations
+        undefined, // strata
+        undefined // siteSelectionStrategies
+      );
+    });
+
+    it('sets focal_species as array of taxon objects', () => {
+      expect(data.properties.focal_species).to.eql([{ taxon_id: 1234 }, { taxon_id: 5678 }, { taxon_id: 90123 }]);
+    });
+
+    it('does not include taxon_id property', () => {
+      expect(data.properties.taxon_id).to.be.undefined;
+    });
+
+    it('includes ecological units from focal species as children of animals', () => {
+      // Find animal features
+      const animalFeatures = data.child_features.filter((feature) => feature.type === 'animal');
+      expect(animalFeatures).to.have.length(2);
+
+      // Find ecological units within animal child features
+      let totalEcologicalUnits = 0;
+      animalFeatures.forEach((animalFeature) => {
+        const ecologicalUnits = animalFeature.child_features.filter((child) => child.type === 'ecological_unit');
+        totalEcologicalUnits += ecologicalUnits.length;
+      });
+
+      expect(totalEcologicalUnits).to.equal(2); // Two species have ecological units
+    });
+
+    it('sets correct properties for ecological unit features from focal species', () => {
+      // Find animal features and their ecological units
+      const animalFeatures = data.child_features.filter((feature) => feature.type === 'animal');
+
+      // Get ecological units from first animal (tsn: 1234)
+      const firstAnimalEcologicalUnits = animalFeatures[0].child_features.filter(
+        (child) => child.type === 'ecological_unit'
+      );
+      expect(firstAnimalEcologicalUnits).to.have.length(1);
+      expect(firstAnimalEcologicalUnits[0].properties).to.eql({
+        ecological_unit_type: 'category-1',
+        ecological_unit_value: 'unit-1'
+      });
+
+      // Get ecological units from second animal (tsn: 5678)
+      const secondAnimalEcologicalUnits = animalFeatures[1].child_features.filter(
+        (child) => child.type === 'ecological_unit'
+      );
+      expect(secondAnimalEcologicalUnits).to.have.length(1);
+      expect(secondAnimalEcologicalUnits[0].properties).to.eql({
+        ecological_unit_type: 'category-2',
+        ecological_unit_value: 'unit-2'
+      });
+    });
+  });
+
+  describe('With strata provided', () => {
+    let data: PostSurveyToBiohubObject;
+
+    const survey_obj: GetSurveyData = {
+      id: 1,
+      uuid: '1',
+      survey_name: 'survey_name',
+      project_id: 1,
+      progress_id: 1,
+      start_date: 'start_date',
+      end_date: 'end_date',
+      survey_types: [9],
+      revision_count: 1,
+      geometry: []
+    } as GetSurveyData;
+
+    const survey_purpose_obj: GetSurveyPurposeAndMethodologyData = {
+      intended_outcome_ids: [1, 2],
+      additional_details: 'Test survey objectives',
+      revision_count: 1
+    } as GetSurveyPurposeAndMethodologyData;
+
+    const strata = [
+      { name: 'Forest Stratum', description: 'Mixed coniferous and deciduous forest' },
+      { name: 'Alpine Stratum', description: 'High elevation alpine meadows and rock' }
+    ];
+
+    before(() => {
+      data = new PostSurveyToBiohubObject(
+        survey_obj,
+        survey_purpose_obj,
+        [],
+        { type: 'FeatureCollection', features: [] },
+        [],
+        [],
+        [],
+        undefined, // observationSigns
+        undefined, // environmentDefinitions
+        undefined, // measurementDefinitions
+        undefined, // samplingSites
+        undefined, // samplingPeriods
+        undefined, // habitatFeatures
+        undefined, // habitatFeatureTypes
+        undefined, // telemetryDevices
+        undefined, // telemetryDeployments
+        undefined, // telemetry
+        undefined, // samplingTechniques
+        undefined, // deviceMakes
+        undefined, // frequencyUnits
+        undefined, // partnerships
+        undefined, // focalSpecies
+        undefined, // surveyLocation
+        undefined, // firstNations
+        strata
+      );
+    });
+
+    it('includes strata in child_features', () => {
+      const stratumFeatures = data.child_features.filter((feature) => feature.type === 'stratum');
+      expect(stratumFeatures).to.have.length(2);
+    });
+
+    it('sets correct properties for stratum features', () => {
+      const stratumFeatures = data.child_features.filter((feature) => feature.type === 'stratum');
+      expect(stratumFeatures[0].properties).to.eql({
+        name: 'Forest Stratum',
+        description: 'Mixed coniferous and deciduous forest'
+      });
+
+      expect(stratumFeatures[1].properties).to.eql({
+        name: 'Alpine Stratum',
+        description: 'High elevation alpine meadows and rock'
+      });
+    });
+
+    it('sets correct id for stratum features', () => {
+      const stratumFeatures = data.child_features.filter((feature) => feature.type === 'stratum');
+
+      expect(stratumFeatures[0].id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(stratumFeatures[1].id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
   });
 
@@ -1381,6 +1654,12 @@ describe('PostSurveyToBiohubObject', () => {
       geometry: []
     } as GetSurveyData;
 
+    const survey_purpose_obj: GetSurveyPurposeAndMethodologyData = {
+      intended_outcome_ids: [1, 2],
+      additional_details: 'Test survey objectives',
+      revision_count: 1
+    } as GetSurveyPurposeAndMethodologyData;
+
     const animal_obj: ICritterDetailed = {
       critter_id: 'animal-uuid-123',
       wlh_id: 'WLH-123',
@@ -1396,6 +1675,7 @@ describe('PostSurveyToBiohubObject', () => {
     before(() => {
       data = new PostSurveyToBiohubObject(
         survey_obj,
+        survey_purpose_obj,
         [observation_obj],
         { type: 'FeatureCollection', features: [] },
         [],
@@ -1416,7 +1696,7 @@ describe('PostSurveyToBiohubObject', () => {
       ) as PostSurveyAnimalToBiohubObject;
 
       expect(animalFeature).to.not.be.undefined;
-      expect(animalFeature.id).to.equal('animal-uuid-123');
+      expect(animalFeature.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
       expect(animalFeature.properties).to.eql({
         taxon_id: 180543,
         animal_identifier: 'ANIMAL-456',
@@ -1486,7 +1766,7 @@ describe('PostSurveySubmissionToBioHubObject', () => {
     });
 
     it('sets id', () => {
-      expect(data.id).to.equal('1');
+      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     });
 
     it('sets name', () => {
@@ -1502,9 +1782,20 @@ describe('PostSurveySubmissionToBioHubObject', () => {
     });
 
     it('sets content', () => {
-      expect(data.content).to.eql(
-        new PostSurveyToBiohubObject(survey_obj, observation_obj, survey_geometry, [], [], [])
+      const expectedContent = new PostSurveyToBiohubObject(
+        survey_obj,
+        purpose_and_methodology,
+        observation_obj,
+        survey_geometry,
+        [],
+        [],
+        []
       );
+
+      // Compare properties instead of deep equality due to generated UUIDs
+      expect(data.content.type).to.equal(expectedContent.type);
+      expect(data.content.properties).to.eql(expectedContent.properties);
+      expect(data.content.child_features).to.have.length(expectedContent.child_features.length);
     });
   });
 });

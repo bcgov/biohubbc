@@ -20,15 +20,18 @@ describe('Sampling Technique Features BioHub Integration', () => {
         vantage_data: [{ vh: 'Ground', vv: 'Stationary mount' }]
       };
 
-      const techniqueObj = new PostSampleTechniqueToBiohubObject(samplingTechniqueRecord, 0);
+      const techniqueObj = new PostSampleTechniqueToBiohubObject(samplingTechniqueRecord);
 
-      expect(techniqueObj.id).to.equal('sample-technique-123');
+      expect(techniqueObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(techniqueObj.type).to.equal('sample_technique');
       expect(techniqueObj.properties.name).to.equal('Camera Trapping');
       expect(techniqueObj.properties.description).to.equal('Wildlife camera deployed for monitoring');
       expect(techniqueObj.properties.method_name).to.equal('Camera Survey');
-      expect(techniqueObj.properties.attractant).to.equal('Scent lure;Bait station');
-      expect(techniqueObj.child_features).to.be.an('array').with.length(0);
+      expect(techniqueObj.properties.attractant).to.deep.equal([
+        { attractant_name: 'Scent lure' },
+        { attractant_name: 'Bait station' }
+      ]);
+      expect(techniqueObj.child_features).to.be.an('array').with.length(3);
     });
 
     it('should handle sampling technique with null values', () => {
@@ -44,14 +47,14 @@ describe('Sampling Technique Features BioHub Integration', () => {
         vantage_data: []
       };
 
-      const techniqueObj = new PostSampleTechniqueToBiohubObject(samplingTechniqueRecord, 1);
+      const techniqueObj = new PostSampleTechniqueToBiohubObject(samplingTechniqueRecord);
 
-      expect(techniqueObj.id).to.equal('sample-technique-456');
+      expect(techniqueObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(techniqueObj.type).to.equal('sample_technique');
       expect(techniqueObj.properties.name).to.equal('Visual Survey');
       expect(techniqueObj.properties.description).to.be.null;
       expect(techniqueObj.properties.method_name).to.equal('Direct Observation');
-      expect(techniqueObj.properties.attractant).to.equal('');
+      expect(techniqueObj.properties.attractant).to.deep.equal([]);
       expect(techniqueObj.child_features).to.be.an('array').with.length(0);
     });
 
@@ -68,15 +71,15 @@ describe('Sampling Technique Features BioHub Integration', () => {
         vantage_data: [{ vh: 'Arboreal', vv: 'Tree mount' }]
       };
 
-      const techniqueObj = new PostSampleTechniqueToBiohubObject(samplingTechniqueRecord, 2);
+      const techniqueObj = new PostSampleTechniqueToBiohubObject(samplingTechniqueRecord);
 
-      expect(techniqueObj.id).to.equal('sample-technique-789');
+      expect(techniqueObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(techniqueObj.type).to.equal('sample_technique');
       expect(techniqueObj.properties.name).to.equal('Acoustic Monitoring');
       expect(techniqueObj.properties.description).to.equal('Passive acoustic monitoring for species identification');
       expect(techniqueObj.properties.method_name).to.equal('Acoustic Survey');
-      expect(techniqueObj.properties.attractant).to.equal('');
-      expect(techniqueObj.child_features).to.be.an('array').with.length(0);
+      expect(techniqueObj.properties.attractant).to.deep.equal([]);
+      expect(techniqueObj.child_features).to.be.an('array').with.length(2);
     });
   });
 });

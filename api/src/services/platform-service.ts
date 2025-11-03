@@ -221,8 +221,6 @@ export class PlatformService extends DBService {
       data.submissionComment
     );
 
-    console.log('XXX DEBUG', JSON.stringify(surveyDataPackage, null, 2));
-
     // Submit survey data package to BioHub
     const response = await axios.post<{
       submission_uuid: string;
@@ -303,6 +301,9 @@ export class PlatformService extends DBService {
     // Get partnerships and focal species data for BioHub submission
     const partnerships = await surveyService.getSurveyPartnershipsData(surveyId);
     const focalSpecies = await surveyService.getSpeciesData(surveyId);
+
+    // Get site selection strategy data for BioHub submission
+    const siteSelectionData = await surveyService.siteSelectionStrategyService.getSiteSelectionDataBySurveyId(surveyId);
 
     // Get observation signs for mapping IDs to names
     const allCodes = await codeService.getAllCodeSets();
@@ -422,7 +423,9 @@ export class PlatformService extends DBService {
       partnerships,
       focalSpecies,
       surveyLocation,
-      allCodes.first_nations
+      allCodes.first_nations,
+      siteSelectionData.stratums,
+      siteSelectionData.strategies
     );
 
     return surveyDataPackage;
@@ -561,7 +564,7 @@ export class PlatformService extends DBService {
 
     const backboneArtifactIntakeUrl = new URL(getBackboneArtifactIntakePath(), getBackboneInternalApiHost()).href;
 
-    const { data } = await axios.post<{ artifact_uuid: string }>(backboneArtifactIntakeUrl, formData.getBuffer(), {
+    const { data } = await axios.post<{ artifact_uuid: string }>(backboneArtifactIntakeUrl, formData, {
       headers: {
         authorization: `Bearer ${token}`,
         ...formData.getHeaders()

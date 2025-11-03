@@ -5,6 +5,7 @@ import {
   PostSurveySubmissionToBioHubObject,
   PostSurveyToBiohubObject
 } from '../models/biohub-create';
+import { GetSurveyPurposeAndMethodologyData } from './survey-view';
 
 describe('Habitat Features BioHub Integration', () => {
   describe('PostSurveyHabitatFeatureToBiohubObject', () => {
@@ -44,14 +45,14 @@ describe('Habitat Features BioHub Integration', () => {
         }
       ];
 
-      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature, 0, habitatFeatureTypes);
+      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature, habitatFeatureTypes);
 
-      expect(habitatFeatureObj.id).to.equal('habitat-feature-123');
+      expect(habitatFeatureObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(habitatFeatureObj.type).to.equal('habitat_feature');
       expect(habitatFeatureObj.properties.name).to.equal('Den Site');
       expect(habitatFeatureObj.properties.count).to.equal(5);
       expect(habitatFeatureObj.properties.timestamp).to.equal('2024-01-15T10:30:00Z');
-      expect(habitatFeatureObj.properties.taxon_id).to.equal(180543);
+      expect(habitatFeatureObj.properties.associated_species).to.deep.equal([{ taxon_id: 180543 }]);
       expect(habitatFeatureObj.properties.geometry.type).to.equal('FeatureCollection');
       expect(habitatFeatureObj.properties.geometry.features).to.have.length(1);
       expect(habitatFeatureObj.properties.geometry.features[0].geometry.coordinates).to.deep.equal([-123.456, 49.123]);
@@ -86,7 +87,7 @@ describe('Habitat Features BioHub Integration', () => {
         }
       ];
 
-      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature, 0, habitatFeatureTypes);
+      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature, habitatFeatureTypes);
 
       expect(habitatFeatureObj.properties.timestamp).to.equal('2024-01-16T00:00:00.000Z');
       expect(habitatFeatureObj.properties).to.not.have.property('taxon_id');
@@ -111,7 +112,7 @@ describe('Habitat Features BioHub Integration', () => {
         survey_sample_period_start_datetime: null
       };
 
-      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature, 0, []);
+      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature, []);
 
       expect(habitatFeatureObj.properties.geometry.features).to.have.length(0);
       expect(habitatFeatureObj.properties.timestamp).to.be.null;
@@ -171,8 +172,15 @@ describe('Habitat Features BioHub Integration', () => {
         }
       ];
 
+      const surveyPurposeData: GetSurveyPurposeAndMethodologyData = {
+        intended_outcome_ids: [],
+        additional_details: 'Habitat features test objectives',
+        revision_count: 1
+      };
+
       const surveyObj = new PostSurveyToBiohubObject(
         mockSurveyData as any,
+        surveyPurposeData,
         [], // observations
         mockGeometry as any, // geometry
         [], // attachments
@@ -276,7 +284,9 @@ describe('Habitat Features BioHub Integration', () => {
       expect(submissionObj.content.child_features[0].type).to.equal('habitat_feature');
       expect(submissionObj.content.child_features[0].properties.name).to.equal('Feeding Area');
       expect(submissionObj.content.child_features[0].properties.count).to.equal(3);
-      expect(submissionObj.content.child_features[0].properties.taxon_id).to.equal(179913);
+      expect(submissionObj.content.child_features[0].properties.associated_species).to.deep.equal([
+        { taxon_id: 179913 }
+      ]);
     });
   });
 });

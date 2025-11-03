@@ -93,7 +93,8 @@ describe('TelemetryVendorService', () => {
             latitude: -49,
             longitude: 125,
             elevation: null,
-            temperature: null
+            temperature: null,
+            dop: null
           }
         ];
         const getTelemetryByDeploymentIdsStub = sinon
@@ -139,7 +140,8 @@ describe('TelemetryVendorService', () => {
             latitude: -49,
             longitude: 125,
             elevation: null,
-            temperature: null
+            temperature: null,
+            dop: null
           }
         ];
         const getTelemetryByDeploymentIdsStub = sinon
@@ -260,7 +262,8 @@ describe('TelemetryVendorService', () => {
         latitude: -49,
         longitude: 125,
         elevation: null,
-        temperature: null
+        temperature: null,
+        dop: null
       };
 
       const getTelemetryRecordByIdStub = sinon
@@ -294,7 +297,8 @@ describe('TelemetryVendorService', () => {
           latitude: -49,
           longitude: 125,
           elevation: null,
-          temperature: null
+          temperature: null,
+          dop: null
         }
       ];
 

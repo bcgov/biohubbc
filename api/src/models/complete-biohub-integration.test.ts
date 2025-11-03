@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import { PostSurveyToBiohubObject } from '../models/biohub-create';
+import { GetSurveyPurposeAndMethodologyData } from './survey-view';
 
 describe('Complete BioHub Integration', () => {
   describe('PostSurveyToBiohubObject with all feature types', () => {
@@ -111,9 +112,16 @@ describe('Complete BioHub Integration', () => {
         }
       ];
 
+      const surveyPurposeData: GetSurveyPurposeAndMethodologyData = {
+        intended_outcome_ids: [1, 2],
+        additional_details: 'Complete integration test objectives',
+        revision_count: 1
+      };
+
       // Create survey object with all features
       const surveyObj = new PostSurveyToBiohubObject(
         surveyData,
+        surveyPurposeData,
         [], // observation records
         { type: 'FeatureCollection', features: [] }, // survey geometry
         [], // survey attachments
@@ -140,16 +148,16 @@ describe('Complete BioHub Integration', () => {
       // Verify habitat feature
       const habitatFeature = surveyObj.child_features.find((f) => f.type === 'habitat_feature');
       expect(habitatFeature).to.exist;
-      expect(habitatFeature?.id).to.equal('habitat-feature-301');
+      expect(habitatFeature?.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
       expect(habitatFeature?.properties.name).to.equal('Den Site');
       expect(habitatFeature?.properties.count).to.equal(2);
       expect(habitatFeature?.properties.timestamp).to.equal('2024-06-15T14:30:00Z');
-      expect(habitatFeature?.properties.taxon_id).to.equal(180543);
+      expect(habitatFeature?.properties.associated_species).to.deep.equal([{ taxon_id: 180543 }]);
 
       // Verify telemetry device
       const deviceFeature = surveyObj.child_features.find((f) => f.type === 'telemetry_device');
       expect(deviceFeature).to.exist;
-      expect(deviceFeature?.id).to.equal('telemetry-device-601');
+      expect(deviceFeature?.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
       expect(deviceFeature?.properties.device_manufacturer).to.equal('Advanced Tracking Systems');
       expect(deviceFeature?.properties.model).to.equal('GPS-Tracker-Pro');
       expect(deviceFeature?.properties.serial_number).to.equal('GPS-DEV-001');
@@ -158,13 +166,10 @@ describe('Complete BioHub Integration', () => {
       // Verify telemetry deployment
       const deploymentFeature = surveyObj.child_features.find((f) => f.type === 'telemetry_deployment');
       expect(deploymentFeature).to.exist;
-      expect(deploymentFeature?.id).to.equal('telemetry-deployment-701');
-      expect(deploymentFeature?.properties.animal_identifier).to.equal('bear-critter-uuid');
-      expect(deploymentFeature?.properties.device).to.equal('GPS-DEV-001');
+      expect(deploymentFeature?.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+      expect(deploymentFeature?.properties.animal_identifier).to.equal(null);
       expect(deploymentFeature?.properties.start_date).to.equal('2024-03-01');
       expect(deploymentFeature?.properties.end_date).to.equal('2024-08-31');
-      expect(deploymentFeature?.properties.frequency).to.equal(12);
-      expect(deploymentFeature?.properties.frequency_unit).to.equal('Hours');
     });
   });
 });

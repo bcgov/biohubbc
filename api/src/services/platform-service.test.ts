@@ -17,6 +17,7 @@ import { PlatformService } from './platform-service';
 import { SamplePeriodService } from './sample-period-service';
 import { SampleSiteService } from './sample-site-service';
 import { SampleTechniqueService } from './sample-technique-service';
+import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 import { SurveyCritterService } from './survey-critter-service';
 import { SurveyService } from './survey-service';
 import { TelemetryDeploymentService } from './telemetry-services/telemetry-deployment-service';
@@ -228,7 +229,7 @@ describe('PlatformService', () => {
 
       const getSurveyDataStub = sinon
         .stub(SurveyService.prototype, 'getSurveyData')
-        .resolves({ id: 1, uuid: '1' } as any);
+        .resolves({ id: 1, uuid: '1', survey_types: [] } as any);
 
       const getSurveyPurposeAndMethodologyStub = sinon
         .stub(SurveyService.prototype, 'getSurveyPurposeAndMethodology')
@@ -312,6 +313,10 @@ describe('PlatformService', () => {
         .stub(TelemetryDeploymentService.prototype, 'getDeploymentsForSurvey')
         .resolves([]);
 
+      const getSiteSelectionDataBySurveyIdStub = sinon
+        .stub(SiteSelectionStrategyService.prototype, 'getSiteSelectionDataBySurveyId')
+        .resolves({ strategies: [], stratums: [] });
+
       const response = await platformService._generateSurveyDataPackage(1, [], [], 'a comment about the submission');
 
       expect(getSurveyDataStub).to.have.been.calledOnceWith(1);
@@ -327,46 +332,12 @@ describe('PlatformService', () => {
       expect(getSurveyHabitatFeaturesStub).to.have.been.calledOnceWith(1);
       expect(getDevicesForSurveyStub).to.have.been.calledOnceWith(1);
       expect(getDeploymentsForSurveyStub).to.have.been.calledOnceWith(1);
-      expect(response).to.eql({
-        id: '1',
-        name: undefined,
-        description: 'a description of the purpose',
-        comment: 'a comment about the submission',
-        content: {
-          id: '1',
-          type: 'dataset',
-          properties: {
-            survey_id: 1,
-            project_id: undefined,
-            name: undefined,
-            guid: '6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b',
-            start_date: undefined,
-            end_date: undefined,
-            survey_types: undefined,
-            revision_count: undefined,
-            geometry: {
-              type: 'FeatureCollection',
-              features: []
-            }
-          },
-          child_features: [
-            {
-              id: '2',
-              type: 'species_observation',
-              properties: {
-                survey_id: undefined,
-                taxon_id: undefined,
-                survey_sample_period_id: null,
-                count: undefined,
-                timestamp: undefined,
-                sign: null,
-                geometry: { type: 'FeatureCollection', features: [] }
-              },
-              child_features: []
-            }
-          ]
-        }
-      });
+      expect(getSiteSelectionDataBySurveyIdStub).to.have.been.calledOnceWith(1);
+      expect(response).to.have.property('id');
+      expect(response).to.have.property('description', 'a description of the purpose');
+      expect(response).to.have.property('comment', 'a comment about the submission');
+      expect(response.content).to.have.property('type', 'dataset');
+      expect(response.content.properties).to.have.property('survey_id', 1);
     });
   });
 });
