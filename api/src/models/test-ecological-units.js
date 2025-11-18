@@ -1,5 +1,5 @@
 // Simple test to debug ecological units issue
-import { PostSurveyToBiohubObject } from './src/models/biohub-create';
+import { PostSurveyToBiohubObject } from './biohub-create';
 
 // Mock survey data
 const survey_obj = {
@@ -137,3 +137,4 @@ animalFeatures.forEach((animalFeature, index) => {
 console.log('\nTotal ecological units:', totalEcologicalUnits);
 console.log('Expected: 2');
 console.log('Success:', totalEcologicalUnits === 2 ? 'YES' : 'NO');
+

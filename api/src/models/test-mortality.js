@@ -1,4 +1,4 @@
-const { PostSurveyMortalityToBiohubObject } = require('./dist/models/biohub-create.js');
+import { PostSurveyMortalityToBiohubObject } from './biohub-create';
 
 const mortalityWithFeatures = {
   mortality_id: 'test-mortality-1',
@@ -25,3 +25,4 @@ const mortalityObj = new PostSurveyMortalityToBiohubObject(mortalityWithFeatures
 console.log('Mortality ID:', mortalityObj.id);
 console.log('Child features count:', mortalityObj.child_features.length);
 console.log('Child feature types:', mortalityObj.child_features.map(f => f.type));
+

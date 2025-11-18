@@ -24,7 +24,7 @@ describe('Telemetry Features BioHub Integration', () => {
         longitude: -123.1207,
         elevation: 250.0,
         temperature: 20.5,
-        dop: null
+        dop: 1.5
       };
 
       const telemetryObj = new PostTelemetryToBiohubObject(telemetryRecord);
@@ -485,7 +485,7 @@ describe('Telemetry Features BioHub Integration', () => {
           longitude: -125.5678,
           elevation: 450.5,
           temperature: 15.2,
-          dop: null
+          dop: 2.0
         },
         {
           telemetry_id: 'telem-002',
