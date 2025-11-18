@@ -185,18 +185,10 @@ describe('Habitat Features BioHub Integration', () => {
         mockGeometry as any, // geometry
         [], // attachments
         [], // report attachments
-        [], // animals
-        [], // observation signs
-        undefined, // environment definitions
-        undefined, // measurement definitions
-        [], // sampling sites
-        [], // sampling periods
-        mockHabitatFeatures, // habitat features
-        mockHabitatFeatureTypes, // habitat feature types
-        [], // telemetry devices
-        [], // telemetry deployments
-        [], // telemetry
-        [] // sampling techniques
+        {
+          habitatFeatures: mockHabitatFeatures,
+          habitatFeatureTypes: mockHabitatFeatureTypes
+        }
       );
 
       expect(surveyObj.child_features).to.have.length(1);
@@ -265,19 +257,16 @@ describe('Habitat Features BioHub Integration', () => {
         mockSurveyData as any,
         mockPurposeAndMethodology as any,
         [], // observations
-        mockGeometry as any, // geometry
-        [], // attachments
-        [], // report attachments
-        'Test submission with habitat features', // submission comment
-        [], // animals
-        [], // observation signs
-        undefined, // environment definitions
-        undefined, // measurement definitions
-        [], // sampling sites
-        [], // sampling periods
-        [], // sampling techniques
-        mockHabitatFeatures, // habitat features
-        mockHabitatFeatureTypes // habitat feature types
+        {
+          surveyGeometry: mockGeometry as any,
+          surveyAttachments: [],
+          surveyReports: [],
+          submissionComment: 'Test submission with habitat features'
+        },
+        {
+          habitatFeatures: mockHabitatFeatures,
+          habitatFeatureTypes: mockHabitatFeatureTypes
+        }
       );
 
       expect(submissionObj.content.child_features).to.have.length(1);

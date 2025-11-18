@@ -126,20 +126,14 @@ describe('Complete BioHub Integration', () => {
         { type: 'FeatureCollection', features: [] }, // survey geometry
         [], // survey attachments
         [], // survey reports
-        [], // animal records
-        [], // observation signs
-        undefined, // environment definitions
-        undefined, // measurement definitions
-        undefined, // sampling sites
-        undefined, // sampling periods
-        habitatFeatures,
-        habitatFeatureTypes,
-        telemetryDevices,
-        telemetryDeployments,
-        undefined, // telemetry data points
-        undefined, // sampling techniques
-        deviceMakes,
-        frequencyUnits
+        {
+          habitatFeatures,
+          habitatFeatureTypes,
+          telemetryDevices,
+          telemetryDeployments,
+          deviceMakes,
+          frequencyUnits
+        }
       );
 
       // Verify all feature types are included

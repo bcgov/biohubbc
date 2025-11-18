@@ -65,7 +65,7 @@ const animalRecords = [
     mortality: null
   },
   {
-    critter_id: 'animal-2', 
+    critter_id: 'animal-2',
     animal_id: 'ANIMAL-002',
     itis_tsn: 5678, // Matches second focal species
     critter_comment: 'Test animal 2',
@@ -87,26 +87,10 @@ const data = new PostSurveyToBiohubObject(
   { type: 'FeatureCollection', features: [] },
   [],
   [],
-  animalRecords,
-  undefined, // observationSigns
-  undefined, // environmentDefinitions
-  undefined, // measurementDefinitions
-  undefined, // samplingSites
-  undefined, // samplingPeriods
-  undefined, // habitatFeatures
-  undefined, // habitatFeatureTypes
-  undefined, // telemetryDevices
-  undefined, // telemetryDeployments
-  undefined, // telemetry
-  undefined, // samplingTechniques
-  undefined, // deviceMakes
-  undefined, // frequencyUnits
-  undefined, // partnerships
-  focalSpecies, // focalSpecies
-  undefined, // surveyLocation
-  undefined, // firstNations
-  undefined, // strata
-  undefined // siteSelectionStrategies
+  {
+    animalRecords,
+    focalSpecies
+  }
 );
 
 console.log('\nResult created!');
@@ -123,18 +107,17 @@ animalFeatures.forEach((animalFeature, index) => {
   console.log('  GUID:', animalFeature.guid);
   console.log('  TSN:', animalFeature.properties.taxon_id);
   console.log('  Child features:', animalFeature.child_features.length);
-  
+
   const ecologicalUnits = animalFeature.child_features.filter((child) => child.type === 'ecological_unit');
   console.log('  Ecological units:', ecologicalUnits.length);
-  
+
   ecologicalUnits.forEach((unit, unitIndex) => {
     console.log(`    Unit ${unitIndex + 1}:`, unit.properties);
   });
-  
+
   totalEcologicalUnits += ecologicalUnits.length;
 });
 
 console.log('\nTotal ecological units:', totalEcologicalUnits);
 console.log('Expected: 2');
 console.log('Success:', totalEcologicalUnits === 2 ? 'YES' : 'NO');
-

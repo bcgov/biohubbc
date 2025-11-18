@@ -16,7 +16,7 @@ const mortalityWithFeatures = {
     {
       measurement_quantitative_id: 'test-measurement-1',
       measurement_name: 'Weight',
-      value: 75.0
+      value: 74.5
     }
   ]
 };
@@ -24,5 +24,7 @@ const mortalityWithFeatures = {
 const mortalityObj = new PostSurveyMortalityToBiohubObject(mortalityWithFeatures);
 console.log('Mortality ID:', mortalityObj.id);
 console.log('Child features count:', mortalityObj.child_features.length);
-console.log('Child feature types:', mortalityObj.child_features.map(f => f.type));
-
+console.log(
+  'Child feature types:',
+  mortalityObj.child_features.map((f) => f.type)
+);

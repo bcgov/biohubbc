@@ -1333,7 +1333,7 @@ describe('PostSurveyToBiohubObject', () => {
         { type: 'FeatureCollection', features: [] },
         [],
         [],
-        []
+        {}
       );
     });
 
@@ -1465,26 +1465,10 @@ describe('PostSurveyToBiohubObject', () => {
         { type: 'FeatureCollection', features: [] },
         [],
         [],
-        animalRecords, // Now passing animal records
-        undefined, // observationSigns
-        undefined, // environmentDefinitions
-        undefined, // measurementDefinitions
-        undefined, // samplingSites
-        undefined, // samplingPeriods
-        undefined, // habitatFeatures
-        undefined, // habitatFeatureTypes
-        undefined, // telemetryDevices
-        undefined, // telemetryDeployments
-        undefined, // telemetry
-        undefined, // samplingTechniques
-        undefined, // deviceMakes
-        undefined, // frequencyUnits
-        undefined, // partnerships
-        focalSpecies, // focalSpecies
-        undefined, // surveyLocation
-        undefined, // firstNations
-        undefined, // strata
-        undefined // siteSelectionStrategies
+        {
+          animalRecords,
+          focalSpecies
+        }
       );
     });
 
@@ -1572,25 +1556,9 @@ describe('PostSurveyToBiohubObject', () => {
         { type: 'FeatureCollection', features: [] },
         [],
         [],
-        [],
-        undefined, // observationSigns
-        undefined, // environmentDefinitions
-        undefined, // measurementDefinitions
-        undefined, // samplingSites
-        undefined, // samplingPeriods
-        undefined, // habitatFeatures
-        undefined, // habitatFeatureTypes
-        undefined, // telemetryDevices
-        undefined, // telemetryDeployments
-        undefined, // telemetry
-        undefined, // samplingTechniques
-        undefined, // deviceMakes
-        undefined, // frequencyUnits
-        undefined, // partnerships
-        undefined, // focalSpecies
-        undefined, // surveyLocation
-        undefined, // firstNations
-        strata
+        {
+          strata
+        }
       );
     });
 
@@ -1680,7 +1648,7 @@ describe('PostSurveyToBiohubObject', () => {
         { type: 'FeatureCollection', features: [] },
         [],
         [],
-        [animal_obj]
+        { animalRecords: [animal_obj] }
       );
     });
 
@@ -1753,16 +1721,12 @@ describe('PostSurveySubmissionToBioHubObject', () => {
     const submissionComment = 'A comment about the submission';
 
     before(() => {
-      data = new PostSurveySubmissionToBioHubObject(
-        survey_obj,
-        purpose_and_methodology,
-        observation_obj,
-        survey_geometry,
-        [],
-        [],
-        submissionComment,
-        []
-      );
+      data = new PostSurveySubmissionToBioHubObject(survey_obj, purpose_and_methodology, observation_obj, {
+        surveyGeometry: survey_geometry,
+        surveyAttachments: [],
+        surveyReports: [],
+        submissionComment
+      });
     });
 
     it('sets id', () => {
@@ -1789,7 +1753,7 @@ describe('PostSurveySubmissionToBioHubObject', () => {
         survey_geometry,
         [],
         [],
-        []
+        {}
       );
 
       // Compare properties instead of deep equality due to generated UUIDs

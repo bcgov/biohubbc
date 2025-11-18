@@ -322,20 +322,12 @@ describe('Telemetry Features BioHub Integration', () => {
         { type: 'FeatureCollection', features: [] }, // survey geometry
         [], // survey attachments
         [], // survey reports
-        [], // animal records
-        [], // observation signs
-        undefined, // environment definitions
-        undefined, // measurement definitions
-        undefined, // sampling sites
-        undefined, // sampling periods
-        undefined, // habitat features
-        undefined, // habitat feature types
-        telemetryDevices,
-        telemetryDeployments,
-        undefined, // telemetry data points
-        [], // sampling techniques
-        deviceMakes,
-        [] // frequency units
+        {
+          telemetryDevices,
+          telemetryDeployments,
+          deviceMakes,
+          frequencyUnits: []
+        }
       );
 
       expect(surveyObj.child_features).to.have.length(2);
@@ -421,24 +413,18 @@ describe('Telemetry Features BioHub Integration', () => {
         surveyData,
         methodologyData,
         [], // observation records
-        { type: 'FeatureCollection', features: [] }, // survey geometry
-        [], // survey attachments
-        [], // survey reports
-        'Telemetry data submission', // submission comment
-        [], // animal records
-        [], // observation signs
-        undefined, // environment definitions
-        undefined, // measurement definitions
-        undefined, // sampling sites
-        undefined, // sampling periods
-        [], // sampling techniques
-        undefined, // habitat features
-        undefined, // habitat feature types
-        telemetryDevices,
-        telemetryDeployments,
-        undefined, // telemetry data points
-        deviceMakes,
-        [] // frequency units
+        {
+          surveyGeometry: { type: 'FeatureCollection', features: [] },
+          surveyAttachments: [],
+          surveyReports: [],
+          submissionComment: 'Telemetry data submission'
+        },
+        {
+          telemetryDevices,
+          telemetryDeployments,
+          deviceMakes,
+          frequencyUnits: []
+        }
       );
 
       expect(submissionObj.content.child_features).to.have.length(2);
@@ -506,24 +492,15 @@ describe('Telemetry Features BioHub Integration', () => {
         surveyData,
         methodologyData,
         [], // observation records
-        { type: 'FeatureCollection', features: [] }, // survey geometry
-        [], // survey attachments
-        [], // survey reports
-        'Telemetry points data submission', // submission comment
-        [], // animal records
-        [], // observation signs
-        undefined, // environment definitions
-        undefined, // measurement definitions
-        undefined, // sampling sites
-        undefined, // sampling periods
-        [], // sampling techniques
-        undefined, // habitat features
-        undefined, // habitat feature types
-        undefined, // telemetry devices
-        undefined, // telemetry deployments
-        telemetryData,
-        undefined, // device makes
-        undefined // frequency units
+        {
+          surveyGeometry: { type: 'FeatureCollection', features: [] },
+          surveyAttachments: [],
+          surveyReports: [],
+          submissionComment: 'Telemetry points data submission'
+        },
+        {
+          telemetry: telemetryData
+        }
       );
 
       expect(submissionObj.content.child_features).to.have.length(0);
@@ -583,24 +560,15 @@ describe('Telemetry Features BioHub Integration', () => {
         surveyData,
         methodologyData,
         [], // observation records
-        { type: 'FeatureCollection', features: [] }, // survey geometry
-        [], // survey attachments
-        [], // survey reports
-        'Sampling techniques submission', // submission comment
-        [], // animal records
-        [], // observation signs
-        undefined, // environment definitions
-        undefined, // measurement definitions
-        undefined, // sampling sites
-        undefined, // sampling periods
-        samplingTechniques,
-        undefined, // habitat features
-        undefined, // habitat feature types
-        undefined, // telemetry devices
-        undefined, // telemetry deployments
-        undefined, // telemetry data points
-        undefined, // device makes
-        undefined // frequency units
+        {
+          surveyGeometry: { type: 'FeatureCollection', features: [] },
+          surveyAttachments: [],
+          surveyReports: [],
+          submissionComment: 'Sampling techniques submission'
+        },
+        {
+          samplingTechniques
+        }
       );
 
       const samplingTechniqueFeatures = submissionObj.content.child_features.filter(

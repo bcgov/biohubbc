@@ -172,12 +172,10 @@ describe('Sampling Features BioHub Integration', () => {
         mockGeometry as any, // geometry
         [], // attachments
         [], // report attachments
-        [], // animals
-        [], // observation signs
-        undefined, // environment definitions
-        undefined, // measurement definitions
-        mockSamplingSites, // sampling sites
-        mockSamplingPeriods // sampling periods
+        {
+          samplingSites: mockSamplingSites,
+          samplingPeriods: mockSamplingPeriods
+        }
       );
 
       expect(surveyObj.child_features).to.have.length(2);
@@ -264,16 +262,16 @@ describe('Sampling Features BioHub Integration', () => {
         mockSurveyData as any,
         mockPurposeAndMethodology as any,
         [], // observations
-        mockGeometry as any, // geometry
-        [], // attachments
-        [], // report attachments
-        'Test submission comment',
-        [], // animals
-        [], // observation signs
-        undefined, // environment definitions
-        undefined, // measurement definitions
-        mockSamplingSites, // sampling sites
-        mockSamplingPeriods // sampling periods
+        {
+          surveyGeometry: mockGeometry as any,
+          surveyAttachments: [],
+          surveyReports: [],
+          submissionComment: 'Test submission comment'
+        },
+        {
+          samplingSites: mockSamplingSites,
+          samplingPeriods: mockSamplingPeriods
+        }
       );
 
       expect(submissionObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
