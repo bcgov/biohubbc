@@ -53,9 +53,11 @@ describe('Habitat Features BioHub Integration', () => {
       expect(habitatFeatureObj.properties.count).to.equal(5);
       expect(habitatFeatureObj.properties.timestamp).to.equal('2024-01-15T10:30:00Z');
       expect(habitatFeatureObj.properties.associated_species).to.deep.equal([{ taxon_id: 180543 }]);
-      expect(habitatFeatureObj.properties.geometry.type).to.equal('FeatureCollection');
-      expect(habitatFeatureObj.properties.geometry.features).to.have.length(1);
-      expect(habitatFeatureObj.properties.geometry.features[0].geometry.coordinates).to.deep.equal([-123.456, 49.123]);
+      expect((habitatFeatureObj.properties.geometry as any).type).to.equal('FeatureCollection');
+      expect((habitatFeatureObj.properties.geometry as any).features).to.have.length(1);
+      expect((habitatFeatureObj.properties.geometry as any).features[0].geometry.coordinates).to.deep.equal([
+        -123.456, 49.123
+      ]);
       expect(habitatFeatureObj.child_features).to.be.an('array').with.length(0);
     });
 
@@ -114,7 +116,7 @@ describe('Habitat Features BioHub Integration', () => {
 
       const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature, []);
 
-      expect(habitatFeatureObj.properties.geometry.features).to.have.length(0);
+      expect(habitatFeatureObj.properties.geometry).to.be.null;
       expect(habitatFeatureObj.properties.timestamp).to.be.null;
       expect(habitatFeatureObj.properties).to.not.have.property('taxon_id');
     });

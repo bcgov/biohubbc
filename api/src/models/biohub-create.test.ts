@@ -1056,10 +1056,7 @@ describe('PostSurveyMortalityToBiohubObject', () => {
       expect(data.properties).to.eql({
         comment: null,
         timestamp: '2025-10-22T00:00:00.000Z',
-        geometry: {
-          type: 'FeatureCollection',
-          features: []
-        },
+        geometry: null,
         cause_of_death: null
       });
     });
@@ -1082,10 +1079,7 @@ describe('PostSurveyMortalityToBiohubObject', () => {
       expect(data.properties).to.eql({
         comment: null,
         timestamp: '2025-10-21T09:09:09-07:00',
-        geometry: {
-          type: 'FeatureCollection',
-          features: []
-        },
+        geometry: null,
         cause_of_death: null
       });
     });
@@ -1274,10 +1268,7 @@ describe('PostSurveyReleaseToBiohubObject', () => {
     it('sets properties without description when release_comment is null', () => {
       expect(data.properties).to.eql({
         timestamp: '2023-09-02',
-        geometry: {
-          type: 'FeatureCollection',
-          features: []
-        }
+        geometry: null
       });
       expect(data.properties).to.not.have.property('description');
     });

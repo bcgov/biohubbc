@@ -20,9 +20,9 @@ describe('Sampling Features BioHub Integration', () => {
         blocks: [],
         stratums: [],
         geojson: {
-          type: 'Feature',
+          type: 'Feature' as const,
           geometry: {
-            type: 'Polygon',
+            type: 'Polygon' as const,
             coordinates: [
               [
                 [-123.123, 49.123],
@@ -47,9 +47,9 @@ describe('Sampling Features BioHub Integration', () => {
         type: 'FeatureCollection',
         features: [
           {
-            type: 'Feature',
+            type: 'Feature' as const,
             geometry: {
-              type: 'Polygon',
+              type: 'Polygon' as const,
               coordinates: [
                 [
                   [-123.123, 49.123],
@@ -123,9 +123,9 @@ describe('Sampling Features BioHub Integration', () => {
           blocks: [],
           stratums: [],
           geojson: {
-            type: 'Feature',
+            type: 'Feature' as const,
             geometry: {
-              type: 'Polygon',
+              type: 'Polygon' as const,
               coordinates: [
                 [
                   [-123.123, 49.123],
@@ -222,9 +222,9 @@ describe('Sampling Features BioHub Integration', () => {
           blocks: [],
           stratums: [],
           geojson: {
-            type: 'Feature',
+            type: 'Feature' as const,
             geometry: {
-              type: 'Polygon',
+              type: 'Polygon' as const,
               coordinates: [
                 [
                   [-123.123, 49.123],

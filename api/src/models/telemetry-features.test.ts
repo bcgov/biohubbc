@@ -67,10 +67,7 @@ describe('Telemetry Features BioHub Integration', () => {
 
       expect(telemetryObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(telemetryObj.type).to.equal('telemetry');
-      expect(telemetryObj.properties.geometry).to.deep.equal({
-        type: 'FeatureCollection',
-        features: []
-      });
+      expect(telemetryObj.properties.geometry).to.be.null;
       expect(telemetryObj.properties.timestamp).to.equal('2024-06-02T15:45:00Z');
       expect(telemetryObj.child_features).to.be.an('array').with.length(0);
     });
