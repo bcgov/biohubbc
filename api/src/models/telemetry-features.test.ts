@@ -540,8 +540,8 @@ describe('Telemetry Features BioHub Integration', () => {
           attractants: 'Scent lure;Bait',
           distance_threshold: 25.0,
           response_metric: 'Count',
-          attrib_data: [{ ah: 'Duration', av: '30 days' }],
-          vantage_data: [{ vh: 'Ground', vv: 'Trail mount' }]
+          attribute_data: [{ attribute_header: 'Duration', attribute_value: '30 days' }],
+          vantage_data: [{ vantage_header: 'Ground', vantage_value: 'Trail mount' }]
         },
         {
           method_technique_id: 102,
@@ -551,7 +551,7 @@ describe('Telemetry Features BioHub Integration', () => {
           attractants: null,
           distance_threshold: null,
           response_metric: 'Detection',
-          attrib_data: [],
+          attribute_data: [],
           vantage_data: []
         }
       ];

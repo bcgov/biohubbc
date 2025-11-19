@@ -843,18 +843,18 @@ export class PostSampleTechniqueToBiohubObject implements BioHubSubmissionFeatur
         : {})
     };
 
-    // Create sample technique detail child features from attrib_data, filtering out entries where both values are null
-    const techniqueDetailFeatures = samplingTechniqueRecord.attrib_data
-      ? samplingTechniqueRecord.attrib_data
-          .filter((attrib) => attrib.ah != null || attrib.av != null)
-          .map((attrib) => new PostSampleTechniqueDetailToBiohubObject(attrib.ah, attrib.av))
+    // Create sample technique detail child features from attribute_data, filtering out entries where both values are null
+    const techniqueDetailFeatures = samplingTechniqueRecord.attribute_data
+      ? samplingTechniqueRecord.attribute_data
+          .filter((attrib) => attrib.attribute_header != null || attrib.attribute_value != null)
+          .map((attrib) => new PostSampleTechniqueDetailToBiohubObject(attrib.attribute_header, attrib.attribute_value))
       : [];
 
     // Create sample technique vantage child features from vantage_data, filtering out entries where both values are null
     const techniqueVantageFeatures = samplingTechniqueRecord.vantage_data
       ? samplingTechniqueRecord.vantage_data
-          .filter((vantage) => vantage.vh != null || vantage.vv != null)
-          .map((vantage) => new PostSampleTechniqueVantageToBiohubObject(vantage.vh, vantage.vv))
+          .filter((vantage) => vantage.vantage_header != null || vantage.vantage_value != null)
+          .map((vantage) => new PostSampleTechniqueVantageToBiohubObject(vantage.vantage_header, vantage.vantage_value))
       : [];
 
     this.child_features = [...techniqueDetailFeatures, ...techniqueVantageFeatures];

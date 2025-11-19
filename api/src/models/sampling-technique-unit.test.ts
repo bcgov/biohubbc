@@ -12,11 +12,11 @@ describe('PostSampleTechniqueToBiohubObject Unit Test', () => {
       attractants: 'Scent lure;Bait station',
       distance_threshold: 50.0,
       response_metric: 'Count',
-      attrib_data: [
-        { ah: 'Duration', av: '30 days' },
-        { ah: 'Flash Type', av: 'Infrared' }
+      attribute_data: [
+        { attribute_header: 'Duration', attribute_value: '30 days' },
+        { attribute_header: 'Flash Type', attribute_value: 'Infrared' }
       ],
-      vantage_data: [{ vh: 'Ground', vv: 'Stationary mount' }]
+      vantage_data: [{ vantage_header: 'Ground', vantage_value: 'Stationary mount' }]
     };
 
     const techniqueObj = new PostSampleTechniqueToBiohubObject(samplingTechniqueRecord);

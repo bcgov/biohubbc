@@ -12,8 +12,8 @@ export interface SampleTechniqueRecord {
   attractants: string | null;
   distance_threshold: number | null;
   response_metric: string;
-  attrib_data: Array<{ ah: string; av: string }>;
-  vantage_data: Array<{ vh: string; vv: string }>;
+  attribute_data: Array<{ attribute_header: string; attribute_value: string }>;
+  vantage_data: Array<{ vantage_header: string; vantage_value: string }>;
 }
 
 export class SampleTechniqueService {
@@ -49,7 +49,7 @@ export class SampleTechniqueService {
       attractants: row.attractants,
       distance_threshold: row.distance_threshold,
       response_metric: row.response_metric,
-      attrib_data: row.attrib_data || [],
+      attribute_data: row.attrib_data || [],
       vantage_data: row.vantage_data || []
     }));
   }
