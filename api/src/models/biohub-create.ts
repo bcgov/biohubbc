@@ -32,6 +32,32 @@ interface SampleSiteRecordWithGeojson extends SampleSiteRecordExtendedNonSpatial
   geojson: Feature;
 }
 
+// Measurement record types
+interface MeasurementRecord {
+  comment?: string | null;
+  measurement_comment?: string | null;
+  measurement_name?: string | null;
+  value?: number | null;
+}
+
+// Mortality record types
+interface MortalityLocation {
+  longitude: number;
+  latitude: number;
+}
+
+interface ProximateCauseOfDeath {
+  cod_category?: string;
+  cod_reason?: string;
+}
+
+interface MortalityRecord {
+  mortality_comment?: string | null;
+  mortality_timestamp: string;
+  location?: MortalityLocation | null;
+  proximate_cause_of_death?: ProximateCauseOfDeath | null;
+}
+
 const defaultLog = getLogger('models/biohub-create');
 
 interface BioHubSubmission {
@@ -81,7 +107,7 @@ type PostSurveySubmissionOptions = PostSurveyToBiohubOptions;
 export interface BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 }
 
@@ -95,7 +121,7 @@ export interface BioHubSubmissionFeature {
 export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(
@@ -212,7 +238,7 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
 export class PostSurveySubcountToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(
@@ -269,7 +295,7 @@ export class PostSurveySubcountToBiohubObject implements BioHubSubmissionFeature
 export class PostObservationSubcountMeasurementToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(
@@ -301,7 +327,7 @@ export class PostObservationSubcountMeasurementToBiohubObject implements BioHubS
 export class PostSurveyEnvironmentalConditionToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(
@@ -352,7 +378,7 @@ export class PostSurveyEnvironmentalConditionToBiohubObject implements BioHubSub
 export class PostSurveyCaptureToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(captureRecord: ICritterDetailed['captures'][0]) {
@@ -423,7 +449,7 @@ export class PostSurveyCaptureToBiohubObject implements BioHubSubmissionFeature 
 export class PostSurveyReleaseToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(captureRecord: ICritterDetailed['captures'][0]) {
@@ -469,10 +495,12 @@ export class PostSurveyReleaseToBiohubObject implements BioHubSubmissionFeature 
 export class PostSurveyMarkingToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(markingRecord: ICritterDetailed['captures'][0]['markings'][0]) {
+  constructor(
+    markingRecord: ICritterDetailed['captures'][0]['markings'][0] & { taxon_marking_body_location?: string }
+  ) {
     defaultLog.debug({ label: 'PostSurveyMarkingToBiohubObject', message: 'params', markingRecord });
 
     this.id = crypto.randomUUID();
@@ -482,7 +510,7 @@ export class PostSurveyMarkingToBiohubObject implements BioHubSubmissionFeature 
       identifier: markingRecord.identifier,
       ...(markingRecord.primary_colour ? { primary_colour: markingRecord.primary_colour } : {}),
       ...(markingRecord.secondary_colour ? { secondary_colour: markingRecord.secondary_colour } : {}),
-      body_position: (markingRecord as any).taxon_marking_body_location || markingRecord.body_location,
+      body_position: markingRecord.taxon_marking_body_location || markingRecord.body_location,
       ...(markingRecord.comment ? { comment: markingRecord.comment } : {})
     };
     this.child_features = [];
@@ -499,10 +527,10 @@ export class PostSurveyMarkingToBiohubObject implements BioHubSubmissionFeature 
 export class PostSurveyMeasurementToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(measurementRecord: any) {
+  constructor(measurementRecord: MeasurementRecord) {
     defaultLog.debug({ label: 'PostSurveyMeasurementToBiohubObject', message: 'params', measurementRecord });
 
     this.id = crypto.randomUUID();
@@ -529,10 +557,10 @@ export class PostSurveyMeasurementToBiohubObject implements BioHubSubmissionFeat
 export class PostSurveyMortalityToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(mortalityRecord: any) {
+  constructor(mortalityRecord: MortalityRecord) {
     defaultLog.debug({ label: 'PostSurveyMortalityToBiohubObject', message: 'params', mortalityRecord });
 
     this.id = crypto.randomUUID();
@@ -576,10 +604,13 @@ export class PostSurveyMortalityToBiohubObject implements BioHubSubmissionFeatur
 export class PostSurveyAnimalToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(animalRecord: ICritterDetailed, focalSpeciesData?: { focal_species: ITaxonomyWithEcologicalUnits[] }) {
+  constructor(
+    animalRecord: ICritterDetailed & { mortality?: MortalityRecord | MortalityRecord[] },
+    focalSpeciesData?: { focal_species: ITaxonomyWithEcologicalUnits[] }
+  ) {
     defaultLog.debug({ label: 'PostSurveyAnimalToBiohubObject', message: 'params', animalRecord });
 
     // Create capture features for each capture record
@@ -594,7 +625,7 @@ export class PostSurveyAnimalToBiohubObject implements BioHubSubmissionFeature {
 
     // Create mortality features if mortality data exists
     // Note: The actual JSON data shows mortality as an array, but the interface shows it as a single object
-    const mortalityArray = (animalRecord as any).mortality || [];
+    const mortalityArray = animalRecord.mortality || [];
     if (Array.isArray(mortalityArray)) {
       for (const mortality of mortalityArray) {
         childFeatures.push(new PostSurveyMortalityToBiohubObject(mortality));
@@ -643,7 +674,7 @@ export class PostSurveyAnimalToBiohubObject implements BioHubSubmissionFeature {
 export class PostSurveyAttachmentsToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(attachmentRecord: ISurveyAttachment) {
@@ -673,7 +704,7 @@ export class PostSurveyAttachmentsToBiohubObject implements BioHubSubmissionFeat
 export class PostSurveyReportAttachmentsToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(reportAttachmentRecord: ISurveyReportAttachment) {
@@ -704,7 +735,7 @@ export class PostSurveyReportAttachmentsToBiohubObject implements BioHubSubmissi
 export class PostSurveySamplingSiteToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(sampleSiteRecord: SampleSiteRecordWithGeojson, strata?: { name: string; description: string }[]) {
@@ -745,7 +776,7 @@ export class PostSurveySamplingSiteToBiohubObject implements BioHubSubmissionFea
 export class PostSurveySamplingPeriodToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(samplingPeriodRecord: SurveySamplePeriodDetails) {
@@ -785,7 +816,7 @@ export class PostSurveySamplingPeriodToBiohubObject implements BioHubSubmissionF
 export class PostSampleTechniqueToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(samplingTechniqueRecord: SampleTechniqueRecord) {
@@ -840,10 +871,10 @@ export class PostSampleTechniqueToBiohubObject implements BioHubSubmissionFeatur
 export class PostSampleTechniqueDetailToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(methodAttribute: string, methodValue: string) {
+  constructor(methodAttribute: string | null, methodValue: string | null) {
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.SAMPLE_TECHNIQUE_DETAIL;
 
@@ -870,10 +901,10 @@ export class PostSampleTechniqueDetailToBiohubObject implements BioHubSubmission
 export class PostSampleTechniqueVantageToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(methodVantage: string, methodValue: string) {
+  constructor(methodVantage: string | null, methodValue: string | null) {
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.SAMPLE_TECHNIQUE_VANTAGE;
 
@@ -900,7 +931,7 @@ export class PostSampleTechniqueVantageToBiohubObject implements BioHubSubmissio
 export class PostSurveyHabitatFeatureToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(
@@ -964,7 +995,7 @@ export class PostSurveyHabitatFeatureToBiohubObject implements BioHubSubmissionF
 export class PostTelemetryDeviceToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(deviceRecord: DeviceRecord, deviceMakes?: ICodeDescription[]) {
@@ -995,7 +1026,7 @@ export class PostTelemetryDeviceToBiohubObject implements BioHubSubmissionFeatur
 export class PostTelemetryDeploymentToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(
@@ -1064,7 +1095,7 @@ export class PostTelemetryDeploymentToBiohubObject implements BioHubSubmissionFe
 export class PostTelemetryFrequencyToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(frequency: number | null, frequencyUnit: string | null) {
@@ -1094,7 +1125,7 @@ export class PostTelemetryFrequencyToBiohubObject implements BioHubSubmissionFea
 export class PostTelemetryToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(telemetryRecord: Telemetry) {
@@ -1135,7 +1166,7 @@ export class PostTelemetryToBiohubObject implements BioHubSubmissionFeature {
 export class PostStudyAreaToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(surveyLocation: SurveyLocationRecord[], surveyName: string) {
@@ -1167,7 +1198,7 @@ export class PostStudyAreaToBiohubObject implements BioHubSubmissionFeature {
 export class PostEcologicalUnitToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(ecologicalUnitData: { ecological_unit_type: string; ecological_unit_value: string }) {
@@ -1193,7 +1224,7 @@ export class PostEcologicalUnitToBiohubObject implements BioHubSubmissionFeature
 export class PostStratumToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(stratumData: { name: string; description: string }) {
@@ -1216,7 +1247,7 @@ export class PostStratumToBiohubObject implements BioHubSubmissionFeature {
 export class PostBlockToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(blockData: { name: string; description: string }) {
@@ -1242,7 +1273,7 @@ export class PostBlockToBiohubObject implements BioHubSubmissionFeature {
 export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
-  properties: Record<string, any>;
+  properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
   constructor(
