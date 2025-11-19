@@ -129,11 +129,11 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
       count: observationRecord.count,
       timestamp: timestamp,
       sign: observationSign?.name || null,
-      geometry: {
-        type: 'FeatureCollection',
-        features:
-          observationRecord.longitude && observationRecord.latitude
-            ? [
+      geometry:
+        observationRecord.longitude && observationRecord.latitude
+          ? {
+              type: 'FeatureCollection',
+              features: [
                 {
                   type: 'Feature',
                   geometry: {
@@ -143,8 +143,8 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
                   properties: {}
                 }
               ]
-            : []
-      }
+            }
+          : null
     };
 
     // Create environmental condition child features if available
@@ -382,10 +382,7 @@ export class PostSurveyCaptureToBiohubObject implements BioHubSubmissionFeature 
               }
             ]
           }
-        : {
-            type: 'FeatureCollection',
-            features: []
-          }
+        : null
     };
 
     // Create child features for markings and measurements
@@ -456,10 +453,7 @@ export class PostSurveyReleaseToBiohubObject implements BioHubSubmissionFeature 
               }
             ]
           }
-        : {
-            type: 'FeatureCollection',
-            features: []
-          }
+        : null
     };
     this.child_features = [];
   }
@@ -560,10 +554,7 @@ export class PostSurveyMortalityToBiohubObject implements BioHubSubmissionFeatur
               }
             ]
           }
-        : {
-            type: 'FeatureCollection',
-            features: []
-          },
+        : null,
       cause_of_death:
         mortalityRecord.proximate_cause_of_death?.cod_category && mortalityRecord.proximate_cause_of_death?.cod_reason
           ? `${mortalityRecord.proximate_cause_of_death.cod_category}: ${mortalityRecord.proximate_cause_of_death.cod_reason}`
@@ -729,10 +720,7 @@ export class PostSurveySamplingSiteToBiohubObject implements BioHubSubmissionFea
             type: 'FeatureCollection',
             features: [sampleSiteRecord.geojson]
           }
-        : {
-            type: 'FeatureCollection',
-            features: []
-          }
+        : null
     };
 
     // Create stratum child features if strata data is available
@@ -960,10 +948,7 @@ export class PostSurveyHabitatFeatureToBiohubObject implements BioHubSubmissionF
                 }
               ]
             }
-          : {
-              type: 'FeatureCollection',
-              features: []
-            }
+          : null
     };
     this.child_features = [];
   }
@@ -1117,11 +1102,11 @@ export class PostTelemetryToBiohubObject implements BioHubSubmissionFeature {
     this.type = BiohubFeatureType.TELEMETRY;
     this.properties = {
       timestamp: telemetryRecord.acquisition_date,
-      geometry: {
-        type: 'FeatureCollection',
-        features:
-          telemetryRecord.longitude && telemetryRecord.latitude
-            ? [
+      geometry:
+        telemetryRecord.longitude && telemetryRecord.latitude
+          ? {
+              type: 'FeatureCollection',
+              features: [
                 {
                   type: 'Feature',
                   geometry: {
@@ -1131,8 +1116,8 @@ export class PostTelemetryToBiohubObject implements BioHubSubmissionFeature {
                   properties: {}
                 }
               ]
-            : []
-      },
+            }
+          : null,
       ...(telemetryRecord.elevation ? { elevation: telemetryRecord.elevation } : {}),
       ...(telemetryRecord.dop ? { dop: telemetryRecord.dop } : {})
     };
