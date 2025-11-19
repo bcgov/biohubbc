@@ -29,7 +29,7 @@ import { GetSurveyData, GetSurveyPurposeAndMethodologyData } from './survey-view
 
 // Extended interface for sampling sites with geometry data
 interface SampleSiteRecordWithGeojson extends SampleSiteRecordExtendedNonSpatial {
-  geojson: any;
+  geojson: Feature;
 }
 
 const defaultLog = getLogger('models/biohub-create');
