@@ -552,7 +552,7 @@ jobs:
             --set-string biohubbc-api.environment.ts=$TS \
             --set-string biohubbc-api.environment.id=$PR_NUMBER \
             --set-string biohubbc-api.environment.changeId=$PR_NUMBER \
-            --wait --timeout=300s
+            --wait --timeout=600s
           
           echo "Helm chart deployment completed for PR $PR_NUMBER"
 
