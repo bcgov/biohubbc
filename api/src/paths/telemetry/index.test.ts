@@ -33,7 +33,8 @@ describe('findTelemetry', () => {
         latitude: 49.123,
         longitude: -126.123,
         elevation: null,
-        temperature: null
+        temperature: null,
+        dop: null
       }
     ];
 

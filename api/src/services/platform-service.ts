@@ -14,12 +14,21 @@ import { isFeatureFlagPresent } from '../utils/feature-flag-utils';
 import { getFileFromS3 } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { AttachmentService } from './attachment-service';
-import { IPostCollectionUnit } from './critterbase-service';
+import { CodeService } from './code-service';
+import { ICritterDetailed, IPostCollectionUnit } from './critterbase-service';
 import { DBService } from './db-service';
+import { SurveyHabitatFeatureService } from './habitat-feature-services/survey-habitat-feature-service';
 import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
 import { ObservationService } from './observation-services/observation-service';
+import { SamplePeriodService } from './sample-period-service';
+import { SampleSiteService } from './sample-site-service';
+import { SampleTechniqueService } from './sample-technique-service';
+import { SurveyCritterService } from './survey-critter-service';
 import { SurveyService } from './survey-service';
+import { TelemetryDeploymentService } from './telemetry-services/telemetry-deployment-service';
+import { TelemetryDeviceService } from './telemetry-services/telemetry-device-service';
+import { TelemetryVendorService } from './telemetry-services/telemetry-vendor-service';
 
 const defaultLog = getLogger('services/platform-service');
 
@@ -269,13 +278,119 @@ export class PlatformService extends DBService {
   ): Promise<PostSurveySubmissionToBioHubObject> {
     const observationService = new ObservationService(this.connection);
     const surveyService = new SurveyService(this.connection);
+    const surveyCritterService = new SurveyCritterService(this.connection);
+    const codeService = new CodeService(this.connection);
+    const sampleSiteService = new SampleSiteService(this.connection);
+    const samplePeriodService = new SamplePeriodService(this.connection);
+    const sampleTechniqueService = new SampleTechniqueService(this.connection);
+    const habitatFeatureService = new SurveyHabitatFeatureService(this.connection);
+    const telemetryDeviceService = new TelemetryDeviceService(this.connection);
+    const telemetryDeploymentService = new TelemetryDeploymentService(this.connection);
+    const telemetryVendorService = new TelemetryVendorService(this.connection);
 
     // Get survey data
     const survey = await surveyService.getSurveyData(surveyId);
 
-    const surveyObservations = await observationService.getAllSurveyObservations(surveyId);
+    // Get all survey observations with environmental data
+    const observationData =
+      await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(surveyId);
+    const surveyObservations = observationData.surveyObservations;
     const purposeAndMethodology = await surveyService.getSurveyPurposeAndMethodology(surveyId);
     const surveyLocation = await surveyService.getSurveyLocationsData(surveyId);
+
+    // Get partnerships and focal species data for BioHub submission
+    const partnerships = await surveyService.getSurveyPartnershipsData(surveyId);
+    const focalSpecies = await surveyService.getSpeciesData(surveyId);
+
+    // Get site selection strategy data for BioHub submission
+    const siteSelectionData = await surveyService.siteSelectionStrategyService.getSiteSelectionDataBySurveyId(surveyId);
+
+    // Get observation signs for mapping IDs to names
+    const allCodes = await codeService.getAllCodeSets();
+    const observationSigns = allCodes.observation_signs;
+
+    // Extract environmental definitions for mapping IDs to names
+    const environmentDefinitions = {
+      qualitative_environments: observationData.supplementaryObservationData.qualitative_environments,
+      quantitative_environments: observationData.supplementaryObservationData.quantitative_environments
+    };
+
+    // Extract measurement definitions for mapping IDs to names
+    const measurementDefinitions = {
+      qualitative_measurements: observationData.supplementaryObservationData.qualitative_measurements,
+      quantitative_measurements: observationData.supplementaryObservationData.quantitative_measurements
+    };
+
+    // Get sampling sites and periods data for survey
+    const surveySamplingSitesNonSpatial = await sampleSiteService.getSampleSitesForSurveyId(surveyId, {});
+    const surveySamplingSitesGeometry = await sampleSiteService.getSampleSitesGeometryBySurveyId(surveyId);
+    const surveySamplingPeriods = await samplePeriodService.getSamplePeriodsForSurvey(surveyId, {});
+    const surveySamplingTechniques = await sampleTechniqueService.getSamplingTechniquesForSurvey(surveyId);
+
+    // Merge sampling sites with their geometry data
+    const surveysamplingSites = surveySamplingSitesNonSpatial.map((site) => {
+      const geometryData = surveySamplingSitesGeometry.find(
+        (geometry) => geometry.survey_sample_site_id === site.survey_sample_site_id
+      );
+      return {
+        ...site,
+        geojson: geometryData?.geojson || null
+      };
+    });
+
+    // Get habitat features data for survey
+    const surveyHabitatFeatures = await habitatFeatureService.getSurveyHabitatFeatures(surveyId);
+    // Transform code types to habitat feature type records
+    const habitatFeatureTypes = allCodes.habitat_feature_types.map((type) => ({
+      habitat_feature_type_id: type.id,
+      name: type.name,
+      description: type.description,
+      record_end_date: null
+    }));
+
+    // Get telemetry data for survey
+    const surveyTelemetryDevices = await telemetryDeviceService.getDevicesForSurvey(surveyId);
+    const surveyTelemetryDeployments = await telemetryDeploymentService.getDeploymentsForSurvey(surveyId);
+
+    // Get telemetry data points for deployments
+    const deploymentIds = surveyTelemetryDeployments.map((deployment) => deployment.deployment_id);
+    const surveyTelemetry =
+      deploymentIds.length > 0 ? await telemetryVendorService.getTelemetryForDeployments(surveyId, deploymentIds) : [];
+
+    const deviceMakes = allCodes.telemetry_device_makes;
+    const frequencyUnits = allCodes.frequency_units;
+
+    // Get survey animals from Critterbase (via SIMS survey-critter associations)
+    const surveyAnimals = await surveyCritterService.getCritterbaseSurveyCritters(surveyId);
+
+    // Enrich mortality data with detailed information
+    const enrichedSurveyAnimals: ICritterDetailed[] = await Promise.all(
+      surveyAnimals.map(async (animal) => {
+        if (animal.mortality && Array.isArray(animal.mortality) && animal.mortality.length > 0) {
+          // Fetch detailed mortality data for the first mortality record
+          // Note: Interface expects singular mortality, but data may contain array
+          const firstMortality = (animal.mortality as any[])[0];
+          if (firstMortality?.mortality_id) {
+            try {
+              const detailedMortality = await surveyCritterService.getDetailedMortalityById(
+                firstMortality.mortality_id
+              );
+              return { ...animal, mortality: detailedMortality } as ICritterDetailed;
+            } catch (error) {
+              // If detailed data fetch fails, use the basic mortality data
+              defaultLog.warn({
+                label: 'submitSurveyToBioHub',
+                message: 'Failed to fetch detailed mortality data',
+                mortality_id: firstMortality.mortality_id,
+                error: error instanceof Error ? error.message : 'Unknown error'
+              });
+              return { ...animal, mortality: firstMortality } as ICritterDetailed;
+            }
+          }
+        }
+        return animal;
+      })
+    );
 
     const geometryFeatureCollection: FeatureCollection = {
       type: 'FeatureCollection',
@@ -287,10 +402,34 @@ export class PlatformService extends DBService {
       survey,
       purposeAndMethodology,
       surveyObservations,
-      geometryFeatureCollection,
-      surveyAttachments,
-      surveyReportAttachments,
-      submissionComment
+      {
+        surveyGeometry: geometryFeatureCollection,
+        surveyAttachments,
+        surveyReports: surveyReportAttachments,
+        submissionComment
+      },
+      {
+        animalRecords: enrichedSurveyAnimals,
+        observationSigns,
+        environmentDefinitions,
+        measurementDefinitions,
+        samplingSites: surveysamplingSites,
+        samplingPeriods: surveySamplingPeriods,
+        samplingTechniques: surveySamplingTechniques,
+        habitatFeatures: surveyHabitatFeatures,
+        habitatFeatureTypes,
+        telemetryDevices: surveyTelemetryDevices,
+        telemetryDeployments: surveyTelemetryDeployments,
+        telemetry: surveyTelemetry,
+        deviceMakes,
+        frequencyUnits,
+        partnerships,
+        focalSpecies,
+        surveyLocation,
+        firstNations: allCodes.first_nations,
+        strata: siteSelectionData.stratums,
+        siteSelectionStrategies: siteSelectionData.strategies
+      }
     );
 
     return surveyDataPackage;
@@ -429,7 +568,7 @@ export class PlatformService extends DBService {
 
     const backboneArtifactIntakeUrl = new URL(getBackboneArtifactIntakePath(), getBackboneInternalApiHost()).href;
 
-    const { data } = await axios.post<{ artifact_uuid: string }>(backboneArtifactIntakeUrl, formData.getBuffer(), {
+    const { data } = await axios.post<{ artifact_uuid: string }>(backboneArtifactIntakeUrl, formData, {
       headers: {
         authorization: `Bearer ${token}`,
         ...formData.getHeaders()

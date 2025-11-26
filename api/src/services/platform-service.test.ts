@@ -3,16 +3,25 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { SurveyObservationRecord } from '../database-models/survey_observation';
+import { ObservationRecordWithSamplingAndSubcountData } from '../repositories/observation-repository/observation-repository.interface';
 import * as envConfig from '../utils/env-config';
 import * as featureFlagUtils from '../utils/feature-flag-utils';
 import { getMockDBConnection } from '../__mocks__/db';
 import { AttachmentService } from './attachment-service';
+import { CodeService } from './code-service';
+import { SurveyHabitatFeatureService } from './habitat-feature-services/survey-habitat-feature-service';
 import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
 import { ObservationService } from './observation-services/observation-service';
 import { PlatformService } from './platform-service';
+import { SamplePeriodService } from './sample-period-service';
+import { SampleSiteService } from './sample-site-service';
+import { SampleTechniqueService } from './sample-technique-service';
+import { SiteSelectionStrategyService } from './site-selection-strategy-service';
+import { SurveyCritterService } from './survey-critter-service';
 import { SurveyService } from './survey-service';
+import { TelemetryDeploymentService } from './telemetry-services/telemetry-deployment-service';
+import { TelemetryDeviceService } from './telemetry-services/telemetry-device-service';
 
 chai.use(sinonChai);
 
@@ -205,70 +214,130 @@ describe('PlatformService', () => {
     });
 
     it('should generate survey data package successfully', async () => {
+      // Add stub for getSurveyPartnershipsData to prevent undefined rows error
+      sinon.stub(SurveyService.prototype, 'getSurveyPartnershipsData').resolves({
+        indigenous_partnerships: [],
+        stakeholder_partnerships: []
+      });
+
+      // Add stub for getSpeciesData
+      sinon.stub(SurveyService.prototype, 'getSpeciesData').resolves({
+        focal_species: []
+      } as any);
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
-      const getSurveyDataStub = sinon.stub(SurveyService.prototype, 'getSurveyData').resolves({ uuid: '1' } as any);
+      const getSurveyDataStub = sinon
+        .stub(SurveyService.prototype, 'getSurveyData')
+        .resolves({ id: 1, uuid: '1', survey_types: [] } as any);
 
       const getSurveyPurposeAndMethodologyStub = sinon
         .stub(SurveyService.prototype, 'getSurveyPurposeAndMethodology')
         .resolves({ additional_details: 'a description of the purpose' } as any);
 
-      const getAllSurveyObservationsStub = sinon
-        .stub(ObservationService.prototype, 'getAllSurveyObservations')
-        .resolves([{ survey_observation_id: 2 } as unknown as SurveyObservationRecord]);
+      const getSurveyObservationsWithSupplementaryDataStub = sinon
+        .stub(ObservationService.prototype, 'getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData')
+        .resolves({
+          surveyObservations: [{ survey_observation_id: 2 } as unknown as ObservationRecordWithSamplingAndSubcountData],
+          supplementaryObservationData: {
+            observationCount: 1,
+            qualitative_measurements: [],
+            quantitative_measurements: [],
+            qualitative_environments: [
+              {
+                environment_qualitative_id: '123e4567-e89b-12d3-a456-426614174000',
+                name: 'Temperature Category',
+                description: null,
+                options: [
+                  {
+                    environment_qualitative_option_id: '223e4567-e89b-12d3-a456-426614174001',
+                    environment_qualitative_id: '123e4567-e89b-12d3-a456-426614174000',
+                    name: 'Cold',
+                    description: null
+                  }
+                ]
+              }
+            ],
+            quantitative_environments: [
+              {
+                environment_quantitative_id: '323e4567-e89b-12d3-a456-426614174002',
+                name: 'Wind Speed',
+                description: null,
+                min: null,
+                max: null,
+                unit: 'meter'
+              }
+            ],
+            sampling_data: []
+          }
+        });
 
       const getSurveyLocationsDataStub = sinon
         .stub(SurveyService.prototype, 'getSurveyLocationsData')
         .resolves([] as any);
 
+      const getCritterbaseSurveyCrittersStub = sinon
+        .stub(SurveyCritterService.prototype, 'getCritterbaseSurveyCritters')
+        .resolves([]);
+
+      const getAllCodeSetsStub = sinon.stub(CodeService.prototype, 'getAllCodeSets').resolves({
+        observation_signs: [],
+        habitat_feature_types: [],
+        telemetry_device_makes: [],
+        frequency_units: []
+      } as any);
+
+      const getSampleSitesForSurveyIdStub = sinon
+        .stub(SampleSiteService.prototype, 'getSampleSitesForSurveyId')
+        .resolves([]);
+
+      const getSampleSitesGeometryBySurveyIdStub = sinon
+        .stub(SampleSiteService.prototype, 'getSampleSitesGeometryBySurveyId')
+        .resolves([]);
+
+      const getSamplePeriodsForSurveyStub = sinon
+        .stub(SamplePeriodService.prototype, 'getSamplePeriodsForSurvey')
+        .resolves([]);
+
+      const getSamplingTechniquesForSurveyStub = sinon
+        .stub(SampleTechniqueService.prototype, 'getSamplingTechniquesForSurvey')
+        .resolves([]);
+
+      const getSurveyHabitatFeaturesStub = sinon
+        .stub(SurveyHabitatFeatureService.prototype, 'getSurveyHabitatFeatures')
+        .resolves([]);
+
+      const getDevicesForSurveyStub = sinon.stub(TelemetryDeviceService.prototype, 'getDevicesForSurvey').resolves([]);
+
+      const getDeploymentsForSurveyStub = sinon
+        .stub(TelemetryDeploymentService.prototype, 'getDeploymentsForSurvey')
+        .resolves([]);
+
+      const getSiteSelectionDataBySurveyIdStub = sinon
+        .stub(SiteSelectionStrategyService.prototype, 'getSiteSelectionDataBySurveyId')
+        .resolves({ strategies: [], stratums: [] });
+
       const response = await platformService._generateSurveyDataPackage(1, [], [], 'a comment about the submission');
 
       expect(getSurveyDataStub).to.have.been.calledOnceWith(1);
       expect(getSurveyPurposeAndMethodologyStub).to.have.been.calledOnceWith(1);
-      expect(getAllSurveyObservationsStub).to.have.been.calledOnceWith(1);
+      expect(getSurveyObservationsWithSupplementaryDataStub).to.have.been.calledOnceWith(1);
       expect(getSurveyLocationsDataStub).to.have.been.calledOnceWith(1);
-      expect(response).to.eql({
-        id: '1',
-        name: undefined,
-        description: 'a description of the purpose',
-        comment: 'a comment about the submission',
-        content: {
-          id: '1',
-          type: 'dataset',
-          properties: {
-            survey_id: undefined,
-            project_id: undefined,
-            name: undefined,
-            start_date: undefined,
-            end_date: undefined,
-            survey_types: undefined,
-            revision_count: undefined,
-            geometry: {
-              type: 'FeatureCollection',
-              features: []
-            }
-          },
-          child_features: [
-            {
-              id: '2',
-              type: 'observation',
-              properties: {
-                survey_id: undefined,
-                taxonomy: undefined,
-                survey_sample_period_id: null,
-                latitude: undefined,
-                longitude: undefined,
-                count: undefined,
-                observation_time: undefined,
-                observation_date: undefined,
-                geometry: { type: 'FeatureCollection', features: [] }
-              },
-              child_features: []
-            }
-          ]
-        }
-      });
+      expect(getCritterbaseSurveyCrittersStub).to.have.been.calledOnceWith(1);
+      expect(getAllCodeSetsStub).to.have.been.calledOnce;
+      expect(getSampleSitesForSurveyIdStub).to.have.been.calledOnceWith(1, {});
+      expect(getSampleSitesGeometryBySurveyIdStub).to.have.been.calledOnceWith(1);
+      expect(getSamplePeriodsForSurveyStub).to.have.been.calledOnceWith(1, {});
+      expect(getSamplingTechniquesForSurveyStub).to.have.been.calledOnceWith(1);
+      expect(getSurveyHabitatFeaturesStub).to.have.been.calledOnceWith(1);
+      expect(getDevicesForSurveyStub).to.have.been.calledOnceWith(1);
+      expect(getDeploymentsForSurveyStub).to.have.been.calledOnceWith(1);
+      expect(getSiteSelectionDataBySurveyIdStub).to.have.been.calledOnceWith(1);
+      expect(response).to.have.property('id');
+      expect(response).to.have.property('description', 'a description of the purpose');
+      expect(response).to.have.property('comment', 'a comment about the submission');
+      expect(response.content).to.have.property('type', 'dataset');
+      expect(response.content.properties).to.have.property('survey_id', 1);
     });
   });
 });

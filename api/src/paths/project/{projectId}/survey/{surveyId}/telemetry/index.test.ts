@@ -31,7 +31,8 @@ describe('getTelemetryInSurvey', () => {
         latitude: -49,
         longitude: 125,
         elevation: null,
-        temperature: null
+        temperature: null,
+        dop: null
       }
     ];
 

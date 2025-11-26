@@ -357,4 +357,15 @@ export class SurveyCritterService extends DBService {
 
     return critterAliasMap;
   }
+
+  /**
+   * Get detailed mortality information by mortality ID
+   *
+   * @param {string} mortalityId - The mortality ID to fetch details for
+   * @return {Promise<any>} Detailed mortality information
+   * @memberof SurveyCritterService
+   */
+  async getDetailedMortalityById(mortalityId: string): Promise<any> {
+    return this.critterbaseService.getDetailedMortalityById(mortalityId);
+  }
 }

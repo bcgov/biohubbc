@@ -27,7 +27,8 @@ describe('TelemetryVendorRepository', () => {
         latitude: -44.4114,
         longitude: 120.2835,
         elevation: null,
-        temperature: null
+        temperature: null,
+        dop: null
       };
 
       const mockResponse = {
@@ -107,7 +108,8 @@ describe('TelemetryVendorRepository', () => {
         latitude: -44.4114,
         longitude: 120.2835,
         elevation: null,
-        temperature: null
+        temperature: null,
+        dop: null
       };
 
       const mockQueryResponse = {
@@ -261,7 +263,8 @@ describe('TelemetryVendorRepository', () => {
         latitude: -44.4114,
         longitude: 120.2835,
         elevation: null,
-        temperature: null
+        temperature: null,
+        dop: null
       };
 
       const mockQueryResponse = {
