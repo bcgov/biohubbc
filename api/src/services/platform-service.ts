@@ -2,7 +2,10 @@ import axios from 'axios';
 import FormData from 'form-data';
 import { Feature, FeatureCollection } from 'geojson';
 import mime from 'mime';
+import fs from 'node:fs';
+import path from 'node:path';
 import qs from 'qs';
+import * as tarStream from 'tar-stream';
 import { URL } from 'url';
 import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
@@ -71,6 +74,21 @@ interface ITaxonomy {
 
 export interface ITaxonomyWithEcologicalUnits extends ITaxonomy {
   ecological_units: IPostCollectionUnit[];
+}
+
+interface IFlattenedBlock {
+  id: string;
+  type: string;
+  properties: Record<string, unknown>;
+  content: string[];
+  parent: string | null;
+}
+
+interface INestedBlock {
+  id: string;
+  type?: string;
+  properties?: Record<string, unknown>;
+  child_features?: INestedBlock[];
 }
 
 const getBackboneInternalApiHost = () => getEnvironmentVariable('BACKBONE_INTERNAL_API_HOST');
@@ -220,6 +238,102 @@ export class PlatformService extends DBService {
       surveyReportAttachments,
       data.submissionComment
     );
+
+    // Save survey data package to JSON file for debugging
+    try {
+      const logFilePath = path.join(process.cwd(), 'data', 'submissions', 'survey-submission.json');
+
+      // Ensure the submissions directory exists (recursive: true creates parent directories if needed)
+      const submissionsBaseDir = path.dirname(logFilePath);
+      fs.mkdirSync(submissionsBaseDir, { recursive: true });
+
+      fs.writeFileSync(logFilePath, JSON.stringify(surveyDataPackage, null, 2));
+      defaultLog.info({
+        label: 'submitSurveyToBioHub',
+        message: 'Survey data package saved for debugging',
+        filePath: logFilePath
+      });
+
+      // Flatten and save the survey data package grouped by type
+      try {
+        const flattenedData = this._flattenToBlockModel(surveyDataPackage);
+
+        // Find the dataset ID (root block with type "dataset")
+        const datasetBlock = flattenedData.find((block) => block.type === 'dataset' && block.parent === null);
+        const datasetId = datasetBlock?.id || 'unknown';
+
+        // Group blocks by type
+        const blocksByType = new Map<string, IFlattenedBlock[]>();
+        flattenedData.forEach((block) => {
+          const blockType = block.type || 'unknown';
+          if (!blocksByType.has(blockType)) {
+            blocksByType.set(blockType, []);
+          }
+          blocksByType.get(blockType)!.push(block);
+        });
+
+        // Create folder named after the dataset ID
+        const submissionDir = path.join(process.cwd(), 'data', 'submissions', datasetId);
+        fs.mkdirSync(submissionDir, { recursive: true });
+
+        const savedFiles: string[] = [];
+
+        blocksByType.forEach((blocks, type) => {
+          // Save file with type name as filename in the dataset folder
+          const fileName = `${type}.json`;
+          const filePath = path.join(submissionDir, fileName);
+          fs.writeFileSync(filePath, JSON.stringify(blocks, null, 2));
+          savedFiles.push(fileName);
+          defaultLog.info({
+            label: 'submitSurveyToBioHub',
+            message: `Flattened ${type} blocks saved for debugging`,
+            filePath,
+            blockCount: blocks.length
+          });
+        });
+
+        // Create TAR archive with PAX format and extended attributes using tar-stream
+        const tarFilePath = path.join(path.dirname(submissionDir), `${datasetId}.tar`);
+        await this._createTarArchive(datasetId, submissionDir);
+
+        // Remove the folder with JSON files and survey-submission.json after TAR creation
+        try {
+          fs.rmSync(submissionDir, { recursive: true, force: true });
+          const logFilePath = path.join(process.cwd(), 'data', 'submissions', 'survey-submission.json');
+          if (fs.existsSync(logFilePath)) {
+            fs.unlinkSync(logFilePath);
+          }
+        } catch (rmError) {
+          defaultLog.warn({
+            label: 'submitSurveyToBioHub',
+            message: 'Failed to cleanup flattened JSON files and survey-submission.json',
+            error: rmError instanceof Error ? rmError.message : 'Unknown error'
+          });
+        }
+
+        // TODO: Remove the TAR file after it's no longer needed for debugging
+        defaultLog.info({
+          label: 'submitSurveyToBioHub',
+          message: 'Flattened survey data package saved by type and compressed to TAR',
+          totalBlocks: flattenedData.length,
+          totalTypes: blocksByType.size,
+          files: savedFiles,
+          tarFilePath
+        });
+      } catch (flattenError) {
+        defaultLog.warn({
+          label: 'submitSurveyToBioHub',
+          message: 'Failed to save flattened survey data package for debugging',
+          error: flattenError instanceof Error ? flattenError.message : 'Unknown error'
+        });
+      }
+    } catch (error) {
+      defaultLog.warn({
+        label: 'submitSurveyToBioHub',
+        message: 'Failed to save survey data package for debugging',
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+    }
 
     // Submit survey data package to BioHub
     const response = await axios.post<{
@@ -433,6 +547,194 @@ export class PlatformService extends DBService {
     );
 
     return surveyDataPackage;
+  }
+
+  /**
+   * Flattens a nested JSON structure using Notion's block data model.
+   * Each block has an ID, properties, and content (array of child block IDs).
+   * Each block also has a parent reference for permissions.
+   *
+   * @param {any} data - The nested data structure to flatten
+   * @return {*}  {IFlattenedBlock[]}
+   * @memberof PlatformService
+   */
+  _flattenToBlockModel(data: any): IFlattenedBlock[] {
+    const blocks = new Map<string, IFlattenedBlock>();
+
+    const processBlock = (block: INestedBlock, parentId: string | null = null): string => {
+      const blockId = block.id;
+
+      // Create the flattened block
+      const flatBlock: IFlattenedBlock = {
+        id: blockId,
+        type: block.type || 'unknown',
+        properties: block.properties || {},
+        content: [], // Will be populated with child block IDs
+        parent: parentId
+      };
+
+      // Add to blocks map
+      blocks.set(blockId, flatBlock);
+
+      // Process child features and collect their IDs
+      if (block.child_features && Array.isArray(block.child_features)) {
+        for (const childBlock of block.child_features) {
+          // Recursively process child block
+          processBlock(childBlock, blockId);
+          // Add child ID to current block's content
+          flatBlock.content.push(childBlock.id);
+        }
+      }
+
+      return blockId;
+    };
+
+    // Handle root-level structure
+    // The main content block should be the root, not the wrapper
+    if (data.content) {
+      // Process the main content block as root
+      processBlock(data.content, null);
+    }
+
+    // Convert Map to array for JSON serialization
+    return Array.from(blocks.values());
+  }
+
+  /**
+   * Creates a TAR archive with PAX format containing flattened JSON files.
+   *
+   * @param {string} datasetId - The dataset ID
+   * @param {string} submissionDir - Directory containing the JSON files to archive
+   * @return {*}  {Promise<void>}
+   * @memberof PlatformService
+   */
+  async _createTarArchive(datasetId: string, submissionDir: string): Promise<void> {
+    const tarFilePath = path.join(path.dirname(submissionDir), `${datasetId}.tar`);
+    const pack = tarStream.pack();
+    const outputStream = fs.createWriteStream(tarFilePath);
+
+    pack.pipe(outputStream);
+
+    // Wait for the stream to finish
+    const streamPromise = new Promise<void>((resolve, reject) => {
+      outputStream.on('close', resolve);
+      pack.on('error', reject);
+      outputStream.on('error', reject);
+    });
+
+    // Add the dataset directory entry
+    pack.entry(
+      {
+        name: `${datasetId}/`,
+        type: 'directory'
+      },
+      undefined,
+      (dirErr?: Error | null) => {
+        if (dirErr) {
+          pack.destroy();
+          throw dirErr;
+        }
+        this._addMetadataFile(pack, datasetId);
+      }
+    );
+
+    await streamPromise;
+  }
+
+  /**
+   * Adds metadata file and JSON files to the TAR archive.
+   *
+   * @param {tarStream.Pack} pack - The TAR pack stream
+   * @param {string} datasetId - The dataset ID
+   * @memberof PlatformService
+   */
+  _addMetadataFile(pack: tarStream.Pack, datasetId: string): void {
+    // Add a metadata file with the dataset ID
+    // Note: tar-stream doesn't easily support PAX extended attributes,
+    // so we store the dataset ID in a metadata file instead
+    const metadataContent = Buffer.from(datasetId);
+    pack.entry(
+      {
+        name: `${datasetId}/.dataset-id`,
+        size: metadataContent.length
+      },
+      metadataContent,
+      (metadataErr?: Error | null) => {
+        if (metadataErr) {
+          pack.destroy();
+          throw metadataErr;
+        }
+        this._addJsonFiles(pack, datasetId);
+      }
+    );
+  }
+
+  /**
+   * Adds all JSON files from the dataset folder to the TAR archive.
+   *
+   * @param {tarStream.Pack} pack - The TAR pack stream
+   * @param {string} datasetId - The dataset ID
+   * @memberof PlatformService
+   */
+  _addJsonFiles(pack: tarStream.Pack, datasetId: string): void {
+    const submissionDir = path.join(process.cwd(), 'data', 'submissions', datasetId);
+    const files = fs.readdirSync(submissionDir);
+    const fileEntries = files.filter((file) => {
+      const filePath = path.join(submissionDir, file);
+      return fs.statSync(filePath).isFile();
+    });
+
+    if (fileEntries.length === 0) {
+      pack.finalize();
+      return;
+    }
+
+    let filesProcessed = 0;
+    fileEntries.forEach((file) => {
+      this._addFileToArchive(pack, datasetId, submissionDir, file, () => {
+        filesProcessed++;
+        if (filesProcessed === fileEntries.length) {
+          pack.finalize();
+        }
+      });
+    });
+  }
+
+  /**
+   * Adds a single file to the TAR archive.
+   *
+   * @param {tarStream.Pack} pack - The TAR pack stream
+   * @param {string} datasetId - The dataset ID
+   * @param {string} submissionDir - Directory containing the file
+   * @param {string} file - Filename to add
+   * @param {() => void} onComplete - Callback when file is added
+   * @memberof PlatformService
+   */
+  _addFileToArchive(
+    pack: tarStream.Pack,
+    datasetId: string,
+    submissionDir: string,
+    file: string,
+    onComplete: () => void
+  ): void {
+    const filePath = path.join(submissionDir, file);
+    const stat = fs.statSync(filePath);
+    const fileContent = fs.readFileSync(filePath);
+
+    pack.entry(
+      {
+        name: `${datasetId}/${file}`,
+        size: stat.size
+      },
+      fileContent,
+      (entryErr?: Error | null) => {
+        if (entryErr) {
+          pack.destroy();
+          throw entryErr;
+        }
+        onComplete();
+      }
+    );
   }
 
   /**
