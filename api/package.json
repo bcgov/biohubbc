@@ -62,7 +62,7 @@
     "qs": "^6.10.1",
     "sql-template-strings": "^2.2.2",
     "swagger-ui-express": "^4.3.0",
-    "tar": "^7.5.2",
+    "tar-stream": "^3.1.7",
     "typescript": "^4.7.4",
     "utm": "^1.1.1",
     "uuid": "^11.0.5",

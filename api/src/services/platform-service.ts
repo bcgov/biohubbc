@@ -239,99 +239,44 @@ export class PlatformService extends DBService {
       data.submissionComment
     );
 
-    // Save survey data package to JSON file for debugging
+    // Flatten and save the survey data package grouped by type
     try {
-      const logFilePath = path.join(process.cwd(), 'data', 'submissions', 'survey-submission.json');
+      const flattenedData = this._flattenToBlockModel(surveyDataPackage);
 
-      // Ensure the submissions directory exists (recursive: true creates parent directories if needed)
-      const submissionsBaseDir = path.dirname(logFilePath);
-      fs.mkdirSync(submissionsBaseDir, { recursive: true });
+      // Find the dataset ID (root block with type "dataset")
+      const datasetBlock = flattenedData.find((block) => block.type === 'dataset' && block.parent === null);
+      const datasetId = datasetBlock?.id || 'unknown';
 
-      fs.writeFileSync(logFilePath, JSON.stringify(surveyDataPackage, null, 2));
-      defaultLog.info({
-        label: 'submitSurveyToBioHub',
-        message: 'Survey data package saved for debugging',
-        filePath: logFilePath
+      // Group blocks by type
+      const blocksByType = new Map<string, IFlattenedBlock[]>();
+      flattenedData.forEach((block) => {
+        const blockType = block.type || 'unknown';
+        if (!blocksByType.has(blockType)) {
+          blocksByType.set(blockType, []);
+        }
+        blocksByType.get(blockType)!.push(block);
       });
 
-      // Flatten and save the survey data package grouped by type
-      try {
-        const flattenedData = this._flattenToBlockModel(surveyDataPackage);
+      // Create TAR archive with PAX format and extended attributes using tar-stream
+      // Data is added directly from memory, skipping disk write/read cycle
+      const submissionsBaseDir = path.join(process.cwd(), 'data', 'submissions');
+      fs.mkdirSync(submissionsBaseDir, { recursive: true });
+      const tarFilePath = path.join(submissionsBaseDir, `${datasetId}.tar`);
+      await this._createTarArchive(datasetId, blocksByType, tarFilePath);
 
-        // Find the dataset ID (root block with type "dataset")
-        const datasetBlock = flattenedData.find((block) => block.type === 'dataset' && block.parent === null);
-        const datasetId = datasetBlock?.id || 'unknown';
-
-        // Group blocks by type
-        const blocksByType = new Map<string, IFlattenedBlock[]>();
-        flattenedData.forEach((block) => {
-          const blockType = block.type || 'unknown';
-          if (!blocksByType.has(blockType)) {
-            blocksByType.set(blockType, []);
-          }
-          blocksByType.get(blockType)!.push(block);
-        });
-
-        // Create folder named after the dataset ID
-        const submissionDir = path.join(process.cwd(), 'data', 'submissions', datasetId);
-        fs.mkdirSync(submissionDir, { recursive: true });
-
-        const savedFiles: string[] = [];
-
-        blocksByType.forEach((blocks, type) => {
-          // Save file with type name as filename in the dataset folder
-          const fileName = `${type}.json`;
-          const filePath = path.join(submissionDir, fileName);
-          fs.writeFileSync(filePath, JSON.stringify(blocks, null, 2));
-          savedFiles.push(fileName);
-          defaultLog.info({
-            label: 'submitSurveyToBioHub',
-            message: `Flattened ${type} blocks saved for debugging`,
-            filePath,
-            blockCount: blocks.length
-          });
-        });
-
-        // Create TAR archive with PAX format and extended attributes using tar-stream
-        const tarFilePath = path.join(path.dirname(submissionDir), `${datasetId}.tar`);
-        await this._createTarArchive(datasetId, submissionDir);
-
-        // Remove the folder with JSON files and survey-submission.json after TAR creation
-        try {
-          fs.rmSync(submissionDir, { recursive: true, force: true });
-          const logFilePath = path.join(process.cwd(), 'data', 'submissions', 'survey-submission.json');
-          if (fs.existsSync(logFilePath)) {
-            fs.unlinkSync(logFilePath);
-          }
-        } catch (rmError) {
-          defaultLog.warn({
-            label: 'submitSurveyToBioHub',
-            message: 'Failed to cleanup flattened JSON files and survey-submission.json',
-            error: rmError instanceof Error ? rmError.message : 'Unknown error'
-          });
-        }
-
-        // TODO: Remove the TAR file after it's no longer needed for debugging
-        defaultLog.info({
-          label: 'submitSurveyToBioHub',
-          message: 'Flattened survey data package saved by type and compressed to TAR',
-          totalBlocks: flattenedData.length,
-          totalTypes: blocksByType.size,
-          files: savedFiles,
-          tarFilePath
-        });
-      } catch (flattenError) {
-        defaultLog.warn({
-          label: 'submitSurveyToBioHub',
-          message: 'Failed to save flattened survey data package for debugging',
-          error: flattenError instanceof Error ? flattenError.message : 'Unknown error'
-        });
-      }
-    } catch (error) {
+      // TODO: Remove the TAR file after it's no longer needed for debugging
+      defaultLog.info({
+        label: 'submitSurveyToBioHub',
+        message: 'Flattened survey data package saved by type and compressed to TAR',
+        totalBlocks: flattenedData.length,
+        totalTypes: blocksByType.size,
+        tarFilePath
+      });
+    } catch (flattenError) {
       defaultLog.warn({
         label: 'submitSurveyToBioHub',
-        message: 'Failed to save survey data package for debugging',
-        error: error instanceof Error ? error.message : 'Unknown error'
+        message: 'Failed to save flattened survey data package for debugging',
+        error: flattenError instanceof Error ? flattenError.message : 'Unknown error'
       });
     }
 
@@ -604,12 +549,16 @@ export class PlatformService extends DBService {
    * Creates a TAR archive with PAX format containing flattened JSON files.
    *
    * @param {string} datasetId - The dataset ID
-   * @param {string} submissionDir - Directory containing the JSON files to archive
+   * @param {Map<string, IFlattenedBlock[]>} blocksByType - Map of block types to their flattened blocks
+   * @param {string} tarFilePath - Full path where the TAR file should be created
    * @return {*}  {Promise<void>}
    * @memberof PlatformService
    */
-  async _createTarArchive(datasetId: string, submissionDir: string): Promise<void> {
-    const tarFilePath = path.join(path.dirname(submissionDir), `${datasetId}.tar`);
+  async _createTarArchive(
+    datasetId: string,
+    blocksByType: Map<string, IFlattenedBlock[]>,
+    tarFilePath: string
+  ): Promise<void> {
     const pack = tarStream.pack();
     const outputStream = fs.createWriteStream(tarFilePath);
 
@@ -634,7 +583,7 @@ export class PlatformService extends DBService {
           pack.destroy();
           throw dirErr;
         }
-        this._addMetadataFile(pack, datasetId);
+        this._addMetadataFile(pack, datasetId, blocksByType);
       }
     );
 
@@ -646,9 +595,10 @@ export class PlatformService extends DBService {
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
    * @param {string} datasetId - The dataset ID
+   * @param {Map<string, IFlattenedBlock[]>} blocksByType - Map of block types to their flattened blocks
    * @memberof PlatformService
    */
-  _addMetadataFile(pack: tarStream.Pack, datasetId: string): void {
+  _addMetadataFile(pack: tarStream.Pack, datasetId: string, blocksByType: Map<string, IFlattenedBlock[]>): void {
     // Add a metadata file with the dataset ID
     // Note: tar-stream doesn't easily support PAX extended attributes,
     // so we store the dataset ID in a metadata file instead
@@ -664,67 +614,228 @@ export class PlatformService extends DBService {
           pack.destroy();
           throw metadataErr;
         }
-        this._addJsonFiles(pack, datasetId);
+        // Start adding JSON files and file blocks (async operation)
+        this._addJsonFiles(pack, datasetId, blocksByType).catch((error) => {
+          defaultLog.error({
+            label: '_addMetadataFile',
+            message: 'Failed to add JSON files and file blocks',
+            error: error instanceof Error ? error.message : 'Unknown error'
+          });
+          pack.destroy();
+          throw error;
+        });
       }
     );
   }
 
   /**
-   * Adds all JSON files from the dataset folder to the TAR archive.
+   * Adds all JSON files from the blocksByType Map to the TAR archive.
+   * Also includes actual file content for blocks with type 'file'.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
    * @param {string} datasetId - The dataset ID
+   * @param {Map<string, IFlattenedBlock[]>} blocksByType - Map of block types to their flattened blocks
    * @memberof PlatformService
    */
-  _addJsonFiles(pack: tarStream.Pack, datasetId: string): void {
-    const submissionDir = path.join(process.cwd(), 'data', 'submissions', datasetId);
-    const files = fs.readdirSync(submissionDir);
-    const fileEntries = files.filter((file) => {
-      const filePath = path.join(submissionDir, file);
-      return fs.statSync(filePath).isFile();
-    });
-
-    if (fileEntries.length === 0) {
+  async _addJsonFiles(
+    pack: tarStream.Pack,
+    datasetId: string,
+    blocksByType: Map<string, IFlattenedBlock[]>
+  ): Promise<void> {
+    if (blocksByType.size === 0) {
       pack.finalize();
       return;
     }
 
-    let filesProcessed = 0;
-    fileEntries.forEach((file) => {
-      this._addFileToArchive(pack, datasetId, submissionDir, file, () => {
-        filesProcessed++;
-        if (filesProcessed === fileEntries.length) {
-          pack.finalize();
-        }
-      });
+    const fileBlocks = blocksByType.get('file') || [];
+    let jsonFilesProcessed = 0;
+    const totalJsonFiles = blocksByType.size;
+    let fileBlocksProcessed = 0;
+    const totalFileBlocks = fileBlocks.length;
+
+    const checkAndFinalize = () => {
+      if (jsonFilesProcessed === totalJsonFiles && fileBlocksProcessed === totalFileBlocks) {
+        pack.finalize();
+      }
+    };
+
+    this._addJsonFilesToArchive(pack, datasetId, blocksByType, () => {
+      jsonFilesProcessed++;
+      checkAndFinalize();
+    });
+
+    await this._addFileBlocksToArchive(pack, datasetId, fileBlocks, () => {
+      fileBlocksProcessed++;
+      checkAndFinalize();
     });
   }
 
   /**
-   * Adds a single file to the TAR archive.
+   * Adds JSON files for all block types to the TAR archive.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
    * @param {string} datasetId - The dataset ID
-   * @param {string} submissionDir - Directory containing the file
-   * @param {string} file - Filename to add
+   * @param {Map<string, IFlattenedBlock[]>} blocksByType - Map of block types to their flattened blocks
+   * @param {() => void} onComplete - Callback when JSON file is added
+   * @memberof PlatformService
+   */
+  _addJsonFilesToArchive(
+    pack: tarStream.Pack,
+    datasetId: string,
+    blocksByType: Map<string, IFlattenedBlock[]>,
+    onComplete: () => void
+  ): void {
+    blocksByType.forEach((blocks, type) => {
+      const fileName = `${type}.json`;
+      const fileContent = Buffer.from(JSON.stringify(blocks, null, 2));
+      this._addFileToArchive(pack, datasetId, fileName, fileContent, onComplete);
+    });
+  }
+
+  /**
+   * Adds actual file content for file type blocks to the TAR archive.
+   *
+   * @param {tarStream.Pack} pack - The TAR pack stream
+   * @param {string} datasetId - The dataset ID
+   * @param {IFlattenedBlock[]} fileBlocks - Array of file blocks to process
+   * @param {() => void} onComplete - Callback when file block is processed
+   * @memberof PlatformService
+   */
+  async _addFileBlocksToArchive(
+    pack: tarStream.Pack,
+    datasetId: string,
+    fileBlocks: IFlattenedBlock[],
+    onComplete: () => void
+  ): Promise<void> {
+    if (fileBlocks.length === 0) {
+      return;
+    }
+
+    for (const fileBlock of fileBlocks) {
+      await this._processFileBlock(pack, datasetId, fileBlock, onComplete);
+    }
+  }
+
+  /**
+   * Processes a single file block by downloading from S3 and adding to archive.
+   *
+   * @param {tarStream.Pack} pack - The TAR pack stream
+   * @param {string} datasetId - The dataset ID
+   * @param {IFlattenedBlock} fileBlock - The file block to process
+   * @param {() => void} onComplete - Callback when file is processed
+   * @memberof PlatformService
+   */
+  async _processFileBlock(
+    pack: tarStream.Pack,
+    datasetId: string,
+    fileBlock: IFlattenedBlock,
+    onComplete: () => void
+  ): Promise<void> {
+    try {
+      const artifactKey = fileBlock.properties?.artifact_key as string | undefined;
+      const filename = (fileBlock.properties?.filename as string | undefined) || fileBlock.id;
+
+      if (!artifactKey) {
+        this._logFileBlockWarning('File block missing artifact_key, skipping', fileBlock.id);
+        onComplete();
+        return;
+      }
+
+      const fileContent = await this._downloadFileFromS3(artifactKey, fileBlock.id);
+      if (!fileContent) {
+        onComplete();
+        return;
+      }
+
+      const archivePath = `files/${filename}`;
+      this._addFileToArchive(pack, datasetId, archivePath, fileContent, onComplete);
+    } catch (error) {
+      this._logFileBlockError('Failed to add file block to archive', fileBlock.id, error);
+      onComplete();
+    }
+  }
+
+  /**
+   * Downloads a file from S3 and converts it to a Buffer.
+   *
+   * @param {string} artifactKey - The S3 key for the file
+   * @param {string} blockId - The block ID for logging
+   * @return {*}  {Promise<Buffer | null>} The file content as a Buffer, or null if download fails
+   * @memberof PlatformService
+   */
+  async _downloadFileFromS3(artifactKey: string, blockId: string): Promise<Buffer | null> {
+    try {
+      const s3File = await getFileFromS3(artifactKey);
+
+      if (!s3File.Body) {
+        this._logFileBlockWarning('S3 file Body is null, skipping', blockId, artifactKey);
+        return null;
+      }
+
+      return (await s3File.Body.transformToByteArray()) as Buffer;
+    } catch (error) {
+      this._logFileBlockError('Failed to download file from S3', blockId, error, artifactKey);
+      return null;
+    }
+  }
+
+  /**
+   * Logs a warning for file block processing.
+   *
+   * @param {string} message - Warning message
+   * @param {string} blockId - The block ID
+   * @param {string} [artifactKey] - Optional artifact key for additional context
+   * @memberof PlatformService
+   */
+  _logFileBlockWarning(message: string, blockId: string, artifactKey?: string): void {
+    defaultLog.warn({
+      label: '_addJsonFiles',
+      message,
+      blockId,
+      ...(artifactKey && { artifactKey })
+    });
+  }
+
+  /**
+   * Logs an error for file block processing.
+   *
+   * @param {string} message - Error message
+   * @param {string} blockId - The block ID
+   * @param {unknown} error - The error object
+   * @param {string} [artifactKey] - Optional artifact key for additional context
+   * @memberof PlatformService
+   */
+  _logFileBlockError(message: string, blockId: string, error: unknown, artifactKey?: string): void {
+    defaultLog.error({
+      label: '_addJsonFiles',
+      message,
+      blockId,
+      error: error instanceof Error ? error.message : 'Unknown error',
+      ...(artifactKey && { artifactKey })
+    });
+  }
+
+  /**
+   * Adds a single file to the TAR archive from memory.
+   *
+   * @param {tarStream.Pack} pack - The TAR pack stream
+   * @param {string} datasetId - The dataset ID
+   * @param {string} fileName - Filename to add
+   * @param {Buffer} fileContent - File content as a Buffer
    * @param {() => void} onComplete - Callback when file is added
    * @memberof PlatformService
    */
   _addFileToArchive(
     pack: tarStream.Pack,
     datasetId: string,
-    submissionDir: string,
-    file: string,
+    fileName: string,
+    fileContent: Buffer,
     onComplete: () => void
   ): void {
-    const filePath = path.join(submissionDir, file);
-    const stat = fs.statSync(filePath);
-    const fileContent = fs.readFileSync(filePath);
-
     pack.entry(
       {
-        name: `${datasetId}/${file}`,
-        size: stat.size
+        name: `${datasetId}/${fileName}`,
+        size: fileContent.length
       },
       fileContent,
       (entryErr?: Error | null) => {
