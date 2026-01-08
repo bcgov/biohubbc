@@ -805,6 +805,4 @@ export class PlatformService extends DBService {
       }
     );
   }
-
-
 }
