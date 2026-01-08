@@ -180,15 +180,7 @@ describe('PlatformService', () => {
         .stub(PlatformService.prototype, '_generateSurveyDataPackage')
         .resolves({ id: '123-456-789' } as unknown as any);
 
-      sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789', artifact_upload_keys: [] } });
-
-      const _submitSurveyAttachmentsToBioHubStub = sinon
-        .stub(PlatformService.prototype, '_submitSurveyAttachmentsToBioHub')
-        .resolves();
-
-      const _submitSurveyReportAttachmentsToBioHubStub = sinon
-        .stub(PlatformService.prototype, '_submitSurveyReportAttachmentsToBioHub')
-        .resolves();
+      sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789' } });
 
       const insertSurveyMetadataPublishRecordStub = sinon
         .stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord')
@@ -198,8 +190,6 @@ describe('PlatformService', () => {
 
       expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
       expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], [], 'test');
-      expect(_submitSurveyAttachmentsToBioHubStub).to.have.been.calledOnceWith('123-456-789', [], []);
-      expect(_submitSurveyReportAttachmentsToBioHubStub).to.have.been.calledOnceWith('123-456-789', [], []);
       expect(insertSurveyMetadataPublishRecordStub).to.have.been.calledOnceWith({
         survey_id: 1,
         submission_uuid: '123-456-789'
@@ -460,10 +450,8 @@ describe('PlatformService', () => {
         .stub(PlatformService.prototype, '_generateSurveyDataPackage')
         .resolves(mockSurveyDataPackage as unknown as any);
 
-      sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789', artifact_upload_keys: [] } });
+      sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789' } });
 
-      sinon.stub(PlatformService.prototype, '_submitSurveyAttachmentsToBioHub').resolves();
-      sinon.stub(PlatformService.prototype, '_submitSurveyReportAttachmentsToBioHub').resolves();
       sinon.stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord').resolves();
 
       // Stub the TAR creation method to avoid fs stubbing issues
@@ -505,10 +493,8 @@ describe('PlatformService', () => {
         .stub(PlatformService.prototype, '_generateSurveyDataPackage')
         .resolves(mockSurveyDataPackage as unknown as any);
 
-      sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789', artifact_upload_keys: [] } });
+      sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789' } });
 
-      sinon.stub(PlatformService.prototype, '_submitSurveyAttachmentsToBioHub').resolves();
-      sinon.stub(PlatformService.prototype, '_submitSurveyReportAttachmentsToBioHub').resolves();
       sinon.stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord').resolves();
 
       // Stub flattening to throw error
@@ -544,10 +530,8 @@ describe('PlatformService', () => {
         .stub(PlatformService.prototype, '_generateSurveyDataPackage')
         .resolves(mockSurveyDataPackage as unknown as any);
 
-      sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789', artifact_upload_keys: [] } });
+      sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789' } });
 
-      sinon.stub(PlatformService.prototype, '_submitSurveyAttachmentsToBioHub').resolves();
-      sinon.stub(PlatformService.prototype, '_submitSurveyReportAttachmentsToBioHub').resolves();
       sinon.stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord').resolves();
 
       // Stub TAR creation to throw error (avoiding fs stubbing issues)

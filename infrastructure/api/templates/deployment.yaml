@@ -110,8 +110,6 @@ spec:
               value: {{ .Values.app.backboneInternalApiHost }}
             - name: BACKBONE_INTAKE_PATH
               value: {{ .Values.app.backboneIntakePath }}
-            - name: BACKBONE_ARTIFACT_INTAKE_PATH
-              value: {{ .Values.app.backboneArtifactIntakePath }}
             - name: BIOHUB_TAXON_TSN_PATH
               value: {{ .Values.app.biohubTaxonTsnPath }}
             - name: BIOHUB_TAXON_PATH
