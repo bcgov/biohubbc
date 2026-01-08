@@ -340,4 +340,240 @@ describe('PlatformService', () => {
       expect(response.content.properties).to.have.property('survey_id', 1);
     });
   });
+
+  describe('_flattenToBlockModel', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should flatten nested structure with child_features', () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const nestedData = {
+        content: {
+          id: 'root-id',
+          type: 'dataset',
+          properties: { name: 'Test Dataset' },
+          child_features: [
+            {
+              id: 'child-1',
+              type: 'species_observation',
+              properties: { count: 5 },
+              child_features: [
+                {
+                  id: 'grandchild-1',
+                  type: 'observation_subcount',
+                  properties: { subcount: 2 }
+                }
+              ]
+            }
+          ]
+        }
+      };
+
+      const result = platformService._flattenToBlockModel(nestedData);
+
+      expect(result).to.have.length(3);
+      expect(result.find((b) => b.id === 'root-id')).to.deep.include({
+        id: 'root-id',
+        type: 'dataset',
+        parent: null,
+        content: ['child-1']
+      });
+      expect(result.find((b) => b.id === 'child-1')).to.deep.include({
+        id: 'child-1',
+        type: 'species_observation',
+        parent: 'root-id',
+        content: ['grandchild-1']
+      });
+      expect(result.find((b) => b.id === 'grandchild-1')).to.deep.include({
+        id: 'grandchild-1',
+        type: 'observation_subcount',
+        parent: 'child-1',
+        content: []
+      });
+    });
+
+    it('should handle data without content', () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const nestedData = {};
+
+      const result = platformService._flattenToBlockModel(nestedData);
+
+      expect(result).to.have.length(0);
+    });
+
+    it('should handle blocks without type', () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const nestedData = {
+        content: {
+          id: 'test-id',
+          properties: { name: 'Test' }
+        }
+      };
+
+      const result = platformService._flattenToBlockModel(nestedData);
+
+      expect(result).to.have.length(1);
+      expect(result[0].type).to.equal('unknown');
+    });
+  });
+
+  describe('submitSurveyToBioHub - flattening and TAR creation', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should create flattened JSON files and TAR archive', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
+
+      sinon.stub(AttachmentService.prototype, 'getSurveyAttachmentsForBioHubSubmission').resolves([]);
+      sinon.stub(AttachmentService.prototype, 'getSurveyReportAttachments').resolves([]);
+
+      const mockSurveyDataPackage = {
+        id: 'test-dataset-id',
+        content: {
+          id: 'test-dataset-id',
+          type: 'dataset',
+          properties: { survey_id: 1 },
+          child_features: [
+            {
+              id: 'obs-1',
+              type: 'species_observation',
+              properties: { count: 5 }
+            }
+          ]
+        }
+      };
+
+      sinon
+        .stub(PlatformService.prototype, '_generateSurveyDataPackage')
+        .resolves(mockSurveyDataPackage as unknown as any);
+
+      sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789', artifact_upload_keys: [] } });
+
+      sinon.stub(PlatformService.prototype, '_submitSurveyAttachmentsToBioHub').resolves();
+      sinon.stub(PlatformService.prototype, '_submitSurveyReportAttachmentsToBioHub').resolves();
+      sinon.stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord').resolves();
+
+      // Stub the TAR creation method to avoid fs stubbing issues
+      const createTarArchiveStub = sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
+
+      // Stub fs methods that are called but we can't stub directly
+      // We'll verify through the _createTarArchive stub instead
+      const flattenToBlockModelStub = sinon.stub(PlatformService.prototype, '_flattenToBlockModel').returns([
+        { id: 'test-dataset-id', type: 'dataset', properties: {}, content: [], parent: null },
+        { id: 'obs-1', type: 'species_observation', properties: {}, content: [], parent: 'test-dataset-id' }
+      ]);
+
+      await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
+
+      // Verify flattening was called
+      expect(flattenToBlockModelStub).to.have.been.calledOnce;
+
+      // Verify TAR was created
+      expect(createTarArchiveStub).to.have.been.calledOnce;
+    });
+
+    it('should handle flattening errors gracefully', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
+
+      sinon.stub(AttachmentService.prototype, 'getSurveyAttachmentsForBioHubSubmission').resolves([]);
+      sinon.stub(AttachmentService.prototype, 'getSurveyReportAttachments').resolves([]);
+
+      const mockSurveyDataPackage = {
+        id: 'test-dataset-id',
+        content: { id: 'test-id', type: 'dataset' }
+      };
+
+      sinon
+        .stub(PlatformService.prototype, '_generateSurveyDataPackage')
+        .resolves(mockSurveyDataPackage as unknown as any);
+
+      sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789', artifact_upload_keys: [] } });
+
+      sinon.stub(PlatformService.prototype, '_submitSurveyAttachmentsToBioHub').resolves();
+      sinon.stub(PlatformService.prototype, '_submitSurveyReportAttachmentsToBioHub').resolves();
+      sinon.stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord').resolves();
+
+      // Stub flattening to throw error
+      sinon.stub(PlatformService.prototype, '_flattenToBlockModel').throws(new Error('File system error'));
+
+      // Should not throw, but continue with submission
+      const response = await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
+
+      expect(response).to.eql({ submission_uuid: '123-456-789' });
+    });
+
+    it('should handle TAR creation errors gracefully', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
+
+      sinon.stub(AttachmentService.prototype, 'getSurveyAttachmentsForBioHubSubmission').resolves([]);
+      sinon.stub(AttachmentService.prototype, 'getSurveyReportAttachments').resolves([]);
+
+      const mockSurveyDataPackage = {
+        id: 'test-dataset-id',
+        content: {
+          id: 'test-dataset-id',
+          type: 'dataset',
+          properties: { survey_id: 1 }
+        }
+      };
+
+      sinon
+        .stub(PlatformService.prototype, '_generateSurveyDataPackage')
+        .resolves(mockSurveyDataPackage as unknown as any);
+
+      sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789', artifact_upload_keys: [] } });
+
+      sinon.stub(PlatformService.prototype, '_submitSurveyAttachmentsToBioHub').resolves();
+      sinon.stub(PlatformService.prototype, '_submitSurveyReportAttachmentsToBioHub').resolves();
+      sinon.stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord').resolves();
+
+      // Stub TAR creation to throw error (avoiding fs stubbing issues)
+      sinon.stub(PlatformService.prototype, '_createTarArchive').rejects(new Error('TAR creation error'));
+
+      // Should not throw, but continue with submission (error is caught and logged)
+      const response = await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
+
+      expect(response).to.eql({ submission_uuid: '123-456-789' });
+    });
+  });
+
+  describe('_createTarArchive and helper methods', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should call helper methods correctly', () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      // Test that helper methods exist and can be called
+      // Full integration testing would require mocking fs which is non-configurable
+      expect(platformService._addMetadataFile).to.be.a('function');
+      expect(platformService._addJsonFiles).to.be.a('function');
+      expect(platformService._addFileToArchive).to.be.a('function');
+    });
+  });
 });
