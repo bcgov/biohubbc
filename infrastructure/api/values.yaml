@@ -28,7 +28,6 @@ app:
   backboneInternalApiHost: "" # API host for BioHub Platform Backbone. Example "https://platform.com".
   backbonePublicApiHost: ""
   backboneIntakePath: /api/submission/intake # The publishing intake endpoint path for BioHub Platform submissions. Example "/api/path/to/intake".
-  backboneArtifactIntakePath: /api/artifact/intake # he publishing intake endpoint path for BioHub Platform artifact submissions. Example "/api/path/to/artifact/intake".
   biohubTaxonPath: /api/taxonomy/taxon # API path for BioHub Platform Backbone taxon endpoint. Example "/api/path/to/taxon"
   biohubTaxonTsnPath: /api/taxonomy/taxon/tsn # API path for BioHub Platform Backbone taxon TSN endpoint. Example "/api/path/to/taxon/tsn"
   
