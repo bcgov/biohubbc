@@ -974,7 +974,7 @@ export class PlatformService extends DBService {
       }
 
       // Remove quotes from ETag
-      const cleanEtag = etag.replace(/"/g, '');
+      const cleanEtag = etag.replaceAll('"', '');
 
       defaultLog.debug({
         label: '_uploadChunkToS3',
