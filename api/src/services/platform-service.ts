@@ -862,12 +862,12 @@ export class PlatformService extends DBService {
   }> {
     defaultLog.debug({ label: '_initiateSubmissionUpload', tarFileSize });
 
-    // Validate file size (max 1 GB)
-    const MAX_FILE_SIZE = 1073741824; // 1 GB in bytes
-    if (tarFileSize > MAX_FILE_SIZE) {
+    // Validate file size
+    const SUBMISSION_UPLOAD_MAX_SIZE = getEnvironmentVariable('SUBMISSION_UPLOAD_MAX_SIZE');
+    if (tarFileSize > SUBMISSION_UPLOAD_MAX_SIZE) {
       throw new ApiError(
         ApiErrorType.UNKNOWN,
-        `TAR file size (${tarFileSize} bytes) exceeds maximum allowed size (${MAX_FILE_SIZE} bytes)`
+        `TAR file size (${tarFileSize} bytes) exceeds maximum allowed size (${SUBMISSION_UPLOAD_MAX_SIZE} bytes)`
       );
     }
 

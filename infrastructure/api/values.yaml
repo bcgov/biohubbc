@@ -67,6 +67,7 @@ app:
     bodySize: "52428800" # Maximum request body size in bytes
     uploadNumFiles: "10" # Maximum number of files uploaded in a single request
     uploadFileSize: "52428800" # Maximum upload file size in bytes
+    submissionUploadMaxSize: "1073741824" # Maximum file size for BioHub submission TAR files in bytes (1 GB)
   
   # Logging
   logging:

@@ -865,6 +865,9 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
+      const getEnvironmentVariableStub = sinon.stub(envConfig, 'getEnvironmentVariable');
+      getEnvironmentVariableStub.withArgs('SUBMISSION_UPLOAD_MAX_SIZE').returns(1073741824); // 1 GB
+
       const surveyDataPackage = {
         name: 'Test Survey',
         description: 'Test Description'

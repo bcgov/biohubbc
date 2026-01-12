@@ -199,6 +199,8 @@ spec:
               value: {{ .Values.app.requestLimits.uploadNumFiles | quote }}
             - name: MAX_UPLOAD_FILE_SIZE
               value: {{ .Values.app.requestLimits.uploadFileSize | quote }}
+            - name: SUBMISSION_UPLOAD_MAX_SIZE
+              value: {{ .Values.app.requestLimits.submissionUploadMaxSize | quote }}
             # Object Store (S3)
             - name: OBJECT_STORE_URL
               valueFrom:
