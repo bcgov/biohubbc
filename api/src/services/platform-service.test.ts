@@ -639,4 +639,316 @@ describe('PlatformService', () => {
       expect(platformService._addFileToArchive).to.be.a('function');
     });
   });
+
+  describe('_splitFileIntoChunks', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should split file into single chunk when numChunks is 1', () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const fileBuffer = Buffer.from('test file content');
+      const chunks = platformService._splitFileIntoChunks(fileBuffer, 1);
+
+      expect(chunks).to.have.length(1);
+      expect(chunks[0]).to.deep.equal(fileBuffer);
+    });
+
+    it('should split file into multiple chunks', () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const fileBuffer = Buffer.from('1234567890');
+      const chunks = platformService._splitFileIntoChunks(fileBuffer, 3);
+
+      expect(chunks).to.have.length(3);
+      expect(chunks[0].toString()).to.equal('1234');
+      expect(chunks[1].toString()).to.equal('5678');
+      expect(chunks[2].toString()).to.equal('90');
+    });
+
+    it('should handle uneven division correctly', () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const fileBuffer = Buffer.from('12345');
+      const chunks = platformService._splitFileIntoChunks(fileBuffer, 2);
+
+      expect(chunks).to.have.length(2);
+      expect(chunks[0].toString()).to.equal('123');
+      expect(chunks[1].toString()).to.equal('45');
+    });
+  });
+
+  describe('_uploadChunkToS3', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should upload chunk and return PartNumber and ETag', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const mockResponse = {
+        headers: {
+          etag: '"abc123def456"'
+        }
+      };
+
+      const axiosPutStub = sinon.stub(axios, 'put').resolves(mockResponse);
+
+      const result = await platformService._uploadChunkToS3(
+        'https://s3.amazonaws.com/presigned-url',
+        Buffer.from('chunk'),
+        1
+      );
+
+      expect(axiosPutStub).to.have.been.calledOnce;
+      expect(axiosPutStub.getCall(0).args[0]).to.equal('https://s3.amazonaws.com/presigned-url');
+      expect(axiosPutStub.getCall(0).args[1]).to.deep.equal(Buffer.from('chunk'));
+      expect(axiosPutStub.getCall(0).args[2]?.headers?.['Content-Type']).to.equal('application/x-tar');
+
+      expect(result).to.deep.equal({
+        PartNumber: 1,
+        ETag: 'abc123def456'
+      });
+    });
+
+    it('should handle ETag with uppercase header', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const mockResponse = {
+        headers: {
+          ETag: '"xyz789"'
+        }
+      };
+
+      sinon.stub(axios, 'put').resolves(mockResponse);
+
+      const result = await platformService._uploadChunkToS3(
+        'https://s3.amazonaws.com/presigned-url',
+        Buffer.from('chunk'),
+        2
+      );
+
+      expect(result.ETag).to.equal('xyz789');
+    });
+
+    it('should throw error when ETag is missing', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const mockResponse = {
+        headers: {}
+      };
+
+      sinon.stub(axios, 'put').resolves(mockResponse);
+
+      try {
+        await platformService._uploadChunkToS3('https://s3.amazonaws.com/presigned-url', Buffer.from('chunk'), 1);
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        // The error gets caught and re-thrown, but the original error message should be in the error chain
+        // We check for the wrapped error message
+        expect((error as Error).message).to.include('Failed to upload part 1 to S3');
+      }
+    });
+
+    it('should throw error when upload fails', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(axios, 'put').rejects(new Error('Network error'));
+
+      try {
+        await platformService._uploadChunkToS3('https://s3.amazonaws.com/presigned-url', Buffer.from('chunk'), 1);
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect((error as Error).message).to.include('Failed to upload part 1 to S3');
+      }
+    });
+  });
+
+  describe('_uploadTarFileParts', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should upload all parts and return sorted array', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const fs = require('node:fs');
+      sinon.stub(fs, 'readFileSync').returns(Buffer.from('1234567890'));
+
+      const presignedUrls = [
+        { partNumber: 1, url: 'https://s3.amazonaws.com/url1' },
+        { partNumber: 2, url: 'https://s3.amazonaws.com/url2' },
+        { partNumber: 3, url: 'https://s3.amazonaws.com/url3' }
+      ];
+
+      const uploadChunkStub = sinon.stub(PlatformService.prototype, '_uploadChunkToS3');
+      uploadChunkStub.onCall(0).resolves({ PartNumber: 2, ETag: 'etag2' });
+      uploadChunkStub.onCall(1).resolves({ PartNumber: 1, ETag: 'etag1' });
+      uploadChunkStub.onCall(2).resolves({ PartNumber: 3, ETag: 'etag3' });
+
+      const result = await platformService._uploadTarFileParts('/path/to/file.tar', presignedUrls, 3);
+
+      expect(uploadChunkStub).to.have.been.calledThrice;
+      expect(result).to.have.length(3);
+      expect(result[0].PartNumber).to.equal(1);
+      expect(result[1].PartNumber).to.equal(2);
+      expect(result[2].PartNumber).to.equal(3);
+    });
+  });
+
+  describe('_initiateSubmissionUpload', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should initiate upload and return presigned URLs', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+      process.env.BACKBONE_SUBMISSION_UPLOAD_PATH = '/api/submission/upload/archive';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const mockResponse = {
+        data: {
+          submissionId: 42,
+          uploadId: 'upload-123',
+          s3UploadId: 's3-upload-id',
+          uploadArchiveId: 'archive-id',
+          key: 's3-key',
+          partSizeBytes: 5242880,
+          partCount: 2,
+          presignedUrls: [
+            { partNumber: 1, url: 'https://s3.amazonaws.com/url1' },
+            { partNumber: 2, url: 'https://s3.amazonaws.com/url2' }
+          ]
+        }
+      };
+
+      const axiosPostStub = sinon.stub(axios, 'post').resolves(mockResponse);
+
+      const surveyDataPackage = {
+        name: 'Test Survey',
+        description: 'Test Description'
+      } as any;
+
+      const result = await platformService._initiateSubmissionUpload('token', 1024, surveyDataPackage, 'comment');
+
+      expect(axiosPostStub).to.have.been.calledOnce;
+      expect(axiosPostStub.getCall(0).args[1]).to.deep.equal({
+        bytes: 1024,
+        name: 'Test Survey',
+        description: 'Test Description',
+        comment: 'comment'
+      });
+      expect(axiosPostStub.getCall(0).args[2]?.headers?.authorization).to.equal('Bearer token');
+
+      expect(result).to.deep.equal({
+        uploadId: 'upload-123',
+        s3UploadId: 's3-upload-id',
+        key: 's3-key',
+        presignedUrls: mockResponse.data.presignedUrls,
+        partCount: 2,
+        submissionId: 42
+      });
+    });
+
+    it('should throw error when file size exceeds maximum', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const surveyDataPackage = {
+        name: 'Test Survey',
+        description: 'Test Description'
+      } as any;
+
+      try {
+        await platformService._initiateSubmissionUpload('token', 1073741825, surveyDataPackage, 'comment');
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect((error as Error).message).to.include('exceeds maximum allowed size');
+      }
+    });
+
+    it('should throw error when API call fails', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+      process.env.BACKBONE_SUBMISSION_UPLOAD_PATH = '/api/submission/upload/archive';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(axios, 'post').rejects(new Error('Network error'));
+
+      const surveyDataPackage = {
+        name: 'Test Survey',
+        description: 'Test Description'
+      } as any;
+
+      try {
+        await platformService._initiateSubmissionUpload('token', 1024, surveyDataPackage, 'comment');
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect((error as Error).message).to.include('Failed to initiate submission upload to BioHub');
+      }
+    });
+  });
+
+  describe('_completeSubmissionUpload', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should complete upload successfully', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+      process.env.BACKBONE_UPLOAD_COMPLETE_PATH = '/api/upload';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const axiosPutStub = sinon.stub(axios, 'put').resolves({ status: 201 });
+
+      const parts = [
+        { PartNumber: 1, ETag: 'etag1' },
+        { PartNumber: 2, ETag: 'etag2' }
+      ];
+
+      await platformService._completeSubmissionUpload('token', 'upload-123', 's3-upload-id', 's3-key', parts);
+
+      expect(axiosPutStub).to.have.been.calledOnce;
+      expect(axiosPutStub.getCall(0).args[0]).to.include('/api/upload/upload-123');
+      expect(axiosPutStub.getCall(0).args[1]).to.deep.equal({
+        s3UploadId: 's3-upload-id',
+        key: 's3-key',
+        parts
+      });
+      expect(axiosPutStub.getCall(0).args[2]?.headers?.authorization).to.equal('Bearer token');
+    });
+
+    it('should throw error when API call fails', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+      process.env.BACKBONE_UPLOAD_COMPLETE_PATH = '/api/upload';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(axios, 'put').rejects(new Error('Network error'));
+
+      const parts = [{ PartNumber: 1, ETag: 'etag1' }];
+
+      try {
+        await platformService._completeSubmissionUpload('token', 'upload-123', 's3-upload-id', 's3-key', parts);
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect((error as Error).message).to.include('Failed to complete submission upload to BioHub');
+      }
+    });
+  });
 });
