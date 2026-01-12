@@ -64,6 +64,8 @@ export const EnvSchema = z.object({
   // Biohub
   BACKBONE_INTERNAL_API_HOST: ZodEnvString,
   BACKBONE_INTAKE_PATH: ZodEnvString,
+  BACKBONE_SUBMISSION_UPLOAD_PATH: ZodEnvString,
+  BACKBONE_UPLOAD_COMPLETE_PATH: ZodEnvString,
   BIOHUB_TAXON_PATH: ZodEnvString,
   BIOHUB_TAXON_TSN_PATH: ZodEnvString,
 
