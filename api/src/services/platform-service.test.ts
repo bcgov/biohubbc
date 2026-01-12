@@ -3,6 +3,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { ApiError, ApiErrorType } from '../errors/api-error';
 import { ObservationRecordWithSamplingAndSubcountData } from '../repositories/observation-repository/observation-repository.interface';
 import * as envConfig from '../utils/env-config';
 import * as featureFlagUtils from '../utils/feature-flag-utils';
@@ -133,7 +134,7 @@ describe('PlatformService', () => {
       }
     });
 
-    it('throws error when axios request fails', async () => {
+    it('throws error when initiate upload fails', async () => {
       process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
 
       const mockDBConnection = getMockDBConnection();
@@ -149,16 +150,29 @@ describe('PlatformService', () => {
 
       const _generateSurveyDataPackageStub = sinon
         .stub(PlatformService.prototype, '_generateSurveyDataPackage')
-        .resolves({ id: '123-456-789' } as unknown as any);
+        .resolves({ id: '123-456-789', name: 'Test', description: 'Test Description' } as unknown as any);
 
-      sinon.stub(axios, 'post').resolves({});
+      sinon
+        .stub(PlatformService.prototype, '_flattenToBlockModel')
+        .returns([{ id: 'test-dataset-id', type: 'dataset', properties: {}, content: [], parent: null }]);
+
+      sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
+
+      const fs = require('node:fs');
+      sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
+
+      const _initiateSubmissionUploadStub = sinon
+        .stub(PlatformService.prototype, '_initiateSubmissionUpload')
+        .rejects(new ApiError(ApiErrorType.UNKNOWN, 'Failed to initiate submission upload to BioHub'));
 
       try {
         await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
+        expect.fail('Should have thrown an error');
       } catch (error) {
-        expect((error as Error).message).to.equal('Failed to submit survey ID to Biohub');
+        expect((error as Error).message).to.include('Failed to initiate submission upload to BioHub');
         expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
         expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], [], 'test');
+        expect(_initiateSubmissionUploadStub).to.have.been.calledOnce;
       }
     });
 
@@ -178,9 +192,38 @@ describe('PlatformService', () => {
 
       const _generateSurveyDataPackageStub = sinon
         .stub(PlatformService.prototype, '_generateSurveyDataPackage')
-        .resolves({ id: '123-456-789' } as unknown as any);
+        .resolves({ id: '123-456-789', name: 'Test', description: 'Test Description' } as unknown as any);
 
-      sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789' } });
+      sinon
+        .stub(PlatformService.prototype, '_flattenToBlockModel')
+        .returns([{ id: 'test-dataset-id', type: 'dataset', properties: {}, content: [], parent: null }]);
+
+      sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
+
+      const fs = require('node:fs');
+      sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
+      sinon.stub(fs, 'unlinkSync').callsFake(() => {});
+
+      const mockUploadResponse = {
+        uploadId: 'upload-123-456-789',
+        s3UploadId: 's3-upload-id',
+        key: 's3-key',
+        presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url' }],
+        partCount: 1,
+        submissionId: 42
+      };
+
+      const _initiateSubmissionUploadStub = sinon
+        .stub(PlatformService.prototype, '_initiateSubmissionUpload')
+        .resolves(mockUploadResponse);
+
+      const _uploadTarFilePartsStub = sinon
+        .stub(PlatformService.prototype, '_uploadTarFileParts')
+        .resolves([{ PartNumber: 1, ETag: 'etag-123' }]);
+
+      const _completeSubmissionUploadStub = sinon
+        .stub(PlatformService.prototype, '_completeSubmissionUpload')
+        .resolves();
 
       const insertSurveyMetadataPublishRecordStub = sinon
         .stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord')
@@ -190,11 +233,20 @@ describe('PlatformService', () => {
 
       expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
       expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], [], 'test');
+      expect(_initiateSubmissionUploadStub).to.have.been.calledOnce;
+      expect(_uploadTarFilePartsStub).to.have.been.calledOnce;
+      expect(_completeSubmissionUploadStub).to.have.been.calledOnceWith(
+        'token',
+        'upload-123-456-789',
+        's3-upload-id',
+        's3-key',
+        [{ PartNumber: 1, ETag: 'etag-123' }]
+      );
       expect(insertSurveyMetadataPublishRecordStub).to.have.been.calledOnceWith({
         survey_id: 1,
-        submission_uuid: '123-456-789'
+        submission_uuid: 'upload-123-456-789'
       });
-      expect(response).to.eql({ submission_uuid: '123-456-789' });
+      expect(response).to.eql({ submission_uuid: 'upload-123-456-789' });
     });
   });
 
@@ -432,6 +484,8 @@ describe('PlatformService', () => {
 
       const mockSurveyDataPackage = {
         id: 'test-dataset-id',
+        name: 'Test Survey',
+        description: 'Test Description',
         content: {
           id: 'test-dataset-id',
           type: 'dataset',
@@ -450,8 +504,6 @@ describe('PlatformService', () => {
         .stub(PlatformService.prototype, '_generateSurveyDataPackage')
         .resolves(mockSurveyDataPackage as unknown as any);
 
-      sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789' } });
-
       sinon.stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord').resolves();
 
       // Stub the TAR creation method to avoid fs stubbing issues
@@ -463,6 +515,23 @@ describe('PlatformService', () => {
         { id: 'test-dataset-id', type: 'dataset', properties: {}, content: [], parent: null },
         { id: 'obs-1', type: 'species_observation', properties: {}, content: [], parent: 'test-dataset-id' }
       ]);
+
+      const fs = require('node:fs');
+      sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
+      sinon.stub(fs, 'unlinkSync').callsFake(() => {});
+
+      const mockUploadResponse = {
+        uploadId: 'upload-123-456-789',
+        s3UploadId: 's3-upload-id',
+        key: 's3-key',
+        presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url' }],
+        partCount: 1,
+        submissionId: 42
+      };
+
+      sinon.stub(PlatformService.prototype, '_initiateSubmissionUpload').resolves(mockUploadResponse);
+      sinon.stub(PlatformService.prototype, '_uploadTarFileParts').resolves([{ PartNumber: 1, ETag: 'etag-123' }]);
+      sinon.stub(PlatformService.prototype, '_completeSubmissionUpload').resolves();
 
       await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
 
@@ -486,6 +555,8 @@ describe('PlatformService', () => {
 
       const mockSurveyDataPackage = {
         id: 'test-dataset-id',
+        name: 'Test Survey',
+        description: 'Test Description',
         content: { id: 'test-id', type: 'dataset' }
       };
 
@@ -493,17 +564,18 @@ describe('PlatformService', () => {
         .stub(PlatformService.prototype, '_generateSurveyDataPackage')
         .resolves(mockSurveyDataPackage as unknown as any);
 
-      sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789' } });
-
       sinon.stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord').resolves();
 
-      // Stub flattening to throw error
+      // Stub flattening to throw error - this will cause the method to fail before upload
       sinon.stub(PlatformService.prototype, '_flattenToBlockModel').throws(new Error('File system error'));
 
-      // Should not throw, but continue with submission
-      const response = await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
-
-      expect(response).to.eql({ submission_uuid: '123-456-789' });
+      // Should throw error since flattening is required for the upload flow
+      try {
+        await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect((error as Error).message).to.include('File system error');
+      }
     });
 
     it('should handle TAR creation errors gracefully', async () => {
@@ -519,6 +591,8 @@ describe('PlatformService', () => {
 
       const mockSurveyDataPackage = {
         id: 'test-dataset-id',
+        name: 'Test Survey',
+        description: 'Test Description',
         content: {
           id: 'test-dataset-id',
           type: 'dataset',
@@ -530,17 +604,22 @@ describe('PlatformService', () => {
         .stub(PlatformService.prototype, '_generateSurveyDataPackage')
         .resolves(mockSurveyDataPackage as unknown as any);
 
-      sinon.stub(axios, 'post').resolves({ data: { submission_uuid: '123-456-789' } });
+      sinon
+        .stub(PlatformService.prototype, '_flattenToBlockModel')
+        .returns([{ id: 'test-dataset-id', type: 'dataset', properties: {}, content: [], parent: null }]);
 
       sinon.stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord').resolves();
 
       // Stub TAR creation to throw error (avoiding fs stubbing issues)
       sinon.stub(PlatformService.prototype, '_createTarArchive').rejects(new Error('TAR creation error'));
 
-      // Should not throw, but continue with submission (error is caught and logged)
-      const response = await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
-
-      expect(response).to.eql({ submission_uuid: '123-456-789' });
+      // Should throw error since TAR creation is required for the upload flow
+      try {
+        await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect((error as Error).message).to.include('TAR creation error');
+      }
     });
   });
 
