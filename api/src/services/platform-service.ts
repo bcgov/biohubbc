@@ -216,7 +216,13 @@ export class PlatformService extends DBService {
 
     // Find the dataset ID (root block with type "dataset")
     const datasetBlock = flattenedData.find((block) => block.type === 'dataset' && block.parent === null);
-    const datasetId = datasetBlock?.id || 'unknown';
+    if (!datasetBlock?.id) {
+      throw new ApiError(
+        ApiErrorType.UNKNOWN,
+        'Failed to find dataset ID in survey data package. The dataset block is missing or invalid.'
+      );
+    }
+    const datasetId = datasetBlock.id;
 
     // Group blocks by type
     const blocksByType = new Map<string, IFlattenedBlock[]>();
