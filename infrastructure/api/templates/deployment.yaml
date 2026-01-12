@@ -108,8 +108,6 @@ spec:
             # BioHub Platform (aka: Backbone)
             - name: BACKBONE_INTERNAL_API_HOST
               value: {{ .Values.app.backboneInternalApiHost }}
-            - name: BACKBONE_INTAKE_PATH
-              value: {{ .Values.app.backboneIntakePath }}
             - name: BACKBONE_SUBMISSION_UPLOAD_PATH
               value: {{ .Values.app.backboneSubmissionUploadPath }}
             - name: BACKBONE_UPLOAD_COMPLETE_PATH
