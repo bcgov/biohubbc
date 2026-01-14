@@ -36,20 +36,11 @@ describe('Habitat Features BioHub Integration', () => {
         survey_sample_period_start_datetime: '2024-01-15T10:00:00'
       };
 
-      const habitatFeatureTypes = [
-        {
-          habitat_feature_type_id: 456,
-          name: 'Den Site',
-          description: 'A location used by animals for shelter',
-          record_end_date: null
-        }
-      ];
-
-      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature, habitatFeatureTypes);
+      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature);
 
       expect(habitatFeatureObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(habitatFeatureObj.type).to.equal('habitat_feature');
-      expect(habitatFeatureObj.properties.name).to.equal('Den Site');
+      expect(habitatFeatureObj.properties.habitat_feature_type_id).to.equal(456);
       expect(habitatFeatureObj.properties.count).to.equal(5);
       expect(habitatFeatureObj.properties.timestamp).to.equal('2024-01-15T10:30:00Z');
       expect(habitatFeatureObj.properties.associated_species).to.deep.equal([{ taxon_id: 180543 }]);
@@ -80,16 +71,7 @@ describe('Habitat Features BioHub Integration', () => {
         survey_sample_period_start_datetime: null
       };
 
-      const habitatFeatureTypes = [
-        {
-          habitat_feature_type_id: 457,
-          name: 'Feeding Area',
-          description: 'A location where animals feed',
-          record_end_date: null
-        }
-      ];
-
-      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature, habitatFeatureTypes);
+      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature);
 
       expect(habitatFeatureObj.properties.timestamp).to.equal('2024-01-16T00:00:00.000Z');
       expect(habitatFeatureObj.properties).to.not.have.property('taxon_id');
@@ -114,7 +96,7 @@ describe('Habitat Features BioHub Integration', () => {
         survey_sample_period_start_datetime: null
       };
 
-      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature, []);
+      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature);
 
       expect(habitatFeatureObj.properties.geometry).to.be.null;
       expect(habitatFeatureObj.properties.timestamp).to.be.null;
@@ -165,15 +147,6 @@ describe('Habitat Features BioHub Integration', () => {
         }
       ];
 
-      const mockHabitatFeatureTypes = [
-        {
-          habitat_feature_type_id: 456,
-          name: 'Den Site',
-          description: 'A location used by animals for shelter',
-          record_end_date: null
-        }
-      ];
-
       const surveyPurposeData: GetSurveyPurposeAndMethodologyData = {
         intended_outcome_ids: [],
         additional_details: 'Habitat features test objectives',
@@ -188,14 +161,13 @@ describe('Habitat Features BioHub Integration', () => {
         [], // attachments
         [], // report attachments
         {
-          habitatFeatures: mockHabitatFeatures,
-          habitatFeatureTypes: mockHabitatFeatureTypes
+          habitatFeatures: mockHabitatFeatures
         }
       );
 
       expect(surveyObj.child_features).to.have.length(1);
       expect(surveyObj.child_features[0].type).to.equal('habitat_feature');
-      expect(surveyObj.child_features[0].properties.name).to.equal('Den Site');
+      expect(surveyObj.child_features[0].properties.habitat_feature_type_id).to.equal(456);
     });
   });
 
@@ -246,15 +218,6 @@ describe('Habitat Features BioHub Integration', () => {
         }
       ];
 
-      const mockHabitatFeatureTypes = [
-        {
-          habitat_feature_type_id: 500,
-          name: 'Feeding Area',
-          description: 'Area where animals regularly feed',
-          record_end_date: null
-        }
-      ];
-
       const submissionObj = new PostSurveySubmissionToBioHubObject(
         mockSurveyData as any,
         mockPurposeAndMethodology as any,
@@ -266,14 +229,13 @@ describe('Habitat Features BioHub Integration', () => {
           submissionComment: 'Test submission with habitat features'
         },
         {
-          habitatFeatures: mockHabitatFeatures,
-          habitatFeatureTypes: mockHabitatFeatureTypes
+          habitatFeatures: mockHabitatFeatures
         }
       );
 
       expect(submissionObj.content.child_features).to.have.length(1);
       expect(submissionObj.content.child_features[0].type).to.equal('habitat_feature');
-      expect(submissionObj.content.child_features[0].properties.name).to.equal('Feeding Area');
+      expect(submissionObj.content.child_features[0].properties.habitat_feature_type_id).to.equal(500);
       expect(submissionObj.content.child_features[0].properties.count).to.equal(3);
       expect(submissionObj.content.child_features[0].properties.associated_species).to.deep.equal([
         { taxon_id: 179913 }

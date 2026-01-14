@@ -36,13 +36,8 @@ describe('PostSurveyObservationToBiohubObject', () => {
       observation_sign_id: 1
     };
 
-    const observationSigns = [
-      { id: 1, name: 'Tracks', description: 'Animal tracks' },
-      { id: 2, name: 'Scat', description: 'Animal droppings' }
-    ];
-
     before(() => {
-      data = new PostSurveyObservationToBiohubObject(obj, observationSigns);
+      data = new PostSurveyObservationToBiohubObject(obj);
     });
 
     it('sets id', () => {
@@ -60,7 +55,7 @@ describe('PostSurveyObservationToBiohubObject', () => {
         survey_sample_period_id: 1,
         count: 1,
         timestamp: 'observation_dateTobservation_time',
-        sign: 'Tracks',
+        observation_sign_id: 1,
         geometry: {
           type: 'FeatureCollection',
           features: [
@@ -114,13 +109,8 @@ describe('PostSurveyObservationToBiohubObject', () => {
       subcounts: []
     };
 
-    const observationSigns = [
-      { id: 1, name: 'Tracks', description: 'Animal tracks' },
-      { id: 2, name: 'Scat', description: 'Animal droppings' }
-    ];
-
     before(() => {
-      data = new PostSurveyObservationToBiohubObject(objWithEnvironments, observationSigns);
+      data = new PostSurveyObservationToBiohubObject(objWithEnvironments);
     });
 
     it('creates environmental condition child features', () => {
@@ -129,15 +119,15 @@ describe('PostSurveyObservationToBiohubObject', () => {
       const qualitativeEnvFeature = data.child_features[0];
       expect(qualitativeEnvFeature.type).to.equal('observation_environmental_condition');
       expect(qualitativeEnvFeature.properties).to.eql({
-        environmental_condition: 'env-qual-uuid-1',
-        environmental_condition_value: 'env-qual-opt-uuid-1'
+        environment_qualitative_id: 'env-qual-uuid-1',
+        environment_qualitative_option_id: 'env-qual-opt-uuid-1'
       });
 
       const quantitativeEnvFeature = data.child_features[1];
       expect(quantitativeEnvFeature.type).to.equal('observation_environmental_condition');
       expect(quantitativeEnvFeature.properties).to.eql({
-        environmental_condition: 'env-quant-uuid-1',
-        environmental_condition_value: '25.5'
+        environment_quantitative_id: 'env-quant-uuid-1',
+        environment_quantitative_value: 25.5
       });
     });
   });
@@ -208,10 +198,8 @@ describe('PostSurveyObservationToBiohubObject', () => {
       ]
     };
 
-    const observationSigns = [{ id: 1, name: 'Tracks', description: 'Animal tracks' }];
-
     before(() => {
-      data = new PostSurveyObservationToBiohubObject(objWithEnvironments, observationSigns, environmentDefinitions);
+      data = new PostSurveyObservationToBiohubObject(objWithEnvironments, environmentDefinitions);
     });
 
     it('creates environmental condition child features with human-readable names', () => {
@@ -220,15 +208,15 @@ describe('PostSurveyObservationToBiohubObject', () => {
       const qualitativeEnvFeature = data.child_features[0];
       expect(qualitativeEnvFeature.type).to.equal('observation_environmental_condition');
       expect(qualitativeEnvFeature.properties).to.eql({
-        environmental_condition: 'Temperature Category',
-        environmental_condition_value: 'Cold'
+        environment_qualitative_id: 'temp-category-uuid',
+        environment_qualitative_option_id: 'cold-uuid'
       });
 
       const quantitativeEnvFeature = data.child_features[1];
       expect(quantitativeEnvFeature.type).to.equal('observation_environmental_condition');
       expect(quantitativeEnvFeature.properties).to.eql({
-        environmental_condition: 'Wind Speed',
-        environmental_condition_value: '15.2 meter'
+        environment_quantitative_id: 'wind-speed-uuid',
+        environment_quantitative_value: 15.2
       });
     });
   });
@@ -306,15 +294,8 @@ describe('PostSurveyObservationToBiohubObject', () => {
       ]
     };
 
-    const observationSigns = [{ id: 1, name: 'Tracks', description: 'Animal tracks' }];
-
     before(() => {
-      data = new PostSurveyObservationToBiohubObject(
-        objWithSubcounts,
-        observationSigns,
-        undefined,
-        measurementDefinitions
-      );
+      data = new PostSurveyObservationToBiohubObject(objWithSubcounts, undefined, measurementDefinitions);
     });
 
     it('creates subcount child features', () => {
@@ -554,8 +535,8 @@ describe('PostSurveyEnvironmentalConditionToBiohubObject', () => {
 
     it('sets properties for qualitative data', () => {
       expect(data.properties).to.eql({
-        environmental_condition: 'Temperature Category',
-        environmental_condition_value: 'Warm'
+        environment_qualitative_id: 'temp-category-uuid',
+        environment_qualitative_option_id: 'warm-uuid'
       });
     });
 
@@ -589,8 +570,8 @@ describe('PostSurveyEnvironmentalConditionToBiohubObject', () => {
 
     it('sets properties for quantitative data', () => {
       expect(data.properties).to.eql({
-        environmental_condition: 'Temperature',
-        environmental_condition_value: '23.5 °C'
+        environment_quantitative_id: 'temperature-uuid',
+        environment_quantitative_value: 23.5
       });
     });
 
@@ -619,15 +600,15 @@ describe('PostSurveyEnvironmentalConditionToBiohubObject', () => {
 
     it('uses IDs when names are missing for qualitative', () => {
       expect(qualData.properties).to.eql({
-        environmental_condition: 'env-qual-uuid',
-        environmental_condition_value: 'env-qual-opt-uuid'
+        environment_qualitative_id: 'env-qual-uuid',
+        environment_qualitative_option_id: 'env-qual-opt-uuid'
       });
     });
 
     it('uses ID and no unit when missing for quantitative', () => {
       expect(quantData.properties).to.eql({
-        environmental_condition: 'env-quant-uuid',
-        environmental_condition_value: '42'
+        environment_quantitative_id: 'env-quant-uuid',
+        environment_quantitative_value: 42
       });
     });
   });

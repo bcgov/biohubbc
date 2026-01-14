@@ -192,9 +192,8 @@ export class PlatformService extends DBService {
       throw new ApiGeneralError('Publishing to BioHub is not currently enabled.');
     }
 
-    const keycloakService = new KeycloakService();
-
     // Get keycloak token for SIMS service client account
+    const keycloakService = new KeycloakService();
     const token = await keycloakService.getKeycloakServiceToken();
 
     // Get survey attachments
@@ -353,9 +352,8 @@ export class PlatformService extends DBService {
     // Get site selection strategy data for BioHub submission
     const siteSelectionData = await surveyService.siteSelectionStrategyService.getSiteSelectionDataBySurveyId(surveyId);
 
-    // Get observation signs for mapping IDs to names
+    // Get all codes
     const allCodes = await codeService.getAllCodeSets();
-    const observationSigns = allCodes.observation_signs;
 
     // Extract environmental definitions for mapping IDs to names
     const environmentDefinitions = {
@@ -388,13 +386,6 @@ export class PlatformService extends DBService {
 
     // Get habitat features data for survey
     const surveyHabitatFeatures = await habitatFeatureService.getSurveyHabitatFeatures(surveyId);
-    // Transform code types to habitat feature type records
-    const habitatFeatureTypes = allCodes.habitat_feature_types.map((type) => ({
-      habitat_feature_type_id: type.id,
-      name: type.name,
-      description: type.description,
-      record_end_date: null
-    }));
 
     // Get telemetry data for survey
     const surveyTelemetryDevices = await telemetryDeviceService.getDevicesForSurvey(surveyId);
@@ -405,8 +396,8 @@ export class PlatformService extends DBService {
     const surveyTelemetry =
       deploymentIds.length > 0 ? await telemetryVendorService.getTelemetryForDeployments(surveyId, deploymentIds) : [];
 
-    const deviceMakes = allCodes.telemetry_device_makes;
-    const frequencyUnits = allCodes.frequency_units;
+    // Get all codeset categories for BioHub submission
+    const codesetCategories = await codeService.getAllCodesetCategories();
 
     // Get survey animals from Critterbase (via SIMS survey-critter associations)
     const surveyAnimals = await surveyCritterService.getCritterbaseSurveyCritters(surveyId);
@@ -458,25 +449,22 @@ export class PlatformService extends DBService {
       },
       {
         animalRecords: enrichedSurveyAnimals,
-        observationSigns,
         environmentDefinitions,
         measurementDefinitions,
         samplingSites: surveysamplingSites,
         samplingPeriods: surveySamplingPeriods,
         samplingTechniques: surveySamplingTechniques,
         habitatFeatures: surveyHabitatFeatures,
-        habitatFeatureTypes,
         telemetryDevices: surveyTelemetryDevices,
         telemetryDeployments: surveyTelemetryDeployments,
         telemetry: surveyTelemetry,
-        deviceMakes,
-        frequencyUnits,
         partnerships,
         focalSpecies,
         surveyLocation,
         firstNations: allCodes.first_nations,
         strata: siteSelectionData.stratums,
-        siteSelectionStrategies: siteSelectionData.strategies
+        siteSelectionStrategies: siteSelectionData.strategies,
+        codesetCategories
       }
     );
 

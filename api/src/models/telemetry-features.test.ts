@@ -85,19 +85,11 @@ describe('Telemetry Features BioHub Integration', () => {
         comment: 'Wildlife tracking device'
       };
 
-      const deviceMakes = [
-        {
-          id: 1,
-          name: 'Lotek',
-          description: 'Lotek Wireless Inc.'
-        }
-      ];
-
-      const deviceObj = new PostTelemetryDeviceToBiohubObject(deviceRecord, deviceMakes);
+      const deviceObj = new PostTelemetryDeviceToBiohubObject(deviceRecord);
 
       expect(deviceObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(deviceObj.type).to.equal('telemetry_device');
-      expect(deviceObj.properties.device_manufacturer).to.equal('Lotek');
+      expect(deviceObj.properties.device_make_id).to.equal(1);
       expect(deviceObj.properties.model).to.equal('GPS-4400M');
       expect(deviceObj.properties.description).to.equal('Wildlife tracking device');
       expect(deviceObj.properties.serial_number).to.equal('ABC123456');
@@ -115,9 +107,9 @@ describe('Telemetry Features BioHub Integration', () => {
         comment: null
       };
 
-      const deviceObj = new PostTelemetryDeviceToBiohubObject(deviceRecord, []);
+      const deviceObj = new PostTelemetryDeviceToBiohubObject(deviceRecord);
 
-      expect(deviceObj.properties.device_manufacturer).to.equal('Unknown Manufacturer 99');
+      expect(deviceObj.properties.device_make_id).to.equal(99);
       expect(deviceObj.properties.model).to.equal(null);
       expect(deviceObj.properties.description).to.equal(null);
     });
@@ -149,15 +141,7 @@ describe('Telemetry Features BioHub Integration', () => {
         critterbase_critter_id: 'cb-critter-uuid-123'
       };
 
-      const frequencyUnits = [
-        {
-          id: 1,
-          name: 'Hours',
-          description: 'Hours frequency unit'
-        }
-      ];
-
-      const deploymentObj = new PostTelemetryDeploymentToBiohubObject(deploymentRecord, frequencyUnits);
+      const deploymentObj = new PostTelemetryDeploymentToBiohubObject(deploymentRecord);
 
       expect(deploymentObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(deploymentObj.type).to.equal('telemetry_deployment');
@@ -171,7 +155,7 @@ describe('Telemetry Features BioHub Integration', () => {
       const frequencyFeature = deploymentObj.child_features[0];
       expect(frequencyFeature.type).to.equal('telemetry_frequency');
       expect(frequencyFeature.properties.frequency).to.equal(24);
-      expect(frequencyFeature.properties.frequency_unit).to.equal('Hours');
+      expect(frequencyFeature.properties.frequency_unit_id).to.equal(1);
     });
 
     it('should handle deployment without frequency data', () => {
@@ -242,7 +226,7 @@ describe('Telemetry Features BioHub Integration', () => {
       const frequencyFeature = deploymentObj.child_features[0];
       expect(frequencyFeature.type).to.equal('telemetry_frequency');
       expect(frequencyFeature.properties.frequency).to.equal(6);
-      expect(frequencyFeature.properties.frequency_unit).to.equal('Unknown Unit 99');
+      expect(frequencyFeature.properties.frequency_unit_id).to.equal(99);
     });
   });
 
@@ -298,14 +282,6 @@ describe('Telemetry Features BioHub Integration', () => {
         }
       ];
 
-      const deviceMakes = [
-        {
-          id: 1,
-          name: 'Vectronic Aerospace',
-          description: 'Vectronic Aerospace GmbH'
-        }
-      ];
-
       const surveyPurposeData: GetSurveyPurposeAndMethodologyData = {
         intended_outcome_ids: [],
         additional_details: 'Telemetry features test objectives',
@@ -321,9 +297,7 @@ describe('Telemetry Features BioHub Integration', () => {
         [], // survey reports
         {
           telemetryDevices,
-          telemetryDeployments,
-          deviceMakes,
-          frequencyUnits: []
+          telemetryDeployments
         }
       );
 
@@ -331,7 +305,7 @@ describe('Telemetry Features BioHub Integration', () => {
 
       const deviceFeature = surveyObj.child_features.find((f) => f.type === 'telemetry_device');
       expect(deviceFeature).to.exist;
-      expect(deviceFeature?.properties.device_manufacturer).to.equal('Vectronic Aerospace');
+      expect(deviceFeature?.properties.device_make_id).to.equal(1);
       expect(deviceFeature?.properties.serial_number).to.equal('TEL001');
 
       const deploymentFeature = surveyObj.child_features.find((f) => f.type === 'telemetry_deployment');
@@ -398,14 +372,6 @@ describe('Telemetry Features BioHub Integration', () => {
         }
       ];
 
-      const deviceMakes = [
-        {
-          id: 2,
-          name: 'Advanced Telemetry Systems',
-          description: 'ATS - Advanced Telemetry Systems'
-        }
-      ];
-
       const submissionObj = new PostSurveySubmissionToBioHubObject(
         surveyData,
         methodologyData,
@@ -418,16 +384,14 @@ describe('Telemetry Features BioHub Integration', () => {
         },
         {
           telemetryDevices,
-          telemetryDeployments,
-          deviceMakes,
-          frequencyUnits: []
+          telemetryDeployments
         }
       );
 
       expect(submissionObj.content.child_features).to.have.length(2);
 
       const deviceFeature = submissionObj.content.child_features.find((f) => f.type === 'telemetry_device');
-      expect(deviceFeature?.properties.device_manufacturer).to.equal('Advanced Telemetry Systems');
+      expect(deviceFeature?.properties.device_make_id).to.equal(2);
       expect(deviceFeature?.properties.model).to.equal('Advanced-GPS-Pro');
       expect(deviceFeature?.properties.serial_number).to.equal('TRACK500');
 
@@ -534,20 +498,41 @@ describe('Telemetry Features BioHub Integration', () => {
           method_name: 'Camera Trapping',
           description: 'Motion-activated camera monitoring',
           method_lookup_name: 'Camera Survey',
+          method_lookup_id: 1,
           attractants: 'Scent lure;Bait',
+          attractant_ids: [{ attractant_lookup_id: 1 }, { attractant_lookup_id: 2 }],
           distance_threshold: 25.0,
           response_metric: 'Count',
-          attribute_data: [{ attribute_header: 'Duration', attribute_value: '30 days' }],
-          vantage_data: [{ vantage_header: 'Ground', vantage_value: 'Trail mount' }]
+          method_response_metric_id: 1,
+          attribute_data: [
+            {
+              attribute_header: 'Duration',
+              attribute_value: '30 days',
+              technique_attribute_qualitative_id: null,
+              technique_attribute_qualitative_option_id: null,
+              technique_attribute_quantitative_id: 1
+            }
+          ],
+          vantage_data: [
+            {
+              vantage_header: 'Ground',
+              vantage_value: 'Trail mount',
+              vantage_category_id: 1,
+              vantage_id: 1
+            }
+          ]
         },
         {
           method_technique_id: 102,
           method_name: 'Acoustic Monitoring',
           description: null,
           method_lookup_name: 'Sound Recording',
+          method_lookup_id: 2,
           attractants: null,
+          attractant_ids: [],
           distance_threshold: null,
           response_metric: 'Detection',
+          method_response_metric_id: 2,
           attribute_data: [],
           vantage_data: []
         }
@@ -578,10 +563,10 @@ describe('Telemetry Features BioHub Integration', () => {
       expect(technique1.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(technique1.properties.name).to.equal('Camera Trapping');
       expect(technique1.properties.description).to.equal('Motion-activated camera monitoring');
-      expect(technique1.properties.method_name).to.equal('Camera Survey');
+      expect(technique1.properties.method_lookup_id).to.equal(1);
       expect(technique1.properties.attractant).to.deep.equal([
-        { attractant_name: 'Scent lure' },
-        { attractant_name: 'Bait' }
+        { attractant_lookup_id: 1 },
+        { attractant_lookup_id: 2 }
       ]);
 
       // Test second sampling technique
@@ -589,7 +574,7 @@ describe('Telemetry Features BioHub Integration', () => {
       expect(technique2.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(technique2.properties.name).to.equal('Acoustic Monitoring');
       expect(technique2.properties.description).to.be.null;
-      expect(technique2.properties.method_name).to.equal('Sound Recording');
+      expect(technique2.properties.method_lookup_id).to.equal(2);
       expect(technique2.properties.attractant).to.deep.equal([]);
     });
   });

@@ -31,7 +31,7 @@ export const SurveyStratumDetails = z
 export type SurveyStratumDetails = z.infer<typeof SurveyStratumDetails>;
 
 export const SiteSelectionData = z.object({
-  strategies: z.array(z.string()),
+  strategies: z.array(z.number()),
   stratums: z.array(SurveyStratumRecord)
 });
 
@@ -58,7 +58,7 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
     defaultLog.debug({ label: 'getSiteSelectionDataBySurveyId', surveyId });
 
     const strategiesQuery = getKnex()
-      .select('ss.name')
+      .select('ss.site_strategy_id', 'ss.name')
       .from('survey_site_strategy as sss')
       .where('sss.survey_id', surveyId)
       .leftJoin('site_strategy as ss', 'ss.site_strategy_id', 'sss.site_strategy_id');
@@ -78,11 +78,11 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       .groupBy('ss.survey_stratum_id', 'ss.survey_id', 'ss.name', 'ss.description', 'ss.revision_count');
 
     const [strategiesResponse, stratumsResponse] = await Promise.all([
-      this.connection.knex(strategiesQuery, z.object({ name: z.string() })),
+      this.connection.knex(strategiesQuery, z.object({ site_strategy_id: z.number(), name: z.string() })),
       this.connection.knex(stratumsQuery, SurveyStratumDetails)
     ]);
 
-    const strategies = strategiesResponse.rows.map((row) => row.name);
+    const strategies = strategiesResponse.rows.map((row) => row.site_strategy_id);
 
     const stratums = stratumsResponse.rows;
 

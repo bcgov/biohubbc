@@ -21,12 +21,12 @@ describe('SiteSelectionStrategyService', () => {
 
       const siteSelectionStrategyRepoStub = sinon
         .stub(SiteSelectionStrategyRepository.prototype, 'getSiteSelectionDataBySurveyId')
-        .resolves({ strategies: ['A'], stratums: [{ name: 'A', description: 'A' } as SurveyStratumRecord] });
+        .resolves({ strategies: [1], stratums: [{ name: 'A', description: 'A' } as SurveyStratumRecord] });
 
       const response = await siteSelectionStrategyService.getSiteSelectionDataBySurveyId(1);
 
       expect(siteSelectionStrategyRepoStub).to.be.calledOnceWith(1);
-      expect(response).to.eql({ strategies: ['A'], stratums: [{ name: 'A', description: 'A' }] });
+      expect(response).to.eql({ strategies: [1], stratums: [{ name: 'A', description: 'A' }] });
     });
   });
 
@@ -155,7 +155,7 @@ describe('SiteSelectionStrategyService', () => {
       const getSiteSelectionDataBySurveyId = sinon
         .stub(SiteSelectionStrategyRepository.prototype, 'getSiteSelectionDataBySurveyId')
         .resolves({
-          strategies: ['Stratified'],
+          strategies: [1],
           stratums: [
             { name: 'B', description: '', survey_stratum_id: 1 },
             { name: 'D', description: '', survey_stratum_id: 2 },

@@ -329,6 +329,8 @@ describe('PlatformService', () => {
         frequency_units: []
       } as any);
 
+      const getAllCodesetCategoriesStub = sinon.stub(CodeService.prototype, 'getAllCodesetCategories').resolves([]);
+
       const getSampleSitesForSurveyIdStub = sinon
         .stub(SampleSiteService.prototype, 'getSampleSitesForSurveyId')
         .resolves([]);
@@ -367,6 +369,7 @@ describe('PlatformService', () => {
       expect(getSurveyLocationsDataStub).to.have.been.calledOnceWith(1);
       expect(getCritterbaseSurveyCrittersStub).to.have.been.calledOnceWith(1);
       expect(getAllCodeSetsStub).to.have.been.calledOnce;
+      expect(getAllCodesetCategoriesStub).to.have.been.calledOnce;
       expect(getSampleSitesForSurveyIdStub).to.have.been.calledOnceWith(1, {});
       expect(getSampleSitesGeometryBySurveyIdStub).to.have.been.calledOnceWith(1);
       expect(getSamplePeriodsForSurveyStub).to.have.been.calledOnceWith(1, {});

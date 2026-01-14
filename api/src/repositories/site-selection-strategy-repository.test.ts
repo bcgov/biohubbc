@@ -21,7 +21,10 @@ describe('SiteSelectionStrategyRepository', () => {
 
   describe('getSiteSelectionDataBySurveyId', () => {
     it('should return non-empty data', async () => {
-      const mockStrategiesRows: { name: string }[] = [{ name: 'strategy1' }, { name: 'strategy2' }];
+      const mockStrategiesRows: { site_strategy_id: number; name: string }[] = [
+        { site_strategy_id: 1, name: 'strategy1' },
+        { site_strategy_id: 2, name: 'strategy2' }
+      ];
       const mockStrategiesResponse = { rows: mockStrategiesRows, rowCount: 2 } as any as Promise<QueryResult<any>>;
 
       const mockStratumsRows: SurveyStratumDetails[] = [
@@ -55,11 +58,11 @@ describe('SiteSelectionStrategyRepository', () => {
       const response = await repo.getSiteSelectionDataBySurveyId(surveyId);
 
       expect(dbConnectionObj.knex).to.have.been.calledTwice;
-      expect(response).to.eql({ strategies: ['strategy1', 'strategy2'], stratums: mockStratumsRows });
+      expect(response).to.eql({ strategies: [1, 2], stratums: mockStratumsRows });
     });
 
     it('should return empty data', async () => {
-      const mockStrategiesRows: { name: string }[] = [];
+      const mockStrategiesRows: { site_strategy_id: number; name: string }[] = [];
       const mockStrategiesResponse = { rows: mockStrategiesRows, rowCount: 0 } as any as Promise<QueryResult<any>>;
 
       const mockStratumsRows: SurveyStratumDetails[] = [];
