@@ -1,5 +1,7 @@
+import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
 
 // Code types
@@ -605,192 +607,14 @@ export class CodeRepository extends BaseRepository {
       codes: Array<{ id: number | string; name: string; description: string | null }>;
     }>
   > {
-    // Define all codetable queries with their category names and descriptions
-    const codetableQueries = [
-      {
-        name: 'agency',
-        description: 'Government and non-government agencies',
-        sql: SQL`SELECT agency_id AS id, name, description FROM agency WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'attractant_lookup',
-        description: 'Attractants used in sampling techniques',
-        sql: SQL`SELECT attractant_lookup_id AS id, name, description FROM attractant_lookup WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'device_make',
-        description: 'Telemetry device manufacturers',
-        sql: SQL`SELECT device_make_id AS id, name, description FROM device_make WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'ecological_season',
-        description: 'Ecological seasons',
-        sql: SQL`SELECT ecological_season_id AS id, name, description FROM ecological_season WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'environment_qualitative',
-        description: 'Qualitative environmental variables',
-        sql: SQL`SELECT environment_qualitative_id AS id, name, description FROM environment_qualitative WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'environment_qualitative_option',
-        description: 'Options for qualitative environmental variables',
-        sql: SQL`SELECT environment_qualitative_option_id AS id, name, description FROM environment_qualitative_option WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'environment_quantitative',
-        description: 'Quantitative environmental variables',
-        sql: SQL`SELECT environment_quantitative_id AS id, name, description FROM environment_quantitative WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'field_method',
-        description: 'Field methods used in surveys',
-        sql: SQL`SELECT field_method_id AS id, name, description FROM field_method WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'first_nations',
-        description: 'First Nations communities',
-        sql: SQL`SELECT first_nations_id AS id, name, description FROM first_nations WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'frequency_unit',
-        description: 'Frequency units for telemetry devices',
-        sql: SQL`SELECT frequency_unit_id AS id, name, description FROM frequency_unit WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'funding_source',
-        description: 'Funding sources for projects',
-        sql: SQL`SELECT funding_source_id AS id, name, description FROM funding_source WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'habitat_feature_qualitative_definition',
-        description: 'Qualitative habitat feature definitions',
-        sql: SQL`SELECT habitat_feature_qualitative_definition_id AS id, name, description FROM habitat_feature_qualitative_definition WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'habitat_feature_qualitative_definition_option',
-        description: 'Options for qualitative habitat feature definitions',
-        sql: SQL`SELECT habitat_feature_qualitative_definition_option_id AS id, name, description FROM habitat_feature_qualitative_definition_option WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'habitat_feature_quantitative_definition',
-        description: 'Quantitative habitat feature definitions',
-        sql: SQL`SELECT habitat_feature_quantitative_definition_id AS id, name, description FROM habitat_feature_quantitative_definition WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'habitat_feature_type',
-        description: 'Types of habitat features',
-        sql: SQL`SELECT habitat_feature_type_id AS id, name, description FROM habitat_feature_type WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'intended_outcome',
-        description: 'Intended outcomes for surveys',
-        sql: SQL`SELECT intended_outcome_id AS id, name, description FROM intended_outcome WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'investment_action_category',
-        description: 'Investment action categories',
-        sql: SQL`SELECT investment_action_category_id AS id, name, description FROM investment_action_category WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'iucn_conservation_action_level_1_classification',
-        description: 'IUCN Conservation Action Level 1 classifications',
-        sql: SQL`SELECT iucn_conservation_action_level_1_classification_id AS id, name, description FROM iucn_conservation_action_level_1_classification WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'iucn_conservation_action_level_2_subclassification',
-        description: 'IUCN Conservation Action Level 2 subclassifications',
-        sql: SQL`SELECT iucn_conservation_action_level_2_subclassification_id AS id, name, description FROM iucn_conservation_action_level_2_subclassification WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'iucn_conservation_action_level_3_subclassification',
-        description: 'IUCN Conservation Action Level 3 subclassifications',
-        sql: SQL`SELECT iucn_conservation_action_level_3_subclassification_id AS id, name, description FROM iucn_conservation_action_level_3_subclassification WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'management_action_type',
-        description: 'Types of management actions',
-        sql: SQL`SELECT management_action_type_id AS id, name, description FROM management_action_type WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'method_lookup',
-        description: 'Survey methods and techniques',
-        sql: SQL`SELECT method_lookup_id AS id, name, description FROM method_lookup ORDER BY name`
-      },
-      {
-        name: 'method_response_metric',
-        description: 'Response metrics for survey methods',
-        sql: SQL`SELECT method_response_metric_id AS id, name, description FROM method_response_metric WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'observation_sign',
-        description: 'Signs of species observation',
-        sql: SQL`SELECT observation_sign_id AS id, name, description FROM observation_sign WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'proprietor_type',
-        description: 'Types of proprietors',
-        sql: SQL`SELECT proprietor_type_id AS id, name, description FROM proprietor_type WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'site_strategy',
-        description: 'Site selection strategies',
-        sql: SQL`SELECT site_strategy_id AS id, name, description FROM site_strategy WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'spatial_transform',
-        description: 'Spatial transformation types',
-        sql: SQL`SELECT spatial_transform_id AS id, name, description FROM spatial_transform WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'survey_job',
-        description: 'Survey job types',
-        sql: SQL`SELECT survey_job_id AS id, name, description FROM survey_job WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'survey_progress',
-        description: 'Survey progress statuses',
-        sql: SQL`SELECT survey_progress_id AS id, name, description FROM survey_progress WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'technique_attribute_qualitative',
-        description: 'Qualitative technique attributes',
-        sql: SQL`SELECT technique_attribute_qualitative_id AS id, name, description FROM technique_attribute_qualitative WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'technique_attribute_qualitative_option',
-        description: 'Options for qualitative technique attributes',
-        sql: SQL`SELECT technique_attribute_qualitative_option_id AS id, name, description FROM technique_attribute_qualitative_option WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'technique_attribute_quantitative',
-        description: 'Quantitative technique attributes',
-        sql: SQL`SELECT technique_attribute_quantitative_id AS id, name, description FROM technique_attribute_quantitative WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'type',
-        description: 'Survey data types',
-        sql: SQL`SELECT type_id AS id, name, description FROM type WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'vantage',
-        description: 'Vantage points for observations',
-        sql: SQL`SELECT vantage_id AS id, name, description FROM vantage WHERE record_end_date IS NULL ORDER BY name`
-      },
-      {
-        name: 'vantage_category',
-        description: 'Categories of vantage points',
-        sql: SQL`SELECT vantage_category_id AS id, name, description FROM vantage_category WHERE record_end_date IS NULL ORDER BY name`
-      }
-    ];
-
-    // Fetch all codetables in parallel
+    // Fetch all codetables in parallel using metadata-driven queries
     const results = await Promise.all(
-      codetableQueries.map(async (query) => {
-        const response = await this.connection.sql(query.sql, FlexibleCodeDescription);
+      CODETABLE_DEFINITIONS.map(async ({ table, description, hasRecordEndDate }) => {
+        const query = this._buildCodetableQuery(table, hasRecordEndDate);
+        const response = await this.connection.knex(query, FlexibleCodeDescription);
         return {
-          name: query.name,
-          description: query.description,
+          name: table,
+          description,
           codes: response.rows
         };
       })
@@ -798,4 +622,103 @@ export class CodeRepository extends BaseRepository {
 
     return results;
   }
+
+  /**
+   * Builds a knex query for fetching codetable data.
+   *
+   * @param {string} tableName - The name of the codetable
+   * @param {boolean} hasRecordEndDate - Whether the table has a record_end_date column
+   * @return {*} {Knex.QueryBuilder}
+   * @memberof CodeRepository
+   */
+  _buildCodetableQuery(tableName: string, hasRecordEndDate: boolean): Knex.QueryBuilder {
+    const knex = getKnex();
+    const idColumn = `${tableName}_id`;
+
+    let query = knex.select(knex.raw('?? AS id', [idColumn]), 'name', 'description').from(tableName);
+
+    if (hasRecordEndDate) {
+      query = query.whereNull('record_end_date');
+    }
+
+    return query.orderBy('name');
+  }
 }
+
+/**
+ * Codetable metadata definitions.
+ * Each entry defines a codetable with its description and whether it has a record_end_date column.
+ */
+const CODETABLE_DEFINITIONS: Array<{ table: string; description: string; hasRecordEndDate: boolean }> = [
+  { table: 'agency', description: 'Government and non-government agencies', hasRecordEndDate: true },
+  { table: 'attractant_lookup', description: 'Attractants used in sampling techniques', hasRecordEndDate: true },
+  { table: 'device_make', description: 'Telemetry device manufacturers', hasRecordEndDate: true },
+  { table: 'ecological_season', description: 'Ecological seasons', hasRecordEndDate: true },
+  { table: 'environment_qualitative', description: 'Qualitative environmental variables', hasRecordEndDate: true },
+  {
+    table: 'environment_qualitative_option',
+    description: 'Options for qualitative environmental variables',
+    hasRecordEndDate: true
+  },
+  { table: 'environment_quantitative', description: 'Quantitative environmental variables', hasRecordEndDate: true },
+  { table: 'field_method', description: 'Field methods used in surveys', hasRecordEndDate: true },
+  { table: 'first_nations', description: 'First Nations communities', hasRecordEndDate: true },
+  { table: 'frequency_unit', description: 'Frequency units for telemetry devices', hasRecordEndDate: true },
+  { table: 'funding_source', description: 'Funding sources for projects', hasRecordEndDate: true },
+  {
+    table: 'habitat_feature_qualitative_definition',
+    description: 'Qualitative habitat feature definitions',
+    hasRecordEndDate: true
+  },
+  {
+    table: 'habitat_feature_qualitative_definition_option',
+    description: 'Options for qualitative habitat feature definitions',
+    hasRecordEndDate: true
+  },
+  {
+    table: 'habitat_feature_quantitative_definition',
+    description: 'Quantitative habitat feature definitions',
+    hasRecordEndDate: true
+  },
+  { table: 'habitat_feature_type', description: 'Types of habitat features', hasRecordEndDate: true },
+  { table: 'intended_outcome', description: 'Intended outcomes for surveys', hasRecordEndDate: true },
+  { table: 'investment_action_category', description: 'Investment action categories', hasRecordEndDate: true },
+  {
+    table: 'iucn_conservation_action_level_1_classification',
+    description: 'IUCN Conservation Action Level 1 classifications',
+    hasRecordEndDate: true
+  },
+  {
+    table: 'iucn_conservation_action_level_2_subclassification',
+    description: 'IUCN Conservation Action Level 2 subclassifications',
+    hasRecordEndDate: true
+  },
+  {
+    table: 'iucn_conservation_action_level_3_subclassification',
+    description: 'IUCN Conservation Action Level 3 subclassifications',
+    hasRecordEndDate: true
+  },
+  { table: 'management_action_type', description: 'Types of management actions', hasRecordEndDate: true },
+  { table: 'method_lookup', description: 'Survey methods and techniques', hasRecordEndDate: false },
+  { table: 'method_response_metric', description: 'Response metrics for survey methods', hasRecordEndDate: true },
+  { table: 'observation_sign', description: 'Signs of species observation', hasRecordEndDate: true },
+  { table: 'proprietor_type', description: 'Types of proprietors', hasRecordEndDate: true },
+  { table: 'site_strategy', description: 'Site selection strategies', hasRecordEndDate: true },
+  { table: 'spatial_transform', description: 'Spatial transformation types', hasRecordEndDate: true },
+  { table: 'survey_job', description: 'Survey job types', hasRecordEndDate: true },
+  { table: 'survey_progress', description: 'Survey progress statuses', hasRecordEndDate: true },
+  { table: 'technique_attribute_qualitative', description: 'Qualitative technique attributes', hasRecordEndDate: true },
+  {
+    table: 'technique_attribute_qualitative_option',
+    description: 'Options for qualitative technique attributes',
+    hasRecordEndDate: true
+  },
+  {
+    table: 'technique_attribute_quantitative',
+    description: 'Quantitative technique attributes',
+    hasRecordEndDate: true
+  },
+  { table: 'type', description: 'Survey data types', hasRecordEndDate: true },
+  { table: 'vantage', description: 'Vantage points for observations', hasRecordEndDate: true },
+  { table: 'vantage_category', description: 'Categories of vantage points', hasRecordEndDate: true }
+];
