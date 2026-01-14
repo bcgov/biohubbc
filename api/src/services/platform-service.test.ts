@@ -357,8 +357,8 @@ describe('PlatformService', () => {
         .stub(TelemetryDeploymentService.prototype, 'getDeploymentsForSurvey')
         .resolves([]);
 
-      const getSiteSelectionDataBySurveyIdStub = sinon
-        .stub(SiteSelectionStrategyService.prototype, 'getSiteSelectionDataBySurveyId')
+      const getSiteSelectionDataForBioHubSubmissionStub = sinon
+        .stub(SiteSelectionStrategyService.prototype, 'getSiteSelectionDataForBioHubSubmission')
         .resolves({ strategies: [], stratums: [] });
 
       const response = await platformService._generateSurveyDataPackage(1, [], [], 'a comment about the submission');
@@ -377,7 +377,7 @@ describe('PlatformService', () => {
       expect(getSurveyHabitatFeaturesStub).to.have.been.calledOnceWith(1);
       expect(getDevicesForSurveyStub).to.have.been.calledOnceWith(1);
       expect(getDeploymentsForSurveyStub).to.have.been.calledOnceWith(1);
-      expect(getSiteSelectionDataBySurveyIdStub).to.have.been.calledOnceWith(1);
+      expect(getSiteSelectionDataForBioHubSubmissionStub).to.have.been.calledOnceWith(1);
       expect(response).to.have.property('id');
       expect(response).to.have.property('description', 'a description of the purpose');
       expect(response).to.have.property('comment', 'a comment about the submission');

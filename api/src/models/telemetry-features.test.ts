@@ -89,7 +89,7 @@ describe('Telemetry Features BioHub Integration', () => {
 
       expect(deviceObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(deviceObj.type).to.equal('telemetry_device');
-      expect(deviceObj.properties.device_make_id).to.equal(1);
+      expect(deviceObj.properties.device_make_id).to.equal('1');
       expect(deviceObj.properties.model).to.equal('GPS-4400M');
       expect(deviceObj.properties.description).to.equal('Wildlife tracking device');
       expect(deviceObj.properties.serial_number).to.equal('ABC123456');
@@ -109,7 +109,7 @@ describe('Telemetry Features BioHub Integration', () => {
 
       const deviceObj = new PostTelemetryDeviceToBiohubObject(deviceRecord);
 
-      expect(deviceObj.properties.device_make_id).to.equal(99);
+      expect(deviceObj.properties.device_make_id).to.equal('99');
       expect(deviceObj.properties.model).to.equal(null);
       expect(deviceObj.properties.description).to.equal(null);
     });
@@ -155,7 +155,7 @@ describe('Telemetry Features BioHub Integration', () => {
       const frequencyFeature = deploymentObj.child_features[0];
       expect(frequencyFeature.type).to.equal('telemetry_frequency');
       expect(frequencyFeature.properties.frequency).to.equal(24);
-      expect(frequencyFeature.properties.frequency_unit_id).to.equal(1);
+      expect(frequencyFeature.properties.frequency_unit_id).to.equal('1');
     });
 
     it('should handle deployment without frequency data', () => {
@@ -226,7 +226,7 @@ describe('Telemetry Features BioHub Integration', () => {
       const frequencyFeature = deploymentObj.child_features[0];
       expect(frequencyFeature.type).to.equal('telemetry_frequency');
       expect(frequencyFeature.properties.frequency).to.equal(6);
-      expect(frequencyFeature.properties.frequency_unit_id).to.equal(99);
+      expect(frequencyFeature.properties.frequency_unit_id).to.equal('99');
     });
   });
 
@@ -305,7 +305,7 @@ describe('Telemetry Features BioHub Integration', () => {
 
       const deviceFeature = surveyObj.child_features.find((f) => f.type === 'telemetry_device');
       expect(deviceFeature).to.exist;
-      expect(deviceFeature?.properties.device_make_id).to.equal(1);
+      expect(deviceFeature?.properties.device_make_id).to.equal('1');
       expect(deviceFeature?.properties.serial_number).to.equal('TEL001');
 
       const deploymentFeature = surveyObj.child_features.find((f) => f.type === 'telemetry_deployment');
@@ -391,7 +391,7 @@ describe('Telemetry Features BioHub Integration', () => {
       expect(submissionObj.content.child_features).to.have.length(2);
 
       const deviceFeature = submissionObj.content.child_features.find((f) => f.type === 'telemetry_device');
-      expect(deviceFeature?.properties.device_make_id).to.equal(2);
+      expect(deviceFeature?.properties.device_make_id).to.equal('2');
       expect(deviceFeature?.properties.model).to.equal('Advanced-GPS-Pro');
       expect(deviceFeature?.properties.serial_number).to.equal('TRACK500');
 
@@ -563,10 +563,10 @@ describe('Telemetry Features BioHub Integration', () => {
       expect(technique1.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(technique1.properties.name).to.equal('Camera Trapping');
       expect(technique1.properties.description).to.equal('Motion-activated camera monitoring');
-      expect(technique1.properties.method_lookup_id).to.equal(1);
+      expect(technique1.properties.method_lookup_id).to.equal('1');
       expect(technique1.properties.attractant).to.deep.equal([
-        { attractant_lookup_id: 1 },
-        { attractant_lookup_id: 2 }
+        { attractant_lookup_id: '1' },
+        { attractant_lookup_id: '2' }
       ]);
 
       // Test second sampling technique
@@ -574,7 +574,7 @@ describe('Telemetry Features BioHub Integration', () => {
       expect(technique2.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(technique2.properties.name).to.equal('Acoustic Monitoring');
       expect(technique2.properties.description).to.be.null;
-      expect(technique2.properties.method_lookup_id).to.equal(2);
+      expect(technique2.properties.method_lookup_id).to.equal('2');
       expect(technique2.properties.attractant).to.deep.equal([]);
     });
   });

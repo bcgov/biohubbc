@@ -349,8 +349,9 @@ export class PlatformService extends DBService {
     const partnerships = await surveyService.getSurveyPartnershipsData(surveyId);
     const focalSpecies = await surveyService.getSpeciesData(surveyId);
 
-    // Get site selection strategy data for BioHub submission
-    const siteSelectionData = await surveyService.siteSelectionStrategyService.getSiteSelectionDataBySurveyId(surveyId);
+    // Get site selection strategy data for BioHub submission (with IDs)
+    const siteSelectionData =
+      await surveyService.siteSelectionStrategyService.getSiteSelectionDataForBioHubSubmission(surveyId);
 
     // Get all codes
     const allCodes = await codeService.getAllCodeSets();

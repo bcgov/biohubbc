@@ -55,7 +55,7 @@ describe('PostSurveyObservationToBiohubObject', () => {
         survey_sample_period_id: 1,
         count: 1,
         timestamp: 'observation_dateTobservation_time',
-        observation_sign_id: 1,
+        observation_sign_id: '1',
         geometry: {
           type: 'FeatureCollection',
           features: [
@@ -127,7 +127,7 @@ describe('PostSurveyObservationToBiohubObject', () => {
       expect(quantitativeEnvFeature.type).to.equal('observation_environmental_condition');
       expect(quantitativeEnvFeature.properties).to.eql({
         environment_quantitative_id: 'env-quant-uuid-1',
-        environment_quantitative_value: 25.5
+        environment_quantitative_value: '25.5'
       });
     });
   });
@@ -216,7 +216,7 @@ describe('PostSurveyObservationToBiohubObject', () => {
       expect(quantitativeEnvFeature.type).to.equal('observation_environmental_condition');
       expect(quantitativeEnvFeature.properties).to.eql({
         environment_quantitative_id: 'wind-speed-uuid',
-        environment_quantitative_value: 15.2
+        environment_quantitative_value: '15.2 meter'
       });
     });
   });
@@ -571,7 +571,7 @@ describe('PostSurveyEnvironmentalConditionToBiohubObject', () => {
     it('sets properties for quantitative data', () => {
       expect(data.properties).to.eql({
         environment_quantitative_id: 'temperature-uuid',
-        environment_quantitative_value: 23.5
+        environment_quantitative_value: '23.5 °C'
       });
     });
 
@@ -608,7 +608,7 @@ describe('PostSurveyEnvironmentalConditionToBiohubObject', () => {
     it('uses ID and no unit when missing for quantitative', () => {
       expect(quantData.properties).to.eql({
         environment_quantitative_id: 'env-quant-uuid',
-        environment_quantitative_value: 42
+        environment_quantitative_value: '42'
       });
     });
   });
@@ -1326,7 +1326,7 @@ describe('PostSurveyToBiohubObject', () => {
         end_date: 'end_date',
         collected_data: [
           {
-            survey_type_id: 9
+            survey_type_id: '9'
           }
         ],
         objectives: 'Test survey objectives'
