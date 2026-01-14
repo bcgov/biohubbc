@@ -108,8 +108,10 @@ spec:
             # BioHub Platform (aka: Backbone)
             - name: BACKBONE_INTERNAL_API_HOST
               value: {{ .Values.app.backboneInternalApiHost }}
-            - name: BACKBONE_INTAKE_PATH
-              value: {{ .Values.app.backboneIntakePath }}
+            - name: BACKBONE_SUBMISSION_UPLOAD_PATH
+              value: {{ .Values.app.backboneSubmissionUploadPath }}
+            - name: BACKBONE_UPLOAD_COMPLETE_PATH
+              value: {{ .Values.app.backboneUploadCompletePath }}
             - name: BIOHUB_TAXON_TSN_PATH
               value: {{ .Values.app.biohubTaxonTsnPath }}
             - name: BIOHUB_TAXON_PATH
@@ -197,6 +199,8 @@ spec:
               value: {{ .Values.app.requestLimits.uploadNumFiles | quote }}
             - name: MAX_UPLOAD_FILE_SIZE
               value: {{ .Values.app.requestLimits.uploadFileSize | quote }}
+            - name: SUBMISSION_UPLOAD_MAX_SIZE
+              value: {{ .Values.app.requestLimits.submissionUploadMaxSize | quote }}
             # Object Store (S3)
             - name: OBJECT_STORE_URL
               valueFrom:

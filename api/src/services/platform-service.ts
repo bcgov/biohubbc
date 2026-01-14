@@ -67,9 +67,10 @@ interface INestedBlock {
 }
 
 const getBackboneInternalApiHost = () => getEnvironmentVariable('BACKBONE_INTERNAL_API_HOST');
-const getBackboneSurveyIntakePath = () => getEnvironmentVariable('BACKBONE_INTAKE_PATH');
 const getBackboneTaxonTsnPath = () => getEnvironmentVariable('BIOHUB_TAXON_TSN_PATH');
 const getBackboneTaxonPath = () => getEnvironmentVariable('BIOHUB_TAXON_PATH');
+const getBackboneSubmissionUploadPath = () => getEnvironmentVariable('BACKBONE_SUBMISSION_UPLOAD_PATH');
+const getBackboneUploadCompletePath = () => getEnvironmentVariable('BACKBONE_UPLOAD_COMPLETE_PATH');
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
@@ -196,9 +197,6 @@ export class PlatformService extends DBService {
     // Get keycloak token for SIMS service client account
     const token = await keycloakService.getKeycloakServiceToken();
 
-    // Create intake url
-    const backboneSurveyIntakeUrl = new URL(getBackboneSurveyIntakePath(), getBackboneInternalApiHost()).href;
-
     // Get survey attachments
     const surveyAttachments = await this.attachmentService.getSurveyAttachmentsForBioHubSubmission(surveyId);
 
@@ -214,67 +212,100 @@ export class PlatformService extends DBService {
     );
 
     // Flatten and save the survey data package grouped by type
-    try {
-      const flattenedData = this._flattenToBlockModel(surveyDataPackage);
+    const flattenedData = this._flattenToBlockModel(surveyDataPackage);
 
-      // Find the dataset ID (root block with type "dataset")
-      const datasetBlock = flattenedData.find((block) => block.type === 'dataset' && block.parent === null);
-      const datasetId = datasetBlock?.id || 'unknown';
-
-      // Group blocks by type
-      const blocksByType = new Map<string, IFlattenedBlock[]>();
-      flattenedData.forEach((block) => {
-        const blockType = block.type || 'unknown';
-        if (!blocksByType.has(blockType)) {
-          blocksByType.set(blockType, []);
-        }
-        blocksByType.get(blockType)!.push(block);
-      });
-
-      // Create TAR archive with PAX format and extended attributes using tar-stream
-      // Data is added directly from memory, skipping disk write/read cycle
-      const submissionsBaseDir = path.join(process.cwd(), 'data', 'submissions');
-      fs.mkdirSync(submissionsBaseDir, { recursive: true });
-      const tarFilePath = path.join(submissionsBaseDir, `${datasetId}.tar`);
-      await this._createTarArchive(datasetId, blocksByType, tarFilePath);
-
-      // TODO: Remove the TAR file after it's no longer needed for debugging
-      defaultLog.info({
-        label: 'submitSurveyToBioHub',
-        message: 'Flattened survey data package saved by type and compressed to TAR',
-        totalBlocks: flattenedData.length,
-        totalTypes: blocksByType.size,
-        tarFilePath
-      });
-    } catch (flattenError) {
-      defaultLog.warn({
-        label: 'submitSurveyToBioHub',
-        message: 'Failed to save flattened survey data package for debugging',
-        error: flattenError instanceof Error ? flattenError.message : 'Unknown error'
-      });
+    // Find the dataset ID (root block with type "dataset")
+    const datasetBlock = flattenedData.find((block) => block.type === 'dataset' && block.parent === null);
+    if (!datasetBlock?.id) {
+      throw new ApiError(
+        ApiErrorType.UNKNOWN,
+        'Failed to find dataset ID in survey data package. The dataset block is missing or invalid.'
+      );
     }
+    const datasetId = datasetBlock.id;
 
-    // Submit survey data package to BioHub
-    const response = await axios.post<{
-      submission_uuid: string;
-    }>(backboneSurveyIntakeUrl, surveyDataPackage, {
-      headers: {
-        authorization: `Bearer ${token}`
+    // Group blocks by type
+    const blocksByType = new Map<string, IFlattenedBlock[]>();
+    flattenedData.forEach((block) => {
+      const blockType = block.type || 'unknown';
+      if (!blocksByType.has(blockType)) {
+        blocksByType.set(blockType, []);
       }
+      blocksByType.get(blockType)!.push(block);
     });
 
-    // Check for response data
-    if (!response.data) {
-      throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to submit survey ID to Biohub');
+    // Create TAR archive with PAX format and extended attributes using tar-stream
+    const submissionsBaseDir = path.join(process.cwd(), 'data', 'submissions');
+    fs.mkdirSync(submissionsBaseDir, { recursive: true });
+    const tarFilePath = path.join(submissionsBaseDir, `${datasetId}.tar`);
+    await this._createTarArchive(datasetId, blocksByType, tarFilePath);
+
+    defaultLog.info({
+      label: 'submitSurveyToBioHub',
+      message: 'Flattened survey data package saved by type and compressed to TAR',
+      totalBlocks: flattenedData.length,
+      totalTypes: blocksByType.size,
+      tarFilePath
+    });
+
+    // Get TAR file size for multipart upload
+    const tarFileSize = fs.statSync(tarFilePath).size;
+
+    // Step 1: Initiate upload and get presigned URLs
+    const { uploadId, s3UploadId, key, presignedUrls, partCount, submissionId } = await this._initiateSubmissionUpload(
+      token,
+      tarFileSize,
+      surveyDataPackage,
+      data.submissionComment
+    );
+
+    defaultLog.info({
+      label: 'submitSurveyToBioHub',
+      message: 'Initiated multipart upload',
+      uploadId,
+      submissionId,
+      partCount
+    });
+
+    try {
+      // Step 2: Upload TAR file parts to S3
+      const parts = await this._uploadTarFileParts(tarFilePath, presignedUrls, partCount);
+
+      // Step 3: Complete the upload
+      await this._completeSubmissionUpload(token, uploadId, s3UploadId, key, parts);
+
+      defaultLog.info({
+        label: 'submitSurveyToBioHub',
+        message: 'Successfully completed multipart upload',
+        uploadId,
+        submissionId
+      });
+    } finally {
+      // Clean up TAR file
+      try {
+        fs.unlinkSync(tarFilePath);
+        defaultLog.info({
+          label: 'submitSurveyToBioHub',
+          message: 'TAR file cleaned up',
+          tarFilePath
+        });
+      } catch (cleanupError) {
+        defaultLog.warn({
+          label: 'submitSurveyToBioHub',
+          message: 'Failed to clean up TAR file',
+          tarFilePath,
+          error: cleanupError instanceof Error ? cleanupError.message : 'Unknown error'
+        });
+      }
     }
 
     // Insert publish history record
     await this.historyPublishService.insertSurveyMetadataPublishRecord({
       survey_id: surveyId,
-      submission_uuid: response.data.submission_uuid
+      submission_uuid: uploadId
     });
 
-    return { submission_uuid: response.data.submission_uuid };
+    return { submission_uuid: uploadId };
   }
 
   /**
@@ -804,5 +835,285 @@ export class PlatformService extends DBService {
         onComplete();
       }
     );
+  }
+
+  /**
+   * Initiates a multipart upload to BioHub and gets presigned URLs for S3.
+   *
+   * @param {string} token - Keycloak service token
+   * @param {number} tarFileSize - Size of the TAR file in bytes
+   * @param {PostSurveySubmissionToBioHubObject} surveyDataPackage - Survey data package
+   * @param {string} submissionComment - Comment for the submission
+   * @return {*}  {Promise<{uploadId: string, s3UploadId: string, key: string, presignedUrls: Array<{partNumber: number, url: string}>, partCount: number, submissionId: number}>}
+   * @memberof PlatformService
+   */
+  async _initiateSubmissionUpload(
+    token: string,
+    tarFileSize: number,
+    surveyDataPackage: PostSurveySubmissionToBioHubObject,
+    submissionComment: string
+  ): Promise<{
+    uploadId: string;
+    s3UploadId: string;
+    key: string;
+    presignedUrls: Array<{ partNumber: number; url: string }>;
+    partCount: number;
+    submissionId: number;
+  }> {
+    defaultLog.debug({ label: '_initiateSubmissionUpload', tarFileSize });
+
+    // Validate file size
+    const SUBMISSION_UPLOAD_MAX_SIZE = getEnvironmentVariable('SUBMISSION_UPLOAD_MAX_SIZE');
+    if (tarFileSize > SUBMISSION_UPLOAD_MAX_SIZE) {
+      throw new ApiError(
+        ApiErrorType.UNKNOWN,
+        `TAR file size (${tarFileSize} bytes) exceeds maximum allowed size (${SUBMISSION_UPLOAD_MAX_SIZE} bytes)`
+      );
+    }
+
+    // Create submission upload URL
+    const backboneSubmissionUploadUrl = new URL(getBackboneSubmissionUploadPath(), getBackboneInternalApiHost()).href;
+
+    // Prepare request body
+    const requestBody = {
+      bytes: tarFileSize,
+      name: surveyDataPackage.name,
+      description: surveyDataPackage.description,
+      comment: submissionComment
+    };
+
+    try {
+      const response = await axios.post<{
+        submissionId: number;
+        uploadId: string;
+        s3UploadId: string;
+        uploadArchiveId: string;
+        key: string;
+        partSizeBytes: number;
+        partCount: number;
+        presignedUrls: Array<{ partNumber: number; url: string }>;
+      }>(backboneSubmissionUploadUrl, requestBody, {
+        headers: {
+          authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      defaultLog.info({
+        label: '_initiateSubmissionUpload',
+        message: 'Received presigned URLs',
+        submissionId: response.data.submissionId,
+        uploadId: response.data.uploadId,
+        partCount: response.data.partCount
+      });
+
+      return {
+        uploadId: response.data.uploadId,
+        s3UploadId: response.data.s3UploadId,
+        key: response.data.key,
+        presignedUrls: response.data.presignedUrls,
+        partCount: response.data.partCount,
+        submissionId: response.data.submissionId
+      };
+    } catch (error) {
+      defaultLog.error({
+        label: '_initiateSubmissionUpload',
+        message: 'Failed to initiate submission upload',
+        error: formatAxiosError(error)
+      });
+      throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to initiate submission upload to BioHub');
+    }
+  }
+
+  /**
+   * Splits a file buffer into chunks for multipart upload.
+   *
+   * @param {Buffer} fileBuffer - The file buffer to split
+   * @param {number} numChunks - Number of chunks to create
+   * @return {*}  {Buffer[]} Array of buffer chunks
+   * @memberof PlatformService
+   */
+  _splitFileIntoChunks(fileBuffer: Buffer, numChunks: number): Buffer[] {
+    if (numChunks === 1) {
+      return [fileBuffer];
+    }
+
+    const chunkSize = Math.ceil(fileBuffer.length / numChunks);
+    const chunks: Buffer[] = [];
+
+    for (let i = 0; i < numChunks; i++) {
+      const start = i * chunkSize;
+      const end = Math.min(start + chunkSize, fileBuffer.length);
+      chunks.push(fileBuffer.slice(start, end));
+    }
+
+    return chunks;
+  }
+
+  /**
+   * Uploads a single chunk to S3 using a presigned URL.
+   *
+   * @param {string} presignedUrl - The presigned S3 URL
+   * @param {Buffer} chunk - The chunk data to upload
+   * @param {number} partNumber - The part number (1-indexed)
+   * @return {*}  {Promise<{PartNumber: number, ETag: string}>}
+   * @memberof PlatformService
+   */
+  async _uploadChunkToS3(
+    presignedUrl: string,
+    chunk: Buffer,
+    partNumber: number
+  ): Promise<{ PartNumber: number; ETag: string }> {
+    try {
+      const response = await axios.put(presignedUrl, chunk, {
+        headers: {
+          'Content-Type': 'application/x-tar'
+        },
+        maxBodyLength: Infinity,
+        maxContentLength: Infinity
+      });
+
+      // Get ETag from response headers (case-insensitive)
+      const etag = response.headers.etag || response.headers.ETag;
+      if (!etag) {
+        throw new Error(`No ETag returned from S3 upload for part ${partNumber}`);
+      }
+
+      // Remove quotes from ETag
+      const cleanEtag = etag.replaceAll('"', '');
+
+      defaultLog.debug({
+        label: '_uploadChunkToS3',
+        message: 'Chunk uploaded successfully',
+        partNumber,
+        etag: cleanEtag
+      });
+
+      return {
+        PartNumber: partNumber,
+        ETag: cleanEtag
+      };
+    } catch (error) {
+      defaultLog.error({
+        label: '_uploadChunkToS3',
+        message: 'Failed to upload chunk to S3',
+        partNumber,
+        error: formatAxiosError(error)
+      });
+      throw new Error(`Failed to upload part ${partNumber} to S3`);
+    }
+  }
+
+  /**
+   * Uploads TAR file parts to S3 using presigned URLs with concurrency control.
+   *
+   * @param {string} tarFilePath - Path to the TAR file
+   * @param {Array<{partNumber: number, url: string}>} presignedUrls - Array of presigned URLs
+   * @param {number} partCount - Total number of parts
+   * @return {*}  {Promise<Array<{PartNumber: number, ETag: string}>>} Array of uploaded parts with ETags
+   * @memberof PlatformService
+   */
+  async _uploadTarFileParts(
+    tarFilePath: string,
+    presignedUrls: Array<{ partNumber: number; url: string }>,
+    partCount: number
+  ): Promise<Array<{ PartNumber: number; ETag: string }>> {
+    defaultLog.debug({ label: '_uploadTarFileParts', tarFilePath, partCount });
+
+    // Read TAR file as Buffer
+    const fileBuffer = fs.readFileSync(tarFilePath);
+
+    // Split into chunks
+    const chunks = this._splitFileIntoChunks(fileBuffer, partCount);
+
+    // Upload with concurrency limit (4 parallel uploads)
+    const concurrencyLimit = 4;
+    const parts: Array<{ PartNumber: number; ETag: string }> = [];
+
+    for (let i = 0; i < presignedUrls.length; i += concurrencyLimit) {
+      const batch = presignedUrls.slice(i, i + concurrencyLimit);
+      const chunkBatch = chunks.slice(i, i + concurrencyLimit);
+
+      defaultLog.debug({
+        label: '_uploadTarFileParts',
+        message: 'Uploading batch',
+        batchStart: i,
+        batchSize: batch.length
+      });
+
+      const batchResults = await Promise.all(
+        batch.map((urlObj, idx) => this._uploadChunkToS3(urlObj.url, chunkBatch[idx], urlObj.partNumber))
+      );
+
+      parts.push(...batchResults);
+    }
+
+    // Sort parts by PartNumber
+    parts.sort((a, b) => a.PartNumber - b.PartNumber);
+
+    defaultLog.info({
+      label: '_uploadTarFileParts',
+      message: 'All parts uploaded successfully',
+      totalParts: parts.length
+    });
+
+    return parts;
+  }
+
+  /**
+   * Completes the multipart upload to BioHub.
+   *
+   * @param {string} token - Keycloak service token
+   * @param {string} uploadId - Upload ID from initiate response
+   * @param {string} s3UploadId - S3 upload ID from initiate response
+   * @param {string} key - S3 key from initiate response
+   * @param {Array<{PartNumber: number, ETag: string}>} parts - Array of uploaded parts with ETags
+   * @return {*}  {Promise<void>}
+   * @memberof PlatformService
+   */
+  async _completeSubmissionUpload(
+    token: string,
+    uploadId: string,
+    s3UploadId: string,
+    key: string,
+    parts: Array<{ PartNumber: number; ETag: string }>
+  ): Promise<void> {
+    defaultLog.debug({ label: '_completeSubmissionUpload', uploadId, partCount: parts.length });
+
+    // Create upload complete URL
+    const backboneUploadCompleteUrl = new URL(
+      `${getBackboneUploadCompletePath()}/${uploadId}`,
+      getBackboneInternalApiHost()
+    ).href;
+
+    // Prepare request body
+    const requestBody = {
+      s3UploadId,
+      key,
+      parts
+    };
+
+    try {
+      await axios.put(backboneUploadCompleteUrl, requestBody, {
+        headers: {
+          authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      defaultLog.info({
+        label: '_completeSubmissionUpload',
+        message: 'Upload completed successfully',
+        uploadId
+      });
+    } catch (error) {
+      defaultLog.error({
+        label: '_completeSubmissionUpload',
+        message: 'Failed to complete submission upload',
+        uploadId,
+        error: formatAxiosError(error)
+      });
+      throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to complete submission upload to BioHub');
+    }
   }
 }
