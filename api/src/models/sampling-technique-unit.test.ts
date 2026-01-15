@@ -42,11 +42,11 @@ describe('PostSampleTechniqueToBiohubObject Unit Test', () => {
     expect(techniqueObj.type).to.equal('sample_technique');
     expect(techniqueObj.properties.name).to.equal('Camera Trapping');
     expect(techniqueObj.properties.description).to.equal('Wildlife camera deployed for monitoring');
-    expect(techniqueObj.properties.method_lookup__codeset_id).to.equal('5');
-    expect(techniqueObj.properties.method_response_metric__codeset_id).to.equal('1');
+    expect(techniqueObj.properties.method_name).to.equal('code::method_lookup::5');
+    expect(techniqueObj.properties.response_metric).to.equal('code::method_response_metric::1');
     expect(techniqueObj.properties.attractant).to.deep.equal([
-      { attractant_lookup__codeset_id: '3' },
-      { attractant_lookup__codeset_id: '7' }
+      { attractant_name: 'code::attractant_lookup::3' },
+      { attractant_name: 'code::attractant_lookup::7' }
     ]);
     expect(techniqueObj.child_features).to.be.an('array').with.length(3);
   });

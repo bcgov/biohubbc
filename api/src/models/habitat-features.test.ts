@@ -40,7 +40,7 @@ describe('Habitat Features BioHub Integration', () => {
 
       expect(habitatFeatureObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(habitatFeatureObj.type).to.equal('habitat_feature');
-      expect(habitatFeatureObj.properties.habitat_feature_type__codeset_id).to.equal('456');
+      expect(habitatFeatureObj.properties.name).to.equal('code::habitat_feature_type::456');
       expect(habitatFeatureObj.properties.count).to.equal(5);
       expect(habitatFeatureObj.properties.timestamp).to.equal('2024-01-15T10:30:00Z');
       expect(habitatFeatureObj.properties.associated_species).to.deep.equal([{ taxon_id: 180543 }]);
@@ -167,7 +167,7 @@ describe('Habitat Features BioHub Integration', () => {
 
       expect(surveyObj.child_features).to.have.length(1);
       expect(surveyObj.child_features[0].type).to.equal('habitat_feature');
-      expect(surveyObj.child_features[0].properties.habitat_feature_type__codeset_id).to.equal('456');
+      expect(surveyObj.child_features[0].properties.name).to.equal('code::habitat_feature_type::456');
     });
   });
 
@@ -235,7 +235,7 @@ describe('Habitat Features BioHub Integration', () => {
 
       expect(submissionObj.content.child_features).to.have.length(1);
       expect(submissionObj.content.child_features[0].type).to.equal('habitat_feature');
-      expect(submissionObj.content.child_features[0].properties.habitat_feature_type__codeset_id).to.equal('500');
+      expect(submissionObj.content.child_features[0].properties.name).to.equal('code::habitat_feature_type::500');
       expect(submissionObj.content.child_features[0].properties.count).to.equal(3);
       expect(submissionObj.content.child_features[0].properties.associated_species).to.deep.equal([
         { taxon_id: 179913 }

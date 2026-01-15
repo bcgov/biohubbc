@@ -158,8 +158,8 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
       survey_sample_period_id: observationRecord?.survey_sample_period_id || null,
       count: observationRecord.count,
       timestamp: timestamp,
-      observation_sign__codeset_id: observationRecord.observation_sign_id
-        ? String(observationRecord.observation_sign_id)
+      sign: observationRecord.observation_sign_id
+        ? `code::observation_sign::${observationRecord.observation_sign_id}`
         : null,
       geometry:
         observationRecord.longitude && observationRecord.latitude
@@ -360,13 +360,13 @@ export class PostSurveyEnvironmentalConditionToBiohubObject implements BioHubSub
 
     if (environmentData.type === 'qualitative') {
       this.properties = {
-        environment_qualitative__codeset_id: environmentData.environment_qualitative_id,
-        environment_qualitative_option__codeset_id: environmentData.environment_qualitative_option_id
+        environmental_condition: `code::environment_qualitative::${environmentData.environment_qualitative_id}`,
+        environmental_condition_value: `code::environment_qualitative_option::${environmentData.environment_qualitative_option_id}`
       };
     } else {
       this.properties = {
-        environment_quantitative__codeset_id: environmentData.environment_quantitative_id,
-        environment_quantitative_value: `${environmentData.value}${environmentData.unit ? ' ' + environmentData.unit : ''}`
+        environmental_condition: `code::environment_quantitative::${environmentData.environment_quantitative_id}`,
+        environmental_quantitative_value: `${environmentData.value}${environmentData.unit ? ' ' + environmentData.unit : ''}`
       };
     }
 
@@ -831,17 +831,17 @@ export class PostSampleTechniqueToBiohubObject implements BioHubSubmissionFeatur
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.SAMPLE_TECHNIQUE;
 
-    // Use attractant IDs array from the database and convert IDs to strings
+    // Use attractant IDs array from the database and convert to code format
     const attractantsArray = (samplingTechniqueRecord.attractant_ids || []).map((attractant) => ({
-      attractant_lookup__codeset_id: String(attractant.attractant_lookup_id)
+      attractant_name: `code::attractant_lookup::${attractant.attractant_lookup_id}`
     }));
 
     this.properties = {
       name: samplingTechniqueRecord.method_name,
       description: samplingTechniqueRecord.description,
-      method_lookup__codeset_id: String(samplingTechniqueRecord.method_lookup_id),
+      method_name: `code::method_lookup::${samplingTechniqueRecord.method_lookup_id}`,
       attractant: attractantsArray,
-      method_response_metric__codeset_id: String(samplingTechniqueRecord.method_response_metric_id),
+      response_metric: `code::method_response_metric::${samplingTechniqueRecord.method_response_metric_id}`,
       ...(samplingTechniqueRecord.distance_threshold
         ? { detect_distance: samplingTechniqueRecord.distance_threshold }
         : {})
@@ -895,18 +895,16 @@ export class PostSampleTechniqueDetailToBiohubObject implements BioHubSubmission
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.SAMPLE_TECHNIQUE_DETAIL;
 
-    // Only include properties if they are not null, convert to strings
+    // Only include properties if they are not null, using code format
     this.properties = {};
     if (techniqueAttributeQualitativeId != null) {
-      this.properties.technique_attribute_qualitative__codeset_id = String(techniqueAttributeQualitativeId);
+      this.properties.method_attribute = `code::technique_attribute_qualitative::${techniqueAttributeQualitativeId}`;
     }
     if (techniqueAttributeQualitativeOptionId != null) {
-      this.properties.technique_attribute_qualitative_option__codeset_id = String(
-        techniqueAttributeQualitativeOptionId
-      );
+      this.properties.method_value = `code::technique_attribute_qualitative_option::${techniqueAttributeQualitativeOptionId}`;
     }
     if (techniqueAttributeQuantitativeId != null) {
-      this.properties.technique_attribute_quantitative__codeset_id = String(techniqueAttributeQuantitativeId);
+      this.properties.method_attribute = `code::technique_attribute_quantitative::${techniqueAttributeQuantitativeId}`;
     }
 
     this.child_features = [];
@@ -930,13 +928,13 @@ export class PostSampleTechniqueVantageToBiohubObject implements BioHubSubmissio
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.SAMPLE_TECHNIQUE_VANTAGE;
 
-    // Only include properties if they are not null, convert to strings
+    // Only include properties if they are not null, using code format
     this.properties = {};
     if (vantageCategoryId != null) {
-      this.properties.vantage_category__codeset_id = String(vantageCategoryId);
+      this.properties.method_vantage = `code::vantage_category::${vantageCategoryId}`;
     }
     if (vantageId != null) {
-      this.properties.vantage__codeset_id = String(vantageId);
+      this.properties.method_value = `code::vantage::${vantageId}`;
     }
 
     this.child_features = [];
@@ -974,7 +972,7 @@ export class PostSurveyHabitatFeatureToBiohubObject implements BioHubSubmissionF
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.HABITAT_FEATURE;
     this.properties = {
-      habitat_feature_type__codeset_id: String(habitatFeatureRecord.habitat_feature_type_id),
+      name: `code::habitat_feature_type::${habitatFeatureRecord.habitat_feature_type_id}`,
       count: habitatFeatureRecord.count,
       timestamp: timestamp,
       ...(associatedSpeciesArray.length > 0 ? { associated_species: associatedSpeciesArray } : {}),
@@ -1018,7 +1016,7 @@ export class PostTelemetryDeviceToBiohubObject implements BioHubSubmissionFeatur
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.TELEMETRY_DEVICE;
     this.properties = {
-      device_make__codeset_id: String(deviceRecord.device_make_id),
+      device_manufacturer: `code::device_make::${deviceRecord.device_make_id}`,
       model: deviceRecord.model || null,
       description: deviceRecord.comment || null,
       serial_number: deviceRecord.serial
@@ -1098,13 +1096,13 @@ export class PostTelemetryFrequencyToBiohubObject implements BioHubSubmissionFea
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.TELEMETRY_FREQUENCY;
 
-    // Only include properties if they are not null
+    // Only include properties if they are not null, using code format
     this.properties = {};
     if (frequency != null) {
       this.properties.frequency = frequency;
     }
     if (frequencyUnitId != null) {
-      this.properties.frequency_unit__codeset_id = String(frequencyUnitId);
+      this.properties.frequency_unit = `code::frequency_unit::${frequencyUnitId}`;
     }
 
     this.child_features = [];
@@ -1281,16 +1279,50 @@ export class PostCodesetToBiohubObject implements BioHubSubmissionFeature {
 
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.CODESET;
-    this.properties = {
-      categories: codesetCategories.map((category) => ({
-        name: category.name,
-        description: category.description,
-        codes: category.codes.map((code) => ({
+
+    // Helper function to convert snake_case to Title Case
+    const toTitleCase = (str: string): string => {
+      return str
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+    };
+
+    // Convert categories array to object format
+    const categoriesObject: Record<
+      string,
+      {
+        label: string;
+        description: string | null;
+        codes: Record<string, { label: string; description: string | null }>;
+      }
+    > = {};
+
+    for (const category of codesetCategories) {
+      // Create category key: use table name as-is
+      const categoryKey = category.name;
+
+      // Convert snake_case to Title Case for label
+      const categoryLabel = toTitleCase(category.name);
+
+      // Convert codes array to object format
+      const codesObject: Record<string, { label: string; description: string | null }> = {};
+      for (const code of category.codes) {
+        codesObject[code.id] = {
           label: code.name,
-          value: code.id,
           description: code.description
-        }))
-      }))
+        };
+      }
+
+      categoriesObject[categoryKey] = {
+        label: categoryLabel,
+        description: category.description,
+        codes: codesObject
+      };
+    }
+
+    this.properties = {
+      categories: categoriesObject
     };
     this.child_features = [];
   }
@@ -1546,7 +1578,7 @@ function buildPartnershipsValue(
   partnerships: { indigenous_partnerships: number[]; stakeholder_partnerships: string[] } | undefined,
   _firstNations: { id: number; name: string }[] | undefined
 ): {
-  indigenous_partnerships: { first_nations__codeset_id: string }[];
+  indigenous_partnerships: { name: string }[];
   stakeholder_partnerships: { name: string }[];
 } | null {
   if (!partnerships) {
@@ -1554,7 +1586,7 @@ function buildPartnershipsValue(
   }
 
   const indigenousPartnerships = (partnerships.indigenous_partnerships || []).map((id) => ({
-    first_nations__codeset_id: String(id)
+    name: `code::first_nations::${id}`
   }));
   const stakeholderPartnerships = (partnerships.stakeholder_partnerships || []).map((name) => ({
     name: name
@@ -1576,11 +1608,9 @@ function buildFocalSpeciesArray(focalSpecies?: { focal_species: ITaxonomyWithEco
   return focalSpecies?.focal_species?.map((species) => ({ taxon_id: species.tsn })) ?? [];
 }
 
-function buildSiteSelectionStrategiesArray(
-  siteSelectionStrategies?: number[]
-): { site_strategy__codeset_id: string }[] {
+function buildSiteSelectionStrategiesArray(siteSelectionStrategies?: number[]): { strategy: string }[] {
   return (siteSelectionStrategies ?? []).map((site_strategy_id) => ({
-    site_strategy__codeset_id: String(site_strategy_id)
+    strategy: `code::site_strategy::${site_strategy_id}`
   }));
 }
 
