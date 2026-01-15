@@ -55,7 +55,7 @@ describe('PostSurveyObservationToBiohubObject', () => {
         survey_sample_period_id: 1,
         count: 1,
         timestamp: 'observation_dateTobservation_time',
-        observation_sign_id: '1',
+        observation_sign__codeset_id: '1',
         geometry: {
           type: 'FeatureCollection',
           features: [
@@ -119,14 +119,14 @@ describe('PostSurveyObservationToBiohubObject', () => {
       const qualitativeEnvFeature = data.child_features[0];
       expect(qualitativeEnvFeature.type).to.equal('observation_environmental_condition');
       expect(qualitativeEnvFeature.properties).to.eql({
-        environment_qualitative_id: 'env-qual-uuid-1',
-        environment_qualitative_option_id: 'env-qual-opt-uuid-1'
+        environment_qualitative__codeset_id: 'env-qual-uuid-1',
+        environment_qualitative_option__codeset_id: 'env-qual-opt-uuid-1'
       });
 
       const quantitativeEnvFeature = data.child_features[1];
       expect(quantitativeEnvFeature.type).to.equal('observation_environmental_condition');
       expect(quantitativeEnvFeature.properties).to.eql({
-        environment_quantitative_id: 'env-quant-uuid-1',
+        environment_quantitative__codeset_id: 'env-quant-uuid-1',
         environment_quantitative_value: '25.5'
       });
     });
@@ -208,14 +208,14 @@ describe('PostSurveyObservationToBiohubObject', () => {
       const qualitativeEnvFeature = data.child_features[0];
       expect(qualitativeEnvFeature.type).to.equal('observation_environmental_condition');
       expect(qualitativeEnvFeature.properties).to.eql({
-        environment_qualitative_id: 'temp-category-uuid',
-        environment_qualitative_option_id: 'cold-uuid'
+        environment_qualitative__codeset_id: 'temp-category-uuid',
+        environment_qualitative_option__codeset_id: 'cold-uuid'
       });
 
       const quantitativeEnvFeature = data.child_features[1];
       expect(quantitativeEnvFeature.type).to.equal('observation_environmental_condition');
       expect(quantitativeEnvFeature.properties).to.eql({
-        environment_quantitative_id: 'wind-speed-uuid',
+        environment_quantitative__codeset_id: 'wind-speed-uuid',
         environment_quantitative_value: '15.2 meter'
       });
     });
@@ -535,8 +535,8 @@ describe('PostSurveyEnvironmentalConditionToBiohubObject', () => {
 
     it('sets properties for qualitative data', () => {
       expect(data.properties).to.eql({
-        environment_qualitative_id: 'temp-category-uuid',
-        environment_qualitative_option_id: 'warm-uuid'
+        environment_qualitative__codeset_id: 'temp-category-uuid',
+        environment_qualitative_option__codeset_id: 'warm-uuid'
       });
     });
 
@@ -570,7 +570,7 @@ describe('PostSurveyEnvironmentalConditionToBiohubObject', () => {
 
     it('sets properties for quantitative data', () => {
       expect(data.properties).to.eql({
-        environment_quantitative_id: 'temperature-uuid',
+        environment_quantitative__codeset_id: 'temperature-uuid',
         environment_quantitative_value: '23.5 °C'
       });
     });
@@ -600,14 +600,14 @@ describe('PostSurveyEnvironmentalConditionToBiohubObject', () => {
 
     it('uses IDs when names are missing for qualitative', () => {
       expect(qualData.properties).to.eql({
-        environment_qualitative_id: 'env-qual-uuid',
-        environment_qualitative_option_id: 'env-qual-opt-uuid'
+        environment_qualitative__codeset_id: 'env-qual-uuid',
+        environment_qualitative_option__codeset_id: 'env-qual-opt-uuid'
       });
     });
 
     it('uses ID and no unit when missing for quantitative', () => {
       expect(quantData.properties).to.eql({
-        environment_quantitative_id: 'env-quant-uuid',
+        environment_quantitative__codeset_id: 'env-quant-uuid',
         environment_quantitative_value: '42'
       });
     });

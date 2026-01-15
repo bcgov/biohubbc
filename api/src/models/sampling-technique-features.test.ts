@@ -43,10 +43,10 @@ describe('Sampling Technique Features BioHub Integration', () => {
       expect(techniqueObj.type).to.equal('sample_technique');
       expect(techniqueObj.properties.name).to.equal('Camera Trapping');
       expect(techniqueObj.properties.description).to.equal('Wildlife camera deployed for monitoring');
-      expect(techniqueObj.properties.method_lookup_id).to.equal('5');
+      expect(techniqueObj.properties.method_lookup__codeset_id).to.equal('5');
       expect(techniqueObj.properties.attractant).to.deep.equal([
-        { attractant_lookup_id: '3' },
-        { attractant_lookup_id: '7' }
+        { attractant_lookup__codeset_id: '3' },
+        { attractant_lookup__codeset_id: '7' }
       ]);
       expect(techniqueObj.child_features).to.be.an('array').with.length(3);
     });
@@ -73,7 +73,7 @@ describe('Sampling Technique Features BioHub Integration', () => {
       expect(techniqueObj.type).to.equal('sample_technique');
       expect(techniqueObj.properties.name).to.equal('Visual Survey');
       expect(techniqueObj.properties.description).to.be.null;
-      expect(techniqueObj.properties.method_lookup_id).to.equal('8');
+      expect(techniqueObj.properties.method_lookup__codeset_id).to.equal('8');
       expect(techniqueObj.properties.attractant).to.deep.equal([]);
       expect(techniqueObj.child_features).to.be.an('array').with.length(0);
     });
@@ -110,7 +110,7 @@ describe('Sampling Technique Features BioHub Integration', () => {
       expect(techniqueObj.type).to.equal('sample_technique');
       expect(techniqueObj.properties.name).to.equal('Acoustic Monitoring');
       expect(techniqueObj.properties.description).to.equal('Passive acoustic monitoring for species identification');
-      expect(techniqueObj.properties.method_lookup_id).to.equal('12');
+      expect(techniqueObj.properties.method_lookup__codeset_id).to.equal('12');
       expect(techniqueObj.properties.attractant).to.deep.equal([]);
       expect(techniqueObj.child_features).to.be.an('array').with.length(2);
     });
