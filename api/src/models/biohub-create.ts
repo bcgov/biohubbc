@@ -2,10 +2,8 @@ import { Feature, FeatureCollection } from 'geojson';
 import crypto from 'node:crypto';
 import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { DeviceRecord } from '../database-models/device';
-import { HabitatFeatureTypeRecord } from '../database-models/habitat-feature-type';
 import { SurveyObservationRecord } from '../database-models/survey_observation';
 import { ISurveyAttachment, ISurveyReportAttachment } from '../repositories/attachment-repository';
-import { ICodeDescription } from '../repositories/code-repository';
 import { SurveyHabitatFeatureWithTaxonsAndSampling } from '../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
 import {
   QualitativeEnvironmentTypeDefinition,
@@ -58,6 +56,19 @@ interface MortalityRecord {
   proximate_cause_of_death?: ProximateCauseOfDeath | null;
 }
 
+// Codeset types for exporting codetables
+export interface CodesetCode {
+  id: string;
+  name: string;
+  description: string | null;
+}
+
+export interface CodesetCategory {
+  name: string;
+  description: string | null;
+  codes: CodesetCode[];
+}
+
 const defaultLog = getLogger('models/biohub-create');
 
 interface BioHubSubmission {
@@ -76,7 +87,6 @@ interface PostSurveySubmissionInputData {
 
 interface PostSurveyToBiohubOptions {
   animalRecords?: ICritterDetailed[];
-  observationSigns?: ICodeDescription[];
   environmentDefinitions?: {
     qualitative_environments: QualitativeEnvironmentTypeDefinition[];
     quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
@@ -88,19 +98,17 @@ interface PostSurveyToBiohubOptions {
   samplingSites?: SampleSiteRecordWithGeojson[];
   samplingPeriods?: SurveySamplePeriodDetails[];
   habitatFeatures?: SurveyHabitatFeatureWithTaxonsAndSampling[];
-  habitatFeatureTypes?: HabitatFeatureTypeRecord[];
   telemetryDevices?: DeviceRecord[];
   telemetryDeployments?: ExtendedDeploymentRecord[];
   telemetry?: Telemetry[];
   samplingTechniques?: SampleTechniqueRecord[];
-  deviceMakes?: ICodeDescription[];
-  frequencyUnits?: ICodeDescription[];
   partnerships?: { indigenous_partnerships: number[]; stakeholder_partnerships: string[] };
   focalSpecies?: { focal_species: ITaxonomyWithEcologicalUnits[] };
   surveyLocation?: SurveyLocationRecord[];
   firstNations?: { id: number; name: string }[];
   strata?: { name: string; description: string }[];
-  siteSelectionStrategies?: string[];
+  siteSelectionStrategies?: number[];
+  codesetCategories?: CodesetCategory[];
 }
 
 type PostSurveySubmissionOptions = PostSurveyToBiohubOptions;
@@ -126,7 +134,6 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
 
   constructor(
     observationRecord: SurveyObservationRecord | ObservationRecordWithSamplingAndSubcountData,
-    observationSigns?: ICodeDescription[],
     environmentDefinitions?: {
       qualitative_environments: QualitativeEnvironmentTypeDefinition[];
       quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
@@ -143,9 +150,6 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
       ? `${observationRecord.observation_date}T${observationRecord.observation_time}`
       : observationRecord.observation_date;
 
-    // Find the observation sign name from the sign ID
-    const observationSign = observationSigns?.find((sign) => sign.id === observationRecord.observation_sign_id);
-
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.OBSERVATION;
     this.properties = {
@@ -154,7 +158,9 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
       survey_sample_period_id: observationRecord?.survey_sample_period_id || null,
       count: observationRecord.count,
       timestamp: timestamp,
-      sign: observationSign?.name || null,
+      sign: observationRecord.observation_sign_id
+        ? `code::observation_sign::${observationRecord.observation_sign_id}`
+        : null,
       geometry:
         observationRecord.longitude && observationRecord.latitude
           ? {
@@ -354,13 +360,13 @@ export class PostSurveyEnvironmentalConditionToBiohubObject implements BioHubSub
 
     if (environmentData.type === 'qualitative') {
       this.properties = {
-        environmental_condition: environmentData.name || environmentData.environment_qualitative_id,
-        environmental_condition_value: environmentData.option_name || environmentData.environment_qualitative_option_id
+        environmental_condition: `code::environment_qualitative::${environmentData.environment_qualitative_id}`,
+        environmental_condition_value: `code::environment_qualitative_option::${environmentData.environment_qualitative_option_id}`
       };
     } else {
       this.properties = {
-        environmental_condition: environmentData.name || environmentData.environment_quantitative_id,
-        environmental_condition_value: `${environmentData.value}${environmentData.unit ? ' ' + environmentData.unit : ''}`
+        environmental_condition: `code::environment_quantitative::${environmentData.environment_quantitative_id}`,
+        environmental_quantitative_value: `${environmentData.value}${environmentData.unit ? ' ' + environmentData.unit : ''}`
       };
     }
 
@@ -800,7 +806,9 @@ export class PostSurveySamplingPeriodToBiohubObject implements BioHubSubmissionF
           }
         : {}),
       site_identifier: samplingPeriodRecord.survey_sample_site?.name || null,
-      sample_technique: samplingPeriodRecord.method_technique?.name || null
+      method_technique_id: samplingPeriodRecord.method_technique?.method_technique_id
+        ? String(samplingPeriodRecord.method_technique.method_technique_id)
+        : null
     };
     this.child_features = [];
   }
@@ -823,21 +831,17 @@ export class PostSampleTechniqueToBiohubObject implements BioHubSubmissionFeatur
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.SAMPLE_TECHNIQUE;
 
-    // Parse attractants string into array, handling null/empty cases
-    const attractantsArray = samplingTechniqueRecord.attractants
-      ? samplingTechniqueRecord.attractants
-          .split(';')
-          .map((attractant) => attractant.trim())
-          .filter((attractant) => attractant.length > 0)
-          .map((attractant) => ({ attractant_name: attractant }))
-      : [];
+    // Use attractant IDs array from the database and convert to code format
+    const attractantsArray = (samplingTechniqueRecord.attractant_ids || []).map((attractant) => ({
+      attractant_name: `code::attractant_lookup::${attractant.attractant_lookup_id}`
+    }));
 
     this.properties = {
       name: samplingTechniqueRecord.method_name,
       description: samplingTechniqueRecord.description,
-      method_name: samplingTechniqueRecord.method_lookup_name,
+      method_name: `code::method_lookup::${samplingTechniqueRecord.method_lookup_id}`,
       attractant: attractantsArray,
-      response_metric: samplingTechniqueRecord.response_metric,
+      response_metric: `code::method_response_metric::${samplingTechniqueRecord.method_response_metric_id}`,
       ...(samplingTechniqueRecord.distance_threshold
         ? { detect_distance: samplingTechniqueRecord.distance_threshold }
         : {})
@@ -847,14 +851,23 @@ export class PostSampleTechniqueToBiohubObject implements BioHubSubmissionFeatur
     const techniqueDetailFeatures = samplingTechniqueRecord.attribute_data
       ? samplingTechniqueRecord.attribute_data
           .filter((attrib) => attrib.attribute_header != null || attrib.attribute_value != null)
-          .map((attrib) => new PostSampleTechniqueDetailToBiohubObject(attrib.attribute_header, attrib.attribute_value))
+          .map(
+            (attrib) =>
+              new PostSampleTechniqueDetailToBiohubObject(
+                attrib.technique_attribute_qualitative_id,
+                attrib.technique_attribute_qualitative_option_id,
+                attrib.technique_attribute_quantitative_id
+              )
+          )
       : [];
 
     // Create sample technique vantage child features from vantage_data, filtering out entries where both values are null
     const techniqueVantageFeatures = samplingTechniqueRecord.vantage_data
       ? samplingTechniqueRecord.vantage_data
           .filter((vantage) => vantage.vantage_header != null || vantage.vantage_value != null)
-          .map((vantage) => new PostSampleTechniqueVantageToBiohubObject(vantage.vantage_header, vantage.vantage_value))
+          .map(
+            (vantage) => new PostSampleTechniqueVantageToBiohubObject(vantage.vantage_category_id, vantage.vantage_id)
+          )
       : [];
 
     this.child_features = [...techniqueDetailFeatures, ...techniqueVantageFeatures];
@@ -874,17 +887,24 @@ export class PostSampleTechniqueDetailToBiohubObject implements BioHubSubmission
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(methodAttribute: string | null, methodValue: string | null) {
+  constructor(
+    techniqueAttributeQualitativeId: number | null,
+    techniqueAttributeQualitativeOptionId: number | null,
+    techniqueAttributeQuantitativeId: number | null
+  ) {
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.SAMPLE_TECHNIQUE_DETAIL;
 
-    // Only include properties if they are not null
+    // Only include properties if they are not null, using code format
     this.properties = {};
-    if (methodAttribute != null) {
-      this.properties.method_attribute = methodAttribute;
+    if (techniqueAttributeQualitativeId != null) {
+      this.properties.method_attribute = `code::technique_attribute_qualitative::${techniqueAttributeQualitativeId}`;
     }
-    if (methodValue != null) {
-      this.properties.method_value = methodValue;
+    if (techniqueAttributeQualitativeOptionId != null) {
+      this.properties.method_value = `code::technique_attribute_qualitative_option::${techniqueAttributeQualitativeOptionId}`;
+    }
+    if (techniqueAttributeQuantitativeId != null) {
+      this.properties.method_attribute = `code::technique_attribute_quantitative::${techniqueAttributeQuantitativeId}`;
     }
 
     this.child_features = [];
@@ -904,17 +924,17 @@ export class PostSampleTechniqueVantageToBiohubObject implements BioHubSubmissio
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(methodVantage: string | null, methodValue: string | null) {
+  constructor(vantageCategoryId: number | null, vantageId: number | null) {
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.SAMPLE_TECHNIQUE_VANTAGE;
 
-    // Only include properties if they are not null
+    // Only include properties if they are not null, using code format
     this.properties = {};
-    if (methodVantage != null) {
-      this.properties.method_vantage = methodVantage;
+    if (vantageCategoryId != null) {
+      this.properties.method_vantage = `code::vantage_category::${vantageCategoryId}`;
     }
-    if (methodValue != null) {
-      this.properties.method_value = methodValue;
+    if (vantageId != null) {
+      this.properties.method_value = `code::vantage::${vantageId}`;
     }
 
     this.child_features = [];
@@ -934,10 +954,7 @@ export class PostSurveyHabitatFeatureToBiohubObject implements BioHubSubmissionF
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(
-    habitatFeatureRecord: SurveyHabitatFeatureWithTaxonsAndSampling,
-    habitatFeatureTypes?: HabitatFeatureTypeRecord[]
-  ) {
+  constructor(habitatFeatureRecord: SurveyHabitatFeatureWithTaxonsAndSampling) {
     defaultLog.debug({ label: 'PostSurveyHabitatFeatureToBiohubObject', message: 'params', habitatFeatureRecord });
 
     // Combine date and time into a single timestamp
@@ -948,11 +965,6 @@ export class PostSurveyHabitatFeatureToBiohubObject implements BioHubSubmissionF
       timestamp = `${habitatFeatureRecord.observed_date}T00:00:00.000Z`;
     }
 
-    // Find habitat feature type name
-    const habitatFeatureType = habitatFeatureTypes?.find(
-      (type) => type.habitat_feature_type_id === habitatFeatureRecord.habitat_feature_type_id
-    );
-
     // Create associated species array from focal species
     const associatedSpeciesArray =
       habitatFeatureRecord.survey_habitat_feature_taxons?.map((species) => ({ taxon_id: species.itis_tsn })) || [];
@@ -960,7 +972,7 @@ export class PostSurveyHabitatFeatureToBiohubObject implements BioHubSubmissionF
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.HABITAT_FEATURE;
     this.properties = {
-      name: habitatFeatureType?.name || `Habitat Feature ${habitatFeatureRecord.habitat_feature_type_id}`,
+      name: `code::habitat_feature_type::${habitatFeatureRecord.habitat_feature_type_id}`,
       count: habitatFeatureRecord.count,
       timestamp: timestamp,
       ...(associatedSpeciesArray.length > 0 ? { associated_species: associatedSpeciesArray } : {}),
@@ -998,16 +1010,13 @@ export class PostTelemetryDeviceToBiohubObject implements BioHubSubmissionFeatur
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(deviceRecord: DeviceRecord, deviceMakes?: ICodeDescription[]) {
+  constructor(deviceRecord: DeviceRecord) {
     defaultLog.debug({ label: 'PostTelemetryDeviceToBiohubObject', message: 'params', deviceRecord });
-
-    // Find device make name
-    const deviceMake = deviceMakes?.find((make) => make.id === deviceRecord.device_make_id);
 
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.TELEMETRY_DEVICE;
     this.properties = {
-      device_manufacturer: deviceMake?.name || `Unknown Manufacturer ${deviceRecord.device_make_id}`,
+      device_manufacturer: `code::device_make::${deviceRecord.device_make_id}`,
       model: deviceRecord.model || null,
       description: deviceRecord.comment || null,
       serial_number: deviceRecord.serial
@@ -1029,16 +1038,8 @@ export class PostTelemetryDeploymentToBiohubObject implements BioHubSubmissionFe
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(
-    deploymentRecord: ExtendedDeploymentRecord,
-    frequencyUnits?: ICodeDescription[],
-    telemetry?: Telemetry[],
-    animalRecords?: ICritterDetailed[]
-  ) {
+  constructor(deploymentRecord: ExtendedDeploymentRecord, telemetry?: Telemetry[], animalRecords?: ICritterDetailed[]) {
     defaultLog.debug({ label: 'PostTelemetryDeploymentToBiohubObject', message: 'params', deploymentRecord });
-
-    // Find frequency unit name
-    const frequencyUnit = frequencyUnits?.find((unit) => unit.id === deploymentRecord.frequency_unit_id);
 
     // Find the matching animal record to get the animal_id
     const matchingAnimal = animalRecords?.find(
@@ -1071,16 +1072,9 @@ export class PostTelemetryDeploymentToBiohubObject implements BioHubSubmissionFe
 
     // Add frequency child feature if frequency data exists
     if (deploymentRecord.frequency != null || deploymentRecord.frequency_unit_id != null) {
-      const frequencyUnitName = deploymentRecord.frequency_unit_id
-        ? frequencyUnit?.name || `Unknown Unit ${deploymentRecord.frequency_unit_id}`
-        : null;
-
-      // Only add the frequency child feature if at least one property is not null
-      if (deploymentRecord.frequency != null || frequencyUnitName != null) {
-        this.child_features.push(
-          new PostTelemetryFrequencyToBiohubObject(deploymentRecord.frequency, frequencyUnitName)
-        );
-      }
+      this.child_features.push(
+        new PostTelemetryFrequencyToBiohubObject(deploymentRecord.frequency, deploymentRecord.frequency_unit_id)
+      );
     }
   }
 }
@@ -1098,17 +1092,17 @@ export class PostTelemetryFrequencyToBiohubObject implements BioHubSubmissionFea
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(frequency: number | null, frequencyUnit: string | null) {
+  constructor(frequency: number | null, frequencyUnitId: number | null) {
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.TELEMETRY_FREQUENCY;
 
-    // Only include properties if they are not null
+    // Only include properties if they are not null, using code format
     this.properties = {};
     if (frequency != null) {
       this.properties.frequency = frequency;
     }
-    if (frequencyUnit != null) {
-      this.properties.frequency_unit = frequencyUnit;
+    if (frequencyUnitId != null) {
+      this.properties.frequency_unit = `code::frequency_unit::${frequencyUnitId}`;
     }
 
     this.child_features = [];
@@ -1264,6 +1258,77 @@ export class PostBlockToBiohubObject implements BioHubSubmissionFeature {
 }
 
 /**
+ * Object to be sent to Biohub API for creating a codeset containing all codetable categories.
+ *
+ * @export
+ * @class PostCodesetToBiohubObject
+ * @implements {BioHubSubmissionFeature}
+ */
+export class PostCodesetToBiohubObject implements BioHubSubmissionFeature {
+  id: string;
+  type: string;
+  properties: Record<string, unknown>;
+  child_features: BioHubSubmissionFeature[];
+
+  constructor(codesetCategories: CodesetCategory[]) {
+    defaultLog.debug({
+      label: 'PostCodesetToBiohubObject',
+      message: 'params',
+      categoryCount: codesetCategories.length
+    });
+
+    this.id = crypto.randomUUID();
+    this.type = BiohubFeatureType.CODESET;
+
+    // Helper function to convert snake_case to Title Case
+    const toTitleCase = (str: string): string => {
+      return str
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' ');
+    };
+
+    // Convert categories array to object format
+    const categoriesObject: Record<
+      string,
+      {
+        label: string;
+        description: string | null;
+        codes: Record<string, { label: string; description: string | null }>;
+      }
+    > = {};
+
+    for (const category of codesetCategories) {
+      // Create category key: use table name as-is
+      const categoryKey = category.name;
+
+      // Convert snake_case to Title Case for label
+      const categoryLabel = toTitleCase(category.name);
+
+      // Convert codes array to object format
+      const codesObject: Record<string, { label: string; description: string | null }> = {};
+      for (const code of category.codes) {
+        codesObject[code.id] = {
+          label: code.name,
+          description: code.description
+        };
+      }
+
+      categoriesObject[categoryKey] = {
+        label: categoryLabel,
+        description: category.description,
+        codes: codesObject
+      };
+    }
+
+    this.properties = {
+      categories: categoriesObject
+    };
+    this.child_features = [];
+  }
+}
+
+/**
  * Object to be sent to Biohub API for creating a survey.
  *
  * @export
@@ -1289,35 +1354,27 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
 
     const {
       animalRecords = [],
-      observationSigns,
       environmentDefinitions,
       measurementDefinitions,
       samplingSites,
       samplingPeriods,
       habitatFeatures,
-      habitatFeatureTypes,
       telemetryDevices,
       telemetryDeployments,
       telemetry,
       samplingTechniques,
-      deviceMakes,
-      frequencyUnits,
       partnerships,
       focalSpecies,
       surveyLocation,
       firstNations,
       strata,
-      siteSelectionStrategies
+      siteSelectionStrategies,
+      codesetCategories
     } = options;
 
     const observationFeatures = observationRecords.map(
       (observation) =>
-        new PostSurveyObservationToBiohubObject(
-          observation,
-          observationSigns,
-          environmentDefinitions,
-          measurementDefinitions
-        )
+        new PostSurveyObservationToBiohubObject(observation, environmentDefinitions, measurementDefinitions)
     );
 
     const attachmentFeatures = surveyAttachments.map(
@@ -1349,18 +1406,18 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
     // Create habitat features
     const habitatFeatureFeatures = mapOrEmpty(
       habitatFeatures,
-      (habitatFeature) => new PostSurveyHabitatFeatureToBiohubObject(habitatFeature, habitatFeatureTypes)
+      (habitatFeature) => new PostSurveyHabitatFeatureToBiohubObject(habitatFeature)
     );
 
     // Create telemetry features
     const telemetryDeviceFeatures = mapOrEmpty(
       telemetryDevices,
-      (device) => new PostTelemetryDeviceToBiohubObject(device, deviceMakes)
+      (device) => new PostTelemetryDeviceToBiohubObject(device)
     );
 
     const telemetryDeploymentFeatures = mapOrEmpty(
       telemetryDeployments,
-      (deployment) => new PostTelemetryDeploymentToBiohubObject(deployment, frequencyUnits, telemetry, animalRecords)
+      (deployment) => new PostTelemetryDeploymentToBiohubObject(deployment, telemetry, animalRecords)
     );
 
     // Create study area feature if survey location data is available
@@ -1373,13 +1430,16 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
 
     // Create collected data array from survey types
     const collectedDataArray =
-      surveyData.survey_types.map((survey_type_id) => ({ survey_type_id: survey_type_id })) || [];
+      surveyData.survey_types.map((survey_type_id) => ({ survey_type_id: String(survey_type_id) })) || [];
 
     // Create stratum features
     const stratumFeatures = mapOrEmpty(strata, (stratum) => new PostStratumToBiohubObject(stratum));
 
     // Create site selection strategies array
     const siteSelectionStrategiesArray = buildSiteSelectionStrategiesArray(siteSelectionStrategies);
+
+    // Create codeset feature if codeset categories are available
+    const codesetFeature = codesetCategories ? [new PostCodesetToBiohubObject(codesetCategories)] : [];
 
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.DATASET;
@@ -1390,7 +1450,12 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
       ...buildSurveyDateProperties(surveyData),
       collected_data: collectedDataArray,
       objectives: surveyPurposeAndMethodologyData.additional_details,
-      ...buildOptionalStringProperty(partnershipsValue, 'partnerships'),
+      ...(partnershipsValue
+        ? {
+            indigenous_partnerships: partnershipsValue.indigenous_partnerships,
+            stakeholder_partnerships: partnershipsValue.stakeholder_partnerships
+          }
+        : {}),
       ...buildOptionalArrayProperty(focalSpeciesArray, 'focal_species'),
       ...buildOptionalArrayProperty(siteSelectionStrategiesArray, 'site_select_strategy')
     };
@@ -1406,7 +1471,8 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
       ...telemetryDeviceFeatures,
       ...telemetryDeploymentFeatures,
       ...studyAreaFeature,
-      ...stratumFeatures
+      ...stratumFeatures,
+      ...codesetFeature
     ];
   }
 }
@@ -1431,25 +1497,22 @@ export class PostSurveySubmissionToBioHubObject implements BioHubSubmission {
 
     const {
       animalRecords = [],
-      observationSigns,
       environmentDefinitions,
       measurementDefinitions,
       samplingSites,
       samplingPeriods,
       samplingTechniques,
       habitatFeatures,
-      habitatFeatureTypes,
       telemetryDevices,
       telemetryDeployments,
       telemetry,
-      deviceMakes,
-      frequencyUnits,
       partnerships,
       focalSpecies,
       surveyLocation,
       firstNations,
       strata,
-      siteSelectionStrategies
+      siteSelectionStrategies,
+      codesetCategories
     } = options;
 
     this.id = crypto.randomUUID();
@@ -1465,25 +1528,22 @@ export class PostSurveySubmissionToBioHubObject implements BioHubSubmission {
       surveyReports,
       {
         animalRecords,
-        observationSigns,
         environmentDefinitions,
         measurementDefinitions,
         samplingSites,
         samplingPeriods,
         habitatFeatures,
-        habitatFeatureTypes,
         telemetryDevices,
         telemetryDeployments,
         telemetry,
         samplingTechniques,
-        deviceMakes,
-        frequencyUnits,
         partnerships,
         focalSpecies,
         surveyLocation,
         firstNations,
         strata,
-        siteSelectionStrategies
+        siteSelectionStrategies,
+        codesetCategories
       }
     );
 
@@ -1516,27 +1576,30 @@ function createStudyAreaFeature(
 
 function buildPartnershipsValue(
   partnerships: { indigenous_partnerships: number[]; stakeholder_partnerships: string[] } | undefined,
-  firstNations: { id: number; name: string }[] | undefined
-): string | null {
+  _firstNations: { id: number; name: string }[] | undefined
+): {
+  indigenous_partnerships: { name: string }[];
+  stakeholder_partnerships: { name: string }[];
+} | null {
   if (!partnerships) {
     return null;
   }
 
-  const indigenousPartners = (partnerships.indigenous_partnerships || []).map((id) => {
-    const firstNation = firstNations?.find((fn) => fn.id === id);
-    return firstNation?.name || `Indigenous Partnership ${id}`;
-  });
+  const indigenousPartnerships = (partnerships.indigenous_partnerships || []).map((id) => ({
+    name: `code::first_nations::${id}`
+  }));
+  const stakeholderPartnerships = (partnerships.stakeholder_partnerships || []).map((name) => ({
+    name: name
+  }));
 
-  const stakeholderPartners = partnerships.stakeholder_partnerships || [];
-  const combinedPartners = [...indigenousPartners, ...stakeholderPartners].filter(
-    (partner) => partner && partner.length > 0
-  );
-
-  if (combinedPartners.length === 0) {
+  if (indigenousPartnerships.length === 0 && stakeholderPartnerships.length === 0) {
     return null;
   }
 
-  return combinedPartners.join('; ');
+  return {
+    indigenous_partnerships: indigenousPartnerships,
+    stakeholder_partnerships: stakeholderPartnerships
+  };
 }
 
 function buildFocalSpeciesArray(focalSpecies?: { focal_species: ITaxonomyWithEcologicalUnits[] }): {
@@ -1545,12 +1608,10 @@ function buildFocalSpeciesArray(focalSpecies?: { focal_species: ITaxonomyWithEco
   return focalSpecies?.focal_species?.map((species) => ({ taxon_id: species.tsn })) ?? [];
 }
 
-function buildSiteSelectionStrategiesArray(siteSelectionStrategies?: string[]): { strategy: string }[] {
-  return (siteSelectionStrategies ?? []).map((strategy) => ({ strategy }));
-}
-
-function buildOptionalStringProperty(value: string | null | undefined, key: string): Record<string, string> {
-  return value ? { [key]: value } : {};
+function buildSiteSelectionStrategiesArray(siteSelectionStrategies?: number[]): { strategy: string }[] {
+  return (siteSelectionStrategies ?? []).map((site_strategy_id) => ({
+    strategy: `code::site_strategy::${site_strategy_id}`
+  }));
 }
 
 function buildOptionalArrayProperty<T>(items: T[], key: string): Record<string, T[]> {
@@ -1575,6 +1636,7 @@ enum BiohubFeatureType {
   ANIMAL = 'animal',
   BLOCK = 'block',
   CAPTURE = 'capture',
+  CODESET = 'codeset',
   DATASET = 'dataset',
   ECOLOGICAL_UNIT = 'ecological_unit',
   FILE = 'file',

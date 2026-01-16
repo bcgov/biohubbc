@@ -20,8 +20,11 @@ describe('SiteSelectionStrategyRepository', () => {
   });
 
   describe('getSiteSelectionDataBySurveyId', () => {
-    it('should return non-empty data', async () => {
-      const mockStrategiesRows: { name: string }[] = [{ name: 'strategy1' }, { name: 'strategy2' }];
+    it('should return non-empty data with strategy names', async () => {
+      const mockStrategiesRows: { site_strategy_id: number; name: string }[] = [
+        { site_strategy_id: 1, name: 'strategy1' },
+        { site_strategy_id: 2, name: 'strategy2' }
+      ];
       const mockStrategiesResponse = { rows: mockStrategiesRows, rowCount: 2 } as any as Promise<QueryResult<any>>;
 
       const mockStratumsRows: SurveyStratumDetails[] = [
@@ -59,7 +62,7 @@ describe('SiteSelectionStrategyRepository', () => {
     });
 
     it('should return empty data', async () => {
-      const mockStrategiesRows: { name: string }[] = [];
+      const mockStrategiesRows: { site_strategy_id: number; name: string }[] = [];
       const mockStrategiesResponse = { rows: mockStrategiesRows, rowCount: 0 } as any as Promise<QueryResult<any>>;
 
       const mockStratumsRows: SurveyStratumDetails[] = [];
@@ -74,6 +77,70 @@ describe('SiteSelectionStrategyRepository', () => {
       const surveyId = 1;
 
       const response = await repo.getSiteSelectionDataBySurveyId(surveyId);
+
+      expect(dbConnectionObj.knex).to.have.been.calledTwice;
+      expect(response).to.eql({ strategies: [], stratums: mockStratumsRows });
+    });
+  });
+
+  describe('getSiteSelectionDataForBioHubSubmission', () => {
+    it('should return non-empty data with strategy IDs', async () => {
+      const mockStrategiesRows: { site_strategy_id: number; name: string }[] = [
+        { site_strategy_id: 1, name: 'strategy1' },
+        { site_strategy_id: 2, name: 'strategy2' }
+      ];
+      const mockStrategiesResponse = { rows: mockStrategiesRows, rowCount: 2 } as any as Promise<QueryResult<any>>;
+
+      const mockStratumsRows: SurveyStratumDetails[] = [
+        {
+          name: 'stratum1',
+          description: '',
+          survey_id: 1,
+          survey_stratum_id: 2,
+          revision_count: 0,
+          sample_stratum_count: 1
+        },
+        {
+          name: 'stratum2',
+          description: '',
+          survey_id: 1,
+          survey_stratum_id: 2,
+          revision_count: 0,
+          sample_stratum_count: 1
+        }
+      ];
+      const mockStratumsResponse = { rows: mockStratumsRows, rowCount: 2 } as any as Promise<QueryResult<any>>;
+
+      const dbConnectionObj = getMockDBConnection({
+        knex: sinon.stub().onFirstCall().resolves(mockStrategiesResponse).onSecondCall().resolves(mockStratumsResponse)
+      });
+
+      const repo = new SiteSelectionStrategyRepository(dbConnectionObj);
+
+      const surveyId = 1;
+
+      const response = await repo.getSiteSelectionDataForBioHubSubmission(surveyId);
+
+      expect(dbConnectionObj.knex).to.have.been.calledTwice;
+      expect(response).to.eql({ strategies: [1, 2], stratums: mockStratumsRows });
+    });
+
+    it('should return empty data', async () => {
+      const mockStrategiesRows: { site_strategy_id: number; name: string }[] = [];
+      const mockStrategiesResponse = { rows: mockStrategiesRows, rowCount: 0 } as any as Promise<QueryResult<any>>;
+
+      const mockStratumsRows: SurveyStratumDetails[] = [];
+      const mockStratumsResponse = { rows: mockStratumsRows, rowCount: 0 } as any as Promise<QueryResult<any>>;
+
+      const dbConnectionObj = getMockDBConnection({
+        knex: sinon.stub().onFirstCall().resolves(mockStrategiesResponse).onSecondCall().resolves(mockStratumsResponse)
+      });
+
+      const repo = new SiteSelectionStrategyRepository(dbConnectionObj);
+
+      const surveyId = 1;
+
+      const response = await repo.getSiteSelectionDataForBioHubSubmission(surveyId);
 
       expect(dbConnectionObj.knex).to.have.been.calledTwice;
       expect(response).to.eql({ strategies: [], stratums: mockStratumsRows });

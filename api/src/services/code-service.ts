@@ -1,4 +1,5 @@
 import { IDBConnection } from '../database/db';
+import { CodesetCategory } from '../models/biohub-create';
 import { CodeRepository, IAllCodeSets } from '../repositories/code-repository';
 import { ObservationEnvironments } from '../repositories/observation-repository/observation-repository.interface';
 import { getLogger } from '../utils/logger';
@@ -91,5 +92,29 @@ export class CodeService extends DBService {
       qualitative_environments,
       quantitative_environments
     };
+  }
+
+  /**
+   * Fetch all codeset categories with their codes for BioHub submission export.
+   * Transforms the raw database response into the CodesetCategory format.
+   *
+   * @return {*}  {Promise<CodesetCategory[]>}
+   * @memberof CodeService
+   */
+  async getAllCodesetCategories(): Promise<CodesetCategory[]> {
+    defaultLog.debug({ message: 'getAllCodesetCategories' });
+
+    const rawCategories = await this.codeRepository.getAllCodesetCategories();
+
+    // Transform to CodesetCategory format, converting all IDs to strings
+    return rawCategories.map((category) => ({
+      name: category.name,
+      description: category.description,
+      codes: category.codes.map((code) => ({
+        id: String(code.id),
+        name: code.name,
+        description: code.description
+      }))
+    }));
   }
 }

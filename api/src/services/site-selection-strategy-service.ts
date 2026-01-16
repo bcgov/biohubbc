@@ -1,6 +1,7 @@
 import { IDBConnection } from '../database/db';
 import {
   SiteSelectionData,
+  SiteSelectionDataForBioHub,
   SiteSelectionStrategyRepository,
   SurveyStratum,
   SurveyStratumRecord
@@ -29,6 +30,7 @@ export class SiteSelectionStrategyService extends DBService {
 
   /**
    * Retrieves site selection strategies and stratums
+   * Returns strategy names (for frontend display)
    *
    * @param {number} surveyId
    * @return {*}  {Promise<SiteSelectionData>}
@@ -36,6 +38,18 @@ export class SiteSelectionStrategyService extends DBService {
    */
   async getSiteSelectionDataBySurveyId(surveyId: number): Promise<SiteSelectionData> {
     return this.siteSelectionStrategyRepository.getSiteSelectionDataBySurveyId(surveyId);
+  }
+
+  /**
+   * Retrieves site selection strategies and stratums for BioHub submission
+   * Returns strategy IDs (for BioHub submission)
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<SiteSelectionDataForBioHub>}
+   * @memberof SiteSelectionStrategyService
+   */
+  async getSiteSelectionDataForBioHubSubmission(surveyId: number): Promise<SiteSelectionDataForBioHub> {
+    return this.siteSelectionStrategyRepository.getSiteSelectionDataForBioHubSubmission(surveyId);
   }
 
   /**

@@ -15,18 +15,34 @@ describe('SiteSelectionStrategyService', () => {
   });
 
   describe('getSiteSelectionDataBySurveyId', () => {
-    it('should return site selection data', async () => {
+    it('should return site selection data with strategy names', async () => {
       const mockDbConnection = getMockDBConnection();
       const siteSelectionStrategyService = new SiteSelectionStrategyService(mockDbConnection);
 
       const siteSelectionStrategyRepoStub = sinon
         .stub(SiteSelectionStrategyRepository.prototype, 'getSiteSelectionDataBySurveyId')
-        .resolves({ strategies: ['A'], stratums: [{ name: 'A', description: 'A' } as SurveyStratumRecord] });
+        .resolves({ strategies: ['Strategy A'], stratums: [{ name: 'A', description: 'A' } as SurveyStratumRecord] });
 
       const response = await siteSelectionStrategyService.getSiteSelectionDataBySurveyId(1);
 
       expect(siteSelectionStrategyRepoStub).to.be.calledOnceWith(1);
-      expect(response).to.eql({ strategies: ['A'], stratums: [{ name: 'A', description: 'A' }] });
+      expect(response).to.eql({ strategies: ['Strategy A'], stratums: [{ name: 'A', description: 'A' }] });
+    });
+  });
+
+  describe('getSiteSelectionDataForBioHubSubmission', () => {
+    it('should return site selection data with strategy IDs', async () => {
+      const mockDbConnection = getMockDBConnection();
+      const siteSelectionStrategyService = new SiteSelectionStrategyService(mockDbConnection);
+
+      const siteSelectionStrategyRepoStub = sinon
+        .stub(SiteSelectionStrategyRepository.prototype, 'getSiteSelectionDataForBioHubSubmission')
+        .resolves({ strategies: [1], stratums: [{ name: 'A', description: 'A' } as SurveyStratumRecord] });
+
+      const response = await siteSelectionStrategyService.getSiteSelectionDataForBioHubSubmission(1);
+
+      expect(siteSelectionStrategyRepoStub).to.be.calledOnceWith(1);
+      expect(response).to.eql({ strategies: [1], stratums: [{ name: 'A', description: 'A' }] });
     });
   });
 
@@ -155,7 +171,7 @@ describe('SiteSelectionStrategyService', () => {
       const getSiteSelectionDataBySurveyId = sinon
         .stub(SiteSelectionStrategyRepository.prototype, 'getSiteSelectionDataBySurveyId')
         .resolves({
-          strategies: ['Stratified'],
+          strategies: ['Strategy A'],
           stratums: [
             { name: 'B', description: '', survey_stratum_id: 1 },
             { name: 'D', description: '', survey_stratum_id: 2 },

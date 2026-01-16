@@ -1316,17 +1316,32 @@ export class SurveyRepository extends BaseRepository {
               mt.method_technique_id,
               mt.name AS method_name,
               mt.description,
+              mt.method_lookup_id,
               ml.name AS method_lookup_name,
-              STRING_AGG(DISTINCT attractant_lookup.name, ';') AS attractants,
-              mt.distance_threshold,
+              mt.method_response_metric_id,
               rm.name AS response_metric,
+              STRING_AGG(DISTINCT attractant_lookup.name, ';') AS attractants,
+              -- Attractant IDs as JSON array
+              COALESCE(
+                  jsonb_agg(
+                      DISTINCT jsonb_build_object(
+                          'attractant_lookup_id', attractant_lookup.attractant_lookup_id
+                      )
+                  ) FILTER (
+                      WHERE attractant_lookup.attractant_lookup_id IS NOT NULL
+                  ),
+                  '[]'::jsonb
+              ) AS attractant_ids,
+              mt.distance_threshold,
 
-              -- Qualitative attribute aggregation, returning an empty array if no data is found
+              -- Qualitative attribute aggregation with IDs
               COALESCE(
                   jsonb_agg(
                       jsonb_build_object(
                           'ah', taq.name,
-                          'av', taqo.name
+                          'av', taqo.name,
+                          'technique_attribute_qualitative_id', taq.technique_attribute_qualitative_id,
+                          'technique_attribute_qualitative_option_id', taqo.technique_attribute_qualitative_option_id
                       )
                   ) FILTER (
                       WHERE taq.name IS NOT NULL
@@ -1334,12 +1349,13 @@ export class SurveyRepository extends BaseRepository {
                   )
               ) AS attrib_qual_data,  -- Qualitative attribute data
 
-              -- Quantitative attribute aggregation, returning an empty array if no data is found
+              -- Quantitative attribute aggregation with IDs
               COALESCE(
                   jsonb_agg(
                       DISTINCT jsonb_build_object(
                           'ah', taq_quant.name,
-                          'av', mtac.value
+                          'av', mtac.value,
+                          'technique_attribute_quantitative_id', taq_quant.technique_attribute_quantitative_id
                       )
                   ) FILTER (
                       WHERE taq_quant.name IS NOT NULL
@@ -1376,13 +1392,15 @@ export class SurveyRepository extends BaseRepository {
           WHERE
               mt.survey_id = ${surveyId}
           GROUP BY
-              mt.method_technique_id, mt.name, mt.description, ml.name, mt.distance_threshold, rm.name
+              mt.method_technique_id, mt.name, mt.description, mt.method_lookup_id, ml.name, mt.method_response_metric_id, rm.name, mt.distance_threshold
       ),
-      -- Get the vantage categories and their corresponding methods
+      -- Get the vantage categories and their corresponding methods with IDs
       vantage_data AS (
           SELECT
               mtv.method_technique_id,
+              vc.vantage_category_id,
               vc.name AS vh,  -- Vantage category (i.e. air, arboreal, ground)
+              v.vantage_id,
               v.name AS vv    -- Vantage value (i.e. helicopter, stationary fixture, horseback)
           FROM
               method_technique mt
@@ -1410,7 +1428,9 @@ export class SurveyRepository extends BaseRepository {
               jsonb_agg(
                   jsonb_build_object(
                       'vh', vc.name,  -- Vantage category name (air, arboreal, ground)
-                      'vv', vd.vv
+                      'vantage_category_id', vc.vantage_category_id,
+                      'vv', vd.vv,
+                      'vantage_id', vd.vantage_id
                   )
                   ORDER BY vc.name  -- Order alphabetically by vh
               ) AS vantage_data
@@ -1449,12 +1469,15 @@ export class SurveyRepository extends BaseRepository {
               ad.method_technique_id,
               ad.method_name,
               ad.description,
+              ad.method_lookup_id,
               ad.method_lookup_name,
-              ad.attractants,
-              ad.distance_threshold,
+              ad.method_response_metric_id,
               ad.response_metric,
+              ad.attractants,
+              ad.attractant_ids,
+              ad.distance_threshold,
 
-              -- Combine both qualitative and quantitative attributes, but only those that have data
+              -- Combine both qualitative and quantitative attributes with IDs
               jsonb_agg(
                   jsonb_build_object(
                       'ah', aa.attribute_name,  -- Include the attribute from the used_attributes CTE
@@ -1464,6 +1487,18 @@ export class SurveyRepository extends BaseRepository {
                           -- Check for value in quantitative data
                           (SELECT e2->>'av' FROM jsonb_array_elements(ad.attrib_quan_data) AS e2 WHERE e2->>'ah' = aa.attribute_name LIMIT 1),
                           NULL  -- If no value found, assign null
+                      ),
+                      'technique_attribute_qualitative_id', COALESCE(
+                          (SELECT (e2->>'technique_attribute_qualitative_id')::int FROM jsonb_array_elements(ad.attrib_qual_data) AS e2 WHERE e2->>'ah' = aa.attribute_name LIMIT 1),
+                          NULL
+                      ),
+                      'technique_attribute_qualitative_option_id', COALESCE(
+                          (SELECT (e2->>'technique_attribute_qualitative_option_id')::int FROM jsonb_array_elements(ad.attrib_qual_data) AS e2 WHERE e2->>'ah' = aa.attribute_name LIMIT 1),
+                          NULL
+                      ),
+                      'technique_attribute_quantitative_id', COALESCE(
+                          (SELECT (e2->>'technique_attribute_quantitative_id')::int FROM jsonb_array_elements(ad.attrib_quan_data) AS e2 WHERE e2->>'ah' = aa.attribute_name LIMIT 1),
+                          NULL
                       )
                   )
                   ORDER BY aa.attribute_name  -- Sort alphabetically by attribute name
@@ -1480,20 +1515,26 @@ export class SurveyRepository extends BaseRepository {
               ad.method_technique_id,
               ad.method_name,
               ad.description,
+              ad.method_lookup_id,
               ad.method_lookup_name,
-              ad.attractants,
-              ad.distance_threshold,
+              ad.method_response_metric_id,
               ad.response_metric,
+              ad.attractants,
+              ad.attractant_ids,
+              ad.distance_threshold,
               vd.vantage_data
       )
       SELECT
           cd.method_technique_id,
           cd.method_name,
           cd.description,
+          cd.method_lookup_id,
           cd.method_lookup_name,
-          cd.attractants,
-          cd.distance_threshold,
+          cd.method_response_metric_id,
           cd.response_metric,
+          cd.attractants,
+          cd.attractant_ids,
+          cd.distance_threshold,
           cd.attrib_data,
           cd.vantage_data
       FROM combined_data cd
