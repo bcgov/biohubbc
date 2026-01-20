@@ -30,18 +30,18 @@ biohubbc-app:
   # App configuration
   app:
     nodeEnv: production
-    apiHost: api-biohubbc.apps.silver.devops.gov.bc.ca
+    apiHost: api-test-biohubbc.apps.silver.devops.gov.bc.ca
     featureFlags: APP_FF_SUBMIT_BIOHUB
 
     # BioHub Platform (aka: Backbone)
-    backbonePublicApiHost: "https://api-biohub-platform.apps.silver.devops.gov.bc.ca"
+    backbonePublicApiHost: "https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca"
 
     # Siteminder
-    siteminderLogoutURL: "https://logon7.gov.bc.ca/clp-cgi/logoff.cgi"
+    siteminderLogoutURL: "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi"
 
     # Keycloak
     keycloak:
-      host: "https://loginproxy.gov.bc.ca/auth"
+      host: "https://test.loginproxy.gov.bc.ca/auth"
     
   # Openshift Resources
   replicas: 2
@@ -55,7 +55,7 @@ biohubbc-app:
 
   # Route configuration
   route:
-    host: biohubbc.apps.silver.devops.gov.bc.ca
+    host: test-biohubbc.apps.silver.devops.gov.bc.ca
 
 # Values passed to biohubbc-db subchart
 biohubbc-db:
