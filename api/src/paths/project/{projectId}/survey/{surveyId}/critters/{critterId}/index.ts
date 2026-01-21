@@ -265,7 +265,17 @@ GET.apiDoc = {
                     type: 'array',
                     items: {
                       type: 'object',
-                      required: ['attachment_id', 'attachment_type', 'attachment_url'],
+                      required: [
+                        'attachment_id',
+                        'attachment_type',
+                        'attachment_url',
+                        'critterbase_capture_id',
+                        'critter_capture_attachment_id',
+                        'file_name',
+                        'file_size',
+                        'file_type',
+                        'key'
+                      ],
                       additionalProperties: false,
                       properties: {
                         attachment_id: {
@@ -279,6 +289,28 @@ GET.apiDoc = {
                         attachment_url: {
                           type: 'string',
                           format: 'uri'
+                        },
+                        critterbase_capture_id: {
+                          type: 'string',
+                          format: 'uuid'
+                        },
+                        critter_capture_attachment_id: {
+                          type: 'integer',
+                          minimum: 1
+                        },
+                        file_name: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        file_size: {
+                          type: 'integer',
+                          nullable: true
+                        },
+                        file_type: {
+                          type: 'string'
+                        },
+                        key: {
+                          type: 'string'
                         }
                       }
                     }
@@ -335,10 +367,13 @@ export function getSurveyCritter(): RequestHandler {
       }
 
       const getAttachmentsPromise = expand.includes('attachments')
-        ? critterAttachmentService.findAllCritterAttachments(surveyCritter.critter_id).then((response) => {
+        ? critterAttachmentService.findAllCritterAttachments(surveyCritter.critter_id).then(async (response) => {
+            const transformedCaptureAttachments = await critterAttachmentService.transformCaptureAttachmentsForResponse(
+              response.captureAttachments
+            );
             return {
               attachments: {
-                capture_attachments: response.captureAttachments
+                capture_attachments: transformedCaptureAttachments
                 // TODO: add mortality attachments
               }
             };
