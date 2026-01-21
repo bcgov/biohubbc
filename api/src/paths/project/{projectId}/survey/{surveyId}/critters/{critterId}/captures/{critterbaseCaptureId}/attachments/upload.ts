@@ -5,11 +5,7 @@ import { getDBConnection } from '../../../../../../../../../../database/db';
 import { fileSchema } from '../../../../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../../../../request-handlers/security/authorization';
 import { CritterAttachmentService } from '../../../../../../../../../../services/critter-attachment-service';
-import {
-  deleteFileFromS3,
-  generateS3FileKey,
-  uploadFileToS3
-} from '../../../../../../../../../../utils/file-utils';
+import { deleteFileFromS3, generateS3FileKey, uploadFileToS3 } from '../../../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../../../utils/logger';
 
 const defaultLog = getLogger(

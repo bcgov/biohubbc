@@ -145,9 +145,7 @@ export class CritterAttachmentService extends DBService {
    * @param {CritterCaptureAttachmentRecord[]} attachments - The capture attachment records
    * @return {*}  {Promise<Array<{attachment_id: number; attachment_type: 'photo' | 'video'; attachment_url: string; critterbase_capture_id: string; critter_capture_attachment_id: number; file_name: string | null; file_size: number | null; file_type: string; key: string}>>}
    */
-  async transformCaptureAttachmentsForResponse(
-    attachments: CritterCaptureAttachmentRecord[]
-  ): Promise<
+  async transformCaptureAttachmentsForResponse(attachments: CritterCaptureAttachmentRecord[]): Promise<
     Array<{
       attachment_id: number;
       attachment_type: 'photo' | 'video';

@@ -368,8 +368,9 @@ export function getSurveyCritter(): RequestHandler {
 
       const getAttachmentsPromise = expand.includes('attachments')
         ? critterAttachmentService.findAllCritterAttachments(surveyCritter.critter_id).then(async (response) => {
-            const transformedCaptureAttachments =
-              await critterAttachmentService.transformCaptureAttachmentsForResponse(response.captureAttachments);
+            const transformedCaptureAttachments = await critterAttachmentService.transformCaptureAttachmentsForResponse(
+              response.captureAttachments
+            );
             return {
               attachments: {
                 capture_attachments: transformedCaptureAttachments
