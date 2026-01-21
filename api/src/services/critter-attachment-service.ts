@@ -8,6 +8,7 @@ import {
   CritterCaptureAttachmentPayload,
   CritterMortalityAttachmentPayload
 } from '../repositories/critter-attachment-repository.interface';
+import { getS3SignedURL } from '../utils/file-utils';
 import { DBService } from './db-service';
 
 /**
@@ -102,5 +103,82 @@ export class CritterAttachmentService extends DBService {
       this.attachmentRepository.findCaptureAttachmentsByCritterId(critterId)
     ]);
     return { captureAttachments };
+  }
+
+  /**
+   * Video file extensions that map to 'video' attachment type.
+   */
+  private static readonly VIDEO_EXTENSIONS = ['.mp4', '.mov', '.wmv', '.ave'];
+
+  /**
+   * Determines the attachment type (photo or video) based on the file name extension.
+   *
+   * @param {string | null} fileName - The file name
+   * @return {*}  {'photo' | 'video'}
+   */
+  private static getAttachmentType(fileName: string | null): 'photo' | 'video' {
+    if (!fileName) {
+      return 'photo'; // Default to photo if no file name
+    }
+
+    const lowerFileName = fileName.toLowerCase();
+    const lastDotIndex = lowerFileName.lastIndexOf('.');
+
+    // If no extension found, default to photo
+    if (lastDotIndex === -1 || lastDotIndex === lowerFileName.length - 1) {
+      return 'photo';
+    }
+
+    const extension = lowerFileName.substring(lastDotIndex);
+
+    if (CritterAttachmentService.VIDEO_EXTENSIONS.includes(extension)) {
+      return 'video';
+    }
+
+    // Default to photo for image extensions or unknown extensions
+    return 'photo';
+  }
+
+  /**
+   * Transforms capture attachment records to match the API schema.
+   *
+   * @param {CritterCaptureAttachmentRecord[]} attachments - The capture attachment records
+   * @return {*}  {Promise<Array<{attachment_id: number; attachment_type: 'photo' | 'video'; attachment_url: string; critterbase_capture_id: string; critter_capture_attachment_id: number; file_name: string | null; file_size: number | null; file_type: string; key: string}>>}
+   */
+  async transformCaptureAttachmentsForResponse(
+    attachments: CritterCaptureAttachmentRecord[]
+  ): Promise<
+    Array<{
+      attachment_id: number;
+      attachment_type: 'photo' | 'video';
+      attachment_url: string;
+      critterbase_capture_id: string;
+      critter_capture_attachment_id: number;
+      file_name: string | null;
+      file_size: number | null;
+      file_type: string;
+      key: string;
+    }>
+  > {
+    const transformedAttachments = await Promise.all(
+      attachments.map(async (attachment) => {
+        const attachmentUrl = await getS3SignedURL(attachment.key);
+        const attachmentType = CritterAttachmentService.getAttachmentType(attachment.file_name);
+
+        return {
+          attachment_id: attachment.critter_capture_attachment_id,
+          attachment_type: attachmentType,
+          attachment_url: attachmentUrl || '',
+          critterbase_capture_id: attachment.critterbase_capture_id,
+          critter_capture_attachment_id: attachment.critter_capture_attachment_id,
+          file_name: attachment.file_name,
+          file_size: attachment.file_size,
+          file_type: attachment.file_type,
+          key: attachment.key
+        };
+      })
+    );
+
+    return transformedAttachments;
   }
 }

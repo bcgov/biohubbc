@@ -4,7 +4,7 @@ import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../../../../c
 import { getDBConnection } from '../../../../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../../../../request-handlers/security/authorization';
 import { CritterAttachmentService } from '../../../../../../../../../../services/critter-attachment-service';
-import { bulkDeleteFilesFromS3 } from '../../../../../../../../../../utils/file-utils';
+import { deleteFileFromS3 } from '../../../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../../../utils/logger';
 
 const defaultLog = getLogger(
@@ -119,8 +119,8 @@ export function deleteCritterCaptureAttachments(): RequestHandler {
       // Delete the attachments from the database
       await critterAttachmentService.deleteCritterCaptureAttachments(surveyId, attachmentIds);
 
-      // Delete the attachments from S3
-      await bulkDeleteFilesFromS3(s3Keys);
+      // Delete the attachments from S3 individually (using individual deletes to avoid Content-MD5 requirement)
+      await Promise.all(s3Keys.map((key) => deleteFileFromS3(key)));
 
       await connection.commit();
 

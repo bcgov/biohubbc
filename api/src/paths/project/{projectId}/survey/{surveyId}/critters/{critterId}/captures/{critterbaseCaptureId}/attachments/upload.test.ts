@@ -33,7 +33,7 @@ describe('uploadCaptureAttachments', () => {
     const mockDeleteAttachments = sinon.stub(CritterAttachmentService.prototype, 'deleteCritterCaptureAttachments');
     const mockS3UploadFileToS3 = sinon.stub(S3, 'uploadFileToS3');
     const mockS3GenerateS3FileKey = sinon.stub(S3, 'generateS3FileKey').returns('S3KEY');
-    const mockBulkDeleteFilesFromS3 = sinon.stub(S3, 'bulkDeleteFilesFromS3');
+    const mockDeleteFileFromS3 = sinon.stub(S3, 'deleteFileFromS3').resolves({} as any);
 
     mockUpsertAttachment.resolves({ critter_capture_attachment_id: 1, key: 'S3KEY' });
     mockDeleteAttachments.resolves(['DELETE_S3_KEY']);
@@ -59,7 +59,7 @@ describe('uploadCaptureAttachments', () => {
     expect(mockDBConnection.open).to.have.been.calledOnce;
 
     expect(mockDeleteAttachments).to.have.been.calledOnceWithExactly(2, [1, 2]);
-    expect(mockBulkDeleteFilesFromS3).to.have.been.calledOnceWithExactly(['DELETE_S3_KEY']);
+    expect(mockDeleteFileFromS3).to.have.been.calledOnceWithExactly('DELETE_S3_KEY');
 
     expect(mockS3GenerateS3FileKey).to.have.been.calledOnceWithExactly({
       projectId: 1,
