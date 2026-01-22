@@ -22,7 +22,7 @@ import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import PublishSurveyIdDialog from 'components/publish/PublishSurveyDialog';
-import { FeatureFlagGuard, ProjectRoleGuard } from 'components/security/Guards';
+import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
@@ -172,39 +172,37 @@ const SurveyHeader = () => {
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
             <Stack flexDirection="row" alignItems="center" gap={2}>
               <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_PAGE} />
-              <FeatureFlagGuard featureFlags={['APP_FF_SUBMIT_BIOHUB']}>
-                <ProjectRoleGuard
-                  validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
-                  validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                  <Typography
-                    component="span"
-                    variant="body2"
-                    color="textSecondary"
-                    sx={{
-                      flex: '0 0 auto',
-                      mr: { sm: 0, md: 0.5 },
-                      order: { sm: 3, md: 0 }
-                    }}>
-                    {publishDate ? (
-                      <span>
-                        Status:&nbsp;&nbsp;<b>Published ({publishDate})</b>
-                      </span>
-                    ) : (
-                      <span>
-                        Status:&nbsp;&nbsp;<b>Unpublished</b>
-                      </span>
-                    )}
-                  </Typography>
-                  <Button
-                    title="Submit Survey Data and Documents"
-                    color="primary"
-                    variant="contained"
-                    onClick={() => setPublishSurveyDialogOpen(true)}
-                    style={{ minWidth: '7rem' }}>
-                    Publish
-                  </Button>
-                </ProjectRoleGuard>
-              </FeatureFlagGuard>
+              <ProjectRoleGuard
+                validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
+                validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
+                <Typography
+                  component="span"
+                  variant="body2"
+                  color="textSecondary"
+                  sx={{
+                    flex: '0 0 auto',
+                    mr: { sm: 0, md: 0.5 },
+                    order: { sm: 3, md: 0 }
+                  }}>
+                  {publishDate ? (
+                    <span>
+                      Status:&nbsp;&nbsp;<b>Published ({publishDate})</b>
+                    </span>
+                  ) : (
+                    <span>
+                      Status:&nbsp;&nbsp;<b>Unpublished</b>
+                    </span>
+                  )}
+                </Typography>
+                <Button
+                  title="Submit Survey Data and Documents"
+                  color="primary"
+                  variant="contained"
+                  onClick={() => setPublishSurveyDialogOpen(true)}
+                  style={{ minWidth: '7rem' }}>
+                  Publish
+                </Button>
+              </ProjectRoleGuard>
             </Stack>
 
             <Button
