@@ -888,9 +888,9 @@ export class PostSampleTechniqueDetailToBiohubObject implements BioHubSubmission
   child_features: BioHubSubmissionFeature[];
 
   constructor(
-    techniqueAttributeQualitativeId: number | null,
+    techniqueAttributeQualitativeId: string | null,
     techniqueAttributeQualitativeOptionId: number | null,
-    techniqueAttributeQuantitativeId: number | null
+    techniqueAttributeQuantitativeId: string | null
   ) {
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.SAMPLE_TECHNIQUE_DETAIL;

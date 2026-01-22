@@ -510,7 +510,7 @@ describe('Telemetry Features BioHub Integration', () => {
               attribute_value: '30 days',
               technique_attribute_qualitative_id: null,
               technique_attribute_qualitative_option_id: null,
-              technique_attribute_quantitative_id: 1
+              technique_attribute_quantitative_id: 'e0479006-f5ee-40cf-a33b-c1ffce393bf4'
             }
           ],
           vantage_data: [

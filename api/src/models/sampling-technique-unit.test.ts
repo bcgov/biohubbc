@@ -19,14 +19,14 @@ describe('PostSampleTechniqueToBiohubObject Unit Test', () => {
         {
           attribute_header: 'Duration',
           attribute_value: '30 days',
-          technique_attribute_qualitative_id: 10,
+          technique_attribute_qualitative_id: 'e0479006-f5ee-40cf-a33b-c1ffce393bf4',
           technique_attribute_qualitative_option_id: 20,
           technique_attribute_quantitative_id: null
         },
         {
           attribute_header: 'Flash Type',
           attribute_value: 'Infrared',
-          technique_attribute_qualitative_id: 11,
+          technique_attribute_qualitative_id: 'a1599008-f7ff-42ef-c55d-e3ffef5a5df6',
           technique_attribute_qualitative_option_id: 21,
           technique_attribute_quantitative_id: null
         }
