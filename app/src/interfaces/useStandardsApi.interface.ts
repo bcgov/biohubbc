@@ -1,7 +1,7 @@
 import {
   CBQualitativeMeasurementTypeDefinition,
   CBQuantitativeMeasurementTypeDefinition,
-  ICollectionUnit
+  ICollectionCategory
 } from './useCritterApi.interface';
 import { IMarkingColourOption, IMarkingTypeResponse } from './useMarkingApi.interface';
 
@@ -36,7 +36,7 @@ export interface ISpeciesStandards {
     key: string;
     value: string;
   }[];
-  ecologicalUnits: ICollectionUnit[];
+  ecologicalUnits: ICollectionCategory[];
 }
 
 /**

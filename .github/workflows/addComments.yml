@@ -10,7 +10,7 @@ on:
 
 jobs:
   addOpenshiftURLComment:
-    name: Add Openshift URL Comment
+    name: Add OpenShift URL Comment
     runs-on: ubuntu-latest
     timeout-minutes: 20
     steps:
@@ -19,7 +19,8 @@ jobs:
         with:
           issue-number: ${{ github.event.number }}
           body: |
-            Openshift URLs for the PR Deployment:
-            - App Route: https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca/
-            - Api Route: https://biohubbc-api-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca/
-            - Pods: https://console.apps.silver.devops.gov.bc.ca/k8s/ns/af2668-dev/pods?name=${{ github.event.number }}
+            OpenShift URLs for the PR Deployment:
+            - App Route: https://biohubbc-app-${{ github.event.number }}-${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev.apps.silver.devops.gov.bc.ca/
+            - API Route: https://biohubbc-api-${{ github.event.number }}-${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev.apps.silver.devops.gov.bc.ca/
+            - Pods: https://console.apps.silver.devops.gov.bc.ca/k8s/ns/${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev/pods?name=${{ github.event.number }}
+            - Helm Release: https://console.apps.silver.devops.gov.bc.ca/helm-releases/ns/${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev/release/pr-${{ github.event.number }}

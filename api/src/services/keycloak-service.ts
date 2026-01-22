@@ -3,25 +3,6 @@ import qs from 'qs';
 import { ApiGeneralError } from '../errors/api-error';
 import { getLogger } from '../utils/logger';
 
-type IDIRAttributes = {
-  idir_user_guid: [string];
-  idir_username: [string];
-  display_name: [string];
-  given_name: [string];
-  family_name: [string];
-};
-
-interface BCEIDBasicAttributes {
-  bceid_user_guid: [string];
-  bceid_username: [string];
-}
-
-type BCEIDBusinessAttributes = BCEIDBasicAttributes & {
-  bceid_business_guid: [string];
-  bceid_business_name: [string];
-  display_name: [string];
-};
-
 interface KeycloakIDIRUserRecord {
   username: string;
   firstName: string;
@@ -37,14 +18,6 @@ interface KeycloakIDIRUserRecord {
 interface KeycloakIDIRUserResponse {
   data: KeycloakIDIRUserRecord[];
 }
-
-export type KeycloakUser = {
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  attributes: IDIRAttributes | BCEIDBusinessAttributes;
-};
 
 const defaultLog = getLogger('services/keycloak-service');
 

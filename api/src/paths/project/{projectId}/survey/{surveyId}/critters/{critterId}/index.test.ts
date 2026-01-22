@@ -134,6 +134,24 @@ describe('getSurveyCritter', () => {
       .stub(CritterAttachmentService.prototype, 'findAllCritterAttachments')
       .resolves(mockAttachments);
 
+    const transformedAttachments = [
+      {
+        attachment_id: 1,
+        attachment_type: 'photo' as const,
+        attachment_url: 'https://s3.example.com/signed-url',
+        critterbase_capture_id: '222-222-222',
+        critter_capture_attachment_id: 1,
+        file_name: 'moose_picture.jpg',
+        file_size: 100,
+        file_type: 'Other',
+        key: 'project/1/survey/1/critter/3/attachment/1'
+      }
+    ];
+
+    const transformCaptureAttachmentsStub = sinon
+      .stub(CritterAttachmentService.prototype, 'transformCaptureAttachmentsForResponse')
+      .resolves(transformedAttachments);
+
     const getCritterStub = sinon.stub(CritterbaseService.prototype, 'getCritter').resolves(mockCritterbaseCritter);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -152,11 +170,12 @@ describe('getSurveyCritter', () => {
 
     expect(getCritterByIdStub).to.have.been.calledOnce;
     expect(findAllCritterAttachmentsStub).to.have.been.calledOnce;
+    expect(transformCaptureAttachmentsStub).to.have.been.calledOnceWithExactly(mockAttachments.captureAttachments);
     expect(getCritterStub).to.have.been.calledOnce;
 
     expect(mockRes.status).to.have.been.calledWith(200);
     expect(mockRes.json).to.have.been.calledWith({
-      attachments: { capture_attachments: mockAttachments.captureAttachments },
+      attachments: { capture_attachments: transformedAttachments },
       ...mockCritterbaseCritter,
       ...mockSimsCritter
     });
@@ -295,6 +314,24 @@ describe('getSurveyCritter', () => {
       .stub(CritterAttachmentService.prototype, 'findAllCritterAttachments')
       .resolves(mockAttachments);
 
+    const transformedAttachments = [
+      {
+        attachment_id: 1,
+        attachment_type: 'photo' as const,
+        attachment_url: 'https://s3.example.com/signed-url',
+        critterbase_capture_id: '222-222-222',
+        critter_capture_attachment_id: 1,
+        file_name: 'moose_picture.jpg',
+        file_size: 100,
+        file_type: 'Other',
+        key: 'project/1/survey/1/critter/3/attachment/1'
+      }
+    ];
+
+    const transformCaptureAttachmentsStub = sinon
+      .stub(CritterAttachmentService.prototype, 'transformCaptureAttachmentsForResponse')
+      .resolves(transformedAttachments);
+
     // Fail to find external critterbase record
     const getCritterStub = sinon.stub(CritterbaseService.prototype, 'getCritter').resolves(undefined);
 
@@ -319,6 +356,7 @@ describe('getSurveyCritter', () => {
 
       expect(getCritterByIdStub).to.have.been.calledOnce;
       expect(findAllCritterAttachmentsStub).to.have.been.calledOnce;
+      expect(transformCaptureAttachmentsStub).to.have.been.calledOnceWithExactly(mockAttachments.captureAttachments);
       expect(getCritterStub).to.have.been.calledOnce;
 
       expect(mockDBConnection.rollback).to.have.been.called;

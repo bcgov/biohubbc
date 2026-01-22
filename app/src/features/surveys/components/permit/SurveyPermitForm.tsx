@@ -130,7 +130,7 @@ const SurveyPermitForm: React.FC = () => {
             name="permit_used"
             value={getPermitUsedValue()}
             onChange={(event) => {
-              const permitsUsed = event.target.value === 'true' ? true : false;
+              const permitsUsed = event.target.value === 'true';
               setFieldValue('permit_used', permitsUsed);
               if (permitsUsed) {
                 setFieldValue('permit.permits', [SurveyPermitFormArrayItemInitialValues]);

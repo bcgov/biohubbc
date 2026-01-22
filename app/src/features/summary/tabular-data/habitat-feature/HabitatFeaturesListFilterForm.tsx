@@ -96,8 +96,18 @@ export const HabitatFeaturesListFilterForm = (props: IHabitatFeaturesListFilterF
               key="habitat-features-tsn-filter"
             />,
 
-            <SingleDateField name={'start_date'} label={'Observed after'} key="habitat-features-start-date-filter" />,
-            <SingleDateField name={'end_date'} label={'Observed before'} key="habitat-features-end-date-filter" />
+            <SingleDateField
+              name={'start_date'}
+              id="start_date"
+              label={'Observed after'}
+              key="habitat-features-start-date-filter"
+            />,
+            <SingleDateField
+              name={'end_date'}
+              id="end_date"
+              label={'Observed before'}
+              key="habitat-features-end-date-filter"
+            />
           ]}
         />
       )}

@@ -130,6 +130,36 @@ export class SurveyCritterService extends DBService {
   }
 
   /**
+   * Retrieves all critters details that are available to the user, based on their permissions.
+   *
+   * @param {boolean} isUserAdmin
+   * @param {(number | null)} systemUserId The system user id of the user making the request
+   * @param {IAnimalAdvancedFilters} [filterFields]
+   * @return {*}  {Promise<FindCrittersResponse[]>}
+   * @memberof SurveyCritterService
+   */
+  async findCrittersDetails(
+    isUserAdmin: boolean,
+    systemUserId: number | null,
+    filterFields?: IAnimalAdvancedFilters
+  ): Promise<ICritterDetailed[]> {
+    // The SIMS critter records the user has access to
+    const simsCritters = await this.critterRepository.findCritters(isUserAdmin, systemUserId, filterFields);
+    if (!Array.isArray(simsCritters) || simsCritters.length === 0) {
+      // Exit early if simsCritters is not an array or it's empty
+      return [];
+    }
+
+    // map sims critter id to critterbase uuid
+    const critterbaseCritterUUIDs = simsCritters.map((critter) => critter.critterbase_critter_id);
+
+    // Get detailed critter recordd from Critterbase
+    const critterbaseCritters = await this.critterbaseService.getMultipleCrittersByIdsDetailed(critterbaseCritterUUIDs);
+
+    return critterbaseCritters;
+  }
+
+  /**
    * Retrieves the count of all critters that are available to the user, based on their permissions and provided
    * filter criteria.
    *
@@ -326,5 +356,16 @@ export class SurveyCritterService extends DBService {
     }
 
     return critterAliasMap;
+  }
+
+  /**
+   * Get detailed mortality information by mortality ID
+   *
+   * @param {string} mortalityId - The mortality ID to fetch details for
+   * @return {Promise<any>} Detailed mortality information
+   * @memberof SurveyCritterService
+   */
+  async getDetailedMortalityById(mortalityId: string): Promise<any> {
+    return this.critterbaseService.getDetailedMortalityById(mortalityId);
   }
 }

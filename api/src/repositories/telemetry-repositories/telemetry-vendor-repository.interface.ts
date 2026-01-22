@@ -44,10 +44,19 @@ export const TelemetrySchema = z.object({
   latitude: z.number().nullable(), // Latitude of telemetry (Y axis)
   longitude: z.number().nullable(), // Longitude of telemetry (X axis)
   elevation: z.number().nullable(), // Elevation of telemetry in meters
-  temperature: z.number().nullable() // Temperature in Celsius
+  temperature: z.number().nullable(), // Temperature in Celsius
+  dop: z.number().nullable() // Dilution of Precision (pdop for Lotek, dop for Vectronic)
 });
 
 export type Telemetry = z.infer<typeof TelemetrySchema>;
+
+export const TelemetrySupplementary = z.object({
+  count: z.number(),
+  start_date: z.string().nullable(),
+  end_date: z.string().nullable()
+});
+
+export type TelemetrySupplementary = z.infer<typeof TelemetrySupplementary>;
 
 export const TelemetrySpatialSchema = z.object({
   telemetry_id: z.string(), // Telemetry ID (Primary Key)
@@ -58,5 +67,10 @@ export type TelemetrySpatial = z.infer<typeof TelemetrySpatialSchema>;
 
 export type TelemetryOptions = {
   pagination?: ApiPaginationOptions;
-  dateRange?: { startDate?: string; endDate?: string };
+  filters?: TelemetryFilters;
+};
+
+export type TelemetryFilters = {
+  startDate?: string;
+  endDate?: string;
 };

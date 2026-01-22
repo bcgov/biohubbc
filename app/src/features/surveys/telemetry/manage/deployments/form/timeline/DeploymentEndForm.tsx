@@ -6,8 +6,9 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import HelpButtonStack from 'components/buttons/HelpButtonStack';
 import AutocompleteField from 'components/fields/AutocompleteField';
-import { DateField } from 'components/fields/DateField';
+import SingleDateField from 'components/fields/SingleDateField';
 import { TimeField } from 'components/fields/TimeField';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
@@ -18,6 +19,7 @@ import { ICreateAnimalDeployment } from 'interfaces/useTelemetryApi.interface';
 import { useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { TransitionGroup } from 'react-transition-group';
+import { formatDateTime, hasRealTime } from 'utils/datetime';
 import yup from 'utils/YupSchema';
 
 // Types to know how the deployment ended, determining which form components to display
@@ -85,22 +87,24 @@ export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
   return (
     <Grid container spacing={3}>
       <Grid item xs={12} flex="1 1 auto">
-        <Typography color="textSecondary" mb={2}>
-          If applicable, select how the deployment ended. If due to a mortality, you must&nbsp;
-          {values.critter_id ? (
-            <Typography
-              sx={{
-                textDecoration: 'none'
-              }}
-              component={RouterLink}
-              to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/${values.critter_id}/mortality/create`}>
-              report the mortality
-            </Typography>
-          ) : (
-            'report the mortality'
-          )}
-          &nbsp;before removing the device.
-        </Typography>
+        <HelpButtonStack helpText="A device's deployment must end before re-deploying the device." mb={2}>
+          <Typography color="textSecondary">
+            If applicable, select how the deployment ended. If due to a mortality, you must&nbsp;
+            {values.critter_id ? (
+              <Typography
+                sx={{
+                  textDecoration: 'none'
+                }}
+                component={RouterLink}
+                to={`/admin/projects/${surveyContext.projectId}/surveys/${surveyContext.surveyId}/animals/${values.critter_id}/mortality/create`}>
+                report the mortality
+              </Typography>
+            ) : (
+              'report the mortality'
+            )}
+            &nbsp;before removing the device.
+          </Typography>
+        </HelpButtonStack>
 
         <RadioGroup
           aria-label="deployment-end"
@@ -185,14 +189,14 @@ export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
                   }}
                   options={captures.map((capture) => ({
                     value: capture.capture_id,
-                    label: dayjs(capture.capture_date).format(DATE_FORMAT.LongDateTimeFormat)
+                    label: formatDateTime(capture.capture_date, capture.capture_time)
                   }))}
                   sx={{ width: '100%' }}
                 />
               )}
               {deploymentEndType === 'fell_off' && (
                 <Box sx={{ width: '100%' }} display="flex">
-                  <DateField
+                  <SingleDateField
                     sx={{
                       '& .MuiOutlinedInput-root': {
                         borderTopRightRadius: 0,
@@ -218,10 +222,16 @@ export const DeploymentEndForm = (props: IDeploymentEndFormProps) => {
                     name="critterbase_end_mortality_id"
                     id="critterbase_end_mortality_id"
                     label={'End mortality event'}
-                    options={mortalities.map((mortality) => ({
-                      value: mortality.mortality_id,
-                      label: dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.LongDateTimeFormat)
-                    }))}
+                    options={mortalities.map((mortality) => {
+                      const isRealTime = hasRealTime(mortality.mortality_timestamp);
+
+                      return {
+                        value: mortality.mortality_id,
+                        label: isRealTime
+                          ? dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.MediumDateTimeFormat)
+                          : dayjs(mortality.mortality_timestamp).format(DATE_FORMAT.MediumDateFormat)
+                      };
+                    })}
                     sx={{ width: '100%' }}
                   />
                 </Box>

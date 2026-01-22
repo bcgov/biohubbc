@@ -27,7 +27,8 @@ describe('TelemetryVendorRepository', () => {
         latitude: -44.4114,
         longitude: 120.2835,
         elevation: null,
-        temperature: null
+        temperature: null,
+        dop: null
       };
 
       const mockResponse = {
@@ -107,7 +108,8 @@ describe('TelemetryVendorRepository', () => {
         latitude: -44.4114,
         longitude: 120.2835,
         elevation: null,
-        temperature: null
+        temperature: null,
+        dop: null
       };
 
       const mockQueryResponse = {
@@ -145,17 +147,20 @@ describe('TelemetryVendorRepository', () => {
     });
   });
 
-  describe('getTelemetryCountByDeploymentIds', () => {
+  describe('getTelemetrySupplementaryByDeploymentIds', () => {
     it('should return telemetry data count for a survey', async () => {
-      const mockQueryResponse = { rows: [{ count: 1 }] };
+      const mockQueryResponse = { rows: [{ count: 1, start_date: '2020-01-01', end_date: '2022-05-05' }] };
       const mockDbConnection = getMockDBConnection({ knex: sinon.stub().resolves(mockQueryResponse) });
       const telemetryVendorRepository = new TelemetryVendorRepository(mockDbConnection);
       const surveyId = 1;
       const deploymentIds = [1];
 
-      const response = await telemetryVendorRepository.getTelemetryCountByDeploymentIds(surveyId, deploymentIds);
+      const response = await telemetryVendorRepository.getTelemetrySupplementaryByDeploymentIds(
+        surveyId,
+        deploymentIds
+      );
 
-      expect(response).to.eql(mockQueryResponse.rows[0].count);
+      expect(response).to.eql(mockQueryResponse.rows[0]);
     });
   });
 
@@ -258,7 +263,8 @@ describe('TelemetryVendorRepository', () => {
         latitude: -44.4114,
         longitude: 120.2835,
         elevation: null,
-        temperature: null
+        temperature: null,
+        dop: null
       };
 
       const mockQueryResponse = {

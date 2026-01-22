@@ -1,0 +1,78 @@
+# Default values for biohubbc chart
+# This is a YAML-formatted file.
+
+# Global configuration
+global:
+  environment:
+    licensePlate: "af2668"
+    name: "" # Environment name (dev, test, prod)
+    id: "" # Environment id (PR, deploy)
+    changeId: "" # Change id (PR number)
+    ts: "" # Timestamp of the deployment
+
+# Component enablement flags
+app:
+  enabled: true
+
+database:
+  enabled: true
+
+database-setup:
+  enabled: true
+
+api:
+  enabled: true
+
+# Component-specific configurations
+# These will be passed through to the individual charts
+app:
+  enabled: true
+  environment:
+    licensePlate: "af2668"
+    name: ""
+    id: ""
+    changeId: ""
+    ts: ""
+  # Add any app-specific overrides here
+
+database:
+  enabled: true
+  environment:
+    licensePlate: "af2668"
+    name: ""
+    id: ""
+    changeId: ""
+    ts: ""
+  app:
+    name: biohubbc-db
+    nodeEnv: ""
+    timezone: America/Vancouver
+    postgresAdmin: ""
+    postgresAdminPassword: ""
+    postgresUser: ""
+    postgresUserPassword: ""
+    postgresUserApi: ""
+    postgresUserApiPassword: ""
+    postgresDb: ""
+    pgData: /var/lib/postgresql/data/17
+  # Add any database-specific overrides here
+
+database-setup:
+  enabled: true
+  environment:
+    licensePlate: "af2668"
+    name: ""
+    id: ""
+    changeId: ""
+    ts: ""
+  # Add any database-setup-specific overrides here
+
+api:
+  enabled: true
+  environment:
+    licensePlate: "af2668"
+    name: ""
+    id: ""
+    changeId: ""
+    ts: ""
+  # Add any api-specific overrides here

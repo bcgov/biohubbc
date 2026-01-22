@@ -10,14 +10,22 @@ ENV HOME=/opt/app-root/src
 
 RUN mkdir -p $HOME
 
-RUN chgrp -R 0 $HOME && \
-    chmod -R g+rwX $HOME
+# Local dev user (OpenShift will ignore USER at runtime anyway)
+RUN groupadd -g 1001 appuser || true && \
+    useradd -u 1001 -g 1001 -d "$HOME" appuser || true
 
 WORKDIR $HOME
 
 COPY . ./
 
-RUN npm ci --include=dev
+# Make everything owned by uid 1001, group 0, and group-writable
+RUN chown -R 1001:0 "$HOME" && \
+    chmod -R g+rwX "$HOME" && \
+    find "$HOME" -type d -exec chmod g+s {} \;
+
+# Install deps as root, then fix ownership again (node_modules etc.)
+RUN npm ci --include=dev && \
+    chown -R 1001:0 "$HOME"
 
 USER 1001
 

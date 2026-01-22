@@ -1,0 +1,103 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  annotations:
+    template.alpha.openshift.io/wait-for-ready: 'true'
+  name: {{ include "app.fullname" . }}
+  namespace: {{ include "environment.namespace" . }}
+  labels:
+    {{- include "app.labels" . | nindent 4 }}
+  annotations:
+    {{- include "app.annotations" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      name: {{ include "app.fullname" . | quote }}
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        name: {{ include "app.fullname" . | quote }}
+        role: db
+    spec:
+      containers:
+        - name: postgresql
+          env:
+            - name: POSTGRES_DB
+              valueFrom:
+                secretKeyRef:
+                  key: database-name
+                  name: {{ include "app.fullname" . }}
+            - name: POSTGRES_USER
+              valueFrom:
+                secretKeyRef:
+                  key: database-admin
+                  name: {{ include "app.fullname" . }}
+            - name: POSTGRES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: database-admin-password
+                  name: {{ include "app.fullname" . }}
+            - name: PGDATA
+              value: {{ .Values.app.pgData }}
+            - name: PGOPTIONS
+              value: '-c maintenance_work_mem=128MB'
+            - name: PGTZ
+              value: {{ .Values.app.timezone }}
+          image: {{ .Values.image.registry }}/{{ .Values.image.image }}:{{ include "app.imageTag" . }}
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 5432
+              protocol: TCP
+          startupProbe:
+            exec:
+              command:
+                - '/bin/sh'
+                - '-i'
+                - '-c'
+                - psql -h 127.0.0.1 -U $POSTGRES_USER -q -d $POSTGRES_DB -c 'SELECT 1'
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 10
+            successThreshold: 1
+            failureThreshold: 30
+          readinessProbe:
+            exec:
+              command:
+                - '/bin/sh'
+                - '-i'
+                - '-c'
+                - psql -h 127.0.0.1 -U $POSTGRES_USER -q -d $POSTGRES_DB -c 'SELECT 1'
+            initialDelaySeconds: 0
+            periodSeconds: 30
+            timeoutSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          livenessProbe:
+            tcpSocket:
+              port: 5432
+            initialDelaySeconds: 0
+            periodSeconds: 30
+            timeoutSeconds: 10
+            successThreshold: 1
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
+          securityContext: {}
+          terminationMessagePath: '/dev/termination-log'
+          volumeMounts:
+            - name: {{ include "app.fullname" . }}-data
+              mountPath: '/var/lib/postgresql/data'
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      volumes:
+        - name: {{ include "app.fullname" . }}-data
+          persistentVolumeClaim:
+            claimName: {{ default (include "app.fullname" .) .Values.persistence.existingClaim }}

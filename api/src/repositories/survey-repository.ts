@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import SQL from 'sql-template-strings';
+import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
@@ -16,27 +16,6 @@ import {
 import { IPostCollectionUnit } from '../services/critterbase-service';
 import { ApiPaginationOptions } from '../zod-schema/pagination';
 import { BaseRepository } from './base-repository';
-
-export interface IGetSpeciesData {
-  itis_tsn: number;
-}
-
-export interface IObservationSubmissionInsertDetails {
-  surveyId: number;
-  source: string;
-  inputFileName?: string;
-  inputKey?: string;
-  outputFileName?: string;
-  outputKey?: string;
-}
-
-export interface IObservationSubmissionUpdateDetails {
-  submissionId: number;
-  inputFileName?: string;
-  inputKey?: string;
-  outputFileName?: string;
-  outputKey?: string;
-}
 
 export interface ISurveyProprietorModel {
   first_nations_id: number;
@@ -1281,5 +1260,285 @@ export class SurveyRepository extends BaseRepository {
     const response = await this.connection.knex(queryBuilder);
 
     return response.rowCount ?? 0;
+  }
+
+  /**
+   * Build the survey export periods records query
+   *
+   * @static
+   * @param {number} surveyId
+   * @returns {SQLStatement}
+   * @memberof SurveyRepository
+   */
+  static getSamplePeriodsBySurveyId(surveyId: number): SQLStatement {
+    return SQL`
+        SELECT * FROM
+          survey_sample_period
+        WHERE
+          survey_id = ${surveyId};
+      `;
+  }
+
+  /**
+   * Build the survey export sites records query
+   *
+   * @static
+   * @param {number} surveyId
+   * @returns {SQLStatement}
+   * @memberof SurveyRepository
+   */
+  static getSampleSitesBySurveyId(surveyId: number): SQLStatement {
+    return SQL`
+        SELECT
+          survey_sample_site_id,
+          name,
+          description,
+          ST_AsText(ST_GeomFromGeoJSON(geojson->'geometry'::text)) AS geometry_wkt
+        FROM
+          survey_sample_site
+        WHERE
+          survey_id = ${surveyId};
+      `;
+  }
+
+  /**
+   * Build the survey export techniques records query
+   *
+   * @static
+   * @param {number} surveyId
+   * @returns {SQLStatement}
+   * @memberof SurveyRepository
+   */
+  static getSampleTechniquesBySurveyId(surveyId: number): SQLStatement {
+    return SQL`
+      WITH aggregated_data AS (
+          SELECT
+              mt.method_technique_id,
+              mt.name AS method_name,
+              mt.description,
+              mt.method_lookup_id,
+              ml.name AS method_lookup_name,
+              mt.method_response_metric_id,
+              rm.name AS response_metric,
+              STRING_AGG(DISTINCT attractant_lookup.name, ';') AS attractants,
+              -- Attractant IDs as JSON array
+              COALESCE(
+                  jsonb_agg(
+                      DISTINCT jsonb_build_object(
+                          'attractant_lookup_id', attractant_lookup.attractant_lookup_id
+                      )
+                  ) FILTER (
+                      WHERE attractant_lookup.attractant_lookup_id IS NOT NULL
+                  ),
+                  '[]'::jsonb
+              ) AS attractant_ids,
+              mt.distance_threshold,
+
+              -- Qualitative attribute aggregation with IDs
+              COALESCE(
+                  jsonb_agg(
+                      jsonb_build_object(
+                          'ah', taq.name,
+                          'av', taqo.name,
+                          'technique_attribute_qualitative_id', taq.technique_attribute_qualitative_id,
+                          'technique_attribute_qualitative_option_id', taqo.technique_attribute_qualitative_option_id
+                      )
+                  ) FILTER (
+                      WHERE taq.name IS NOT NULL
+                          AND taqo.name IS NOT NULL
+                  )
+              ) AS attrib_qual_data,  -- Qualitative attribute data
+
+              -- Quantitative attribute aggregation with IDs
+              COALESCE(
+                  jsonb_agg(
+                      DISTINCT jsonb_build_object(
+                          'ah', taq_quant.name,
+                          'av', mtac.value,
+                          'technique_attribute_quantitative_id', taq_quant.technique_attribute_quantitative_id
+                      )
+                  ) FILTER (
+                      WHERE taq_quant.name IS NOT NULL
+                          AND mtac.value IS NOT NULL
+                  )
+              ) AS attrib_quan_data  -- Quantitative attribute data
+
+          FROM
+              method_technique mt
+          LEFT JOIN method_lookup ml
+              ON mt.method_lookup_id = ml.method_lookup_id
+          LEFT JOIN method_technique_attractant mta
+              ON mt.method_technique_id = mta.method_technique_id
+          LEFT JOIN attractant_lookup attractant_lookup
+              ON mta.attractant_lookup_id = attractant_lookup.attractant_lookup_id
+          LEFT JOIN method_response_metric rm
+              ON mt.method_response_metric_id = rm.method_response_metric_id
+          LEFT JOIN method_technique_attribute_qualitative mtaq
+              ON mt.method_technique_id = mtaq.method_technique_id
+          LEFT JOIN method_lookup_attribute_qualitative mlaq
+              ON mtaq.method_lookup_attribute_qualitative_id = mlaq.method_lookup_attribute_qualitative_id
+          LEFT JOIN technique_attribute_qualitative taq
+              ON mlaq.technique_attribute_qualitative_id = taq.technique_attribute_qualitative_id
+          LEFT JOIN method_lookup_attribute_qualitative_option mlaqo
+              ON mtaq.method_lookup_attribute_qualitative_option_id = mlaqo.method_lookup_attribute_qualitative_option_id
+          LEFT JOIN technique_attribute_qualitative_option taqo
+              ON mlaqo.technique_attribute_qualitative_option_id = taqo.technique_attribute_qualitative_option_id
+          LEFT JOIN method_technique_attribute_quantitative mtac
+              ON mt.method_technique_id = mtac.method_technique_id
+          LEFT JOIN method_lookup_attribute_quantitative mlaq_quant
+              ON mtac.method_lookup_attribute_quantitative_id = mlaq_quant.method_lookup_attribute_quantitative_id
+          LEFT JOIN technique_attribute_quantitative taq_quant
+              ON mlaq_quant.technique_attribute_quantitative_id = taq_quant.technique_attribute_quantitative_id
+          WHERE
+              mt.survey_id = ${surveyId}
+          GROUP BY
+              mt.method_technique_id, mt.name, mt.description, mt.method_lookup_id, ml.name, mt.method_response_metric_id, rm.name, mt.distance_threshold
+      ),
+      -- Get the vantage categories and their corresponding methods with IDs
+      vantage_data AS (
+          SELECT
+              mtv.method_technique_id,
+              vc.vantage_category_id,
+              vc.name AS vh,  -- Vantage category (i.e. air, arboreal, ground)
+              v.vantage_id,
+              v.name AS vv    -- Vantage value (i.e. helicopter, stationary fixture, horseback)
+          FROM
+              method_technique mt
+          LEFT JOIN method_technique_vantage mtv
+              ON mt.method_technique_id = mtv.method_technique_id
+          LEFT JOIN vantage_method vm
+              ON mtv.vantage_method_id = vm.vantage_method_id
+          LEFT JOIN vantage v
+              ON vm.vantage_id = v.vantage_id
+          LEFT JOIN vantage_category vc
+              ON v.vantage_category_id = vc.vantage_category_id
+          WHERE
+              mt.survey_id = ${surveyId}
+      ),
+      -- Identify used vantage categories that have non-null 'vv' values
+      used_vantages AS (
+          SELECT DISTINCT vh
+          FROM vantage_data
+          WHERE vv IS NOT NULL
+      ),
+      -- Ensure we only keep relevant vantage categories with non-null 'vv' values
+      method_technique_data AS (
+          SELECT
+              mt.method_technique_id,
+              jsonb_agg(
+                  jsonb_build_object(
+                      'vh', vc.name,  -- Vantage category name (air, arboreal, ground)
+                      'vantage_category_id', vc.vantage_category_id,
+                      'vv', vd.vv,
+                      'vantage_id', vd.vantage_id
+                  )
+                  ORDER BY vc.name  -- Order alphabetically by vh
+              ) AS vantage_data
+          FROM method_technique mt
+          LEFT JOIN vantage_category vc
+              ON vc.name IN (SELECT vh FROM used_vantages)
+          LEFT JOIN vantage_data vd
+              ON mt.method_technique_id = vd.method_technique_id
+              AND vc.name = vd.vh
+          WHERE mt.survey_id = ${surveyId}
+          GROUP BY mt.method_technique_id
+      ),
+      -- Get all distinct attributes (qualitative and quantitative) that are used in any record
+      used_attributes AS (
+          SELECT DISTINCT taq.name AS attribute_name
+          FROM technique_attribute_qualitative taq
+          WHERE EXISTS (
+              SELECT 1
+              FROM aggregated_data ad
+              CROSS JOIN jsonb_array_elements(ad.attrib_qual_data) AS e2
+              WHERE e2->>'ah' = taq.name
+          )
+          UNION
+          SELECT DISTINCT taq_quant.name AS attribute_name
+          FROM technique_attribute_quantitative taq_quant
+          WHERE EXISTS (
+              SELECT 1
+              FROM aggregated_data ad
+              CROSS JOIN jsonb_array_elements(ad.attrib_quan_data) AS e2
+              WHERE e2->>'ah' = taq_quant.name
+          )
+      ),
+      -- Combine both attributes and vantage data
+      combined_data AS (
+          SELECT
+              ad.method_technique_id,
+              ad.method_name,
+              ad.description,
+              ad.method_lookup_id,
+              ad.method_lookup_name,
+              ad.method_response_metric_id,
+              ad.response_metric,
+              ad.attractants,
+              ad.attractant_ids,
+              ad.distance_threshold,
+
+              -- Combine both qualitative and quantitative attributes with IDs
+              jsonb_agg(
+                  jsonb_build_object(
+                      'ah', aa.attribute_name,  -- Include the attribute from the used_attributes CTE
+                      'av', COALESCE(
+                          -- Check for value in qualitative data first
+                          (SELECT e2->>'av' FROM jsonb_array_elements(ad.attrib_qual_data) AS e2 WHERE e2->>'ah' = aa.attribute_name LIMIT 1),
+                          -- Check for value in quantitative data
+                          (SELECT e2->>'av' FROM jsonb_array_elements(ad.attrib_quan_data) AS e2 WHERE e2->>'ah' = aa.attribute_name LIMIT 1),
+                          NULL  -- If no value found, assign null
+                      ),
+                      'technique_attribute_qualitative_id', COALESCE(
+                          (SELECT e2->>'technique_attribute_qualitative_id' FROM jsonb_array_elements(ad.attrib_qual_data) AS e2 WHERE e2->>'ah' = aa.attribute_name LIMIT 1),
+                          NULL
+                      ),
+                      'technique_attribute_qualitative_option_id', COALESCE(
+                          (SELECT (e2->>'technique_attribute_qualitative_option_id')::int FROM jsonb_array_elements(ad.attrib_qual_data) AS e2 WHERE e2->>'ah' = aa.attribute_name LIMIT 1),
+                          NULL
+                      ),
+                      'technique_attribute_quantitative_id', COALESCE(
+                          (SELECT e2->>'technique_attribute_quantitative_id' FROM jsonb_array_elements(ad.attrib_quan_data) AS e2 WHERE e2->>'ah' = aa.attribute_name LIMIT 1),
+                          NULL
+                      )
+                  )
+                  ORDER BY aa.attribute_name  -- Sort alphabetically by attribute name
+              ) AS attrib_data,
+
+              -- Include only the relevant vantage data
+              vd.vantage_data
+          FROM aggregated_data ad
+          LEFT JOIN used_attributes aa
+              ON true  -- We want all used attributes to be considered here
+          LEFT JOIN method_technique_data vd
+              ON ad.method_technique_id = vd.method_technique_id
+          GROUP BY
+              ad.method_technique_id,
+              ad.method_name,
+              ad.description,
+              ad.method_lookup_id,
+              ad.method_lookup_name,
+              ad.method_response_metric_id,
+              ad.response_metric,
+              ad.attractants,
+              ad.attractant_ids,
+              ad.distance_threshold,
+              vd.vantage_data
+      )
+      SELECT
+          cd.method_technique_id,
+          cd.method_name,
+          cd.description,
+          cd.method_lookup_id,
+          cd.method_lookup_name,
+          cd.method_response_metric_id,
+          cd.response_metric,
+          cd.attractants,
+          cd.attractant_ids,
+          cd.distance_threshold,
+          cd.attrib_data,
+          cd.vantage_data
+      FROM combined_data cd
+      ORDER BY cd.method_technique_id;
+    `;
   }
 }

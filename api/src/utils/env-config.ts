@@ -52,6 +52,7 @@ export const EnvSchema = z.object({
   MAX_REQ_BODY_SIZE: ZodEnvNumber,
   MAX_UPLOAD_NUM_FILES: ZodEnvNumber,
   MAX_UPLOAD_FILE_SIZE: ZodEnvNumber,
+  SUBMISSION_UPLOAD_MAX_SIZE: ZodEnvNumber, // Maximum file size for BioHub submission TAR files (bytes)
 
   // External Services
   CB_API_HOST: ZodEnvString,
@@ -63,8 +64,8 @@ export const EnvSchema = z.object({
 
   // Biohub
   BACKBONE_INTERNAL_API_HOST: ZodEnvString,
-  BACKBONE_INTAKE_PATH: ZodEnvString,
-  BACKBONE_ARTIFACT_INTAKE_PATH: ZodEnvString,
+  BACKBONE_SUBMISSION_UPLOAD_PATH: ZodEnvString,
+  BACKBONE_UPLOAD_COMPLETE_PATH: ZodEnvString,
   BIOHUB_TAXON_PATH: ZodEnvString,
   BIOHUB_TAXON_TSN_PATH: ZodEnvString,
 

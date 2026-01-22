@@ -74,8 +74,18 @@ export const ObservationsListFilterForm = (props: IObservationsListFilterFormPro
               key="observations-tsn-filter"
             />,
 
-            <SingleDateField name={'start_date'} label={'Observed after'} key="observations-start-date-filter" />,
-            <SingleDateField name={'end_date'} label={'Observed before'} key="observations-end-date-filter" />
+            <SingleDateField
+              name={'start_date'}
+              id="start_date"
+              label={'Observed after'}
+              key="observations-start-date-filter"
+            />,
+            <SingleDateField
+              name={'end_date'}
+              id="end_date"
+              label={'Observed before'}
+              key="observations-end-date-filter"
+            />
           ]}
         />
       )}

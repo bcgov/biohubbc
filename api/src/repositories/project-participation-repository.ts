@@ -1,6 +1,5 @@
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
-import { PROJECT_ROLE } from '../constants/roles';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { SystemUserWithRoles } from '../models/system-user-view';
@@ -39,11 +38,6 @@ export const ProjectParticipationRecord = z.object({
 });
 
 export type ProjectParticipationRecord = z.infer<typeof ProjectParticipationRecord>;
-
-export interface IInsertProjectParticipant {
-  system_user_id: number;
-  role: PROJECT_ROLE;
-}
 
 export const UserProjectParticipation = z.object({
   project_id: z.number(),
@@ -102,13 +96,13 @@ export class ProjectParticipationRepository extends BaseRepository {
 
   async updateProjectParticipationRole(projectParticipationId: number, role: string): Promise<void> {
     const sql = SQL`
-      UPDATE project_participation 
+      UPDATE project_participation
       SET project_role_id = (
-        SELECT project_role_id 
-        FROM project_role 
-        WHERE name = ${role} 
+        SELECT project_role_id
+        FROM project_role
+        WHERE name = ${role}
         AND record_end_date IS NULL
-      ) 
+      )
       WHERE project_participation_id = ${projectParticipationId};
     `;
     await this.connection.sql(sql);
@@ -565,13 +559,13 @@ export class ProjectParticipationRepository extends BaseRepository {
         array_remove(array_agg(pp2.name), NULL) as project_role_permissions
       FROM
         project_participation pp
-      LEFT JOIN 
+      LEFT JOIN
         project_role pr
         ON pp.project_role_id = pr.project_role_id
-      LEFT JOIN 
+      LEFT JOIN
         project_role_permission prp
         ON pp.project_role_id = prp.project_role_id
-      LEFT JOIN 
+      LEFT JOIN
         project_permission pp2
         ON pp2.project_permission_id = prp.project_permission_id
       LEFT JOIN

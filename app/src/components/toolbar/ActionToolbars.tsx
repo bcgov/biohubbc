@@ -1,6 +1,6 @@
 import Box from '@mui/material/Box';
 import Button, { ButtonProps } from '@mui/material/Button';
-import IconButton, { IconButtonProps } from '@mui/material/IconButton';
+import IconButton from '@mui/material/IconButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
@@ -122,7 +122,6 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
 interface ICustomMenuIconButtonProps {
   buttonTitle: string;
   buttonIcon: ReactNode;
-  buttonProps?: Partial<IconButtonProps>;
   menuItems: IMenuToolbarItem[];
 }
 

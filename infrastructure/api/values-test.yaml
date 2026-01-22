@@ -1,0 +1,61 @@
+# Test environment values for SIMS
+environment:
+  name: test
+  id: deploy
+  
+# API configuration
+app:
+  nodeEnv: production
+  nodeOptions: --max_old_space_size=3000 # 75% of memoryLimit (bytes)
+  appHost: test-biohubbc.apps.silver.devops.gov.bc.ca
+  featureFlags: ""
+
+  # BioHub Platform (aka: Backbone)
+  backboneInternalApiHost: "https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca"
+  backbonePublicApiHost: "https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca"
+  
+  # Critterbase
+  critterbaseApiHost: "https://moe-critterbase-api-test.apps.silver.devops.gov.bc.ca/api"
+
+  # Keycloak
+  keycloak:
+    host: "https://test.loginproxy.gov.bc.ca/auth"
+    cssApi:
+      environment: test
+
+  # Object Store (S3)
+  objectStore:
+    keyPrefix: sims
+    
+  # Logging
+  logging:
+    level: warn
+    levelFile: debug
+    fileMaxFiles: 10
+
+  # API Validation
+  apiResponseValidationEnabled: true
+  databaseResponseValidationEnabled: true
+
+  # Telemetry
+  telemetry:
+    disabled: false
+    deviceLimit: -1 # -1 means no limit
+
+# Openshift Resources
+replicas: 2
+resources:
+  requests:
+    cpu: 50m
+    memory: 100Mi
+  limits:
+    cpu: 1000m
+    memory: 4Gi
+
+# Volume for logs and persistent data
+persistence:
+  existingClaim: "biohubbc-api-test"
+
+# Route configuration (OpenShift)
+route:
+  host: api-test-biohubbc.apps.silver.devops.gov.bc.ca

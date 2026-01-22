@@ -37,6 +37,13 @@ export const SiteSelectionData = z.object({
 
 export type SiteSelectionData = z.infer<typeof SiteSelectionData>;
 
+export const SiteSelectionDataForBioHub = z.object({
+  strategies: z.array(z.number()),
+  stratums: z.array(SurveyStratumRecord)
+});
+
+export type SiteSelectionDataForBioHub = z.infer<typeof SiteSelectionDataForBioHub>;
+
 const defaultLog = getLogger('repositories/site-selection-strategy-repository');
 
 /**
@@ -49,6 +56,7 @@ const defaultLog = getLogger('repositories/site-selection-strategy-repository');
 export class SiteSelectionStrategyRepository extends BaseRepository {
   /**
    * Retrieves the site selection strategies and stratums for the given survey
+   * Returns strategy names (for frontend display)
    *
    * @param {number} surveyId
    * @return {*}  {Promise<SiteSelectionData>}
@@ -58,7 +66,7 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
     defaultLog.debug({ label: 'getSiteSelectionDataBySurveyId', surveyId });
 
     const strategiesQuery = getKnex()
-      .select('ss.name')
+      .select('ss.site_strategy_id', 'ss.name')
       .from('survey_site_strategy as sss')
       .where('sss.survey_id', surveyId)
       .leftJoin('site_strategy as ss', 'ss.site_strategy_id', 'sss.site_strategy_id');
@@ -78,11 +86,54 @@ export class SiteSelectionStrategyRepository extends BaseRepository {
       .groupBy('ss.survey_stratum_id', 'ss.survey_id', 'ss.name', 'ss.description', 'ss.revision_count');
 
     const [strategiesResponse, stratumsResponse] = await Promise.all([
-      this.connection.knex(strategiesQuery, z.object({ name: z.string() })),
+      this.connection.knex(strategiesQuery, z.object({ site_strategy_id: z.number(), name: z.string() })),
       this.connection.knex(stratumsQuery, SurveyStratumDetails)
     ]);
 
     const strategies = strategiesResponse.rows.map((row) => row.name);
+
+    const stratums = stratumsResponse.rows;
+
+    return { strategies, stratums };
+  }
+
+  /**
+   * Retrieves the site selection strategies and stratums for BioHub submission
+   * Returns strategy IDs (for BioHub submission)
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<SiteSelectionDataForBioHub>}
+   * @memberof SurveyRepository
+   */
+  async getSiteSelectionDataForBioHubSubmission(surveyId: number): Promise<SiteSelectionDataForBioHub> {
+    defaultLog.debug({ label: 'getSiteSelectionDataForBioHubSubmission', surveyId });
+
+    const strategiesQuery = getKnex()
+      .select('ss.site_strategy_id', 'ss.name')
+      .from('survey_site_strategy as sss')
+      .where('sss.survey_id', surveyId)
+      .leftJoin('site_strategy as ss', 'ss.site_strategy_id', 'sss.site_strategy_id');
+
+    const stratumsQuery = getKnex()
+      .select(
+        'ss.survey_stratum_id',
+        'ss.survey_id',
+        'ss.name',
+        'ss.description',
+        'ss.revision_count',
+        getKnex().raw('COUNT(sss.survey_stratum_id)::INTEGER AS sample_stratum_count')
+      )
+      .from('survey_stratum as ss')
+      .leftJoin('survey_sample_stratum as sss', 'ss.survey_stratum_id', 'sss.survey_stratum_id')
+      .where('ss.survey_id', surveyId)
+      .groupBy('ss.survey_stratum_id', 'ss.survey_id', 'ss.name', 'ss.description', 'ss.revision_count');
+
+    const [strategiesResponse, stratumsResponse] = await Promise.all([
+      this.connection.knex(strategiesQuery, z.object({ site_strategy_id: z.number(), name: z.string() })),
+      this.connection.knex(stratumsQuery, SurveyStratumDetails)
+    ]);
+
+    const strategies = strategiesResponse.rows.map((row) => row.site_strategy_id);
 
     const stratums = stratumsResponse.rows;
 

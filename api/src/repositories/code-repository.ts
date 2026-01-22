@@ -1,5 +1,7 @@
+import { Knex } from 'knex';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { getKnex } from '../database/db';
 import { BaseRepository } from './base-repository';
 
 // Code types
@@ -12,6 +14,13 @@ export const Code = z.object({ id: z.number(), name: z.string() });
 
 // Code with description
 export const CodeDescription = Code.extend({ description: z.string() });
+
+// Flexible code with description that accepts both number and string IDs (for codetables with UUIDs)
+export const FlexibleCodeDescription = z.object({
+  id: z.union([z.number(), z.string()]),
+  name: z.string(),
+  description: z.string().nullable()
+});
 
 // Codes which need to include additional properties
 const InvestmentActionCategoryCode = Code.extend({ agency_id: z.number() });
@@ -582,4 +591,134 @@ export class CodeRepository extends BaseRepository {
 
     return response.rows;
   }
+
+  /**
+   * Fetch all codeset categories with their codes for BioHub submission export.
+   * Returns all 35 codetables with id, name, and description.
+   * Note: IDs can be either numbers or strings (UUIDs) depending on the table.
+   *
+   * @return {*} {Promise<Array<{ name: string; description: string | null; codes: Array<{ id: number | string; name: string; description: string | null }> }>>}
+   * @memberof CodeRepository
+   */
+  async getAllCodesetCategories(): Promise<
+    Array<{
+      name: string;
+      description: string | null;
+      codes: Array<{ id: number | string; name: string; description: string | null }>;
+    }>
+  > {
+    // Fetch all codetables in parallel using metadata-driven queries
+    const results = await Promise.all(
+      CODETABLE_DEFINITIONS.map(async ({ table, description, hasRecordEndDate }) => {
+        const query = this._buildCodetableQuery(table, hasRecordEndDate);
+        const response = await this.connection.knex(query, FlexibleCodeDescription);
+        return {
+          name: table,
+          description,
+          codes: response.rows
+        };
+      })
+    );
+
+    return results;
+  }
+
+  /**
+   * Builds a knex query for fetching codetable data.
+   *
+   * @param {string} tableName - The name of the codetable
+   * @param {boolean} hasRecordEndDate - Whether the table has a record_end_date column
+   * @return {*} {Knex.QueryBuilder}
+   * @memberof CodeRepository
+   */
+  _buildCodetableQuery(tableName: string, hasRecordEndDate: boolean): Knex.QueryBuilder {
+    const knex = getKnex();
+    const idColumn = `${tableName}_id`;
+
+    let query = knex.select(knex.raw('?? AS id', [idColumn]), 'name', 'description').from(tableName);
+
+    if (hasRecordEndDate) {
+      query = query.whereNull('record_end_date');
+    }
+
+    return query.orderBy('name');
+  }
 }
+
+/**
+ * Codetable metadata definitions.
+ * Each entry defines a codetable with its description and whether it has a record_end_date column.
+ */
+const CODETABLE_DEFINITIONS: Array<{ table: string; description: string; hasRecordEndDate: boolean }> = [
+  { table: 'agency', description: 'Government and non-government agencies', hasRecordEndDate: true },
+  { table: 'attractant_lookup', description: 'Attractants used in sampling techniques', hasRecordEndDate: true },
+  { table: 'device_make', description: 'Telemetry device manufacturers', hasRecordEndDate: true },
+  { table: 'ecological_season', description: 'Ecological seasons', hasRecordEndDate: true },
+  { table: 'environment_qualitative', description: 'Qualitative environmental variables', hasRecordEndDate: true },
+  {
+    table: 'environment_qualitative_option',
+    description: 'Options for qualitative environmental variables',
+    hasRecordEndDate: true
+  },
+  { table: 'environment_quantitative', description: 'Quantitative environmental variables', hasRecordEndDate: true },
+  { table: 'field_method', description: 'Field methods used in surveys', hasRecordEndDate: true },
+  { table: 'first_nations', description: 'First Nations communities', hasRecordEndDate: true },
+  { table: 'frequency_unit', description: 'Frequency units for telemetry devices', hasRecordEndDate: true },
+  { table: 'funding_source', description: 'Funding sources for projects', hasRecordEndDate: true },
+  {
+    table: 'habitat_feature_qualitative_definition',
+    description: 'Qualitative habitat feature definitions',
+    hasRecordEndDate: true
+  },
+  {
+    table: 'habitat_feature_qualitative_definition_option',
+    description: 'Options for qualitative habitat feature definitions',
+    hasRecordEndDate: true
+  },
+  {
+    table: 'habitat_feature_quantitative_definition',
+    description: 'Quantitative habitat feature definitions',
+    hasRecordEndDate: true
+  },
+  { table: 'habitat_feature_type', description: 'Types of habitat features', hasRecordEndDate: true },
+  { table: 'intended_outcome', description: 'Intended outcomes for surveys', hasRecordEndDate: true },
+  { table: 'investment_action_category', description: 'Investment action categories', hasRecordEndDate: true },
+  {
+    table: 'iucn_conservation_action_level_1_classification',
+    description: 'IUCN Conservation Action Level 1 classifications',
+    hasRecordEndDate: true
+  },
+  {
+    table: 'iucn_conservation_action_level_2_subclassification',
+    description: 'IUCN Conservation Action Level 2 subclassifications',
+    hasRecordEndDate: true
+  },
+  {
+    table: 'iucn_conservation_action_level_3_subclassification',
+    description: 'IUCN Conservation Action Level 3 subclassifications',
+    hasRecordEndDate: true
+  },
+  { table: 'management_action_type', description: 'Types of management actions', hasRecordEndDate: true },
+  { table: 'method_lookup', description: 'Survey methods and techniques', hasRecordEndDate: false },
+  { table: 'method_response_metric', description: 'Response metrics for survey methods', hasRecordEndDate: true },
+  { table: 'observation_sign', description: 'Signs of species observation', hasRecordEndDate: true },
+  { table: 'proprietor_type', description: 'Types of proprietors', hasRecordEndDate: true },
+  { table: 'site_strategy', description: 'Site selection strategies', hasRecordEndDate: true },
+  { table: 'spatial_transform', description: 'Spatial transformation types', hasRecordEndDate: true },
+  { table: 'survey_job', description: 'Survey job types', hasRecordEndDate: true },
+  { table: 'survey_progress', description: 'Survey progress statuses', hasRecordEndDate: true },
+  { table: 'technique_attribute_qualitative', description: 'Qualitative technique attributes', hasRecordEndDate: true },
+  {
+    table: 'technique_attribute_qualitative_option',
+    description: 'Options for qualitative technique attributes',
+    hasRecordEndDate: true
+  },
+  {
+    table: 'technique_attribute_quantitative',
+    description: 'Quantitative technique attributes',
+    hasRecordEndDate: true
+  },
+  { table: 'type', description: 'Survey data types', hasRecordEndDate: true },
+  { table: 'vantage', description: 'Vantage points for observations', hasRecordEndDate: true },
+  { table: 'vantage_category', description: 'Categories of vantage points', hasRecordEndDate: true }
+];
