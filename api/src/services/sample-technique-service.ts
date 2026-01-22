@@ -18,9 +18,9 @@ export interface SampleTechniqueRecord {
   attribute_data: Array<{
     attribute_header: string;
     attribute_value: string;
-    technique_attribute_qualitative_id: number | null;
+    technique_attribute_qualitative_id: string | null;
     technique_attribute_qualitative_option_id: number | null;
-    technique_attribute_quantitative_id: number | null;
+    technique_attribute_quantitative_id: string | null;
   }>;
   vantage_data: Array<{
     vantage_header: string;

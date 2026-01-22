@@ -1489,7 +1489,7 @@ export class SurveyRepository extends BaseRepository {
                           NULL  -- If no value found, assign null
                       ),
                       'technique_attribute_qualitative_id', COALESCE(
-                          (SELECT (e2->>'technique_attribute_qualitative_id')::int FROM jsonb_array_elements(ad.attrib_qual_data) AS e2 WHERE e2->>'ah' = aa.attribute_name LIMIT 1),
+                          (SELECT e2->>'technique_attribute_qualitative_id' FROM jsonb_array_elements(ad.attrib_qual_data) AS e2 WHERE e2->>'ah' = aa.attribute_name LIMIT 1),
                           NULL
                       ),
                       'technique_attribute_qualitative_option_id', COALESCE(
@@ -1497,7 +1497,7 @@ export class SurveyRepository extends BaseRepository {
                           NULL
                       ),
                       'technique_attribute_quantitative_id', COALESCE(
-                          (SELECT (e2->>'technique_attribute_quantitative_id')::int FROM jsonb_array_elements(ad.attrib_quan_data) AS e2 WHERE e2->>'ah' = aa.attribute_name LIMIT 1),
+                          (SELECT e2->>'technique_attribute_quantitative_id' FROM jsonb_array_elements(ad.attrib_quan_data) AS e2 WHERE e2->>'ah' = aa.attribute_name LIMIT 1),
                           NULL
                       )
                   )
