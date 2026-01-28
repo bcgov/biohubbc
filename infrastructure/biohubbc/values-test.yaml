@@ -15,6 +15,9 @@ database:
 database-setup:
   enabled: true
 
+clamav:
+  enabled: true
+
 api:
   enabled: true
 
@@ -104,6 +107,24 @@ biohubbc-db-setup:
   app:
     nodeEnv: production # This is set to production as test is not a valid name in the Knexfile and to only run the procedures and not seed the database
 
+# Values passed to biohubbc-clamav subchart
+biohubbc-clamav:
+  environment:
+    licensePlate: "af2668"
+    name: test
+    id: deploy
+    ts: ""
+
+  # Openshift Resources
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 500Mi
+    limits:
+      cpu: 1100m
+      memory: 2Gi
+
 # Values passed to biohubbc-api subchart
 biohubbc-api:
   environment:
@@ -119,6 +140,12 @@ biohubbc-api:
     nodeOptions: --max_old_space_size=3000 # 75% of memoryLimit (bytes)
     appHost: test-biohubbc.apps.silver.devops.gov.bc.ca
     featureFlags: ""
+
+    # ClamAV
+    clamav:
+      enabled: true
+      host: clamav
+      port: 3310
 
     # BioHub Platform (aka: Backbone)
     backboneInternalApiHost: "https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca"

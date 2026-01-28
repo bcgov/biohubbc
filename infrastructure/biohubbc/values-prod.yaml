@@ -15,6 +15,9 @@ database:
 database-setup:
   enabled: true
 
+clamav:
+  enabled: true
+
 api:
   enabled: true
 
@@ -97,6 +100,24 @@ biohubbc-db-setup:
   app:
     nodeEnv: production
 
+# Values passed to biohubbc-clamav subchart
+biohubbc-clamav:
+  environment:
+    licensePlate: "af2668"
+    name: prod
+    id: deploy
+    ts: ""
+
+  # Openshift Resources
+  replicas: 1
+  resources:
+    requests:
+      cpu: 100m
+      memory: 500Mi
+    limits:
+      cpu: 1100m
+      memory: 2Gi
+
 # Values passed to biohubbc-api subchart
 biohubbc-api:
   environment:
@@ -112,6 +133,12 @@ biohubbc-api:
     nodeOptions: --max_old_space_size=6000  # 75% of 8Gi memory limit
     appHost: sims.nrs.gov.bc.ca  # Vanity URL for prod
     featureFlags: API_FF_SUBMIT_BIOHUB,API_FF_DISABLE_MULTIPLE_ACTIVE_DEPLOYMENTS_CHECK # Feature flags
+
+    # ClamAV
+    clamav:
+      enabled: true
+      host: clamav
+      port: 3310
 
     # BioHub Platform (aka: Backbone)
     backboneInternalApiHost: "https://api-biohub-platform.apps.silver.devops.gov.bc.ca"

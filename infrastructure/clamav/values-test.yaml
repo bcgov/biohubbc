@@ -1,0 +1,14 @@
+# Test environment values for ClamAV
+environment:
+  name: test
+  id: deploy
+
+# Openshift Resources
+replicas: 1
+resources:
+  requests:
+    cpu: 100m
+    memory: 500Mi
+  limits:
+    cpu: 1100m
+    memory: 2Gi

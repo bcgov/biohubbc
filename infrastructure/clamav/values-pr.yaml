@@ -1,0 +1,14 @@
+# PR environment values for ClamAV (not used in static deploys)
+environment:
+  name: dev
+  id: ""
+
+# Openshift Resources - reduced for PR environments
+replicas: 1
+resources:
+  requests:
+    cpu: 50m
+    memory: 250Mi
+  limits:
+    cpu: 500m
+    memory: 1Gi
