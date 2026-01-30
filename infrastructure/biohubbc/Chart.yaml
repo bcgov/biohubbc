@@ -20,6 +20,10 @@ dependencies:
     condition: database-setup.enabled
     dependsOn:
       - biohubbc-db
+  - name: biohubbc-clamav
+    repository: file://../clamav
+    version: 0.1.0
+    condition: clamav.enabled
   - name: biohubbc-api
     repository: file://../api
     version: 0.1.0
