@@ -151,6 +151,11 @@ GET.apiDoc = {
                     temperature: {
                       type: 'number',
                       nullable: true
+                    },
+                    dop: {
+                      type: 'number',
+                      nullable: true,
+                      description: 'Dilution of Precision (pdop for Lotek, dop for Vectronic)'
                     }
                   }
                 }
