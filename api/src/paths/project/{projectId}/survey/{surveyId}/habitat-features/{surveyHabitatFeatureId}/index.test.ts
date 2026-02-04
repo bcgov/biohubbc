@@ -185,6 +185,7 @@ describe('getSurveyHabitatFeature', () => {
       surveyHabitatFeature: mockHabitatFeatureRecord,
       supplementaryData: {
         count: 1,
+        sampling_periods: [],
         habitatFeatureQuantitativeDefinitions: [],
         habitatFeatureQualitativeDefinitions: []
       }

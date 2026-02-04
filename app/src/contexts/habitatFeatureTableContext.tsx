@@ -8,6 +8,7 @@ import {
 } from '@mui/x-data-grid';
 import { GridApiCommunity } from '@mui/x-data-grid/internals';
 import { SIMS_HABITAT_FEATURES_HIDDEN_COLUMNS } from 'constants/session-storage';
+import { useSamplingInformationCache } from 'features/surveys/habitat-features/components/forms/sampling-information/hooks/useSamplingInformationCache';
 import { HABITAT_FEATURE_TABLE_PAGE_SIZES } from 'features/surveys/habitat-features/components/tables/SurveyHabitatFeatureTable';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useSurveyContext } from 'hooks/useContext';
@@ -120,6 +121,7 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
   const { projectId, surveyId } = useSurveyContext();
 
   const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
+  const samplingInformationCache = useSamplingInformationCache();
 
   // Stores the column visibility state in local storage
   const [columnVisibilityModel, setColumnVisibilityModel] = usePersistentState<GridColumnVisibilityModel>(
@@ -241,6 +243,16 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
     }));
   }, [habitatFeatureDataLoader.data]);
 
+  useEffect(() => {
+    if (!habitatFeatureDataLoader.data?.supplementaryData.sampling_periods?.length) {
+      return;
+    }
+
+    samplingInformationCache.initCachedSamplingInformationRef({
+      periods: habitatFeatureDataLoader.data.supplementaryData.sampling_periods
+    });
+  }, [habitatFeatureDataLoader.data?.supplementaryData.sampling_periods, samplingInformationCache]);
+
   // Create the columns for the table
   const habitatFeatureTableColumns: GridColDef<IHabitatFeatureRow>[] = useMemo(() => {
     const quantitativeColumns: GridColDef<IHabitatFeatureRow>[] =
@@ -298,7 +310,20 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
         headerName: 'Sample Period',
         align: 'left',
         minWidth: 200,
-        flex: 1
+        flex: 1,
+        valueGetter: (params) => {
+          const periodId = params.row.survey_sample_period_id;
+
+          if (!periodId) {
+            return '';
+          }
+
+          return (
+            samplingInformationCache.getCurrentPeriod(periodId)?.label ??
+            params.row.survey_sample_period_start_datetime ??
+            ''
+          );
+        }
       },
       {
         field: 'count',
@@ -344,7 +369,8 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
   }, [
     habitatFeatureDataLoader.data?.supplementaryData.habitatFeatureQualitativeDefinitions,
     habitatFeatureDataLoader.data?.supplementaryData.habitatFeatureQuantitativeDefinitions,
-    habitatFeatureTypeMap
+    habitatFeatureTypeMap,
+    samplingInformationCache
   ]);
 
   // Create the memoized context object

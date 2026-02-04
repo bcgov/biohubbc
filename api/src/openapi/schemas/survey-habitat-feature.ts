@@ -286,12 +286,113 @@ export const SurveyHabitatFeaturesWithTaxonsSchema: OpenAPIV3.SchemaObject = {
 export const SurveyHabitatFeaturesSupplementaryDataSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: ['count', 'habitatFeatureQuantitativeDefinitions', 'habitatFeatureQualitativeDefinitions'],
+  required: [
+    'count',
+    'habitatFeatureQuantitativeDefinitions',
+    'habitatFeatureQualitativeDefinitions',
+    'sampling_periods'
+  ],
   properties: {
     count: {
       description: 'The total count of survey habitat features for the survey.',
       type: 'integer',
       minimum: 0
+    },
+    sampling_periods: {
+      type: 'array',
+      items: {
+        type: 'object',
+        required: [
+          'survey_sample_period_id',
+          'survey_id',
+          'survey_sample_site_id',
+          'method_technique_id',
+          'start_date',
+          'start_time',
+          'end_date',
+          'end_time',
+          'method_technique',
+          'survey_sample_site'
+        ],
+        additionalProperties: false,
+        properties: {
+          survey_sample_period_id: {
+            type: 'integer',
+            minimum: 1
+          },
+          survey_id: {
+            type: 'integer',
+            minimum: 1
+          },
+          survey_sample_site_id: {
+            type: 'integer',
+            minimum: 1,
+            nullable: true
+          },
+          method_technique_id: {
+            type: 'integer',
+            minimum: 1,
+            nullable: true
+          },
+          start_date: {
+            type: 'string',
+            nullable: true
+          },
+          start_time: {
+            type: 'string',
+            nullable: true
+          },
+          end_date: {
+            type: 'string',
+            nullable: true
+          },
+          end_time: {
+            type: 'string',
+            nullable: true
+          },
+          survey_sample_site: {
+            type: 'object',
+            required: ['survey_sample_site_id', 'name'],
+            additionalProperties: false,
+            properties: {
+              survey_sample_site_id: {
+                type: 'integer',
+                minimum: 1
+              },
+              name: {
+                type: 'string'
+              }
+            },
+            nullable: true
+          },
+          method_technique: {
+            type: 'object',
+            description: 'Details about the technique of the survey sample period',
+            required: ['method_technique_id', 'name', 'description', 'method_response_metric_id'],
+            properties: {
+              method_technique_id: {
+                type: 'integer',
+                minimum: 1,
+                description: 'Primary key of the method technique record'
+              },
+              name: {
+                type: 'string',
+                description: 'Name of the method technique'
+              },
+              description: {
+                type: 'string',
+                description: 'Description of the method technique',
+                nullable: true
+              },
+              method_response_metric_id: {
+                type: 'integer',
+                minimum: 1
+              }
+            },
+            nullable: true
+          }
+        }
+      }
     },
     habitatFeatureQuantitativeDefinitions: {
       description: 'All quantitative habitat feature definitions for the survey habitat features.',

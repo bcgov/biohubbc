@@ -104,6 +104,50 @@ const ObservationYupSchema = yup.object({
           })
       )
     })
+    .test('sampling', 'Invalid sampling information', function (_value) {
+      const hasAnySamplingSelection = Boolean(
+        _value.survey_sample_site_id || _value.method_technique_id || _value.survey_sample_period_id
+      );
+
+      if (!hasAnySamplingSelection) {
+        return true;
+      }
+
+      const errors: yup.ValidationError[] = [];
+
+      if (!_value.survey_sample_period_id) {
+        errors.push(
+          this.createError({
+            path: `${this.path}.survey_sample_period_id`,
+            message: 'Sampling period is required when any sampling field is selected'
+          })
+        );
+      }
+
+      if (!_value.survey_sample_site_id) {
+        errors.push(
+          this.createError({
+            path: `${this.path}.survey_sample_site_id`,
+            message: 'Sampling site is required when a sampling period is selected'
+          })
+        );
+      }
+
+      if (!_value.method_technique_id) {
+        errors.push(
+          this.createError({
+            path: `${this.path}.method_technique_id`,
+            message: 'Sampling technique is required when a sampling period is selected'
+          })
+        );
+      }
+
+      if (errors.length) {
+        return new yup.ValidationError(errors);
+      }
+
+      return true;
+    })
     .test('conditional-validation', 'Invalid fields based on survey_sample_period_id', function (_value) {
       if (!_value.survey_sample_period_id) {
         if (!_value.observation_date) {

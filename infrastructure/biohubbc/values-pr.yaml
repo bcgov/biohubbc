@@ -15,6 +15,9 @@ database:
 database-setup:
   enabled: true
 
+clamav:
+  enabled: false  # PR previews share the DEV environment's ClamAV instance
+
 api:
   enabled: true
 
@@ -103,6 +106,12 @@ biohubbc-db-setup:
   app:
     nodeEnv: development
 
+# Values passed to biohubbc-clamav subchart
+# NOTE: ClamAV is DISABLED for PR previews to save resources.
+# PR previews share the DEV environment's ClamAV instance
+biohubbc-clamav:
+  enabled: false
+
 # Values passed to biohubbc-api subchart
 biohubbc-api:
   environment:
@@ -118,6 +127,12 @@ biohubbc-api:
     nodeOptions: --max_old_space_size=3000 # 75% of memoryLimit (bytes)
     # appHost will be dynamically set: "biohubbc-app-1234-af2668-dev.apps.silver.devops.gov.bc.ca"
     featureFlags: "" # Feature flags
+
+    # ClamAV - PR previews share the DEV environment's ClamAV instance
+    clamav:
+      enabled: true
+      host: clamav  # Use the shared DEV ClamAV service
+      port: 3310
     
     # BioHub Platform (aka: Backbone)
     backboneInternalApiHost: "https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca"

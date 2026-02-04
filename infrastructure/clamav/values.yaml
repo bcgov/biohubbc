@@ -1,0 +1,33 @@
+# Default values for clamav chart
+environment:
+  licensePlate: "af2668" # License plate of the project
+  name: "" # Environment name (dev, test, prod)
+  id: "" # Environment id (PR, deploy)
+  changeId: "" # Change id (PR number)
+  ts: "" # Timestamp of the deployment
+
+image:
+  registry: "image-registry.openshift-image-registry.svc:5000" # The base image registry URL
+  image: af2668-tools/clamav # Always pull from tools namespace
+  tag: "latest" # Use 'latest' tag which references the ImageStreamTag
+
+# ClamAV configuration
+app:
+  name: clamav
+
+# Openshift Resources
+replicas: ""
+resources:
+  requests:
+    cpu: ""
+    memory: ""
+  limits:
+    cpu: ""
+    memory: ""
+
+# Service configuration
+service:
+  type: ClusterIP
+  name: 3310-tcp
+  port: 3310
+  targetPort: 3310
