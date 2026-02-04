@@ -192,6 +192,7 @@ describe('getSurveyHabitatFeatures', () => {
       ],
       supplementaryData: {
         count: 59,
+        sampling_periods: [],
         habitatFeatureQuantitativeDefinitions: [],
         habitatFeatureQualitativeDefinitions: []
       }
@@ -272,6 +273,7 @@ describe('getSurveyHabitatFeatures', () => {
       ],
       supplementaryData: {
         count: 59,
+        sampling_periods: [],
         habitatFeatureQuantitativeDefinitions: [],
         habitatFeatureQualitativeDefinitions: []
       },
@@ -347,6 +349,7 @@ describe('getSurveyHabitatFeatures', () => {
       ],
       supplementaryData: {
         count: 59,
+        sampling_periods: [],
         habitatFeatureQuantitativeDefinitions: [],
         habitatFeatureQualitativeDefinitions: []
       }
@@ -425,6 +428,7 @@ describe('getSurveyHabitatFeatures', () => {
       ],
       supplementaryData: {
         count: 59,
+        sampling_periods: [],
         habitatFeatureQuantitativeDefinitions: [],
         habitatFeatureQualitativeDefinitions: []
       },
@@ -500,6 +504,7 @@ describe('getSurveyHabitatFeatures', () => {
       ],
       supplementaryData: {
         count: 59,
+        sampling_periods: [],
         habitatFeatureQuantitativeDefinitions: [],
         habitatFeatureQualitativeDefinitions: []
       }
@@ -568,6 +573,7 @@ describe('getSurveyHabitatFeatures', () => {
       ],
       supplementaryData: {
         count: 59,
+        sampling_periods: [],
         habitatFeatureQuantitativeDefinitions: [],
         habitatFeatureQualitativeDefinitions: []
       },
