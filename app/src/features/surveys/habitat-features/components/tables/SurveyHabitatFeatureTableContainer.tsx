@@ -14,11 +14,9 @@ import Stack from '@mui/material/Stack';
 import Toolbar from '@mui/material/Toolbar';
 import Tooltip from '@mui/material/Tooltip';
 import Typography from '@mui/material/Typography';
-import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useHabitatFeatureTableContext, useSurveyContext } from 'hooks/useContext';
-import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import { ImportHabitatFeaturesButton } from '../../import/ImportHabitatFeaturesButton';
@@ -110,7 +108,6 @@ export const SurveyHabitatFeatureTableContainer = (): JSX.Element => {
         </Typography>
 
         <Stack flexDirection="row" alignItems="center" gap={1} whiteSpace="nowrap">
-          <HelpButtonDialog markdownType={MarkdownTypeNameEnum.HABITAT_FEATURES} />
           <ImportHabitatFeaturesButton />
           <Button
             variant="contained"
