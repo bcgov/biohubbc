@@ -22,6 +22,8 @@ const HabitatFeatureYupSchema = yup
       .max(180, 'Longitude must be between -180 and 180'),
     observed_date: yup.string().nullable(),
     observed_time: yup.string().nullable(),
+    survey_sample_site_id: yup.number().nullable(),
+    method_technique_id: yup.number().nullable(),
     survey_sample_period_id: yup.number().nullable(),
     survey_habitat_feature_taxons: yup.array().of(
       yup.object({
@@ -30,6 +32,50 @@ const HabitatFeatureYupSchema = yup
         comment: yup.string().nullable()
       })
     )
+  })
+  .test('sampling', 'Invalid sampling information', function (_value) {
+    const hasAnySamplingSelection = Boolean(
+      _value.survey_sample_site_id || _value.method_technique_id || _value.survey_sample_period_id
+    );
+
+    if (!hasAnySamplingSelection) {
+      return true;
+    }
+
+    const errors: yup.ValidationError[] = [];
+
+    if (!_value.survey_sample_period_id) {
+      errors.push(
+        this.createError({
+          path: this.path ? `${this.path}.survey_sample_period_id` : 'survey_sample_period_id',
+          message: 'Sampling period is required when any sampling field is selected'
+        })
+      );
+    }
+
+    if (!_value.survey_sample_site_id) {
+      errors.push(
+        this.createError({
+          path: this.path ? `${this.path}.survey_sample_site_id` : 'survey_sample_site_id',
+          message: 'Sampling site is required when a sampling period is selected'
+        })
+      );
+    }
+
+    if (!_value.method_technique_id) {
+      errors.push(
+        this.createError({
+          path: this.path ? `${this.path}.method_technique_id` : 'method_technique_id',
+          message: 'Sampling technique is required when a sampling period is selected'
+        })
+      );
+    }
+
+    if (errors.length) {
+      return new yup.ValidationError(errors);
+    }
+
+    return true;
   })
   .test('conditional-validation', 'Invalid fields based on survey_sample_period_id', function (_value) {
     if (!_value.survey_sample_period_id) {
