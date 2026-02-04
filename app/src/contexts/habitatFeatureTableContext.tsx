@@ -244,14 +244,14 @@ export const HabitatFeatureTableContextProvider = (props: IHabitatFeatureTableCo
   }, [habitatFeatureDataLoader.data]);
 
   useEffect(() => {
-    if (!habitatFeatureDataLoader.data?.supplementaryData.sampling_data?.length) {
+    if (!habitatFeatureDataLoader.data?.supplementaryData.sampling_periods?.length) {
       return;
     }
 
     samplingInformationCache.initCachedSamplingInformationRef({
-      periods: habitatFeatureDataLoader.data.supplementaryData.sampling_data
+      periods: habitatFeatureDataLoader.data.supplementaryData.sampling_periods
     });
-  }, [habitatFeatureDataLoader.data?.supplementaryData.sampling_data, samplingInformationCache]);
+  }, [habitatFeatureDataLoader.data?.supplementaryData.sampling_periods, samplingInformationCache]);
 
   // Create the columns for the table
   const habitatFeatureTableColumns: GridColDef<IHabitatFeatureRow>[] = useMemo(() => {

@@ -286,14 +286,19 @@ export const SurveyHabitatFeaturesWithTaxonsSchema: OpenAPIV3.SchemaObject = {
 export const SurveyHabitatFeaturesSupplementaryDataSchema: OpenAPIV3.SchemaObject = {
   type: 'object',
   additionalProperties: false,
-  required: ['count', 'habitatFeatureQuantitativeDefinitions', 'habitatFeatureQualitativeDefinitions', 'sampling_data'],
+  required: [
+    'count',
+    'habitatFeatureQuantitativeDefinitions',
+    'habitatFeatureQualitativeDefinitions',
+    'sampling_periods'
+  ],
   properties: {
     count: {
       description: 'The total count of survey habitat features for the survey.',
       type: 'integer',
       minimum: 0
     },
-    sampling_data: {
+    sampling_periods: {
       type: 'array',
       items: {
         type: 'object',

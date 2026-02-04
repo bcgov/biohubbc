@@ -127,7 +127,7 @@ export class SurveyHabitatFeatureService extends DBService {
       surveyHabitatFeature: surveyHabitatFeature,
       supplementaryData: {
         count: 1,
-        sampling_data: samplePeriods,
+        sampling_periods: samplePeriods,
         habitatFeatureQuantitativeDefinitions:
           surveyHabitatFeatureTypeDefinitions.habitatFeatureQuantitativeDefinitions,
         habitatFeatureQualitativeDefinitions: surveyHabitatFeatureTypeDefinitions.habitatFeatureQualitativeDefinitions
@@ -189,7 +189,7 @@ export class SurveyHabitatFeatureService extends DBService {
       surveyHabitatFeatures: surveyHabitatFeatures,
       supplementaryData: {
         count: surveyHabitatFeaturesCount,
-        sampling_data: samplePeriods,
+        sampling_periods: samplePeriods,
         habitatFeatureQuantitativeDefinitions:
           surveyHabitatFeatureTypeDefinitions.habitatFeatureQuantitativeDefinitions,
         habitatFeatureQualitativeDefinitions: surveyHabitatFeatureTypeDefinitions.habitatFeatureQualitativeDefinitions

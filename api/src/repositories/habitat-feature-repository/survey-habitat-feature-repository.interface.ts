@@ -45,7 +45,7 @@ export type SurveyHabitatFeatureCount = z.infer<typeof SurveyHabitatFeatureCount
 
 export type SurveyHabitatFeaturesSupplementaryData = SurveyHabitatFeatureCount &
   FindHabitatFeatureDefinitions & {
-    sampling_data: SurveySamplePeriodDetails[];
+    sampling_periods: SurveySamplePeriodDetails[];
   };
 
 /**

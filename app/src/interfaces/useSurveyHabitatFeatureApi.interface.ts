@@ -62,7 +62,7 @@ export type SurveyHabitatFeature = {
 
 export type SurveyHabitatFeatureSupplementaryData = {
   count: number;
-  sampling_data: GetSamplingPeriod[];
+  sampling_periods: GetSamplingPeriod[];
   habitatFeatureQuantitativeDefinitions: HabitatFeatureQuantitativeDefinition[];
   habitatFeatureQualitativeDefinitions: HabitatFeatureQualitativeDefinition[];
 };
