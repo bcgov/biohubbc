@@ -4,6 +4,7 @@ import { SurveyHabitatFeatureRecord } from '../../database-models/survey_habitat
 import { SurveyHabitatFeatureTaxonRecord } from '../../database-models/survey_habitat_feature_taxon';
 import { SurveySampleSiteRecord } from '../../database-models/survey_sample_site';
 import { GeoJSONPointZodSchema } from '../../zod-schema/geoJsonZodSchema';
+import { SurveySamplePeriodDetails } from '../sample-period-repository';
 import { FindHabitatFeatureDefinitions } from './habitat-feature-repository.interface';
 
 export type InsertSurveyHabitatFeatureTaxon = Pick<
@@ -42,7 +43,10 @@ export const SurveyHabitatFeatureCount = z.object({
 });
 export type SurveyHabitatFeatureCount = z.infer<typeof SurveyHabitatFeatureCount>;
 
-export type SurveyHabitatFeaturesSupplementaryData = SurveyHabitatFeatureCount & FindHabitatFeatureDefinitions;
+export type SurveyHabitatFeaturesSupplementaryData = SurveyHabitatFeatureCount &
+  FindHabitatFeatureDefinitions & {
+    sampling_data: SurveySamplePeriodDetails[];
+  };
 
 /**
  * An array of survey habitat features with supplementary data.

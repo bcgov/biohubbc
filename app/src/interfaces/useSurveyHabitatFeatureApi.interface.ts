@@ -1,5 +1,6 @@
 import { Point } from 'geojson';
 import { ApiPaginationResponseParams } from 'types/misc';
+import { GetSamplingPeriod } from './useSamplingPeriodApi.interface';
 
 export type HabitatFeatureQuantitativeDefinition = {
   habitat_feature_quantitative_definition_id: string;
@@ -61,6 +62,7 @@ export type SurveyHabitatFeature = {
 
 export type SurveyHabitatFeatureSupplementaryData = {
   count: number;
+  sampling_data: GetSamplingPeriod[];
   habitatFeatureQuantitativeDefinitions: HabitatFeatureQuantitativeDefinition[];
   habitatFeatureQualitativeDefinitions: HabitatFeatureQualitativeDefinition[];
 };

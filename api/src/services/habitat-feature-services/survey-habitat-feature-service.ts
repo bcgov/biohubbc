@@ -16,6 +16,7 @@ import { getLogger } from '../../utils/logger';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
 import { DBService } from '../db-service';
 import { PlatformService } from '../platform-service';
+import { SamplePeriodService } from '../sample-period-service';
 import { HabitatFeatureService } from './habitat-feature-service';
 
 const defaultLog = getLogger('survey-habitat-feature-service');
@@ -30,11 +31,13 @@ const defaultLog = getLogger('survey-habitat-feature-service');
 export class SurveyHabitatFeatureService extends DBService {
   surveyHabitatFeatureRepository: SurveyHabitatFeatureRepository;
   platformService: PlatformService;
+  samplePeriodService: SamplePeriodService;
 
   constructor(connection: IDBConnection) {
     super(connection);
     this.surveyHabitatFeatureRepository = new SurveyHabitatFeatureRepository(connection);
     this.platformService = new PlatformService(connection);
+    this.samplePeriodService = new SamplePeriodService(connection);
   }
 
   /**
@@ -118,10 +121,13 @@ export class SurveyHabitatFeatureService extends DBService {
       this.getSurveyHabitatFeatureDefinitions(surveyId)
     ]);
 
+    const samplePeriods = await this.samplePeriodService.getSamplePeriodsForSurvey(surveyId);
+
     return {
       surveyHabitatFeature: surveyHabitatFeature,
       supplementaryData: {
         count: 1,
+        sampling_data: samplePeriods,
         habitatFeatureQuantitativeDefinitions:
           surveyHabitatFeatureTypeDefinitions.habitatFeatureQuantitativeDefinitions,
         habitatFeatureQualitativeDefinitions: surveyHabitatFeatureTypeDefinitions.habitatFeatureQualitativeDefinitions
@@ -167,19 +173,23 @@ export class SurveyHabitatFeatureService extends DBService {
     surveyId: number,
     pagination?: ApiPaginationOptions
   ): Promise<SurveyHabitatFeaturesWithSupplementaryData> {
-    const [surveyHabitatFeatures, surveyHabitatFeaturesCount, surveyHabitatFeatureTypeDefinitions] = await Promise.all([
-      // Fetch survey habitat feature records
-      this.getSurveyHabitatFeatures(surveyId, pagination),
-      // Fetch pagination count data
-      this.getSurveyHabitatFeaturesCount(surveyId),
-      // Fetch habitat feature definitions applicable to this survey
-      this.getSurveyHabitatFeatureDefinitions(surveyId)
-    ]);
+    const [surveyHabitatFeatures, surveyHabitatFeaturesCount, surveyHabitatFeatureTypeDefinitions, samplePeriods] =
+      await Promise.all([
+        // Fetch survey habitat feature records
+        this.getSurveyHabitatFeatures(surveyId, pagination),
+        // Fetch pagination count data
+        this.getSurveyHabitatFeaturesCount(surveyId),
+        // Fetch habitat feature definitions applicable to this survey
+        this.getSurveyHabitatFeatureDefinitions(surveyId),
+        // Fetch sampling periods applicable to this survey
+        this.samplePeriodService.getSamplePeriodsForSurvey(surveyId)
+      ]);
 
     return {
       surveyHabitatFeatures: surveyHabitatFeatures,
       supplementaryData: {
         count: surveyHabitatFeaturesCount,
+        sampling_data: samplePeriods,
         habitatFeatureQuantitativeDefinitions:
           surveyHabitatFeatureTypeDefinitions.habitatFeatureQuantitativeDefinitions,
         habitatFeatureQualitativeDefinitions: surveyHabitatFeatureTypeDefinitions.habitatFeatureQualitativeDefinitions
