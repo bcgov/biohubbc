@@ -21,6 +21,7 @@ interface ITelemetryData {
   id: number;
   critter_id: number | null;
   device_id: number;
+  device_key: string;
   frequency: number | null;
   frequency_unit: string | null;
   start_date: string;
@@ -109,6 +110,7 @@ export const SurveySpatialDeploymentTable = () => {
         critter_id: item.critter.critter_id,
         animal_id: item.critter.animal_id,
         device_id: item.deployment.device_id,
+        device_key: item.deployment.device_key,
         start_date: item.deployment.attachment_start_date
           ? dayjs(item.deployment.attachment_start_date).format(DATE_FORMAT.MediumDateFormat)
           : '',
@@ -141,6 +143,7 @@ export const SurveySpatialDeploymentTable = () => {
       renderCell: (param) => {
         return (
           <ScientificNameTypography
+            variant="body2"
             name={param.row.itis_scientific_name}
             textOverflow="ellipsis"
             noWrap
@@ -150,8 +153,8 @@ export const SurveySpatialDeploymentTable = () => {
       }
     },
     {
-      field: 'device_id',
-      headerName: 'Device ID',
+      field: 'device_key',
+      headerName: 'Device',
       flex: 1
     },
     {
@@ -160,7 +163,7 @@ export const SurveySpatialDeploymentTable = () => {
       flex: 1,
       renderCell: (param) => {
         return (
-          <Typography>
+          <Typography variant="body2">
             {param.row.frequency}&nbsp;
             <Typography component="span" color="textSecondary">
               {param.row.frequency_unit}
