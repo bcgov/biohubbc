@@ -37,6 +37,7 @@ export const SurveyTechniqueCard = ({
   const attributesCount =
     technique.attributes.qualitative_attributes.length + technique.attributes.quantitative_attributes.length;
   const attractantsCount = technique.attractants.length;
+  const vantageCount = technique.vantage_methods.length;
 
   return (
     <AccordionStandardCard
@@ -116,6 +117,29 @@ export const SurveyTechniqueCard = ({
           </Typography>
         )}
       </AccordionStandardCard>
+
+      {technique.vantage_methods.length > 0 ? (
+        <AccordionStandardCard
+          label={
+            <>
+              Vantage&nbsp;
+              <Typography component="span">({vantageCount})</Typography>
+            </>
+          }
+          colour={grey[200]}
+          sx={{ my: 2 }}>
+          <Stack gap={1} mb={2}>
+            {technique.vantage_methods.map((vantage) => {
+              const vantageLookupName =
+                codesDataLoader.data?.vantages.find((lookup) => lookup.id === vantage.vantage_method_id)?.name ?? '';
+
+              return (
+                <AccordionStandardCard key={vantage.vantage_method_id} label={vantageLookupName} colour={grey[300]} />
+              );
+            })}
+          </Stack>
+        </AccordionStandardCard>
+      ) : null}
     </AccordionStandardCard>
   );
 };

@@ -551,7 +551,7 @@ export class CodeRepository extends BaseRepository {
   }
 
   /**
-   * Fetch vantages associated with vantages
+   * Fetch vantage methods as codes (id = vantage_method_id) for lookup by technique vantage_method_id.
    *
    * @return {*} {Promise<ICodeDescription[]>}
    * @memberof CodeRepository
@@ -559,11 +559,14 @@ export class CodeRepository extends BaseRepository {
   async getVantages(): Promise<ICodeDescription[]> {
     const sqlStatement = SQL`
       SELECT
-        vantage_category_id AS id,
-        name,
-        description
-      FROM vantage
-      WHERE record_end_date IS null;
+        vm.vantage_method_id AS id,
+        v.name,
+        COALESCE(v.description, '') AS description
+      FROM vantage_method vm
+      JOIN vantage v ON vm.vantage_id = v.vantage_id
+      WHERE v.record_end_date IS NULL
+        AND (vm.record_end_date IS NULL OR vm.record_end_date > CURRENT_DATE)
+      ORDER BY v.name ASC;
     `;
 
     const response = await this.connection.sql(sqlStatement, CodeDescription);
