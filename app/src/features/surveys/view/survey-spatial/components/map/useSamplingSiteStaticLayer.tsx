@@ -5,7 +5,7 @@ import { SurveySampleSiteMapPopup } from 'features/surveys/view/SurveySampleSite
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Popup } from 'react-leaflet';
 
 /**
@@ -21,9 +21,11 @@ export const useSamplingSiteStaticLayer = (): IStaticLayer => {
     biohubApi.samplingSite.getSampleSitesGeometry(surveyContext.projectId, surveyContext.surveyId)
   );
 
+  const loadRef = useRef(geometryDataLoader.load);
+  loadRef.current = geometryDataLoader.load;
   useEffect(() => {
-    geometryDataLoader.load();
-  }, [geometryDataLoader]);
+    loadRef.current();
+  }, [surveyContext.projectId, surveyContext.surveyId]);
 
   const samplingSites = geometryDataLoader.data?.sampleSites ?? [];
 

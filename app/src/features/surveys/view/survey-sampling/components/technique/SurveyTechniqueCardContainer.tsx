@@ -6,7 +6,7 @@ import { GridPaginationModel, GridSortModel } from '@mui/x-data-grid';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IGetTechniqueResponse } from 'interfaces/useTechniqueApi.interface';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { SurveyTechniqueCard } from './components/SurveyTechniqueCard';
 
 const pageSizeOptions = [10, 25, 50];
@@ -29,9 +29,11 @@ export const SurveyTechniquesCardContainer = (props: ISurveyTechniquesCardContai
     biohubApi.reference.getTechniqueAttributes(techniques.map((technique) => technique.method_lookup_id))
   );
 
+  const loadRef = useRef(methodAttributeDataLoader.load);
+  loadRef.current = methodAttributeDataLoader.load;
   useEffect(() => {
-    methodAttributeDataLoader.load();
-  }, [methodAttributeDataLoader]);
+    loadRef.current();
+  }, [techniques]);
 
   const handleChangeRowsPerPage = (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     // reset the page to 0 when changing the page size

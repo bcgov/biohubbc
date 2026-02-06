@@ -10,7 +10,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IObservationCountByGroup } from 'interfaces/useAnalyticsApi.interface';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import {
   getBasicGroupByColDefs,
   getDateColDef,
@@ -68,20 +68,17 @@ export const ObservationAnalyticsDataTableContainer = (props: IObservationAnalyt
       )
   );
 
+  const refreshRef = useRef(analyticsDataLoader.refresh);
+  refreshRef.current = analyticsDataLoader.refresh;
+
   useEffect(() => {
-    analyticsDataLoader.refresh(
+    refreshRef.current(
       surveyContext.surveyId,
       groupByColumns,
       groupByQuantitativeMeasurements,
       groupByQualitativeMeasurements
     );
-  }, [
-    analyticsDataLoader,
-    groupByColumns,
-    groupByQualitativeMeasurements,
-    groupByQuantitativeMeasurements,
-    surveyContext.surveyId
-  ]);
+  }, [groupByColumns, groupByQualitativeMeasurements, groupByQuantitativeMeasurements, surveyContext.surveyId]);
 
   const rows = useMemo(
     () =>

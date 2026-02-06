@@ -4,7 +4,7 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useCodesContext } from 'hooks/useContext';
 import { GetSamplingPeriod } from 'interfaces/useSamplingPeriodApi.interface';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { formatTimeDifference } from 'utils/datetime';
 import { getCodesName, getFormattedDate } from 'utils/Utils';
 
@@ -28,9 +28,11 @@ export const SurveyPeriodsTable = (props: ISamplingPeriodTableProps) => {
 
   const codesContext = useCodesContext();
 
+  const codesLoadRef = useRef(codesContext.codesDataLoader.load);
+  codesLoadRef.current = codesContext.codesDataLoader.load;
   useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
+    codesLoadRef.current();
+  }, []);
 
   const columns: GridColDef<GetSamplingPeriod>[] = [
     {

@@ -20,7 +20,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
 import { TelemetryDevice } from 'interfaces/useTelemetryDeviceApi.interface';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { combineDateTime } from 'utils/datetime';
 
@@ -57,9 +57,11 @@ export const DevicesTable = (props: IDevicesTableProps) => {
   const [actionMenuDeviceId, setActionMenuDeviceId] = useState<number>();
   const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
+  const codesLoadRef = useRef(codesContext.codesDataLoader.load);
+  codesLoadRef.current = codesContext.codesDataLoader.load;
   useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
+    codesLoadRef.current();
+  }, []);
 
   const handleDeleteDevice = async () => {
     if (!actionMenuDeviceId) {

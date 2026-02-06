@@ -10,7 +10,7 @@ import { SurveySpatialTelemetry } from 'features/surveys/view/survey-spatial/com
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext, useTaxonomyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
 import { SurveySpatialHabitatFeature } from './components/habitat-feature/SurveySpatialHabitatFeature';
 import { useSamplingSiteStaticLayer } from './components/map/useSamplingSiteStaticLayer';
@@ -43,10 +43,11 @@ export const SurveySpatialContainer = (): JSX.Element => {
     [samplingSiteStaticLayer, studyAreaStaticLayer]
   );
 
+  const loadRef = useRef(observationsDataLoader.load);
+  loadRef.current = observationsDataLoader.load;
   useEffect(() => {
-    // Load the observations data
-    observationsDataLoader.load();
-  }, [observationsDataLoader]);
+    loadRef.current();
+  }, [surveyContext.projectId, surveyContext.surveyId]);
 
   // Fetch and cache all taxonomic data required for the observations.
   useEffect(() => {

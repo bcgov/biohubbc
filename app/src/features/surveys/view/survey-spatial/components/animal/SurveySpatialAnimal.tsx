@@ -8,7 +8,7 @@ import SurveyMapTooltip from 'features/surveys/view/SurveyMapTooltip';
 import { useSurveyContext } from 'hooks/useContext';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { coloredCustomMortalityMarker } from 'utils/mapUtils';
 import { SurveySpatialAnimalTable } from './SurveySpatialAnimalTable';
 
@@ -38,13 +38,15 @@ export const SurveySpatialAnimal = (props: ISurveySpatialAnimalProps) => {
     crittersApi.critters.getMultipleCrittersGeometryByIds(critter_ids)
   );
 
+  const loadRef = useRef(geometryDataLoader.load);
+  loadRef.current = geometryDataLoader.load;
   useEffect(() => {
     if (!critterIds.length) {
       return;
     }
 
-    geometryDataLoader.load(critterIds);
-  }, [critterIds, geometryDataLoader]);
+    loadRef.current(critterIds);
+  }, [critterIds]);
 
   const captureLayer: IStaticLayer = {
     layerName: 'Animal Captures',
