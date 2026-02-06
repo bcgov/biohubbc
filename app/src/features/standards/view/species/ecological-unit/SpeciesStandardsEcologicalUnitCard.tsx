@@ -2,7 +2,7 @@ import grey from '@mui/material/colors/grey';
 import Stack from '@mui/material/Stack';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { AccordionStandardCard } from '../../components/AccordionStandardCard';
 
 interface ISpeciesStandardsEcologicalUnitCardProps {
@@ -21,9 +21,11 @@ export const SpeciesStandardsEcologicalUnitCard = (props: ISpeciesStandardsEcolo
   const critterbaseApi = useCritterbaseApi();
   const unitsDataLoader = useDataLoader(() => critterbaseApi.xref.getCollectionUnits(collectionCategoryId));
 
+  const loadRef = useRef(unitsDataLoader.load);
+  loadRef.current = unitsDataLoader.load;
   useEffect(() => {
-    unitsDataLoader.load();
-  }, [unitsDataLoader]);
+    loadRef.current();
+  }, [collectionCategoryId]);
 
   const units = unitsDataLoader.data ?? [];
 

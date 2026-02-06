@@ -9,7 +9,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { SurveyHabitatFeaturesGeometry } from 'interfaces/useSurveyHabitatFeatureApi.interface';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { coloredCustomHabitatFeatureMarker } from 'utils/mapUtils';
 import { SurveySpatialHabitatFeatureTableContainer } from './SurveySpatialHabitatFeatureTableContainer';
 
@@ -35,9 +35,11 @@ export const SurveySpatialHabitatFeature = (props: ISurveySpatialHabitatFeatureP
     biohubApi.habitatFeature.getSurveyHabitatFeaturesGeometry(surveyContext.projectId, surveyContext.surveyId)
   );
 
+  const loadRef = useRef(habitatFeaturesGeometryDataLoader.load);
+  loadRef.current = habitatFeaturesGeometryDataLoader.load;
   useEffect(() => {
-    habitatFeaturesGeometryDataLoader.load();
-  }, [habitatFeaturesGeometryDataLoader]);
+    loadRef.current();
+  }, [surveyContext.projectId, surveyContext.surveyId]);
 
   const habitatFeatures: SurveyHabitatFeaturesGeometry | undefined = habitatFeaturesGeometryDataLoader.data;
 

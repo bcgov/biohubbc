@@ -20,7 +20,7 @@ import isBetween from 'dayjs/plugin/isBetween';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useDialogContext, useSurveyContext } from 'hooks/useContext';
 import { TelemetryDeployment } from 'interfaces/useTelemetryDeploymentApi.interface';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { combineDateTime, formatDateTime } from 'utils/datetime';
 
@@ -71,9 +71,11 @@ export const DeploymentsTable = (props: IDeploymentsTableProps) => {
   const [actionMenuDeploymentId, setActionMenuDeploymentId] = useState<number | undefined>();
   const [actionMenuAnchorEl, setActionMenuAnchorEl] = useState<MenuProps['anchorEl']>(null);
 
+  const codesLoadRef = useRef(codesContext.codesDataLoader.load);
+  codesLoadRef.current = codesContext.codesDataLoader.load;
   useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
+    codesLoadRef.current();
+  }, []);
 
   const handleCloseActionMenu = () => {
     setActionMenuAnchorEl(null);

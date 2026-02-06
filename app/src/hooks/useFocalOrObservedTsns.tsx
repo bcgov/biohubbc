@@ -1,4 +1,4 @@
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { useBiohubApi } from './useBioHubApi';
 import { useSurveyContext } from './useContext';
 import useDataLoader from './useDataLoader';
@@ -21,10 +21,11 @@ export const useFocalOrObservedSpeciesTsns = () => {
 
   const hierarchyDataLoader = useDataLoader((tsns: number[]) => biohubApi.taxonomy.getTaxonHierarchyByTSNs(tsns));
 
-  // Load observed species when component mounts
+  const observedLoadRef = useRef(observedSpeciesDataLoader.load);
+  observedLoadRef.current = observedSpeciesDataLoader.load;
   useEffect(() => {
-    observedSpeciesDataLoader.load();
-  }, [observedSpeciesDataLoader]);
+    observedLoadRef.current();
+  }, [surveyContext.projectId, surveyContext.surveyId]);
 
   // Combine focal species and observed species TSNs into a single array
   const focalSpeciesTsns = useMemo(
@@ -42,12 +43,13 @@ export const useFocalOrObservedSpeciesTsns = () => {
     [focalSpeciesTsns, observedSpeciesTsns]
   );
 
-  // Fetch parent taxa hierarchy for combined species TSNs
+  const hierarchyLoadRef = useRef(hierarchyDataLoader.load);
+  hierarchyLoadRef.current = hierarchyDataLoader.load;
   useEffect(() => {
     if (observedAndFocalSpeciesTsns.length && observedSpeciesDataLoader.data) {
-      hierarchyDataLoader.load(observedAndFocalSpeciesTsns);
+      hierarchyLoadRef.current(observedAndFocalSpeciesTsns);
     }
-  }, [observedAndFocalSpeciesTsns, hierarchyDataLoader, observedSpeciesDataLoader]);
+  }, [observedAndFocalSpeciesTsns, observedSpeciesDataLoader.data]);
 
   // Combine TSNs of focal/observed species with their parent taxa
   const allSpeciesWithParentsTsns = [

@@ -65,15 +65,19 @@ const CreateSurveyPage = () => {
   const history = useHistory();
 
   const codesContext = useContext(CodesContext);
+  const codesLoadRef = useRef(codesContext.codesDataLoader.load);
+  codesLoadRef.current = codesContext.codesDataLoader.load;
   useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
+    codesLoadRef.current();
+  }, []);
   const codes = codesContext.codesDataLoader.data;
 
   const projectContext = useContext(ProjectContext);
+  const projectLoadRef = useRef(projectContext.projectDataLoader.load);
+  projectLoadRef.current = projectContext.projectDataLoader.load;
   useEffect(() => {
-    projectContext.projectDataLoader.load(projectContext.projectId);
-  }, [projectContext.projectDataLoader, projectContext.projectId]);
+    projectLoadRef.current(projectContext.projectId);
+  }, [projectContext.projectId]);
   const projectData = projectContext.projectDataLoader.data?.projectData;
 
   const formikRef = useRef<FormikProps<IEditSurveyRequest>>(null);

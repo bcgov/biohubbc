@@ -9,7 +9,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IGetSurveyObservationsGeometryResponse } from 'interfaces/useObservationApi.interface';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { coloredCustomObservationMarker } from 'utils/mapUtils';
 
 interface ISurveySpatialObservationProps {
@@ -31,9 +31,11 @@ export const SurveySpatialObservation = (props: ISurveySpatialObservationProps) 
     biohubApi.observation.getObservationsGeometry(projectId, surveyId)
   );
 
+  const loadRef = useRef(observationsGeometryDataLoader.load);
+  loadRef.current = observationsGeometryDataLoader.load;
   useEffect(() => {
-    observationsGeometryDataLoader.load();
-  }, [observationsGeometryDataLoader]);
+    loadRef.current();
+  }, [projectId, surveyId]);
 
   const observations: IGetSurveyObservationsGeometryResponse | undefined = observationsGeometryDataLoader.data;
 

@@ -12,7 +12,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { IAnimalDeploymentWithCritter } from 'interfaces/useSurveyApi.interface';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 // Set height so the skeleton loader will match table rows
 const rowHeight = 52;
@@ -67,9 +67,11 @@ export const SurveySpatialDeploymentTable = () => {
 
   const critterDataLoader = useDataLoader(biohubApi.survey.getSurveyCritters);
 
+  const critterLoadRef = useRef(critterDataLoader.load);
+  critterLoadRef.current = critterDataLoader.load;
   useEffect(() => {
-    critterDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [deploymentsDataLoader, critterDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+    critterLoadRef.current(surveyContext.projectId, surveyContext.surveyId);
+  }, [surveyContext.projectId, surveyContext.surveyId]);
 
   /**
    * Merges critters with associated deployments

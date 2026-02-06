@@ -22,7 +22,7 @@ import { DevicesTable } from 'features/surveys/telemetry/manage/devices/table/De
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useDialogContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { getDeviceCSVTemplate } from 'utils/csv-templates';
 import { downloadFile } from 'utils/file-utils';
@@ -43,9 +43,11 @@ export const DevicesContainer = () => {
     biohubApi.telemetryDevice.getDevicesInSurvey(projectId, surveyId)
   );
 
+  const devicesLoadRef = useRef(devicesDataLoader.load);
+  devicesLoadRef.current = devicesDataLoader.load;
   useEffect(() => {
-    devicesDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [devicesDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+    devicesLoadRef.current(surveyContext.projectId, surveyContext.surveyId);
+  }, [surveyContext.projectId, surveyContext.surveyId]);
 
   const devices = devicesDataLoader.data?.devices ?? [];
   const devicesCount = devicesDataLoader.data?.count ?? 0;
@@ -55,9 +57,11 @@ export const DevicesContainer = () => {
     biohubApi.telemetryDeployment.getDeploymentsInSurvey(projectId, surveyId)
   );
 
+  const deploymentsLoadRef = useRef(deploymentsDataLoader.load);
+  deploymentsLoadRef.current = deploymentsDataLoader.load;
   useEffect(() => {
-    deploymentsDataLoader.load(surveyContext.projectId, surveyContext.surveyId);
-  }, [deploymentsDataLoader, surveyContext.projectId, surveyContext.surveyId]);
+    deploymentsLoadRef.current(surveyContext.projectId, surveyContext.surveyId);
+  }, [surveyContext.projectId, surveyContext.surveyId]);
 
   const deployments = deploymentsDataLoader.data?.deployments ?? [];
 

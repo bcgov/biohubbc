@@ -14,7 +14,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import startCase from 'lodash-es/startCase';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type GroupByColumnType = 'column' | 'quantitative_measurement' | 'qualitative_measurement';
 
@@ -49,9 +49,11 @@ export const SurveyObservationAnalytics = () => {
     biohubApi.observation.getObservationMeasurementDefinitions(projectId, surveyId)
   );
 
+  const loadRef = useRef(measurementDefinitionsDataLoader.load);
+  loadRef.current = measurementDefinitionsDataLoader.load;
   useEffect(() => {
-    measurementDefinitionsDataLoader.load();
-  }, [measurementDefinitionsDataLoader]);
+    loadRef.current();
+  }, [projectId, surveyId]);
 
   const groupByOptions: IGroupByOption[] = [
     ...allGroupByColumnOptions,
