@@ -81,9 +81,11 @@ const SamplingSiteMapControl = (props: ISamplingSiteMapControlProps) => {
     biohubApi.samplingSite.getSampleSitesGeometry(surveyContext.projectId, surveyContext.surveyId)
   );
 
+  const loadRef = useRef(samplingSiteDataLoader.load);
+  loadRef.current = samplingSiteDataLoader.load;
   useEffect(() => {
-    samplingSiteDataLoader.load();
-  }, [samplingSiteDataLoader]);
+    loadRef.current();
+  }, [surveyContext.projectId, surveyContext.surveyId]);
 
   let numSites = samplingSiteDataLoader.data?.sampleSites.length ?? 0;
 

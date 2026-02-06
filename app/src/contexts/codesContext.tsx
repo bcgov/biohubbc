@@ -1,7 +1,7 @@
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader, { DataLoader } from 'hooks/useDataLoader';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { createContext, PropsWithChildren, useEffect, useMemo } from 'react';
+import { createContext, PropsWithChildren, useEffect, useMemo, useRef } from 'react';
 
 /**
  * Context object that stores information about codes
@@ -27,9 +27,11 @@ export const CodesContextProvider = (props: PropsWithChildren<Record<never, any>
   const biohubApi = useBiohubApi();
   const codesDataLoader = useDataLoader(biohubApi.codes.getAllCodeSets);
 
+  const loadRef = useRef(codesDataLoader.load);
+  loadRef.current = codesDataLoader.load;
   useEffect(() => {
-    codesDataLoader.load();
-  }, [codesDataLoader]);
+    loadRef.current();
+  }, []);
 
   const codesContext: ICodesContext = useMemo(() => ({ codesDataLoader }), [codesDataLoader]);
 

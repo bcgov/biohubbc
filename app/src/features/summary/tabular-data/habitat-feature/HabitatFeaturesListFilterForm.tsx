@@ -6,7 +6,7 @@ import { FilterFieldsContainer } from 'features/summary/components/FilterFieldsC
 import { Formik } from 'formik';
 import { useCodesContext, useTaxonomyContext } from 'hooks/useContext';
 import { FindSurveyHabitatFeaturesFilters } from 'interfaces/useSurveyHabitatFeatureApi.interface';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 export type SurveyHabitatFeaturesAdvancedFilters = Omit<
   FindSurveyHabitatFeaturesFilters,
@@ -45,9 +45,11 @@ export const HabitatFeaturesListFilterForm = (props: IHabitatFeaturesListFilterF
   const codesContext = useCodesContext();
   const taxonomyContext = useTaxonomyContext();
 
+  const codesLoadRef = useRef(codesContext.codesDataLoader.load);
+  codesLoadRef.current = codesContext.codesDataLoader.load;
   useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
+    codesLoadRef.current();
+  }, []);
 
   const habitatFeatureTypeOptions =
     codesContext.codesDataLoader.data?.habitat_feature_types.map((item) => {

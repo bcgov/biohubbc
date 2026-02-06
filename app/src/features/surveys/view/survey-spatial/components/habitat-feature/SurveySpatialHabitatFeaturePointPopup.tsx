@@ -6,7 +6,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useCodesContext, useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { SurveyHabitatFeature } from 'interfaces/useSurveyHabitatFeatureApi.interface';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { Popup } from 'react-leaflet';
 import { getCodesName } from 'utils/Utils';
 
@@ -27,9 +27,11 @@ export const SurveySpatialHabitatFeaturePointPopup = (props: ISurveySpatialHabit
   const surveyContext = useSurveyContext();
   const biohubApi = useBiohubApi();
 
+  const codesLoadRef = useRef(codesContext.codesDataLoader.load);
+  codesLoadRef.current = codesContext.codesDataLoader.load;
   useEffect(() => {
-    codesContext.codesDataLoader.load();
-  }, [codesContext.codesDataLoader]);
+    codesLoadRef.current();
+  }, []);
 
   const habitatFeatureDataLoader = useDataLoader((surveyHabitatFeatureId: number) =>
     biohubApi.habitatFeature.getSurveyHabitatFeatureWithSupplementaryData(

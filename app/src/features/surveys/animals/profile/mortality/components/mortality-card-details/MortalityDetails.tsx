@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import { IMortalityWithSupplementaryData } from 'features/surveys/animals/profile/mortality/AnimalMortalityContainer';
 import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import { hasRealTime } from 'utils/datetime';
 
 interface IMortalityDetailsProps {
@@ -26,9 +26,11 @@ export const MortalityDetails = (props: IMortalityDetailsProps) => {
 
   const mortalityCodesDataLoader = useDataLoader(() => critterbaseApi.mortality.getCauseOfDeathOptions());
 
+  const loadRef = useRef(mortalityCodesDataLoader.load);
+  loadRef.current = mortalityCodesDataLoader.load;
   useEffect(() => {
-    mortalityCodesDataLoader.load();
-  }, [mortalityCodesDataLoader]);
+    loadRef.current();
+  }, []);
 
   const mortalityTimestamp = mortality.mortality_timestamp;
   const mortalityComment = mortality.mortality_comment;

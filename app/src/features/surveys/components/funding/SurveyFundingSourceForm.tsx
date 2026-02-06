@@ -11,7 +11,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { IEditSurveyRequest } from 'interfaces/useSurveyApi.interface';
 import get from 'lodash-es/get';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 import { TransitionGroup } from 'react-transition-group';
 import yup from 'utils/YupSchema';
 
@@ -84,9 +84,11 @@ const SurveyFundingSourceForm = () => {
 
   const fundingSourcesDataLoader = useDataLoader(() => biohubApi.funding.getAllFundingSources());
 
+  const loadRef = useRef(fundingSourcesDataLoader.load);
+  loadRef.current = fundingSourcesDataLoader.load;
   useEffect(() => {
-    fundingSourcesDataLoader.load();
-  }, [fundingSourcesDataLoader]);
+    loadRef.current();
+  }, []);
 
   const fundingSourceOptions = useMemo(
     () =>
