@@ -132,7 +132,7 @@ biohubbc-api:
     nodeEnv: production
     nodeOptions: --max_old_space_size=6000  # 75% of 8Gi memory limit
     appHost: sims.nrs.gov.bc.ca  # Vanity URL for prod
-    featureFlags: API_FF_SUBMIT_BIOHUB,API_FF_DISABLE_MULTIPLE_ACTIVE_DEPLOYMENTS_CHECK # Feature flags
+    featureFlags: API_FF_DISABLE_MULTIPLE_ACTIVE_DEPLOYMENTS_CHECK # Feature flags
 
     # ClamAV
     clamav:
