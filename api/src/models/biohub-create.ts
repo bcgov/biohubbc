@@ -366,7 +366,7 @@ export class PostSurveyEnvironmentalConditionToBiohubObject implements BioHubSub
     } else {
       this.properties = {
         environmental_condition: `code::environment_quantitative::${environmentData.environment_quantitative_id}`,
-        environmental_quantitative_value: `${environmentData.value}${environmentData.unit ? ' ' + environmentData.unit : ''}`
+        environmental_condition_value: `${environmentData.value}${environmentData.unit ? ' ' + environmentData.unit : ''}`
       };
     }
 
@@ -719,13 +719,13 @@ export class PostSurveyReportAttachmentsToBiohubObject implements BioHubSubmissi
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.REPORT;
     this.properties = {
-      artifact_id: reportAttachmentRecord.survey_report_attachment_id,
+      artifact_key: reportAttachmentRecord.key,
       filename: reportAttachmentRecord.file_name,
       file_type: ATTACHMENT_TYPE.REPORT,
       file_size: reportAttachmentRecord.file_size,
-      title: reportAttachmentRecord.title,
+      name: reportAttachmentRecord.title,
       description: reportAttachmentRecord.description,
-      year_published: reportAttachmentRecord.year_published
+      year: reportAttachmentRecord.year_published
     };
     this.child_features = [];
   }
@@ -1017,7 +1017,7 @@ export class PostTelemetryDeviceToBiohubObject implements BioHubSubmissionFeatur
     this.type = BiohubFeatureType.TELEMETRY_DEVICE;
     this.properties = {
       device_manufacturer: `code::device_make::${deviceRecord.device_make_id}`,
-      model: deviceRecord.model || null,
+      device_model: deviceRecord.model || null,
       description: deviceRecord.comment || null,
       serial_number: deviceRecord.serial
     };
