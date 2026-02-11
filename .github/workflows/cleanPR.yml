@@ -1,21 +1,23 @@
-# Clean out all deployment artifacts when a PR is closed, but not merged.
-# Will attempt to remove all artifacts from any PR that was opened against any branch (and then closed (not merged)).
-name: Clean Closed PR Artifacts
+# Clean PR artifacts and image tags.
+# Runs when a PR is closed (merged or not), or when a PR is converted back to draft.
+# Deletes PR Helm release in dev and the four PR image tags (build-1.0.0-{PR}) in -tools.
+name: Clean PR Artifacts
 
 on:
   pull_request:
-    types: [closed]
+    types: [closed, converted_to_draft]
 
+permissions:
+  contents: read
+  
 env:
   IMAGE_TAG: build-1.0.0-${{ github.event.number }}
-  
+
 jobs:
   clean:
-    name: Clean Deployment Artifacts for API and App in Dev and Tools environment
+    name: Clean PR Artifacts for API, App, DB, and DB Setup in Dev and Tools environment
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    # Don't run if the PR was merged
-    if: ${{ github.event.pull_request.merged != true }}
     env:
       PR_NUMBER: ${{ github.event.number }}
     steps:
@@ -34,29 +36,24 @@ jobs:
           openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
           openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
 
-      # Clean all deployment artifacts for the PR using Helm
-      - name: Clean Deployment Artifacts
+      # Clean all PR artifacts for the PR using Helm
+      - name: Clean PR Artifacts
         run: |
-          echo "Cleaning deployment artifacts for PR $PR_NUMBER using Helm"
+          echo "Cleaning PR artifacts for PR $PR_NUMBER"
           
-          # Clean from dev namespace (where Helm releases are deployed)
-          echo "Cleaning from ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev namespace..."
+          echo "Uninstalling Helm release from ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev namespace..."
           helm uninstall "pr-$PR_NUMBER" --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev || echo "No Helm release found in dev namespace for PR $PR_NUMBER"
-          
-          # Remove App image tag from registry
-          echo "Removing App image tag from registry..."
+
+          echo "Removing App image tag from ${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools namespace..."
           oc tag -d biohubbc-app:${{ env.IMAGE_TAG }} --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools || echo "No image found for PR $PR_NUMBER"
 
-          # Remove API image tag from registry
-          echo "Removing API image tag from registry..."
+          echo "Removing API image tag from ${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools namespace..."
           oc tag -d biohubbc-api:${{ env.IMAGE_TAG }} --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools || echo "No image found for PR $PR_NUMBER"
 
-          # Remove DB image tag from registry
-          echo "Removing DB image tag from registry..."
+          echo "Removing DB image tag from ${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools namespace..."
           oc tag -d biohubbc-db:${{ env.IMAGE_TAG }} --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools || echo "No image found for PR $PR_NUMBER"
 
-          # Remove DB Setup image tag from registry
-          echo "Removing DB Setup image tag from registry..."
+          echo "Removing DB Setup image tag from ${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools namespace..."
           oc tag -d biohubbc-db-setup:${{ env.IMAGE_TAG }}  --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools || echo "No image found for PR $PR_NUMBER"
-                    
+          
           echo "Cleanup completed for PR $PR_NUMBER"
