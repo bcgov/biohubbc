@@ -26,7 +26,7 @@ jobs:
     steps:
       - name: Set timestamp (yymmddhhiiss)
         id: set-timestamp
-        run: echo "value=$(date -u +%y%m%d%H%M%S)" >> $GITHUB_OUTPUT
+        run: echo "value=$(TZ=America/Vancouver date +%Y%m%d%H%M%S)" >> $GITHUB_OUTPUT
       - name: Print Env Vars
         run: |
           echo Git Base Ref: ${{ github.base_ref || github.ref_name }}
