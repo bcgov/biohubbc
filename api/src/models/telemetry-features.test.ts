@@ -90,7 +90,7 @@ describe('Telemetry Features BioHub Integration', () => {
       expect(deviceObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(deviceObj.type).to.equal('telemetry_device');
       expect(deviceObj.properties.device_manufacturer).to.equal('code::device_make::1');
-      expect(deviceObj.properties.model).to.equal('GPS-4400M');
+      expect(deviceObj.properties.device_model).to.equal('GPS-4400M');
       expect(deviceObj.properties.description).to.equal('Wildlife tracking device');
       expect(deviceObj.properties.serial_number).to.equal('ABC123456');
       expect(deviceObj.child_features).to.be.an('array').with.length(0);
@@ -110,7 +110,7 @@ describe('Telemetry Features BioHub Integration', () => {
       const deviceObj = new PostTelemetryDeviceToBiohubObject(deviceRecord);
 
       expect(deviceObj.properties.device_manufacturer).to.equal('code::device_make::99');
-      expect(deviceObj.properties.model).to.equal(null);
+      expect(deviceObj.properties.device_model).to.equal(null);
       expect(deviceObj.properties.description).to.equal(null);
     });
   });
@@ -392,7 +392,7 @@ describe('Telemetry Features BioHub Integration', () => {
 
       const deviceFeature = submissionObj.content.child_features.find((f) => f.type === 'telemetry_device');
       expect(deviceFeature?.properties.device_manufacturer).to.equal('code::device_make::2');
-      expect(deviceFeature?.properties.model).to.equal('Advanced-GPS-Pro');
+      expect(deviceFeature?.properties.device_model).to.equal('Advanced-GPS-Pro');
       expect(deviceFeature?.properties.serial_number).to.equal('TRACK500');
 
       const deploymentFeature = submissionObj.content.child_features.find((f) => f.type === 'telemetry_deployment');

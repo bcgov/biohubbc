@@ -125,7 +125,7 @@ describe('Complete BioHub Integration', () => {
       expect(deviceFeature).to.exist;
       expect(deviceFeature?.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
       expect(deviceFeature?.properties.device_manufacturer).to.equal('code::device_make::1');
-      expect(deviceFeature?.properties.model).to.equal('GPS-Tracker-Pro');
+      expect(deviceFeature?.properties.device_model).to.equal('GPS-Tracker-Pro');
       expect(deviceFeature?.properties.serial_number).to.equal('GPS-DEV-001');
       expect(deviceFeature?.properties.description).to.equal('High-accuracy GPS collar');
 

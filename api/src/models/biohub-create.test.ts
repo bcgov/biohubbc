@@ -127,7 +127,7 @@ describe('PostSurveyObservationToBiohubObject', () => {
       expect(quantitativeEnvFeature.type).to.equal('observation_environmental_condition');
       expect(quantitativeEnvFeature.properties).to.eql({
         environmental_condition: 'code::environment_quantitative::env-quant-uuid-1',
-        environmental_quantitative_value: '25.5'
+        environmental_condition_value: '25.5'
       });
     });
   });
@@ -216,7 +216,7 @@ describe('PostSurveyObservationToBiohubObject', () => {
       expect(quantitativeEnvFeature.type).to.equal('observation_environmental_condition');
       expect(quantitativeEnvFeature.properties).to.eql({
         environmental_condition: 'code::environment_quantitative::wind-speed-uuid',
-        environmental_quantitative_value: '15.2 meter'
+        environmental_condition_value: '15.2 meter'
       });
     });
   });
@@ -571,7 +571,7 @@ describe('PostSurveyEnvironmentalConditionToBiohubObject', () => {
     it('sets properties for quantitative data', () => {
       expect(data.properties).to.eql({
         environmental_condition: 'code::environment_quantitative::temperature-uuid',
-        environmental_quantitative_value: '23.5 °C'
+        environmental_condition_value: '23.5 °C'
       });
     });
 
@@ -608,7 +608,7 @@ describe('PostSurveyEnvironmentalConditionToBiohubObject', () => {
     it('uses ID and no unit when missing for quantitative', () => {
       expect(quantData.properties).to.eql({
         environmental_condition: 'code::environment_quantitative::env-quant-uuid',
-        environmental_quantitative_value: '42'
+        environmental_condition_value: '42'
       });
     });
   });
