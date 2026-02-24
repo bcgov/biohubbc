@@ -17,6 +17,16 @@ app:
 
   dbSchema: biohub # Database schema
 
+  database:
+    # useCrunchy: true = Crunchy Postgres (DEV/TEST/PROD). Set to false for PR environments (legacy dbHost secret).
+    useCrunchy: true
+    host: "" # e.g. "biohubbc-db-dev-primary" (use -primary not pgbouncer; also used for migrations unless migrationHost set)
+    migrationHost: "" # optional; defaults to host when empty (set only if migration target differs from app host)
+    adminSecretName: "" # e.g. "biohubbc-db-dev-pguser-postgres"
+    appSecretName: "" # e.g. "biohubbc-db-dev-pguser-biohub-api"
+    dbNameSecretName: "" # e.g. "biohubbc-db-dev-pguser-biohubbc-db-dev"
+    # Secret keys default in templates: user/password/dbname (override in parent values if needed)
+
 # Openshift Resources
 resources:
   requests:

@@ -120,62 +120,6 @@ jobs:
           docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} .
           docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
-  # Build the Database image
-  buildAndPushDatabase:
-    name: Build Database Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' }}
-    env:
-      IMAGE_TAG: build-1.0.0-${{ needs.checkoutRepo.outputs.timestamp }}-${{ github.base_ref || github.ref_name }}
-      BRANCH: ${{ github.base_ref || github.ref_name }}
-      APP_NAME: "biohubbc-db"
-    needs:
-      - checkoutRepo
-    steps:
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha || github.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: "4.16"
-
-      # Log in to OpenShift
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
-          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-${{ env.BRANCH }}
-
-      # Authenticate Docker with OpenShift registry
-      - name: Authenticate Docker with OpenShift registry
-        run: |
-          echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
-
-      # Build and push the database image using Docker
-      - name: Build and Push Database Image
-        working-directory: database
-        run: |
-          docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} .
-          docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
-
   # Build the Database Setup image
   buildAndPushDatabaseSetup:
     name: Build Database Setup Image
@@ -300,7 +244,6 @@ jobs:
     needs:
       - checkoutRepo
       - buildAndPushApp
-      - buildAndPushDatabase
       - buildAndPushDatabaseSetup
       - buildAndPushAPI
     steps:
@@ -358,15 +301,6 @@ jobs:
             -f ./infrastructure/biohubbc/values-$BRANCH.yaml \
             --set-string biohubbc-app.environment.ts=$TS \
             --set-string biohubbc-app.environment.changeId=$BUILD_TAG \
-            --set-string biohubbc-db.environment.ts=$TS \
-            --set-string biohubbc-db.environment.changeId=$BUILD_TAG \
-            --set-string biohubbc-db.app.postgresAdmin=${{ secrets.DATABASE_ADMIN }} \
-            --set-string biohubbc-db.app.postgresAdminPassword=${{ secrets.DATABASE_ADMIN_PASSWORD }} \
-            --set-string biohubbc-db.app.postgresUser=${{ secrets.DATABASE_USER }} \
-            --set-string biohubbc-db.app.postgresUserPassword=${{ secrets.DATABASE_USER_PASSWORD }} \
-            --set-string biohubbc-db.app.postgresUserApi=${{ secrets.DATABASE_USER_API }} \
-            --set-string biohubbc-db.app.postgresUserApiPassword=${{ secrets.DATABASE_USER_API_PASSWORD }} \
-            --set-string biohubbc-db.app.postgresDb=${{ secrets.DATABASE_NAME }} \
             --set-string biohubbc-db-setup.environment.ts=$TS \
             --set-string biohubbc-db-setup.environment.changeId=$BUILD_TAG \
             --set-string biohubbc-api.environment.ts=$TS \
@@ -403,7 +337,7 @@ jobs:
           set -e
           KEEP=3
           SUFFIX="-$BRANCH"
-          IMAGES="biohubbc-app biohubbc-api biohubbc-db biohubbc-db-setup"
+          IMAGES="biohubbc-app biohubbc-api biohubbc-db-setup"
           echo "Pruning image tags for environment $BRANCH in $TOOLS_NAMESPACE (keeping $KEEP most recent by date)"
           for IMAGE in $IMAGES; do
             echo "Checking image stream $IMAGE..."

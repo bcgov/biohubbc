@@ -33,22 +33,22 @@ spec:
                 - name: TZ
                   value: {{ .Values.app.timezone }}
                 - name: DB_HOST
-                  value: {{ include "dbHost" . }}
+                  value: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.host }}{{ else }}{{ include "dbHost" . }}{{ end }}
                 - name: DB_USER_API
                   valueFrom:
                     secretKeyRef:
-                      key: database-user-api
-                      name: {{ include "dbHost" . }}
+                      name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                      key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appUserKey | default "user" }}{{ else }}database-user-api{{ end }}
                 - name: DB_USER_API_PASS
                   valueFrom:
                     secretKeyRef:
-                      key: database-user-api-password
-                      name: {{ include "dbHost" . }}
+                      name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                      key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appPasswordKey | default "password" }}{{ else }}database-user-api-password{{ end }}
                 - name: DB_DATABASE
                   valueFrom:
                     secretKeyRef:
-                      key: database-name
-                      name: {{ include "dbHost" . }}
+                      name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.dbNameSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                      key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.dbNameKey | default "dbname" }}{{ else }}database-name{{ end }}
                 - name: DB_PORT
                   value: {{ .Values.app.database.port | quote }}
                 # Telemetry

@@ -37,9 +37,16 @@ app:
 
   # Database
   database:
-    secretName: biohubbc-db
-    serviceName: "" # Database service name associated with deployment
-    port: 5432 # Database port'
+    secretName: biohubbc-db # Unused: legacy path uses hardcoded dbHost helper (biohubbc-db + app.suffix) for secret name
+    serviceName: "" # Unused: reserved for future use
+    port: 5432 # Database port
+    # useCrunchy: true = Crunchy Postgres (DEV/TEST/PROD). Set to false for PR environments (legacy dbHost secret).
+    useCrunchy: true
+    host: "" # e.g. "<release>-primary" (biohubbc-db-dev-primary for DEV); use primary not pgbouncer (biohub_api not in PgBouncer config)
+    appSecretName: "" # e.g. "<release>-pguser-biohub-api" (biohubbc-db-dev-pguser-biohub-api for DEV)
+    dbNameSecretName: "" # e.g. "<release>-pguser-<cluster-name>" (biohubbc-db-dev-pguser-biohubbc-db-dev for DEV)
+    adminSecretName: "" # e.g. "<release>-pguser-postgres" (biohubbc-db-dev-pguser-postgres for DEV)
+    # Secret keys default in templates: user/password/dbname (override in parent values if needed)
 
   # Keycloak
   keycloak:

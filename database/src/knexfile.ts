@@ -1,3 +1,6 @@
+// When PGSSLMODE=require (e.g. Crunchy Postgres with self-signed cert), use SSL and accept self-signed for this connection only.
+const sslConfig = process.env.PGSSLMODE === 'require' ? { rejectUnauthorized: false } : false;
+
 export default {
   development: {
     client: 'pg',
@@ -6,7 +9,8 @@ export default {
       port: process.env.DB_PORT,
       database: process.env.DB_DATABASE,
       user: process.env.DB_ADMIN,
-      password: process.env.DB_ADMIN_PASS
+      password: process.env.DB_ADMIN_PASS,
+      ...(sslConfig && { ssl: sslConfig })
     },
     pool: {
       min: 2,
@@ -28,7 +32,8 @@ export default {
       port: process.env.DB_PORT,
       database: process.env.DB_DATABASE,
       user: process.env.DB_ADMIN,
-      password: process.env.DB_ADMIN_PASS
+      password: process.env.DB_ADMIN_PASS,
+      ...(sslConfig && { ssl: sslConfig })
     },
     pool: {
       min: 2,

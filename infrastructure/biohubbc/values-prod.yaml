@@ -9,8 +9,9 @@ environment:
 app:
   enabled: true
 
+# Disabled: PROD uses the separate Crunchy Postgres Helm release (infrastructure/crunchy-db).
 database:
-  enabled: true
+  enabled: false
 
 database-setup:
   enabled: true
@@ -60,33 +61,6 @@ biohubbc-app:
   route:
     host: biohubbc.apps.silver.devops.gov.bc.ca
 
-# Values passed to biohubbc-db subchart
-biohubbc-db:
-  environment:
-    licensePlate: "af2668"
-    name: prod
-    id: deploy
-    # changeId will be dynamically set: "1234"
-    ts: ""
-
-  # App configuration
-  app:
-    nodeEnv: production
-
-  # Openshift Resources
-  replicas: 1
-  resources:
-    requests:
-      cpu: 50m
-      memory: 100Mi
-    limits:
-      cpu: 4000m
-      memory: 10Gi
-
-  # Volume for persistent data
-  persistence:
-    existingClaim: "biohubbc-db-postgresql-prod"
-
 # Values passed to biohubbc-db-setup subchart
 biohubbc-db-setup:
   environment:
@@ -99,6 +73,11 @@ biohubbc-db-setup:
   # App configuration
   app:
     nodeEnv: production
+    database:
+      host: "biohubbc-db-prod-primary"
+      adminSecretName: "biohubbc-db-prod-pguser-postgres"
+      appSecretName: "biohubbc-db-prod-pguser-biohub-api"
+      dbNameSecretName: "biohubbc-db-prod-pguser-biohubbc-db-prod"
 
 # Values passed to biohubbc-clamav subchart
 biohubbc-clamav:
@@ -146,6 +125,14 @@ biohubbc-api:
     
     # Critterbase
     critterbaseApiHost: "https://moe-critterbase-api-prod.apps.silver.devops.gov.bc.ca/api"
+
+    # Database
+    database:
+      host: "biohubbc-db-prod-primary"
+      port: 5432
+      appSecretName: "biohubbc-db-prod-pguser-biohub-api"
+      dbNameSecretName: "biohubbc-db-prod-pguser-biohubbc-db-prod"
+      adminSecretName: "biohubbc-db-prod-pguser-postgres"
 
     # Keycloak
     keycloak:
