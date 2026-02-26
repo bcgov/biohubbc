@@ -31,63 +31,63 @@ spec:
           command: ['sh', '-c']
           args:
             - |
-              until pg_isready -h {{ include "dbHost" . }} -p {{ .Values.app.database.port }} -U $DB_USER_API; do
+              until pg_isready -h $DB_HOST -p {{ .Values.app.database.port }} -U $DB_USER_API; do
                 echo "Waiting for database to be ready..."
                 sleep 5
               done
               echo "Database is ready!"
           env:
             - name: DB_HOST
-              value: {{ include "dbHost" . }}
+              value: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.host }}{{ else }}{{ include "dbHost" . }}{{ end }}
             - name: DB_USER_API
               valueFrom:
                 secretKeyRef:
-                  key: database-user-api
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appUserKey | default "user" }}{{ else }}database-user-api{{ end }}
             - name: DB_USER_API_PASS
               valueFrom:
                 secretKeyRef:
-                  key: database-user-api-password
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appPasswordKey | default "password" }}{{ else }}database-user-api-password{{ end }}
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  key: database-user-api-password
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appPasswordKey | default "password" }}{{ else }}database-user-api-password{{ end }}
         - name: wait-for-database-setup
           image: postgres:15-alpine
           command: ['sh', '-c']
           args:
             - |
               echo "Waiting for database-setup job to complete..."
-              until PGPASSWORD=$DB_ADMIN_PASS psql -h {{ include "dbHost" . }} -U $DB_ADMIN -d $DB_DATABASE -c "SELECT 1 FROM pg_roles WHERE rolname='$DB_USER_API';" | grep -q "1"; do
+              until PGPASSWORD=$DB_CHECK_PASS psql -h $DB_HOST -U $DB_CHECK_USER -d $DB_DATABASE -c "SELECT 1;" | grep -q "1"; do
                 echo "Database-setup not complete, waiting..."
                 sleep 5
               done
               echo "Database-setup completed successfully!"
           env:
             - name: DB_HOST
-              value: {{ include "dbHost" . }}
-            - name: DB_ADMIN
+              value: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.host }}{{ else }}{{ include "dbHost" . }}{{ end }}
+            - name: DB_CHECK_USER
               valueFrom:
                 secretKeyRef:
-                  key: database-admin
-                  name: {{ include "dbHost" . }}
-            - name: DB_ADMIN_PASS
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appUserKey | default "user" }}{{ else }}database-admin{{ end }}
+            - name: DB_CHECK_PASS
               valueFrom:
                 secretKeyRef:
-                  key: database-admin-password
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appPasswordKey | default "password" }}{{ else }}database-admin-password{{ end }}
             - name: DB_DATABASE
               valueFrom:
                 secretKeyRef:
-                  key: database-name
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.dbNameSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.dbNameKey | default "dbname" }}{{ else }}database-name{{ end }}
             - name: DB_USER_API
               valueFrom:
                 secretKeyRef:
-                  key: database-user-api
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appUserKey | default "user" }}{{ else }}database-user-api{{ end }}
       containers:
         - name: api
           env:
@@ -130,24 +130,28 @@ spec:
             - name: TZ
               value: {{ .Values.app.timezone }}
             - name: DB_HOST
-              value: {{ include "dbHost" . }}
+              value: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.host }}{{ else }}{{ include "dbHost" . }}{{ end }}
             - name: DB_USER_API
               valueFrom:
                 secretKeyRef:
-                  key: database-user-api
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appUserKey | default "user" }}{{ else }}database-user-api{{ end }}
             - name: DB_USER_API_PASS
               valueFrom:
                 secretKeyRef:
-                  key: database-user-api-password
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appPasswordKey | default "password" }}{{ else }}database-user-api-password{{ end }}
             - name: DB_DATABASE
               valueFrom:
                 secretKeyRef:
-                  key: database-name
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.dbNameSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.dbNameKey | default "dbname" }}{{ else }}database-name{{ end }}
             - name: DB_PORT
               value: {{ .Values.app.database.port | quote }}
+            {{- if .Values.app.database.useCrunchy }}
+            - name: PG_SSL_CA_PATH
+              value: "/etc/pg-ssl/{{ .Values.app.database.caSecretKey }}"
+            {{- end }}
             # Telemetry
             - name: LOTEK_API_HOST
               value: {{ .Values.app.lotekApiHost }}
@@ -311,6 +315,11 @@ spec:
           volumeMounts:
             - name: {{ include "app.fullname" . }}
               mountPath: /opt/app-root/src/data
+            {{- if .Values.app.database.useCrunchy }}
+            - name: pg-root-ca
+              mountPath: /etc/pg-ssl
+              readOnly: true
+            {{- end }}
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -320,3 +329,11 @@ spec:
         - name: {{ include "app.fullname" . }}
           persistentVolumeClaim:
             claimName: {{ default (include "app.fullname" .) .Values.persistence.existingClaim }}
+        {{- if .Values.app.database.useCrunchy }}
+        - name: pg-root-ca
+          secret:
+            secretName: {{ .Values.app.database.caSecretName }}
+            items:
+              - key: {{ .Values.app.database.caSecretKey }}
+                path: {{ .Values.app.database.caSecretKey }}
+        {{- end }}

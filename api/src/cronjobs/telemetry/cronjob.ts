@@ -1,6 +1,6 @@
 import { parseArgs } from 'util';
 import { z } from 'zod';
-import { defaultPoolConfig, getAPIUserDBConnection, initDBPool } from '../../database/db';
+import { getAPIUserDBConnection, getDefaultPoolConfig, initDBPool } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';
 import { TelemetryLotekService } from '../../services/telemetry-services/telemetry-lotek-service';
 import { TelemetryVectronicService } from '../../services/telemetry-services/telemetry-vectronic-service';
@@ -47,7 +47,7 @@ export async function telemetryCronjob() {
   const args = parseArguments();
   defaultLog.info({ message: 'Cronjob starting.', args });
 
-  initDBPool(defaultPoolConfig);
+  initDBPool(getDefaultPoolConfig());
 
   const connection = getAPIUserDBConnection();
 

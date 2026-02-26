@@ -105,6 +105,8 @@ biohubbc-db-setup:
   # App configuration
   app:
     nodeEnv: development
+    database:
+      useCrunchy: false # PRs use legacy dbHost secret
 
 # Values passed to biohubbc-clamav subchart
 # NOTE: ClamAV is DISABLED for PR previews to save resources.
@@ -140,6 +142,10 @@ biohubbc-api:
     
     # Critterbase
     critterbaseApiHost: "https://moe-critterbase-api-dev.apps.silver.devops.gov.bc.ca/api"
+
+    # Database: PRs use legacy dbHost secret (not Crunchy)
+    database:
+      useCrunchy: false
 
     # Keycloak
     keycloak:

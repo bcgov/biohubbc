@@ -1,0 +1,227 @@
+{{- if .Values.migration.enabled }}
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: biohubbc-db-migration
+  labels:
+    app: biohubbc-db-migration
+    role: migration
+  annotations:
+    # Ensures this job is not re-created on subsequent helm upgrades unless explicitly enabled
+    "helm.sh/hook": post-install,post-upgrade
+    "helm.sh/hook-weight": "0"
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  # Allow up to 30 minutes for the migration
+  activeDeadlineSeconds: 1800
+  backoffLimit: 1
+  template:
+    metadata:
+      labels:
+        app: biohubbc-db-migration
+        role: migration
+    spec:
+      restartPolicy: Never
+      initContainers:
+        # Wait for the old database to be reachable
+        - name: wait-for-old-db
+          image: postgres:17-alpine
+          command: ['sh', '-c']
+          args:
+            - |
+              echo "Waiting for old database to be ready at {{ .Values.migration.oldDb.host }}..."
+              until pg_isready -h {{ .Values.migration.oldDb.host }} -p 5432 -U $OLD_DB_ADMIN; do
+                echo "Old database not ready, waiting..."
+                sleep 5
+              done
+              echo "Old database is ready."
+          env:
+            - name: OLD_DB_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.migration.oldDb.secretName }}
+                  key: {{ .Values.migration.oldDb.adminKey }}
+        # Wait for the new Crunchy DB to be ready (host from postgres secret = primary)
+        # Secret name uses cluster name (fullnameOverride), not Helm release name.
+        - name: wait-for-new-db
+          image: postgres:17-alpine
+          command: ['sh', '-c']
+          args:
+            - |
+              echo "Waiting for Crunchy DB at $NEW_DB_HOST:5432..."
+              until pg_isready -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN; do
+                echo "Crunchy DB not ready, waiting..."
+                sleep 5
+              done
+              echo "Crunchy DB is ready."
+          env:
+            - name: NEW_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ (index .Values "crunchy-postgres").fullnameOverride }}-pguser-postgres
+                  key: host
+            - name: NEW_DB_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ (index .Values "crunchy-postgres").fullnameOverride }}-pguser-postgres
+                  key: {{ .Values.migration.newDb.adminUserKey }}
+      containers:
+        - name: migrate
+          image: postgres:17-alpine
+          command: ['sh', '-c']
+          args:
+            - |
+              set -e
+
+              echo "=== Starting database migration ==="
+              echo "Source: $OLD_DB_HOST / $OLD_DB_NAME"
+              echo "Target: $NEW_DB_HOST / $NEW_DB_NAME"
+
+              # biohub_api password comes from a secret you create manually (see values migration.newDb.appUserSecretName).
+              # Example: kubectl create secret generic biohubbc-db-dev-pguser-biohub-api --from-literal=user=biohub_api --from-literal=password='YOUR_PASSWORD' -n <namespace>
+              if [ -z "$NEW_DB_APP_PASS" ]; then
+                echo "ERROR: NEW_DB_APP_PASS is not set. Create the app user secret before running migration (e.g. biohubbc-db-dev-pguser-biohub-api with key password)."
+                exit 1
+              fi
+
+              echo "--- Running pg_dump from old database and restoring into Crunchy ---"
+              PGPASSWORD=$OLD_DB_ADMIN_PASS pg_dump \
+                -h $OLD_DB_HOST \
+                -p 5432 \
+                -U $OLD_DB_ADMIN \
+                -d $OLD_DB_NAME \
+                --no-owner \
+                --no-acl \
+                --format=custom \
+                -f /tmp/migration.dump
+
+              echo "--- Dump complete, size: $(du -sh /tmp/migration.dump | cut -f1) ---"
+
+              export PGSSLMODE=require
+              # Strip newlines/carriage returns from secrets (K8s can have trailing newlines)
+              NEW_DB_HOST=$(printf '%s' "$NEW_DB_HOST" | tr -d '\n\r')
+              NEW_DB_NAME=$(printf '%s' "$NEW_DB_NAME" | tr -d '\n\r')
+              NEW_DB_ADMIN=$(printf '%s' "$NEW_DB_ADMIN" | tr -d '\n\r')
+              NEW_PASS_ESC=$(printf '%s' "$NEW_DB_ADMIN_PASS" | tr -d '\n\r' | sed 's/\\/\\\\/g; s/:/\\:/g')
+              printf '%s:5432:%s:%s:%s\n' "$NEW_DB_HOST" "$NEW_DB_NAME" "$NEW_DB_ADMIN" "$NEW_PASS_ESC" > /tmp/.pgpass.new
+              chmod 600 /tmp/.pgpass.new
+              export PGPASSFILE=/tmp/.pgpass.new
+
+              echo "--- Clean new database completely (drop all extensions and non-system schemas) ---"
+              psql -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN -d $NEW_DB_NAME -v ON_ERROR_STOP=0 -c "
+                SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();
+              "
+              for ext in $(psql -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN -d $NEW_DB_NAME -t -A -v ON_ERROR_STOP=0 -c "SELECT extname FROM pg_extension WHERE extname != 'plpgsql'"); do
+                echo "Dropping extension $ext"
+                psql -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN -d $NEW_DB_NAME -v ON_ERROR_STOP=0 -c "DROP EXTENSION IF EXISTS \"$ext\" CASCADE;"
+              done
+              for schema in $(psql -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN -d $NEW_DB_NAME -t -A -v ON_ERROR_STOP=0 -c "SELECT nspname FROM pg_namespace WHERE nspname NOT IN ('pg_catalog', 'information_schema', 'pg_toast') AND nspname NOT LIKE 'pg_temp%'"); do
+                echo "Dropping schema $schema"
+                psql -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN -d $NEW_DB_NAME -v ON_ERROR_STOP=0 -c "DROP SCHEMA IF EXISTS \"$schema\" CASCADE;"
+              done
+              echo "--- Recreate public schema (pg_restore expects it for extensions and tables) ---"
+              psql -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN -d $NEW_DB_NAME -v ON_ERROR_STOP=1 -c "
+                CREATE SCHEMA IF NOT EXISTS public;
+                GRANT ALL ON SCHEMA public TO postgres;
+                GRANT ALL ON SCHEMA public TO public;
+              "
+              echo "--- New database cleaned ---"
+
+              echo "--- Create biohub_api role with new password (must exist before restore so ACLs can be restored) ---"
+              ESCAPED=$(echo "$NEW_DB_APP_PASS" | sed "s/'/''/g")
+              psql -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN -d $NEW_DB_NAME -v ON_ERROR_STOP=1 -c "
+                DO \$\$
+                BEGIN
+                  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'biohub_api') THEN
+                    EXECUTE format('CREATE USER biohub_api WITH LOGIN PASSWORD %L', '${ESCAPED}');
+                  ELSE
+                    EXECUTE format('ALTER USER biohub_api PASSWORD %L', '${ESCAPED}');
+                  END IF;
+                END \$\$;
+              "
+              echo "biohub_api role ready."
+
+              echo "--- Restoring into Crunchy database (postgres superuser; ACLs restored so biohub_api grants apply) ---"
+              pg_restore \
+                -h "$NEW_DB_HOST" \
+                -p 5432 \
+                -U $NEW_DB_ADMIN \
+                -d $NEW_DB_NAME \
+                --no-owner \
+                --clean \
+                --if-exists \
+                /tmp/migration.dump
+
+              # Ensure password is set after restore (restore may have overwritten role)
+              psql -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN -d $NEW_DB_NAME -v ON_ERROR_STOP=1 -c "ALTER USER biohub_api PASSWORD '${ESCAPED}';"
+              echo "biohub_api password confirmed."
+
+              echo "--- Set search_path and re-grant ACLs for biohub_api (dump used --no-acl; role defaults not in dump) ---"
+              psql -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN -d $NEW_DB_NAME -v ON_ERROR_STOP=1 -c "
+                ALTER ROLE biohub_api SET search_path TO biohub, public, biohub_dapi_v1;
+                GRANT USAGE ON SCHEMA biohub TO biohub_api;
+                GRANT SELECT, INSERT, UPDATE, DELETE ON ALL TABLES IN SCHEMA biohub TO biohub_api;
+                GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA biohub TO biohub_api;
+                GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA biohub TO biohub_api;
+              "
+              psql -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN -d $NEW_DB_NAME -v ON_ERROR_STOP=0 -c "
+                GRANT USAGE ON SCHEMA biohub_dapi_v1 TO biohub_api;
+                GRANT ALL ON ALL TABLES IN SCHEMA biohub_dapi_v1 TO biohub_api;
+                GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA biohub_dapi_v1 TO biohub_api;
+                GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA biohub_dapi_v1 TO biohub_api;
+              " || true
+              echo "biohub_api search_path and ACLs set."
+
+              echo "=== Migration complete ==="
+          env:
+            - name: OLD_DB_HOST
+              value: {{ .Values.migration.oldDb.host }}
+            - name: OLD_DB_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.migration.oldDb.secretName }}
+                  key: {{ .Values.migration.oldDb.adminKey }}
+            - name: OLD_DB_ADMIN_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.migration.oldDb.secretName }}
+                  key: {{ .Values.migration.oldDb.passwordKey }}
+            - name: OLD_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.migration.oldDb.secretName }}
+                  key: {{ .Values.migration.oldDb.dbNameKey }}
+            - name: NEW_DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: {{ (index .Values "crunchy-postgres").fullnameOverride }}-pguser-postgres
+                  key: host
+            - name: NEW_DB_ADMIN
+              valueFrom:
+                secretKeyRef:
+                  name: {{ (index .Values "crunchy-postgres").fullnameOverride }}-pguser-postgres
+                  key: {{ .Values.migration.newDb.adminUserKey }}
+            - name: NEW_DB_ADMIN_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ (index .Values "crunchy-postgres").fullnameOverride }}-pguser-postgres
+                  key: {{ .Values.migration.newDb.adminPasswordKey }}
+            - name: NEW_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: {{ (index .Values "crunchy-postgres").fullnameOverride }}-pguser-{{ (index .Values "crunchy-postgres").fullnameOverride }}
+                  key: dbname
+            # Password for biohub_api role; create this secret manually before running migration (valid name: no underscore, e.g. pguser-biohub-api).
+            - name: NEW_DB_APP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ (.Values.migration.newDb.appUserSecretName | default (printf "%s-pguser-biohub-api" (index .Values "crunchy-postgres").fullnameOverride)) }}
+                  key: {{ .Values.migration.newDb.appPasswordKey | default "password" }}
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+{{- end }}

@@ -4,7 +4,7 @@ import multer from 'multer';
 import { OpenAPIV3 } from 'openapi-types';
 import path from 'path';
 import swaggerUIExperss from 'swagger-ui-express';
-import { defaultPoolConfig, initDBPool } from './database/db';
+import { getDefaultPoolConfig, initDBPool } from './database/db';
 import { ensureHTTPError, HTTP400, HTTP500 } from './errors/http-error';
 import {
   authorizeAndAuthenticateMiddleware,
@@ -172,7 +172,7 @@ app.use('/api-docs', swaggerUIExperss.serve, swaggerUIExperss.setup(openAPIFrame
 
 // Start api
 try {
-  initDBPool(defaultPoolConfig);
+  initDBPool(getDefaultPoolConfig());
 
   app.listen(PORT, () => {
     defaultLog.info({ label: 'start api', message: `started api on ${HOST}:${PORT}/api` });

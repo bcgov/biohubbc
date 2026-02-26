@@ -10,15 +10,10 @@ on:
       - test
       - prod
   workflow_dispatch:
-    inputs:
-      pr_number:
-        description: 'Pull Request Number (required for manual runs)'
-        required: true
-        type: string
 
-env:
-  IMAGE_TAG: build-1.0.0-${{ github.event.number || github.event.inputs.pr_number }}-${{ github.base_ref || github.ref_name }}
-
+permissions:
+  contents: read
+  
 jobs:
   # Print variables for logging and debugging purposes
   checkEnv:
@@ -26,11 +21,16 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' }}
+    outputs:
+      timestamp: ${{ steps.set-timestamp.outputs.value }}
     steps:
+      - name: Set timestamp (yymmddhhiiss)
+        id: set-timestamp
+        run: echo "value=$(TZ=America/Vancouver date +%Y%m%d%H%M%S)" >> $GITHUB_OUTPUT
       - name: Print Env Vars
         run: |
           echo Git Base Ref: ${{ github.base_ref || github.ref_name }}
-          echo Git Change ID: ${{ github.event.number || github.event.inputs.pr_number }}
+          echo Build timestamp: ${{ steps.set-timestamp.outputs.value }}
           echo Git Pull Request Ref: ${{ github.event.pull_request.head.sha || github.sha }}
           echo Git Event Name: ${{ github.event_name }}
           echo Git Event Action: ${{ github.event.action || 'manual' }}
@@ -43,8 +43,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' }}
-    env:
-      PR_NUMBER: ${{ github.event.number || github.event.inputs.pr_number }}
+    outputs:
+      timestamp: ${{ needs.checkEnv.outputs.timestamp }}
     needs:
       - checkEnv
     steps:
@@ -71,7 +71,7 @@ jobs:
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' }}
     env:
-      PR_NUMBER: ${{ github.event.number || github.event.inputs.pr_number }}
+      IMAGE_TAG: build-1.0.0-${{ needs.checkoutRepo.outputs.timestamp }}-${{ github.base_ref || github.ref_name }}
       BRANCH: ${{ github.base_ref || github.ref_name }}
       APP_NAME: "biohubbc-app"
     needs:
@@ -120,62 +120,6 @@ jobs:
           docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} .
           docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
-  # Build the Database image
-  buildAndPushDatabase:
-    name: Build Database Image
-    runs-on: ubuntu-latest
-    timeout-minutes: 20
-    if: ${{ github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' }}
-    env:
-      PR_NUMBER: ${{ github.event.number || github.event.inputs.pr_number }}
-      BRANCH: ${{ github.base_ref || github.ref_name }}
-      APP_NAME: "biohubbc-db"
-    needs:
-      - checkoutRepo
-    steps:
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha || github.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: "4.16"
-
-      # Log in to OpenShift
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
-          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-${{ env.BRANCH }}
-
-      # Authenticate Docker with OpenShift registry
-      - name: Authenticate Docker with OpenShift registry
-        run: |
-          echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
-
-      # Build and push the database image using Docker
-      - name: Build and Push Database Image
-        working-directory: database
-        run: |
-          docker build -t ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }} .
-          docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
-
   # Build the Database Setup image
   buildAndPushDatabaseSetup:
     name: Build Database Setup Image
@@ -183,7 +127,7 @@ jobs:
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' }}
     env:
-      PR_NUMBER: ${{ github.event.number || github.event.inputs.pr_number }}
+      IMAGE_TAG: build-1.0.0-${{ needs.checkoutRepo.outputs.timestamp }}-${{ github.base_ref || github.ref_name }}
       BRANCH: ${{ github.base_ref || github.ref_name }}
       APP_NAME: "biohubbc-db-setup"
     needs:
@@ -239,7 +183,7 @@ jobs:
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' }}
     env:
-      PR_NUMBER: ${{ github.event.number || github.event.inputs.pr_number }}
+      IMAGE_TAG: build-1.0.0-${{ needs.checkoutRepo.outputs.timestamp }}-${{ github.base_ref || github.ref_name }}
       BRANCH: ${{ github.base_ref || github.ref_name }}
       APP_NAME: "biohubbc-api"
     needs:
@@ -295,11 +239,11 @@ jobs:
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' }}
     env:
-      PR_NUMBER: ${{ github.event.number || github.event.inputs.pr_number }}
+      BUILD_TAG: ${{ needs.checkoutRepo.outputs.timestamp }}
       BRANCH: ${{ github.base_ref || github.ref_name }}
     needs:
+      - checkoutRepo
       - buildAndPushApp
-      - buildAndPushDatabase
       - buildAndPushDatabaseSetup
       - buildAndPushAPI
     steps:
@@ -339,7 +283,7 @@ jobs:
         run: |
           echo "Deploying Helm chart for branch $BRANCH"
           
-          # Generate a timestamp
+          # Generate a timestamp (unix seconds) for env.ts
           TS=$(date +%s)
           
           # Update Helm dependencies
@@ -349,80 +293,71 @@ jobs:
           # Build chart
           echo "Building chart..."
           helm package ./infrastructure/biohubbc \
-            --version $PR_NUMBER \
+            --version $BUILD_TAG \
             --app-version 1.0.0
 
-          helm upgrade --install "$BRANCH" biohubbc-$PR_NUMBER.tgz \
+          helm upgrade --install "$BRANCH" biohubbc-$BUILD_TAG.tgz \
             -f ./infrastructure/biohubbc/values.yaml \
             -f ./infrastructure/biohubbc/values-$BRANCH.yaml \
             --set-string biohubbc-app.environment.ts=$TS \
-            --set-string biohubbc-app.environment.changeId=$PR_NUMBER \
-            --set-string biohubbc-db.environment.ts=$TS \
-            --set-string biohubbc-db.environment.changeId=$PR_NUMBER \
-            --set-string biohubbc-db.app.postgresAdmin=${{ secrets.DATABASE_ADMIN }} \
-            --set-string biohubbc-db.app.postgresAdminPassword=${{ secrets.DATABASE_ADMIN_PASSWORD }} \
-            --set-string biohubbc-db.app.postgresUser=${{ secrets.DATABASE_USER }} \
-            --set-string biohubbc-db.app.postgresUserPassword=${{ secrets.DATABASE_USER_PASSWORD }} \
-            --set-string biohubbc-db.app.postgresUserApi=${{ secrets.DATABASE_USER_API }} \
-            --set-string biohubbc-db.app.postgresUserApiPassword=${{ secrets.DATABASE_USER_API_PASSWORD }} \
-            --set-string biohubbc-db.app.postgresDb=${{ secrets.DATABASE_NAME }} \
+            --set-string biohubbc-app.environment.changeId=$BUILD_TAG \
             --set-string biohubbc-db-setup.environment.ts=$TS \
-            --set-string biohubbc-db-setup.environment.changeId=$PR_NUMBER \
+            --set-string biohubbc-db-setup.environment.changeId=$BUILD_TAG \
             --set-string biohubbc-api.environment.ts=$TS \
-            --set-string biohubbc-api.environment.changeId=$PR_NUMBER \
+            --set-string biohubbc-api.environment.changeId=$BUILD_TAG \
             --wait --timeout=600s
           
           echo "Helm chart deployment completed for branch $BRANCH"
 
-  # Clean deployment artifacts
-  clean:
-    name: Clean Deployment Artifacts
+  # Prune old image tags for this environment (keep 3 most recent by date)
+  pruneOldImageTags:
+    name: Prune Old Image Tags
     runs-on: ubuntu-latest
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch' }}
     needs:
       - deployHelmChart
     env:
-      PR_NUMBER: ${{ github.event.number || github.event.inputs.pr_number }}
       BRANCH: ${{ github.base_ref || github.ref_name }}
+      TOOLS_NAMESPACE: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools
     steps:
-      # Load repo from cache
-      - name: Cache repo
-        uses: actions/cache@v4
-        id: cache-repo
-        env:
-          cache-name: cache-repo
-        with:
-          path: ${{ github.workspace }}/*
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha || github.sha }}
-
-      # Checkout the branch if not restored via cache
-      - name: Checkout Target Branch
-        if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
-
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
       - name: Install OpenShift CLI tools
         uses: redhat-actions/openshift-tools-installer@v1
         with:
           oc: "4.16"
 
-      # Log in to OpenShift
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
       - name: Log in to OpenShift
         uses: redhat-actions/oc-login@v1
         with:
           openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
           openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
 
-      # Clean deployment artifacts
-      - name: Clean deployment artifacts
+      - name: Prune old environment image tags
         run: |
-          echo "Cleaning deployment artifacts for PR $PR_NUMBER using Helm"
-          
-          # Clean from dev namespace (where Helm releases are deployed)
-          echo "Cleaning from ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev namespace..."
-          helm uninstall "pr-$PR_NUMBER" --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev || echo "No Helm release found in dev namespace for PR $PR_NUMBER"
-          
-          echo "Cleanup completed for PR $PR_NUMBER"
+          set -e
+          KEEP=3
+          SUFFIX="-$BRANCH"
+          IMAGES="biohubbc-app biohubbc-api biohubbc-db-setup"
+          echo "Pruning image tags for environment $BRANCH in $TOOLS_NAMESPACE (keeping $KEEP most recent by date)"
+          for IMAGE in $IMAGES; do
+            echo "Checking image stream $IMAGE..."
+            JSON=$(oc get is "$IMAGE" -n "$TOOLS_NAMESPACE" -o json 2>/dev/null) || continue
+            TAGS_TO_DELETE=$(echo "$JSON" | jq -r --arg suffix "$SUFFIX" --argjson keep "$KEEP" '
+              (.status.tags // [])
+              | map(select(.tag != null and (.tag | endswith($suffix))))
+              | map({tag: .tag, created: (.items[0].created // "1970-01-01T00:00:00Z")})
+              | sort_by(.created) | reverse
+              | .[$keep:] | .[] | .tag
+            ')
+            if [ -z "$TAGS_TO_DELETE" ]; then
+              echo "  No tags to delete for $IMAGE (3 or fewer $SUFFIX tags)"
+              continue
+            fi
+            echo "  Deleting old tags for $IMAGE:"
+            echo "$TAGS_TO_DELETE" | while read -r TAG; do
+              [ -z "$TAG" ] && continue
+              echo "    - $TAG"
+              oc tag -d "$IMAGE:$TAG" --namespace "$TOOLS_NAMESPACE" || true
+            done
+          done
+          echo "Prune completed for environment $BRANCH"

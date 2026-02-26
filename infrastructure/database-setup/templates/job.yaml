@@ -22,59 +22,63 @@ spec:
           args:
             - |
               echo "Waiting for database to be ready..."
-              until pg_isready -h {{ include "dbHost" . }} -p 5432 -U $DB_ADMIN; do
+              until pg_isready -h $DB_HOST -p 5432 -U $DB_ADMIN; do
                 echo "Database not ready, waiting..."
                 sleep 5
               done
               echo "Database is ready!"
           env:
             - name: DB_HOST
-              value: {{ include "dbHost" . }}
+              value: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.migrationHost | default .Values.app.database.host }}{{ else }}{{ include "dbHost" . }}{{ end }}
             - name: DB_ADMIN
               valueFrom:
                 secretKeyRef:
-                  key: database-admin
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.adminSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.adminUserKey | default "user" }}{{ else }}database-admin{{ end }}
             - name: DB_ADMIN_PASS
               valueFrom:
                 secretKeyRef:
-                  key: database-admin-password
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.adminSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.adminPasswordKey | default "password" }}{{ else }}database-admin-password{{ end }}
             - name: PGPASSWORD
               valueFrom:
                 secretKeyRef:
-                  key: database-admin-password
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.adminSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.adminPasswordKey | default "password" }}{{ else }}database-admin-password{{ end }}
       containers:
         - name: postgresql
           env:
             - name: DB_HOST
-              value: {{ include "dbHost" . }}
+              value: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.migrationHost | default .Values.app.database.host }}{{ else }}{{ include "dbHost" . }}{{ end }}
             - name: DB_ADMIN
               valueFrom:
                 secretKeyRef:
-                  key: database-admin
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.adminSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.adminUserKey | default "user" }}{{ else }}database-admin{{ end }}
             - name: DB_ADMIN_PASS
               valueFrom:
                 secretKeyRef:
-                  key: database-admin-password
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.adminSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.adminPasswordKey | default "password" }}{{ else }}database-admin-password{{ end }}
+            {{- if .Values.app.database.useCrunchy }}
+            - name: PG_SSL_CA_PATH
+              value: "/etc/pg-ssl/{{ .Values.app.database.caSecretKey }}"
+            {{- end }}
             - name: DB_USER_API
               valueFrom:
                 secretKeyRef:
-                  key: database-user-api
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appUserKey | default "user" }}{{ else }}database-user-api{{ end }}
             - name: DB_USER_API_PASS
               valueFrom:
                 secretKeyRef:
-                  key: database-user-api-password
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.appPasswordKey | default "password" }}{{ else }}database-user-api-password{{ end }}
             - name: DB_DATABASE
               valueFrom:
                 secretKeyRef:
-                  key: database-name
-                  name: {{ include "dbHost" . }}
+                  name: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.dbNameSecretName }}{{ else }}{{ include "dbHost" . }}{{ end }}
+                  key: {{ if .Values.app.database.useCrunchy }}{{ .Values.app.database.dbNameKey | default "dbname" }}{{ else }}database-name{{ end }}
             - name: DB_PORT
               value: '5432'
             - name: CHANGE_VERSION
@@ -87,6 +91,12 @@ spec:
               value: {{ .Values.app.dbSchema }}
           image: "{{ .Values.image.registry }}/{{ .Values.image.image }}:{{ include "app.imageTag" . }}"
           imagePullPolicy: Always
+          {{- if .Values.app.database.useCrunchy }}
+          volumeMounts:
+            - name: pg-root-ca
+              mountPath: /etc/pg-ssl
+              readOnly: true
+          {{- end }}
           resources:
             requests:
               cpu: {{ .Values.resources.requests.cpu }}
@@ -94,6 +104,15 @@ spec:
             limits:
               cpu: {{ .Values.resources.limits.cpu }}
               memory: {{ .Values.resources.limits.memory }}
+      {{- if .Values.app.database.useCrunchy }}
+      volumes:
+        - name: pg-root-ca
+          secret:
+            secretName: {{ .Values.app.database.caSecretName }}
+            items:
+              - key: {{ .Values.app.database.caSecretKey }}
+                path: {{ .Values.app.database.caSecretKey }}
+      {{- end }}
       restartPolicy: Never
       activeDeadlineSeconds: 900
       dnsPolicy: ClusterFirst

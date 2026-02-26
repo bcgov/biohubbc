@@ -1,0 +1,123 @@
+# Base values for biohubbc Crunchy Postgres cluster.
+# Environment-specific overrides are in values-dev.yaml, values-test.yaml, values-prod.yaml.
+# This chart is NOT used for PR preview environments, which use the vanilla database subchart.
+
+crunchy-postgres:
+  # Overridden per environment (e.g. biohubbc-db-dev in values-dev.yaml)
+  fullnameOverride: biohubbc-db
+
+  # PostGIS-enabled image for PostgreSQL 17
+  crunchyImage: artifacts.developer.gov.bc.ca/bcgov-docker-local/crunchy-postgres-gis:ubi9-17.7-3.5-2547
+  postgresVersion: 17
+  postGISVersion: '3.5'
+  imagePullPolicy: IfNotPresent
+  openshift: true
+
+  standby:
+    enabled: false
+    repoName: repo2
+
+  instances:
+    name: ha
+    replicas: 1
+    dataVolumeClaimSpec:
+      storage: 5Gi
+      storageClassName: netapp-block-standard
+    requests:
+      cpu: 50m
+      memory: 256Mi
+    replicaCertCopy:
+      requests:
+        cpu: 1m
+        memory: 32Mi
+
+  dataSource:
+    enabled: false
+    secretName: s3-pgbackrest
+    repo:
+      name: repo2
+      path: "/biohubbc/dev"
+      s3:
+        bucket: "vjfnyw"
+        endpoint: "https://nrs.objectstore.gov.bc.ca:443"
+        region: "ca-central-1"
+    stanza: db
+
+  pgBackRest:
+    retention: "7"
+    retentionFullType: count
+    repo1:
+      enabled: true
+    repos:
+      schedules:
+        full: 0 8 * * *
+        incremental: 0 0,4,12,16,20 * * *
+      volume:
+        accessModes: "ReadWriteOnce"
+        storage: 512Mi
+        storageClassName: netapp-file-backup
+    repoHost:
+      requests:
+        cpu: 1m
+        memory: 64Mi
+    sidecars:
+      requests:
+        cpu: 1m
+        memory: 64Mi
+    s3:
+      enabled: true
+      # The s3-pgbackrest secret must be pre-created in the namespace before deploying this chart.
+      createS3Secret: false
+      s3Secret: s3-pgbackrest
+      # s3Path is overridden per environment to keep backups separated.
+      s3Path: "/biohubbc/dev"
+      s3UriStyle: path
+      bucket: "vjfnyw"
+      endpoint: "https://nrs.objectstore.gov.bc.ca:443"
+      region: "ca-central-1"
+      key: ""
+      keySecret: ""
+      fullSchedule: "0 9 * * *"
+      incrementalSchedule: "0 1,5,13,17,21 * * *"
+
+  patroni:
+    postgresql:
+      pg_hba: "host all all 0.0.0.0/0 md5"
+      parameters:
+        shared_buffers: 16MB
+        wal_buffers: "64kB"
+        min_wal_size: 32MB
+        max_wal_size: 64MB
+        max_slot_wal_keep_size: 128MB
+
+  proxy:
+    pgBouncer:
+      replicas: 1
+      requests:
+        cpu: 1m
+        memory: 64Mi
+
+  pgmonitor:
+    enabled: false
+    exporter:
+      requests:
+        cpu: 1m
+        memory: 64Mi
+
+# Migration job values (disabled by default, enabled one-time per environment to copy data).
+migration:
+  enabled: false
+  oldDb:
+    host: ""
+    secretName: ""
+    adminKey: "database-admin"
+    passwordKey: "database-admin-password"
+    dbNameKey: "database-name"
+  # New (Crunchy) DB: admin secret and app user secret (create manually before migration; name must be RFC 1123, e.g. <fullnameOverride>-pguser-biohub-api).
+  newDb:
+    adminUserKey: "user"
+    adminPasswordKey: "password"
+    # App user secret: create manually before migration. Leave empty to use <fullnameOverride>-pguser-biohub-api (hyphen, not underscore).
+    appUserSecretName: ""
+    appUserKey: "user"
+    appPasswordKey: "password"

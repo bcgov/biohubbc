@@ -1,3 +1,8 @@
+import * as fs from 'node:fs';
+
+// Use SSL with CA verification when PG_SSL_CA_PATH is set (Crunchy); otherwise no SSL (legacy/PR).
+const sslConfig = process.env.PG_SSL_CA_PATH ? { ca: fs.readFileSync(process.env.PG_SSL_CA_PATH) } : false;
+
 export default {
   development: {
     client: 'pg',
@@ -6,7 +11,8 @@ export default {
       port: process.env.DB_PORT,
       database: process.env.DB_DATABASE,
       user: process.env.DB_ADMIN,
-      password: process.env.DB_ADMIN_PASS
+      password: process.env.DB_ADMIN_PASS,
+      ...(sslConfig && { ssl: sslConfig })
     },
     pool: {
       min: 2,
@@ -28,7 +34,8 @@ export default {
       port: process.env.DB_PORT,
       database: process.env.DB_DATABASE,
       user: process.env.DB_ADMIN,
-      password: process.env.DB_ADMIN_PASS
+      password: process.env.DB_ADMIN_PASS,
+      ...(sslConfig && { ssl: sslConfig })
     },
     pool: {
       min: 2,
