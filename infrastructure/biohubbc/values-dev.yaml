@@ -73,6 +73,8 @@ biohubbc-db-setup:
   # App configuration
   app:
     nodeEnv: development
+
+    # Database
     database:
       host: "biohubbc-db-dev-primary"
       adminSecretName: "biohubbc-db-dev-pguser-postgres"

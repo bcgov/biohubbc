@@ -73,6 +73,8 @@ biohubbc-db-setup:
   # App configuration
   app:
     nodeEnv: production # This is set to production as test is not a valid name in the Knexfile and to only run the procedures and not seed the database
+    
+    # Database
     database:
       host: "biohubbc-db-test-primary"
       adminSecretName: "biohubbc-db-test-pguser-postgres"
