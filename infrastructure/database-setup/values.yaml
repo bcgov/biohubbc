@@ -26,6 +26,9 @@ app:
     appSecretName: "" # e.g. "biohubbc-db-dev-pguser-biohub-api"
     dbNameSecretName: "" # e.g. "biohubbc-db-dev-pguser-biohubbc-db-dev"
     # Secret keys default in templates: user/password/dbname (override in parent values if needed)
+    # PGO root CA for TLS verification (same secret name in all envs)
+    caSecretName: "pgo-root-cacert"
+    caSecretKey: "root.crt"
 
 # Openshift Resources
 resources:

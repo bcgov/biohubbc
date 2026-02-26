@@ -1,5 +1,9 @@
-// When PGSSLMODE=require (e.g. Crunchy Postgres with self-signed cert), use SSL and accept self-signed for this connection only.
-const sslConfig = process.env.PGSSLMODE === 'require' ? { rejectUnauthorized: false } : false;
+import * as fs from 'fs';
+
+// Use SSL with CA verification when PG_SSL_CA_PATH is set (Crunchy); otherwise no SSL (legacy/PR).
+const sslConfig = process.env.PG_SSL_CA_PATH
+  ? { ca: fs.readFileSync(process.env.PG_SSL_CA_PATH) }
+  : false;
 
 export default {
   development: {

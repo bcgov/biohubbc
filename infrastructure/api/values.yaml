@@ -47,6 +47,9 @@ app:
     dbNameSecretName: "" # e.g. "<release>-pguser-<cluster-name>" (biohubbc-db-dev-pguser-biohubbc-db-dev for DEV)
     adminSecretName: "" # e.g. "<release>-pguser-postgres" (biohubbc-db-dev-pguser-postgres for DEV)
     # Secret keys default in templates: user/password/dbname (override in parent values if needed)
+    # PGO root CA for TLS verification (same secret name in all envs)
+    caSecretName: "pgo-root-cacert"
+    caSecretKey: "root.crt"
 
   # Keycloak
   keycloak:
