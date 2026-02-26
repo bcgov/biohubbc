@@ -1,6 +1,6 @@
 apiVersion: v2
 name: biohubbc
-description: A Helm umbrella chart for SIMS BioHub BC - deploys app, database, database-setup, and api in proper order
+description: A Helm umbrella chart for SIMS BioHub BC - deploys app, database-setup, and api. For PR previews the database subchart (single-pod Postgres) is enabled; for static envs (dev/test/prod) database is disabled and Crunchy Postgres is deployed separately (see infrastructure/crunchy-db).
 type: application
 version: 0.1.0
 appVersion: "1.0.0"
@@ -18,8 +18,6 @@ dependencies:
     repository: file://../database-setup
     version: 0.1.0
     condition: database-setup.enabled
-    dependsOn:
-      - biohubbc-db
   - name: biohubbc-clamav
     repository: file://../clamav
     version: 0.1.0

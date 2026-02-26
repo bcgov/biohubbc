@@ -1,4 +1,5 @@
 import knex, { Knex } from 'knex';
+import * as fs from 'node:fs';
 import * as pg from 'pg';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';
@@ -39,6 +40,12 @@ export const defaultPoolConfig: pg.PoolConfig = {
   connectionTimeoutMillis: DB_CONNECTION_TIMEOUT,
   idleTimeoutMillis: DB_IDLE_TIMEOUT
 };
+
+/** Default pool config with SSL (CA verification) when PG_SSL_CA_PATH is set. */
+export const getDefaultPoolConfig = (): pg.PoolConfig => ({
+  ...defaultPoolConfig,
+  ...(process.env.PG_SSL_CA_PATH && { ssl: { ca: fs.readFileSync(process.env.PG_SSL_CA_PATH) } })
+});
 
 // Custom type handler for psq `DATE` type to prevent local time/zone information from being added.
 // Why? By default, node-postgres assumes local time/zone for any psql `DATE` or `TIME` types that don't have timezone information.

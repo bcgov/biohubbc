@@ -1,0 +1,11 @@
+apiVersion: v2
+name: biohubbc-crunchy-db
+description: A Helm chart for SIMS Crunchy Postgres Cluster (DEV/TEST/PROD only)
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: crunchy-postgres
+    version: 0.6.6
+    repository: https://bcgov.github.io/crunchy-postgres/
