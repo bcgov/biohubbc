@@ -1,30 +1,47 @@
 # PROD environment overrides for Crunchy Postgres cluster.
 # High-availability: 2 instances + 2 pgBouncer replicas, separate S3 backup path, higher retention.
 
-crunchy-postgres:
-  fullnameOverride: biohubbc-db-prod
+fullnameOverride: biohubbc-db-prod
 
-  instances:
+instances:
+  replicas: 2
+  dataVolumeClaimSpec:
+    storage: 20Gi
+  requests:
+    cpu: 100m
+    memory: 512Mi
+
+proxy:
+  pgBouncer:
     replicas: 2
-    dataVolumeClaimSpec:
-      storage: 20Gi
-    requests:
-      cpu: 100m
-      memory: 512Mi
 
-  proxy:
-    pgBouncer:
-      replicas: 2
+pgBackRest:
+  repos:
+    - name: repo1
+      path: "/biohubbc/prod/hourly"
+      fullSchedule: "0 12 * * *"
+      retention: "1"
+      retentionFullType: count
+    - name: repo2
+      path: "/biohubbc/prod/daily"
+      fullSchedule: "0 0 * * *"
+      retention: "7"
+      retentionFullType: count
+    - name: repo3
+      path: "/biohubbc/prod/weekly"
+      fullSchedule: "0 1 * * 0"
+      retention: "4"
+      retentionFullType: count
+    - name: repo4
+      path: "/biohubbc/prod/monthly"
+      fullSchedule: "0 3 1 * *"
+      retention: "12"
+      retentionFullType: count
 
-  pgBackRest:
-    retention: "30"
-    s3:
-      s3Path: "/biohubbc/prod"
-
-  patroni:
-    postgresql:
-      parameters:
-        shared_buffers: 64MB
+patroni:
+  postgresql:
+    parameters:
+      shared_buffers: 64MB
 
 # To perform the one-time data migration from the old database, set:
 #   migration.enabled: true

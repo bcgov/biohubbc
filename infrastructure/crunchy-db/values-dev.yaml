@@ -1,30 +1,47 @@
 # DEV environment overrides for Crunchy Postgres cluster.
 # Single instance (no HA), separate S3 backup path.
 
-crunchy-postgres:
-  fullnameOverride: biohubbc-db-dev
+fullnameOverride: biohubbc-db-dev
 
-  instances:
+instances:
+  replicas: 1
+  dataVolumeClaimSpec:
+    storage: 5Gi
+  requests:
+    cpu: 50m
+    memory: 256Mi
+
+proxy:
+  pgBouncer:
     replicas: 1
-    dataVolumeClaimSpec:
-      storage: 5Gi
-    requests:
-      cpu: 50m
-      memory: 256Mi
 
-  proxy:
-    pgBouncer:
-      replicas: 1
+pgBackRest:
+  repos:
+    - name: repo1
+      path: "/biohubbc/dev/hourly"
+      fullSchedule: "0 12 * * *"
+      retention: "1"
+      retentionFullType: count
+    - name: repo2
+      path: "/biohubbc/dev/daily"
+      fullSchedule: "0 0 * * *"
+      retention: "7"
+      retentionFullType: count
+    - name: repo3
+      path: "/biohubbc/dev/weekly"
+      fullSchedule: "0 1 * * 0"
+      retention: "4"
+      retentionFullType: count
+    - name: repo4
+      path: "/biohubbc/dev/monthly"
+      fullSchedule: "0 3 1 * *"
+      retention: "12"
+      retentionFullType: count
 
-  pgBackRest:
-    retention: "7"
-    s3:
-      s3Path: "/biohubbc/dev"
-
-  patroni:
-    postgresql:
-      parameters:
-        shared_buffers: 16MB
+patroni:
+  postgresql:
+    parameters:
+      shared_buffers: 16MB
 
 # To perform the one-time data migration from the old database, set:
 #   migration.enabled: true
