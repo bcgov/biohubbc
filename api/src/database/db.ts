@@ -1,5 +1,5 @@
-import * as fs from 'fs';
 import knex, { Knex } from 'knex';
+import * as fs from 'node:fs';
 import * as pg from 'pg';
 import SQL, { SQLStatement } from 'sql-template-strings';
 import { z } from 'zod';

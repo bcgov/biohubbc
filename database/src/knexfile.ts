@@ -1,9 +1,7 @@
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 
 // Use SSL with CA verification when PG_SSL_CA_PATH is set (Crunchy); otherwise no SSL (legacy/PR).
-const sslConfig = process.env.PG_SSL_CA_PATH
-  ? { ca: fs.readFileSync(process.env.PG_SSL_CA_PATH) }
-  : false;
+const sslConfig = process.env.PG_SSL_CA_PATH ? { ca: fs.readFileSync(process.env.PG_SSL_CA_PATH) } : false;
 
 export default {
   development: {
