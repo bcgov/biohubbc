@@ -1,30 +1,47 @@
 # TEST environment overrides for Crunchy Postgres cluster.
 # High-availability: 2 instances + 2 pgBouncer replicas, separate S3 backup path.
 
-crunchy-postgres:
-  fullnameOverride: biohubbc-db-test
+fullnameOverride: biohubbc-db-test
 
-  instances:
+instances:
+  replicas: 2
+  dataVolumeClaimSpec:
+    storage: 10Gi
+  requests:
+    cpu: 50m
+    memory: 256Mi
+
+proxy:
+  pgBouncer:
     replicas: 2
-    dataVolumeClaimSpec:
-      storage: 10Gi
-    requests:
-      cpu: 50m
-      memory: 256Mi
 
-  proxy:
-    pgBouncer:
-      replicas: 2
+pgBackRest:
+  repos:
+    - name: repo1
+      path: "/biohubbc/test/hourly"
+      fullSchedule: "0 12 * * *"
+      retention: "1"
+      retentionFullType: count
+    - name: repo2
+      path: "/biohubbc/test/daily"
+      fullSchedule: "0 0 * * *"
+      retention: "7"
+      retentionFullType: count
+    - name: repo3
+      path: "/biohubbc/test/weekly"
+      fullSchedule: "0 1 * * 0"
+      retention: "4"
+      retentionFullType: count
+    - name: repo4
+      path: "/biohubbc/test/monthly"
+      fullSchedule: "0 3 1 * *"
+      retention: "12"
+      retentionFullType: count
 
-  pgBackRest:
-    retention: "14"
-    s3:
-      s3Path: "/biohubbc/test"
-
-  patroni:
-    postgresql:
-      parameters:
-        shared_buffers: 32MB
+patroni:
+  postgresql:
+    parameters:
+      shared_buffers: 32MB
 
 # To perform the one-time data migration from the old database, set:
 #   migration.enabled: true
