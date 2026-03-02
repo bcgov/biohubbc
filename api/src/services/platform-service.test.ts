@@ -988,6 +988,88 @@ describe('PlatformService', () => {
     });
   });
 
+  describe('_postSubmissionUpload', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should POST to the given URL and return upload details', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const mockResponse = {
+        data: {
+          submissionId: 99,
+          uploadId: 'upload-post-123',
+          s3UploadId: 's3-post-id',
+          uploadArchiveId: 'archive-post-id',
+          key: 's3-post-key',
+          partSizeBytes: 5242880,
+          partCount: 1,
+          presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/post-url' }]
+        }
+      };
+
+      const axiosPostStub = sinon.stub(axios, 'post').resolves(mockResponse);
+
+      const surveyDataPackage = { name: 'Test', description: 'Desc' } as any;
+
+      const result = await platformService._postSubmissionUpload(
+        '_postSubmissionUpload',
+        'my-token',
+        'http://backbone-host.dev/api/some/path',
+        512,
+        surveyDataPackage,
+        'my comment',
+        'Custom error message'
+      );
+
+      expect(axiosPostStub).to.have.been.calledOnce;
+      expect(axiosPostStub.getCall(0).args[0]).to.equal('http://backbone-host.dev/api/some/path');
+      expect(axiosPostStub.getCall(0).args[1]).to.deep.equal({
+        bytes: 512,
+        name: 'Test',
+        description: 'Desc',
+        comment: 'my comment'
+      });
+      expect(axiosPostStub.getCall(0).args[2]?.headers?.authorization).to.equal('Bearer my-token');
+      expect(result).to.deep.equal({
+        uploadId: 'upload-post-123',
+        s3UploadId: 's3-post-id',
+        key: 's3-post-key',
+        presignedUrls: mockResponse.data.presignedUrls,
+        partCount: 1,
+        submissionId: 99
+      });
+    });
+
+    it('should throw the provided error message when the API call fails', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(axios, 'post').rejects(new Error('Network error'));
+
+      const surveyDataPackage = { name: 'Test', description: 'Desc' } as any;
+
+      try {
+        await platformService._postSubmissionUpload(
+          '_postSubmissionUpload',
+          'token',
+          'http://backbone-host.dev/api/some/path',
+          512,
+          surveyDataPackage,
+          'comment',
+          'Custom error message'
+        );
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect((error as Error).message).to.equal('Custom error message');
+      }
+    });
+  });
+
   describe('_initiateSubmissionAppendUpload', () => {
     afterEach(() => {
       sinon.restore();
