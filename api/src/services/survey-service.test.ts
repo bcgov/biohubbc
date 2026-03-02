@@ -1118,50 +1118,35 @@ describe('SurveyService', () => {
     });
   });
 
-  describe('getBioHubSubmissionId', () => {
+  describe('getBioHubSubmissionUploadId', () => {
     afterEach(() => {
       sinon.restore();
     });
 
-    it('should return the BioHub submission ID from the repository', async () => {
+    it('should return the BioHub submission upload ID from the latest publish record', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'getBioHubSubmissionId').resolves(42);
+      const uuid = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+      const getRecordStub = sinon
+        .stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecord')
+        .resolves({ submission_uuid: uuid } as any);
 
-      const result = await service.getBioHubSubmissionId(1);
+      const result = await service.getBioHubSubmissionUploadId(1);
 
-      expect(repoStub).to.have.been.calledOnceWith(1);
-      expect(result).to.equal(42);
+      expect(getRecordStub).to.have.been.calledOnceWith(1);
+      expect(result).to.equal(uuid);
     });
 
-    it('should return null when no BioHub submission ID is set', async () => {
+    it('should return null when no publish record exists', async () => {
       const dbConnection = getMockDBConnection();
       const service = new SurveyService(dbConnection);
 
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'getBioHubSubmissionId').resolves(null);
+      sinon.stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecord').resolves(null);
 
-      const result = await service.getBioHubSubmissionId(1);
+      const result = await service.getBioHubSubmissionUploadId(1);
 
-      expect(repoStub).to.have.been.calledOnceWith(1);
       expect(result).to.equal(null);
-    });
-  });
-
-  describe('setBioHubSubmissionId', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('should call the repository to set the BioHub submission ID', async () => {
-      const dbConnection = getMockDBConnection();
-      const service = new SurveyService(dbConnection);
-
-      const repoStub = sinon.stub(SurveyRepository.prototype, 'setBioHubSubmissionId').resolves();
-
-      await service.setBioHubSubmissionId(1, 42);
-
-      expect(repoStub).to.have.been.calledOnceWith(1, 42);
     });
   });
 });

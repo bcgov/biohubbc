@@ -250,13 +250,13 @@ export class PlatformService extends DBService {
     // Get TAR file size for multipart upload
     const tarFileSize = fs.statSync(tarFilePath).size;
 
-    // Check whether this survey has already been published to BioHub (has an existing submission ID)
+    // Check whether this survey has already been published to BioHub (has an existing submission upload ID)
     const surveyService = new SurveyService(this.connection);
-    const existingSubmissionId = await surveyService.getBioHubSubmissionId(surveyId);
+    const existingSubmissionUploadId = await surveyService.getBioHubSubmissionUploadId(surveyId);
 
     // Step 1: Initiate upload and get presigned URLs.
     // On first publish, create a new submission via POST /api/submission/upload/archive.
-    // On re-publish, append to the existing submission via POST /api/submission/:submissionId/upload.
+    // On re-publish, append via POST /api/submission/upload/:submissionUploadId.
     let uploadResult: {
       uploadId: string;
       s3UploadId: string;
@@ -265,7 +265,7 @@ export class PlatformService extends DBService {
       partCount: number;
       submissionId: number;
     };
-    if (existingSubmissionId === null) {
+    if (existingSubmissionUploadId === null) {
       uploadResult = await this._initiateSubmissionUpload(
         token,
         tarFileSize,
@@ -275,23 +275,22 @@ export class PlatformService extends DBService {
     } else {
       uploadResult = await this._initiateSubmissionAppendUpload(
         token,
-        existingSubmissionId,
+        existingSubmissionUploadId,
         tarFileSize,
         surveyDataPackage,
         data.submissionComment
       );
     }
 
-    const { uploadId, s3UploadId, key, presignedUrls, partCount, submissionId } = uploadResult;
+    const { uploadId, s3UploadId, key, presignedUrls, partCount } = uploadResult;
 
     defaultLog.info({
       label: 'submitSurveyToBioHub',
       message:
-        existingSubmissionId === null
+        existingSubmissionUploadId === null
           ? 'Initiated new submission multipart upload'
           : 'Initiated append multipart upload',
       uploadId,
-      submissionId,
       partCount
     });
 
@@ -305,8 +304,7 @@ export class PlatformService extends DBService {
       defaultLog.info({
         label: 'submitSurveyToBioHub',
         message: 'Successfully completed multipart upload',
-        uploadId,
-        submissionId
+        uploadId
       });
     } finally {
       // Clean up TAR file
@@ -327,12 +325,7 @@ export class PlatformService extends DBService {
       }
     }
 
-    // On first publish, persist the BioHub submission ID so future publishes can append to it
-    if (existingSubmissionId === null) {
-      await surveyService.setBioHubSubmissionId(surveyId, submissionId);
-    }
-
-    // Insert publish history record
+    // Insert publish history record (submission_uuid is the upload ID; re-publish uses latest row's submission_uuid to append)
     await this.historyPublishService.insertSurveyMetadataPublishRecord({
       survey_id: surveyId,
       submission_uuid: uploadId
@@ -990,10 +983,10 @@ export class PlatformService extends DBService {
    * Initiates an append multipart upload to an existing BioHub submission and gets presigned URLs for S3.
    *
    * Used when re-publishing a survey that has already been submitted to BioHub. Calls
-   * `POST /api/submission/:submissionId/upload`.
+   * `POST /api/submission/upload/:submissionUploadId`.
    *
    * @param {string} token - Keycloak service token
-   * @param {number} submissionId - The existing BioHub submission ID
+   * @param {string} submissionUploadId - The existing BioHub submission upload UUID
    * @param {number} tarFileSize - Size of the TAR file in bytes
    * @param {PostSurveySubmissionToBioHubObject} surveyDataPackage - Survey data package
    * @param {string} submissionComment - Comment for the submission
@@ -1002,7 +995,7 @@ export class PlatformService extends DBService {
    */
   async _initiateSubmissionAppendUpload(
     token: string,
-    submissionId: number,
+    submissionUploadId: string,
     tarFileSize: number,
     surveyDataPackage: PostSurveySubmissionToBioHubObject,
     submissionComment: string
@@ -1014,7 +1007,7 @@ export class PlatformService extends DBService {
     partCount: number;
     submissionId: number;
   }> {
-    defaultLog.debug({ label: '_initiateSubmissionAppendUpload', submissionId, tarFileSize });
+    defaultLog.debug({ label: '_initiateSubmissionAppendUpload', submissionUploadId, tarFileSize });
 
     const SUBMISSION_UPLOAD_MAX_SIZE = getEnvironmentVariable('SUBMISSION_UPLOAD_MAX_SIZE');
     if (tarFileSize > SUBMISSION_UPLOAD_MAX_SIZE) {
@@ -1024,7 +1017,7 @@ export class PlatformService extends DBService {
       );
     }
 
-    const uploadUrl = new URL(`/api/submission/${submissionId}/upload`, getBackboneInternalApiHost()).href;
+    const uploadUrl = new URL(`/api/submission/upload/${submissionUploadId}`, getBackboneInternalApiHost()).href;
 
     return this._postSubmissionUpload(
       '_initiateSubmissionAppendUpload',

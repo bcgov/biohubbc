@@ -18,7 +18,7 @@ describe('HistoryPublishRepository', () => {
     it('should insert a record and return an id', async () => {
       const mockConnection = getMockDBConnection({
         sql: async () => {
-          return { rowCount: 1, rows: [{ project_metadata_publish_id: 1 }] } as any as Promise<QueryResult<any>>;
+          return { rowCount: 1, rows: [{ survey_metadata_publish_id: 1 }] } as any as Promise<QueryResult<any>>;
         }
       });
 

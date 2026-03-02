@@ -146,7 +146,7 @@ export class HistoryPublishRepository extends BaseRepository {
       ]);
     }
 
-    return response.rows[0].project_metadata_publish_id;
+    return response.rows[0].survey_metadata_publish_id;
   }
 
   /**

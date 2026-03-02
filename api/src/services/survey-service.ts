@@ -1129,25 +1129,14 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Gets the BioHub submission ID for a given survey, if one has been set.
+   * Gets the BioHub submission upload ID (UUID) for a given survey from the latest publish record.
    *
    * @param {number} surveyId
-   * @return {*}  {Promise<number | null>}
+   * @return {*}  {Promise<string | null>}
    * @memberof SurveyService
    */
-  async getBioHubSubmissionId(surveyId: number): Promise<number | null> {
-    return this.surveyRepository.getBioHubSubmissionId(surveyId);
-  }
-
-  /**
-   * Sets the BioHub submission ID for a given survey.
-   *
-   * @param {number} surveyId
-   * @param {number} submissionId
-   * @return {*}  {Promise<void>}
-   * @memberof SurveyService
-   */
-  async setBioHubSubmissionId(surveyId: number, submissionId: number): Promise<void> {
-    return this.surveyRepository.setBioHubSubmissionId(surveyId, submissionId);
+  async getBioHubSubmissionUploadId(surveyId: number): Promise<string | null> {
+    const record = await this.historyPublishService.getSurveyMetadataPublishRecord(surveyId);
+    return record?.submission_uuid ?? null;
   }
 }
