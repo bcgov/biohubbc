@@ -1541,4 +1541,54 @@ export class SurveyRepository extends BaseRepository {
       ORDER BY cd.method_technique_id;
     `;
   }
+
+  /**
+   * Gets the BioHub submission ID for a given survey, if one has been set.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number | null>}
+   * @memberof SurveyRepository
+   */
+  async getBioHubSubmissionId(surveyId: number): Promise<number | null> {
+    const sqlStatement = SQL`
+      SELECT
+        biohub_submission_id
+      FROM
+        survey
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql<{ biohub_submission_id: number | null }>(sqlStatement);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to get BioHub submission ID for survey', [
+        'SurveyRepository->getBioHubSubmissionId',
+        'row[0] was null or undefined, expected row[0] != null'
+      ]);
+    }
+
+    return response.rows[0].biohub_submission_id;
+  }
+
+  /**
+   * Sets the BioHub submission ID for a given survey.
+   *
+   * @param {number} surveyId
+   * @param {number} submissionId
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyRepository
+   */
+  async setBioHubSubmissionId(surveyId: number, submissionId: number): Promise<void> {
+    const sqlStatement = SQL`
+      UPDATE
+        survey
+      SET
+        biohub_submission_id = ${submissionId}
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    await this.connection.sql(sqlStatement);
+  }
 }

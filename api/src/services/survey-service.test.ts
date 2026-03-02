@@ -1117,4 +1117,51 @@ describe('SurveyService', () => {
       expect(deleteStub).to.be.calledOnceWith(1, [3]);
     });
   });
+
+  describe('getBioHubSubmissionId', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should return the BioHub submission ID from the repository', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'getBioHubSubmissionId').resolves(42);
+
+      const result = await service.getBioHubSubmissionId(1);
+
+      expect(repoStub).to.have.been.calledOnceWith(1);
+      expect(result).to.equal(42);
+    });
+
+    it('should return null when no BioHub submission ID is set', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'getBioHubSubmissionId').resolves(null);
+
+      const result = await service.getBioHubSubmissionId(1);
+
+      expect(repoStub).to.have.been.calledOnceWith(1);
+      expect(result).to.equal(null);
+    });
+  });
+
+  describe('setBioHubSubmissionId', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should call the repository to set the BioHub submission ID', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const repoStub = sinon.stub(SurveyRepository.prototype, 'setBioHubSubmissionId').resolves();
+
+      await service.setBioHubSubmissionId(1, 42);
+
+      expect(repoStub).to.have.been.calledOnceWith(1, 42);
+    });
+  });
 });

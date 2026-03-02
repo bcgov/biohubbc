@@ -250,17 +250,46 @@ export class PlatformService extends DBService {
     // Get TAR file size for multipart upload
     const tarFileSize = fs.statSync(tarFilePath).size;
 
-    // Step 1: Initiate upload and get presigned URLs
-    const { uploadId, s3UploadId, key, presignedUrls, partCount, submissionId } = await this._initiateSubmissionUpload(
-      token,
-      tarFileSize,
-      surveyDataPackage,
-      data.submissionComment
-    );
+    // Check whether this survey has already been published to BioHub (has an existing submission ID)
+    const surveyService = new SurveyService(this.connection);
+    const existingSubmissionId = await surveyService.getBioHubSubmissionId(surveyId);
+
+    // Step 1: Initiate upload and get presigned URLs.
+    // On first publish, create a new submission via POST /api/submission/upload/archive.
+    // On re-publish, append to the existing submission via POST /api/submission/:submissionId/upload.
+    let uploadResult: {
+      uploadId: string;
+      s3UploadId: string;
+      key: string;
+      presignedUrls: Array<{ partNumber: number; url: string }>;
+      partCount: number;
+      submissionId: number;
+    };
+    if (existingSubmissionId === null) {
+      uploadResult = await this._initiateSubmissionUpload(
+        token,
+        tarFileSize,
+        surveyDataPackage,
+        data.submissionComment
+      );
+    } else {
+      uploadResult = await this._initiateSubmissionAppendUpload(
+        token,
+        existingSubmissionId,
+        tarFileSize,
+        surveyDataPackage,
+        data.submissionComment
+      );
+    }
+
+    const { uploadId, s3UploadId, key, presignedUrls, partCount, submissionId } = uploadResult;
 
     defaultLog.info({
       label: 'submitSurveyToBioHub',
-      message: 'Initiated multipart upload',
+      message:
+        existingSubmissionId === null
+          ? 'Initiated new submission multipart upload'
+          : 'Initiated append multipart upload',
       uploadId,
       submissionId,
       partCount
@@ -296,6 +325,11 @@ export class PlatformService extends DBService {
           error: cleanupError instanceof Error ? cleanupError.message : 'Unknown error'
         });
       }
+    }
+
+    // On first publish, persist the BioHub submission ID so future publishes can append to it
+    if (existingSubmissionId === null) {
+      await surveyService.setBioHubSubmissionId(surveyId, submissionId);
     }
 
     // Insert publish history record
@@ -911,6 +945,99 @@ export class PlatformService extends DBService {
         error: formatAxiosError(error)
       });
       throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to initiate submission upload to BioHub');
+    }
+  }
+
+  /**
+   * Initiates an append multipart upload to an existing BioHub submission and gets presigned URLs for S3.
+   *
+   * Used when re-publishing a survey that has already been submitted to BioHub. Calls
+   * `POST /api/submission/:submissionId/upload` to append a new upload to the existing submission.
+   *
+   * @param {string} token - Keycloak service token
+   * @param {number} submissionId - The existing BioHub submission ID
+   * @param {number} tarFileSize - Size of the TAR file in bytes
+   * @param {PostSurveySubmissionToBioHubObject} surveyDataPackage - Survey data package
+   * @param {string} submissionComment - Comment for the submission
+   * @return {*}  {Promise<{uploadId: string, s3UploadId: string, key: string, presignedUrls: Array<{partNumber: number, url: string}>, partCount: number, submissionId: number}>}
+   * @memberof PlatformService
+   */
+  async _initiateSubmissionAppendUpload(
+    token: string,
+    submissionId: number,
+    tarFileSize: number,
+    surveyDataPackage: PostSurveySubmissionToBioHubObject,
+    submissionComment: string
+  ): Promise<{
+    uploadId: string;
+    s3UploadId: string;
+    key: string;
+    presignedUrls: Array<{ partNumber: number; url: string }>;
+    partCount: number;
+    submissionId: number;
+  }> {
+    defaultLog.debug({ label: '_initiateSubmissionAppendUpload', submissionId, tarFileSize });
+
+    // Validate file size
+    const SUBMISSION_UPLOAD_MAX_SIZE = getEnvironmentVariable('SUBMISSION_UPLOAD_MAX_SIZE');
+    if (tarFileSize > SUBMISSION_UPLOAD_MAX_SIZE) {
+      throw new ApiError(
+        ApiErrorType.UNKNOWN,
+        `TAR file size (${tarFileSize} bytes) exceeds maximum allowed size (${SUBMISSION_UPLOAD_MAX_SIZE} bytes)`
+      );
+    }
+
+    // Construct append upload URL: POST /api/submission/:submissionId/upload
+    const appendUploadUrl = new URL(`/api/submission/${submissionId}/upload`, getBackboneInternalApiHost()).href;
+
+    // Prepare request body
+    const requestBody = {
+      bytes: tarFileSize,
+      name: surveyDataPackage.name,
+      description: surveyDataPackage.description,
+      comment: submissionComment
+    };
+
+    try {
+      const response = await axios.post<{
+        submissionId: number;
+        uploadId: string;
+        s3UploadId: string;
+        uploadArchiveId: string;
+        key: string;
+        partSizeBytes: number;
+        partCount: number;
+        presignedUrls: Array<{ partNumber: number; url: string }>;
+      }>(appendUploadUrl, requestBody, {
+        headers: {
+          authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      defaultLog.info({
+        label: '_initiateSubmissionAppendUpload',
+        message: 'Received presigned URLs for append upload',
+        submissionId: response.data.submissionId,
+        uploadId: response.data.uploadId,
+        partCount: response.data.partCount
+      });
+
+      return {
+        uploadId: response.data.uploadId,
+        s3UploadId: response.data.s3UploadId,
+        key: response.data.key,
+        presignedUrls: response.data.presignedUrls,
+        partCount: response.data.partCount,
+        submissionId: response.data.submissionId
+      };
+    } catch (error) {
+      defaultLog.error({
+        label: '_initiateSubmissionAppendUpload',
+        message: 'Failed to initiate submission append upload',
+        error: formatAxiosError(error)
+      });
+      throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to initiate submission append upload to BioHub');
     }
   }
 

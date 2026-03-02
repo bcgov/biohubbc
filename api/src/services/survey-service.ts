@@ -1127,4 +1127,27 @@ export class SurveyService extends DBService {
   async deleteSurvey(surveyId: number): Promise<void> {
     return this.surveyRepository.deleteSurvey(surveyId);
   }
+
+  /**
+   * Gets the BioHub submission ID for a given survey, if one has been set.
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<number | null>}
+   * @memberof SurveyService
+   */
+  async getBioHubSubmissionId(surveyId: number): Promise<number | null> {
+    return this.surveyRepository.getBioHubSubmissionId(surveyId);
+  }
+
+  /**
+   * Sets the BioHub submission ID for a given survey.
+   *
+   * @param {number} surveyId
+   * @param {number} submissionId
+   * @return {*}  {Promise<void>}
+   * @memberof SurveyService
+   */
+  async setBioHubSubmissionId(surveyId: number, submissionId: number): Promise<void> {
+    return this.surveyRepository.setBioHubSubmissionId(surveyId, submissionId);
+  }
 }

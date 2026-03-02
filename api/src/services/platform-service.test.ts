@@ -134,7 +134,7 @@ describe('PlatformService', () => {
       }
     });
 
-    it('throws error when initiate upload fails', async () => {
+    it('throws error when initiate upload fails (first publish)', async () => {
       process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
 
       const mockDBConnection = getMockDBConnection();
@@ -161,6 +161,9 @@ describe('PlatformService', () => {
       const fs = require('node:fs');
       sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
 
+      // No prior submission ID (first publish)
+      sinon.stub(SurveyService.prototype, 'getBioHubSubmissionId').resolves(null);
+
       const _initiateSubmissionUploadStub = sinon
         .stub(PlatformService.prototype, '_initiateSubmissionUpload')
         .rejects(new ApiError(ApiErrorType.UNKNOWN, 'Failed to initiate submission upload to BioHub'));
@@ -176,7 +179,7 @@ describe('PlatformService', () => {
       }
     });
 
-    it('should submit survey to BioHub successfully', async () => {
+    it('should submit survey to BioHub successfully (first publish)', async () => {
       process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
 
       const mockDBConnection = getMockDBConnection();
@@ -213,9 +216,18 @@ describe('PlatformService', () => {
         submissionId: 42
       };
 
+      // No prior submission ID (first publish)
+      const getBioHubSubmissionIdStub = sinon.stub(SurveyService.prototype, 'getBioHubSubmissionId').resolves(null);
+      const setBioHubSubmissionIdStub = sinon.stub(SurveyService.prototype, 'setBioHubSubmissionId').resolves();
+
       const _initiateSubmissionUploadStub = sinon
         .stub(PlatformService.prototype, '_initiateSubmissionUpload')
         .resolves(mockUploadResponse);
+
+      const _initiateSubmissionAppendUploadStub = sinon.stub(
+        PlatformService.prototype,
+        '_initiateSubmissionAppendUpload'
+      );
 
       const _uploadTarFilePartsStub = sinon
         .stub(PlatformService.prototype, '_uploadTarFileParts')
@@ -233,7 +245,12 @@ describe('PlatformService', () => {
 
       expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
       expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], [], 'test');
+      expect(getBioHubSubmissionIdStub).to.have.been.calledOnceWith(1);
+      // First publish uses the archive initiation endpoint, not the append endpoint
       expect(_initiateSubmissionUploadStub).to.have.been.calledOnce;
+      expect(_initiateSubmissionAppendUploadStub).to.not.have.been.called;
+      // Saves the new submission ID after first publish
+      expect(setBioHubSubmissionIdStub).to.have.been.calledOnceWith(1, 42);
       expect(_uploadTarFilePartsStub).to.have.been.calledOnce;
       expect(_completeSubmissionUploadStub).to.have.been.calledOnceWith(
         'token',
@@ -247,6 +264,67 @@ describe('PlatformService', () => {
         submission_uuid: 'upload-123-456-789'
       });
       expect(response).to.eql({ submission_uuid: 'upload-123-456-789' });
+    });
+
+    it('should append to existing BioHub submission on re-publish', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
+      sinon.stub(AttachmentService.prototype, 'getSurveyAttachmentsForBioHubSubmission').resolves([]);
+      sinon.stub(AttachmentService.prototype, 'getSurveyReportAttachments').resolves([]);
+      sinon
+        .stub(PlatformService.prototype, '_generateSurveyDataPackage')
+        .resolves({ id: '123-456-789', name: 'Test', description: 'Test Description' } as unknown as any);
+      sinon
+        .stub(PlatformService.prototype, '_flattenToBlockModel')
+        .returns([{ id: 'test-dataset-id', type: 'dataset', properties: {}, content: [], parent: null }]);
+      sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
+
+      const fs = require('node:fs');
+      sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
+      sinon.stub(fs, 'unlinkSync').callsFake(() => {});
+
+      const mockUploadResponse = {
+        uploadId: 'upload-re-publish-789',
+        s3UploadId: 's3-upload-id-2',
+        key: 's3-key-2',
+        presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url-2' }],
+        partCount: 1,
+        submissionId: 42
+      };
+
+      // Survey already has an existing BioHub submission ID (re-publish scenario)
+      const getBioHubSubmissionIdStub = sinon.stub(SurveyService.prototype, 'getBioHubSubmissionId').resolves(42);
+      const setBioHubSubmissionIdStub = sinon.stub(SurveyService.prototype, 'setBioHubSubmissionId');
+
+      const _initiateSubmissionUploadStub = sinon.stub(PlatformService.prototype, '_initiateSubmissionUpload');
+
+      const _initiateSubmissionAppendUploadStub = sinon
+        .stub(PlatformService.prototype, '_initiateSubmissionAppendUpload')
+        .resolves(mockUploadResponse);
+
+      sinon.stub(PlatformService.prototype, '_uploadTarFileParts').resolves([{ PartNumber: 1, ETag: 'etag-re' }]);
+      sinon.stub(PlatformService.prototype, '_completeSubmissionUpload').resolves();
+      sinon.stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord').resolves();
+
+      const response = await platformService.submitSurveyToBioHub(1, { submissionComment: 're-publish comment' });
+
+      expect(getBioHubSubmissionIdStub).to.have.been.calledOnceWith(1);
+      // Re-publish uses the append endpoint, not the archive initiation endpoint
+      expect(_initiateSubmissionAppendUploadStub).to.have.been.calledOnceWith(
+        'token',
+        42,
+        1024,
+        sinon.match.any,
+        're-publish comment'
+      );
+      expect(_initiateSubmissionUploadStub).to.not.have.been.called;
+      // Does NOT save submission ID again on re-publish (it was already set)
+      expect(setBioHubSubmissionIdStub).to.not.have.been.called;
+      expect(response).to.eql({ submission_uuid: 'upload-re-publish-789' });
     });
   });
 
@@ -508,6 +586,8 @@ describe('PlatformService', () => {
         .resolves(mockSurveyDataPackage as unknown as any);
 
       sinon.stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord').resolves();
+      sinon.stub(SurveyService.prototype, 'getBioHubSubmissionId').resolves(null);
+      sinon.stub(SurveyService.prototype, 'setBioHubSubmissionId').resolves();
 
       // Stub the TAR creation method to avoid fs stubbing issues
       const createTarArchiveStub = sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
@@ -612,6 +692,7 @@ describe('PlatformService', () => {
         .returns([{ id: 'test-dataset-id', type: 'dataset', properties: {}, content: [], parent: null }]);
 
       sinon.stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord').resolves();
+      sinon.stub(SurveyService.prototype, 'getBioHubSubmissionId').resolves(null);
 
       // Stub TAR creation to throw error (avoiding fs stubbing issues)
       sinon.stub(PlatformService.prototype, '_createTarArchive').rejects(new Error('TAR creation error'));
@@ -903,6 +984,110 @@ describe('PlatformService', () => {
         expect.fail('Should have thrown an error');
       } catch (error) {
         expect((error as Error).message).to.include('Failed to initiate submission upload to BioHub');
+      }
+    });
+  });
+
+  describe('_initiateSubmissionAppendUpload', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should initiate append upload and return presigned URLs', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const mockResponse = {
+        data: {
+          submissionId: 42,
+          uploadId: 'upload-append-123',
+          s3UploadId: 's3-upload-append-id',
+          uploadArchiveId: 'archive-append-id',
+          key: 's3-append-key',
+          partSizeBytes: 5242880,
+          partCount: 2,
+          presignedUrls: [
+            { partNumber: 1, url: 'https://s3.amazonaws.com/url1' },
+            { partNumber: 2, url: 'https://s3.amazonaws.com/url2' }
+          ]
+        }
+      };
+
+      const axiosPostStub = sinon.stub(axios, 'post').resolves(mockResponse);
+
+      const surveyDataPackage = {
+        name: 'Test Survey',
+        description: 'Test Description'
+      } as any;
+
+      const result = await platformService._initiateSubmissionAppendUpload(
+        'token',
+        42,
+        1024,
+        surveyDataPackage,
+        'comment'
+      );
+
+      expect(axiosPostStub).to.have.been.calledOnce;
+      // URL should include the submission ID
+      expect(axiosPostStub.getCall(0).args[0]).to.include('/api/submission/42/upload');
+      expect(axiosPostStub.getCall(0).args[1]).to.deep.equal({
+        bytes: 1024,
+        name: 'Test Survey',
+        description: 'Test Description',
+        comment: 'comment'
+      });
+      expect(axiosPostStub.getCall(0).args[2]?.headers?.authorization).to.equal('Bearer token');
+      expect(result).to.deep.equal({
+        uploadId: 'upload-append-123',
+        s3UploadId: 's3-upload-append-id',
+        key: 's3-append-key',
+        presignedUrls: mockResponse.data.presignedUrls,
+        partCount: 2,
+        submissionId: 42
+      });
+    });
+
+    it('should throw error when file size exceeds maximum', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const getEnvironmentVariableStub = sinon.stub(envConfig, 'getEnvironmentVariable');
+      getEnvironmentVariableStub.withArgs('SUBMISSION_UPLOAD_MAX_SIZE').returns(1073741824); // 1 GB
+
+      const surveyDataPackage = {
+        name: 'Test Survey',
+        description: 'Test Description'
+      } as any;
+
+      try {
+        await platformService._initiateSubmissionAppendUpload('token', 42, 1073741825, surveyDataPackage, 'comment');
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect((error as Error).message).to.include('exceeds maximum allowed size');
+      }
+    });
+
+    it('should throw error when API call fails', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(axios, 'post').rejects(new Error('Network error'));
+
+      const surveyDataPackage = {
+        name: 'Test Survey',
+        description: 'Test Description'
+      } as any;
+
+      try {
+        await platformService._initiateSubmissionAppendUpload('token', 42, 1024, surveyDataPackage, 'comment');
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect((error as Error).message).to.include('Failed to initiate submission append upload to BioHub');
       }
     });
   });
