@@ -548,7 +548,14 @@ export const surveySupplementaryDataSchema: OpenAPIV3.SchemaObject = {
         },
         submission_uuid: {
           type: 'string',
-          format: 'uuid'
+          format: 'uuid',
+          description: 'BioHub submission ID (parent resource)'
+        },
+        submission_upload_uuid: {
+          type: 'string',
+          format: 'uuid',
+          nullable: true,
+          description: 'BioHub submission upload ID (this upload; used for delete)'
         },
         ...updateCreateUserPropertiesSchema.properties
       }

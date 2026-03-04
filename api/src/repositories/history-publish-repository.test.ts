@@ -23,7 +23,11 @@ describe('HistoryPublishRepository', () => {
       });
 
       const repo = new HistoryPublishRepository(mockConnection);
-      const response = await repo.insertSurveyMetadataPublishRecord({ survey_id: 1, submission_uuid: '123-456-789' });
+      const response = await repo.insertSurveyMetadataPublishRecord({
+        survey_id: 1,
+        submission_uuid: 'a1b2c3d4-e5f6-4789-a012-3456789abcde',
+        submission_upload_uuid: 'e5f6a7b8-c9d0-4123-e456-789abcdef012'
+      });
 
       expect(response).to.be.eql(1);
     });
@@ -37,7 +41,11 @@ describe('HistoryPublishRepository', () => {
 
       const repo = new HistoryPublishRepository(mockConnection);
       try {
-        await repo.insertSurveyMetadataPublishRecord({ survey_id: 1, submission_uuid: '123-456-789' });
+        await repo.insertSurveyMetadataPublishRecord({
+          survey_id: 1,
+          submission_uuid: 'a1b2c3d4-e5f6-4789-a012-3456789abcde',
+          submission_upload_uuid: 'e5f6a7b8-c9d0-4123-e456-789abcdef012'
+        });
         expect.fail();
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to insert Survey Metadata Publish record');

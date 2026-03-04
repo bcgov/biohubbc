@@ -213,10 +213,11 @@ describe('PlatformService', () => {
         key: 's3-key',
         presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url' }],
         partCount: 1,
-        submissionId: 42
+        submissionId: 'a1b2c3d4-e5f6-4789-a012-3456789abcde',
+        submissionUploadId: 'e5f6a7b8-c9d0-4123-e456-789abcdef012'
       };
 
-      // No prior submission upload ID (first publish)
+      // No prior submission ID (first publish)
       const getBioHubSubmissionUploadIdStub = sinon
         .stub(SurveyService.prototype, 'getBioHubSubmissionUploadId')
         .resolves(null);
@@ -260,12 +261,16 @@ describe('PlatformService', () => {
       );
       expect(insertSurveyMetadataPublishRecordStub).to.have.been.calledOnceWith({
         survey_id: 1,
-        submission_uuid: 'upload-123-456-789'
+        submission_uuid: mockUploadResponse.submissionId,
+        submission_upload_uuid: mockUploadResponse.submissionUploadId
       });
-      expect(response).to.eql({ submission_uuid: 'upload-123-456-789' });
+      expect(response).to.eql({
+        submission_uuid: mockUploadResponse.submissionId,
+        submission_upload_uuid: mockUploadResponse.submissionUploadId
+      });
     });
 
-    it('should append to existing BioHub submission on re-publish', async () => {
+    it('should replace existing BioHub submission on re-publish (PUT)', async () => {
       process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
 
       const mockDBConnection = getMockDBConnection();
@@ -292,18 +297,19 @@ describe('PlatformService', () => {
         key: 's3-key-2',
         presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url-2' }],
         partCount: 1,
-        submissionId: 42
+        submissionId: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890',
+        submissionUploadId: 'f6a7b8c9-d0e1-4234-f567-89abcdef0123'
       };
 
-      // Survey already has an existing BioHub submission upload ID (re-publish scenario)
-      const existingUploadUuid = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+      // Survey already has an existing BioHub submission ID (re-publish scenario)
+      const existingSubmissionId = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
       const getBioHubSubmissionUploadIdStub = sinon
         .stub(SurveyService.prototype, 'getBioHubSubmissionUploadId')
-        .resolves(existingUploadUuid);
+        .resolves(existingSubmissionId);
       const _initiateSubmissionUploadStub = sinon.stub(PlatformService.prototype, '_initiateSubmissionUpload');
 
-      const _initiateSubmissionAppendUploadStub = sinon
-        .stub(PlatformService.prototype, '_initiateSubmissionAppendUpload')
+      const _initiateSubmissionReplaceUploadStub = sinon
+        .stub(PlatformService.prototype, '_initiateSubmissionReplaceUpload')
         .resolves(mockUploadResponse);
 
       sinon.stub(PlatformService.prototype, '_uploadTarFileParts').resolves([{ PartNumber: 1, ETag: 'etag-re' }]);
@@ -317,18 +323,22 @@ describe('PlatformService', () => {
       expect(getBioHubSubmissionUploadIdStub).to.have.been.calledOnceWith(1);
       expect(insertSurveyMetadataPublishRecordStub).to.have.been.calledOnceWith({
         survey_id: 1,
-        submission_uuid: 'upload-re-publish-789'
+        submission_uuid: mockUploadResponse.submissionId,
+        submission_upload_uuid: mockUploadResponse.submissionUploadId
       });
-      // Re-publish uses the append endpoint, not the archive initiation endpoint
-      expect(_initiateSubmissionAppendUploadStub).to.have.been.calledOnceWith(
+      // Re-publish uses the replace endpoint PUT /submission/:submissionId/upload
+      expect(_initiateSubmissionReplaceUploadStub).to.have.been.calledOnceWith(
         'token',
-        existingUploadUuid,
+        existingSubmissionId,
         1024,
         sinon.match.any,
         're-publish comment'
       );
       expect(_initiateSubmissionUploadStub).to.not.have.been.called;
-      expect(response).to.eql({ submission_uuid: 'upload-re-publish-789' });
+      expect(response).to.eql({
+        submission_uuid: mockUploadResponse.submissionId,
+        submission_upload_uuid: mockUploadResponse.submissionUploadId
+      });
     });
   });
 
@@ -612,7 +622,8 @@ describe('PlatformService', () => {
         key: 's3-key',
         presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url' }],
         partCount: 1,
-        submissionId: 42
+        submissionId: 'a1b2c3d4-e5f6-4789-a012-3456789abcde',
+        submissionUploadId: 'e5f6a7b8-c9d0-4123-e456-789abcdef012'
       };
 
       sinon.stub(PlatformService.prototype, '_initiateSubmissionUpload').resolves(mockUploadResponse);
@@ -906,7 +917,8 @@ describe('PlatformService', () => {
 
       const mockResponse = {
         data: {
-          submissionId: 42,
+          submissionId: 'a1b2c3d4-e5f6-4789-a012-3456789abcde',
+          submissionUploadId: 'e5f6a7b8-c9d0-4123-e456-789abcdef012',
           uploadId: 'upload-123',
           s3UploadId: 's3-upload-id',
           uploadArchiveId: 'archive-id',
@@ -944,7 +956,8 @@ describe('PlatformService', () => {
         key: 's3-key',
         presignedUrls: mockResponse.data.presignedUrls,
         partCount: 2,
-        submissionId: 42
+        submissionId: mockResponse.data.submissionId,
+        submissionUploadId: mockResponse.data.submissionUploadId
       });
     });
 
@@ -1004,7 +1017,8 @@ describe('PlatformService', () => {
 
       const mockResponse = {
         data: {
-          submissionId: 99,
+          submissionId: 'c9d0e1f2-a3b4-5678-90ab-cdef12345678',
+          submissionUploadId: 'd0e1f2a3-b4c5-6789-01bc-def123456789',
           uploadId: 'upload-post-123',
           s3UploadId: 's3-post-id',
           uploadArchiveId: 'archive-post-id',
@@ -1044,7 +1058,8 @@ describe('PlatformService', () => {
         key: 's3-post-key',
         presignedUrls: mockResponse.data.presignedUrls,
         partCount: 1,
-        submissionId: 99
+        submissionId: mockResponse.data.submissionId,
+        submissionUploadId: mockResponse.data.submissionUploadId
       });
     });
 
@@ -1086,7 +1101,8 @@ describe('PlatformService', () => {
 
       const mockResponse = {
         data: {
-          submissionId: 42,
+          submissionId: 'b2c3d4e5-f6a7-8901-bcde-f12345678901',
+          submissionUploadId: 'c3d4e5f6-a7b8-9012-cdef-123456789012',
           uploadId: 'upload-append-123',
           s3UploadId: 's3-upload-append-id',
           uploadArchiveId: 'archive-append-id',
@@ -1107,18 +1123,17 @@ describe('PlatformService', () => {
         description: 'Test Description'
       } as any;
 
-      const submissionUploadUuid = 'b2c3d4e5-f6a7-8901-bcde-f12345678901';
+      const submissionId = 'b2c3d4e5-f6a7-8901-bcde-f12345678901';
       const result = await platformService._initiateSubmissionAppendUpload(
         'token',
-        submissionUploadUuid,
+        submissionId,
         1024,
         surveyDataPackage,
         'comment'
       );
 
       expect(axiosPostStub).to.have.been.calledOnce;
-      // URL should include the submission upload UUID
-      expect(axiosPostStub.getCall(0).args[0]).to.include(`/api/submission/upload/${submissionUploadUuid}`);
+      expect(axiosPostStub.getCall(0).args[0]).to.include(`/api/submission/${submissionId}/upload`);
       expect(axiosPostStub.getCall(0).args[1]).to.deep.equal({
         bytes: 1024,
         name: 'Test Survey',
@@ -1132,7 +1147,8 @@ describe('PlatformService', () => {
         key: 's3-append-key',
         presignedUrls: mockResponse.data.presignedUrls,
         partCount: 2,
-        submissionId: 42
+        submissionId: mockResponse.data.submissionId,
+        submissionUploadId: mockResponse.data.submissionUploadId
       });
     });
 
@@ -1186,6 +1202,124 @@ describe('PlatformService', () => {
         expect.fail('Should have thrown an error');
       } catch (error) {
         expect((error as Error).message).to.include('Failed to initiate submission append upload to BioHub');
+      }
+    });
+  });
+
+  describe('_initiateSubmissionReplaceUpload', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should initiate replace upload via PUT and return presigned URLs', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const mockResponse = {
+        data: {
+          submissionId: 'b2c3d4e5-f6a7-8901-bcde-f12345678901',
+          submissionUploadId: 'c3d4e5f6-a7b8-9012-cdef-123456789012',
+          uploadId: 'upload-replace-123',
+          s3UploadId: 's3-upload-replace-id',
+          uploadArchiveId: 'archive-replace-id',
+          key: 's3-replace-key',
+          partSizeBytes: 5242880,
+          partCount: 2,
+          presignedUrls: [
+            { partNumber: 1, url: 'https://s3.amazonaws.com/url1' },
+            { partNumber: 2, url: 'https://s3.amazonaws.com/url2' }
+          ]
+        }
+      };
+
+      const axiosPutStub = sinon.stub(axios, 'put').resolves(mockResponse);
+
+      const surveyDataPackage = {
+        name: 'Test Survey',
+        description: 'Test Description'
+      } as any;
+
+      const submissionId = 'b2c3d4e5-f6a7-8901-bcde-f12345678901';
+      const result = await platformService._initiateSubmissionReplaceUpload(
+        'token',
+        submissionId,
+        1024,
+        surveyDataPackage,
+        'comment'
+      );
+
+      expect(axiosPutStub).to.have.been.calledOnce;
+      expect(axiosPutStub.getCall(0).args[0]).to.include(`/api/submission/${submissionId}/upload`);
+      expect(axiosPutStub.getCall(0).args[1]).to.deep.equal({
+        bytes: 1024,
+        name: 'Test Survey',
+        description: 'Test Description',
+        comment: 'comment'
+      });
+      expect(axiosPutStub.getCall(0).args[2]?.headers?.authorization).to.equal('Bearer token');
+      expect(result).to.deep.equal({
+        uploadId: 'upload-replace-123',
+        s3UploadId: 's3-upload-replace-id',
+        key: 's3-replace-key',
+        presignedUrls: mockResponse.data.presignedUrls,
+        partCount: 2,
+        submissionId: mockResponse.data.submissionId,
+        submissionUploadId: mockResponse.data.submissionUploadId
+      });
+    });
+
+    it('should throw error when file size exceeds maximum', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const getEnvironmentVariableStub = sinon.stub(envConfig, 'getEnvironmentVariable');
+      getEnvironmentVariableStub.withArgs('SUBMISSION_UPLOAD_MAX_SIZE').returns(1073741824); // 1 GB
+
+      const surveyDataPackage = {
+        name: 'Test Survey',
+        description: 'Test Description'
+      } as any;
+
+      try {
+        await platformService._initiateSubmissionReplaceUpload(
+          'token',
+          'c3d4e5f6-a7b8-9012-cdef-123456789012',
+          1073741825,
+          surveyDataPackage,
+          'comment'
+        );
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect((error as Error).message).to.include('exceeds maximum allowed size');
+      }
+    });
+
+    it('should throw error when API call fails', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(axios, 'put').rejects(new Error('Network error'));
+
+      const surveyDataPackage = {
+        name: 'Test Survey',
+        description: 'Test Description'
+      } as any;
+
+      try {
+        await platformService._initiateSubmissionReplaceUpload(
+          'token',
+          'd4e5f6a7-b8c9-0123-def0-234567890123',
+          1024,
+          surveyDataPackage,
+          'comment'
+        );
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect((error as Error).message).to.include('Failed to initiate submission replace upload to BioHub');
       }
     });
   });

@@ -94,7 +94,12 @@ POST.apiDoc = {
               submission_uuid: {
                 type: 'string',
                 format: 'uuid',
-                description: 'The UUID of the submission'
+                description: 'The BioHub submission ID (parent resource)'
+              },
+              submission_upload_uuid: {
+                type: 'string',
+                format: 'uuid',
+                description: 'The BioHub submission upload ID (this upload)'
               }
             }
           }

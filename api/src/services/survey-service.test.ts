@@ -1149,4 +1149,50 @@ describe('SurveyService', () => {
       expect(result).to.equal(null);
     });
   });
+
+  describe('getBioHubSubmissionIds', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should return both submission_uuid and submission_upload_uuid from the latest publish record', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      const submissionUuid = 'a1b2c3d4-e5f6-7890-abcd-ef1234567890';
+      const submissionUploadUuid = 'e5f6a7b8-c9d0-4123-e456-789abcdef012';
+      const getRecordStub = sinon
+        .stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecord')
+        .resolves({ submission_uuid: submissionUuid, submission_upload_uuid: submissionUploadUuid } as any);
+
+      const result = await service.getBioHubSubmissionIds(1);
+
+      expect(getRecordStub).to.have.been.calledOnceWith(1);
+      expect(result).to.eql({ submission_uuid: submissionUuid, submission_upload_uuid: submissionUploadUuid });
+    });
+
+    it('should return null when no publish record exists', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      sinon.stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecord').resolves(null);
+
+      const result = await service.getBioHubSubmissionIds(1);
+
+      expect(result).to.equal(null);
+    });
+
+    it('should return null when submission_upload_uuid is null (legacy record)', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new SurveyService(dbConnection);
+
+      sinon
+        .stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecord')
+        .resolves({ submission_uuid: 'a1b2c3d4-e5f6-7890-abcd-ef1234567890', submission_upload_uuid: null } as any);
+
+      const result = await service.getBioHubSubmissionIds(1);
+
+      expect(result).to.equal(null);
+    });
+  });
 });

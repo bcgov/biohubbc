@@ -241,6 +241,7 @@ export interface SurveySupplementaryData {
     survey_id: number;
     event_timestamp: string;
     submission_uuid: string;
+    submission_upload_uuid: string | null;
     create_date: string;
     create_user: number;
     update_date: string | null;

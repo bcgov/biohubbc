@@ -24,7 +24,7 @@ import PageHeader from 'components/layout/PageHeader';
 import PublishSurveyIdDialog from 'components/publish/PublishSurveyDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { DeleteSurveyI18N } from 'constants/i18n';
+import { DeleteSurveyI18N, UnpublishSurveyI18N } from 'constants/i18n';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { ProjectContext } from 'contexts/projectContext';
@@ -33,7 +33,7 @@ import { SurveyExportDialog } from 'features/surveys/view/survey-export/SurveyEx
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
-import React, { useContext, useState } from 'react';
+import React, { useCallback, useContext, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Link as RouterLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
@@ -126,6 +126,54 @@ const SurveyHeader = () => {
 
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [publishSurveyDialogOpen, setPublishSurveyDialogOpen] = useState<boolean>(false);
+  const [unpublishLoading, setUnpublishLoading] = useState(false);
+
+  const unpublishSurvey = useCallback(async () => {
+    if (!surveyWithDetails) {
+      return;
+    }
+    setUnpublishLoading(true);
+    try {
+      await biohubApi.publish.deleteSurveySubmission(surveyContext.projectId, surveyContext.surveyId);
+      surveyContext.surveyDataLoader.refresh(surveyContext.projectId, surveyContext.surveyId);
+    } catch (err) {
+      const apiError = err as APIError;
+      dialogContext.setErrorDialog({
+        dialogTitle: 'Unpublish failed',
+        dialogText: apiError.message || 'Failed to unpublish survey.',
+        open: true,
+        onClose: () => dialogContext.setErrorDialog({ open: false }),
+        onOk: () => dialogContext.setErrorDialog({ open: false })
+      });
+    } finally {
+      setUnpublishLoading(false);
+    }
+  }, [
+    surveyWithDetails,
+    biohubApi.publish,
+    surveyContext.projectId,
+    surveyContext.surveyId,
+    surveyContext.surveyDataLoader,
+    dialogContext
+  ]);
+
+  const showUnpublishSurveyDialog = useCallback(() => {
+    dialogContext.setYesNoDialog({
+      open: true,
+      dialogTitle: UnpublishSurveyI18N.unpublishTitle,
+      dialogText: UnpublishSurveyI18N.unpublishText,
+      onClose: () => dialogContext.setYesNoDialog({ open: false }),
+      onNo: () => dialogContext.setYesNoDialog({ open: false }),
+      yesButtonProps: { color: 'primary' },
+      yesButtonLabel: 'Unpublish',
+      noButtonProps: { color: 'primary', variant: 'outlined' },
+      noButtonLabel: 'Cancel',
+      onYes: () => {
+        unpublishSurvey();
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
+  }, [dialogContext, unpublishSurvey]);
 
   if (!surveyWithDetails) {
     return <CircularProgress className="pageProgress" size={40} />;

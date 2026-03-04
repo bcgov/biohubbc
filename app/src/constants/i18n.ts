@@ -101,6 +101,12 @@ export const DeleteSurveyI18N = {
     'An error has occurred while attempting to delete this survey. If the error persists, please contact your system administrator.'
 };
 
+export const UnpublishSurveyI18N = {
+  unpublishTitle: 'Unpublish survey?',
+  unpublishText:
+    'This will remove the published submission from BioHub. The survey data in SIMS is not affected. You can publish again later.'
+};
+
 export const AddSystemUserI18N = {
   addUserErrorTitle: 'Error Adding System User',
   addUserErrorText:

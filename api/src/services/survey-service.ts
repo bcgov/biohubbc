@@ -1129,7 +1129,8 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * Gets the BioHub submission upload ID (UUID) for a given survey from the latest publish record.
+   * Gets the BioHub submission ID (UUID) for a given survey from the latest publish record.
+   * Used for append URL: POST /submission/:submissionId/upload.
    *
    * @param {number} surveyId
    * @return {*}  {Promise<string | null>}
@@ -1138,5 +1139,27 @@ export class SurveyService extends DBService {
   async getBioHubSubmissionUploadId(surveyId: number): Promise<string | null> {
     const record = await this.historyPublishService.getSurveyMetadataPublishRecord(surveyId);
     return record?.submission_uuid ?? null;
+  }
+
+  /**
+   * Gets both BioHub submission IDs for a given survey from the latest publish record.
+   * Used for delete: DELETE /submission/:submissionId/upload/:submissionUploadId.
+   * Returns null if no publish record or submission_upload_uuid is null (legacy row).
+   *
+   * @param {number} surveyId
+   * @return {*}  {Promise<{ submission_uuid: string; submission_upload_uuid: string } | null>}
+   * @memberof SurveyService
+   */
+  async getBioHubSubmissionIds(
+    surveyId: number
+  ): Promise<{ submission_uuid: string; submission_upload_uuid: string } | null> {
+    const record = await this.historyPublishService.getSurveyMetadataPublishRecord(surveyId);
+    if (!record?.submission_uuid || !record.submission_upload_uuid) {
+      return null;
+    }
+    return {
+      submission_uuid: record.submission_uuid,
+      submission_upload_uuid: record.submission_upload_uuid
+    };
   }
 }

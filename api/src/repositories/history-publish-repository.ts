@@ -6,6 +6,7 @@ import { BaseRepository } from './base-repository';
 export interface ISurveyMetadataPublish {
   survey_id: number;
   submission_uuid: string;
+  submission_upload_uuid?: string | null;
 }
 export interface ISurveyAttachmentPublish {
   survey_attachment_id: number;
@@ -22,6 +23,7 @@ export const SurveyMetadataPublish = z.object({
   survey_id: z.number(),
   event_timestamp: z.string(),
   submission_uuid: z.string().uuid(),
+  submission_upload_uuid: z.string().uuid().nullable(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -128,10 +130,10 @@ export class HistoryPublishRepository extends BaseRepository {
   async insertSurveyMetadataPublishRecord(data: ISurveyMetadataPublish): Promise<number> {
     const sqlStatement = SQL`
       INSERT INTO survey_metadata_publish
-        (survey_id, submission_uuid, event_timestamp)
+        (survey_id, submission_uuid, submission_upload_uuid, event_timestamp)
       VALUES
-        (${data.survey_id}, ${data.submission_uuid}, NOW())
-      ON CONFLICT (submission_uuid) DO UPDATE SET event_timestamp = NOW()
+        (${data.survey_id}, ${data.submission_uuid}, ${data.submission_upload_uuid ?? null}, NOW())
+      ON CONFLICT (submission_upload_uuid) DO UPDATE SET event_timestamp = NOW()
       RETURNING survey_metadata_publish_id;
     `;
 

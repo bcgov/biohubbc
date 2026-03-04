@@ -48,9 +48,18 @@ const usePublishApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * [TEMPORARY] Soft-delete the survey submission (upload) on the BioHub backbone.
+   * submissionId = survey_metadata_publish.submission_uuid.
+   */
+  const deleteSurveySubmission = async (projectId: number, surveyId: number): Promise<void> => {
+    await axios.delete(`/api/project/${projectId}/survey/${surveyId}/submission`);
+  };
+
   return {
     publishSurveyData,
-    publishProject
+    publishProject,
+    deleteSurveySubmission
   };
 };
 
