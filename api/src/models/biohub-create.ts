@@ -690,9 +690,9 @@ export class PostSampleTechniqueToBiohubObject implements BioHubSubmissionFeatur
     // Single-value properties (first item only) collapsed from sample_technique_detail
     let method_attribute: string | null = null;
     let method_value: string | null = null;
-    const firstAttrib = samplingTechniqueRecord.attribute_data?.filter(
+    const firstAttrib = samplingTechniqueRecord.attribute_data?.find(
       (a) => a.attribute_header != null || a.attribute_value != null
-    )?.[0];
+    );
     if (firstAttrib) {
       if (firstAttrib.technique_attribute_qualitative_id != null) {
         method_attribute = `code::technique_attribute_qualitative::${firstAttrib.technique_attribute_qualitative_id}`;
@@ -708,9 +708,9 @@ export class PostSampleTechniqueToBiohubObject implements BioHubSubmissionFeatur
     // Single-value properties (first item only) collapsed from sample_technique_vantage
     let vantage_method_attribute: string | null = null;
     let vantage_method_value: string | null = null;
-    const firstVantage = samplingTechniqueRecord.vantage_data?.filter(
+    const firstVantage = samplingTechniqueRecord.vantage_data?.find(
       (v) => v.vantage_header != null || v.vantage_value != null
-    )?.[0];
+    );
     if (firstVantage) {
       if (firstVantage.vantage_category_id != null) {
         vantage_method_attribute = `code::vantage_category::${firstVantage.vantage_category_id}`;
