@@ -64,6 +64,8 @@ spec:
               value: {{ .Values.app.keycloak.clientId }}
             - name: VITE_APP_BACKBONE_PUBLIC_API_HOST
               value: {{ .Values.app.backbonePublicApiHost }}
+            - name: VITE_APP_BACKBONE_PUBLIC_WEB_HOST
+              value: {{ .Values.app.backbonePublicWebHost }}
             - name: VITE_APP_BIOHUB_TAXON_PATH
               value: {{ .Values.app.biohubTaxonPath }}
             - name: VITE_APP_BIOHUB_TAXON_TSN_PATH

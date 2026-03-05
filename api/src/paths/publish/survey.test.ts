@@ -30,7 +30,9 @@ describe('survey', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(PlatformService.prototype, 'submitSurveyToBioHub').resolves({ submission_uuid: '123-456-789' });
+      sinon
+        .stub(PlatformService.prototype, 'submitSurveyToBioHub')
+        .resolves({ submission_uuid: '550e8400-e29b-41d4-a716-446655440000' });
 
       const sampleReq = {
         keycloak_token: {},
@@ -60,7 +62,7 @@ describe('survey', () => {
 
       await requestHandler(sampleReq, sampleRes as unknown as any, mockNext);
 
-      expect(actualResult).to.eql({ submission_uuid: '123-456-789' });
+      expect(actualResult).to.eql({ submission_uuid: '550e8400-e29b-41d4-a716-446655440000' });
     });
 
     it('catches error, calls rollback, and re-throws error', async () => {

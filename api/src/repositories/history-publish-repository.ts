@@ -230,6 +230,29 @@ export class HistoryPublishRepository extends BaseRepository {
   }
 
   /**
+   * Gets a record from `survey_metadata_publish` for a given submission_uuid.
+   *
+   * @param {string} submissionUuid
+   * @return {*}  {Promise<(SurveyMetadataPublish | null)>}
+   * @memberof HistoryPublishRepository
+   */
+  async getSurveyMetadataPublishRecordBySubmissionUuid(submissionUuid: string): Promise<SurveyMetadataPublish | null> {
+    const sqlStatement = SQL`
+      select
+        *
+      from
+        survey_metadata_publish
+      where
+        submission_uuid = ${submissionUuid}
+      limit 1;
+    `;
+
+    const response = await this.connection.sql<SurveyMetadataPublish>(sqlStatement);
+
+    return (response.rows.length && response.rows[0]) || null;
+  }
+
+  /**
    * Gets a record from `survey_attachment_publish` for a given survey id.
    *
    * @param {number} surveyAttachmentId

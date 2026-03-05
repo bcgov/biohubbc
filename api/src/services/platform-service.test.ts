@@ -140,6 +140,8 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
+      sinon.stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecord').resolves(null);
+
       const getKeycloakServiceTokenStub = sinon
         .stub(KeycloakService.prototype, 'getKeycloakServiceToken')
         .resolves('token');
@@ -182,6 +184,8 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
+      sinon.stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecord').resolves(null);
+
       const getKeycloakServiceTokenStub = sinon
         .stub(KeycloakService.prototype, 'getKeycloakServiceToken')
         .resolves('token');
@@ -204,13 +208,15 @@ describe('PlatformService', () => {
       sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
       sinon.stub(fs, 'unlinkSync').callsFake(() => {});
 
+      const submissionUuidFromApi = '550e8400-e29b-41d4-a716-446655440001';
       const mockUploadResponse = {
         uploadId: 'upload-123-456-789',
         s3UploadId: 's3-upload-id',
         key: 's3-key',
         presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url' }],
         partCount: 1,
-        submissionId: 42
+        submissionId: 42,
+        submissionUuid: submissionUuidFromApi
       };
 
       const _initiateSubmissionUploadStub = sinon
@@ -244,9 +250,71 @@ describe('PlatformService', () => {
       );
       expect(insertSurveyMetadataPublishRecordStub).to.have.been.calledOnceWith({
         survey_id: 1,
-        submission_uuid: 'upload-123-456-789'
+        submission_uuid: submissionUuidFromApi
       });
-      expect(response).to.eql({ submission_uuid: 'upload-123-456-789' });
+      expect(response).to.eql({ submission_uuid: submissionUuidFromApi });
+    });
+
+    it('should use re-publish endpoint and existing submission_uuid when survey was previously published', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+      process.env.BACKBONE_SUBMISSION_UPLOAD_PATH = '/api/submission';
+
+      const existingSubmissionUuid = '550e8400-e29b-41d4-a716-446655440000';
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon
+        .stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecord')
+        .resolves({ submission_uuid: existingSubmissionUuid } as any);
+
+      sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
+      sinon.stub(AttachmentService.prototype, 'getSurveyAttachmentsForBioHubSubmission').resolves([]);
+      sinon.stub(AttachmentService.prototype, 'getSurveyReportAttachments').resolves([]);
+      sinon
+        .stub(PlatformService.prototype, '_generateSurveyDataPackage')
+        .resolves({ id: '123-456-789', name: 'Test', description: 'Test Description' } as unknown as any);
+      sinon
+        .stub(PlatformService.prototype, '_flattenToBlockModel')
+        .returns([{ id: 'test-dataset-id', type: 'dataset', properties: {}, content: [], parent: null }]);
+      sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
+
+      const fs = require('node:fs');
+      sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
+      sinon.stub(fs, 'unlinkSync').callsFake(() => {});
+
+      const mockUploadResponse = {
+        uploadId: 'multipart-session-upload-id',
+        s3UploadId: 's3-upload-id',
+        key: 's3-key',
+        presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url' }],
+        partCount: 1,
+        submissionId: 42
+      };
+
+      const _initiateSubmissionUploadStub = sinon
+        .stub(PlatformService.prototype, '_initiateSubmissionUpload')
+        .resolves(mockUploadResponse);
+      sinon.stub(PlatformService.prototype, '_uploadTarFileParts').resolves([{ PartNumber: 1, ETag: 'etag-123' }]);
+      sinon.stub(PlatformService.prototype, '_completeSubmissionUpload').resolves();
+
+      const insertSurveyMetadataPublishRecordStub = sinon
+        .stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord')
+        .resolves();
+
+      const response = await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
+
+      expect(_initiateSubmissionUploadStub).to.have.been.calledOnceWith(
+        'token',
+        1024,
+        { id: '123-456-789', name: 'Test', description: 'Test Description' },
+        'test',
+        existingSubmissionUuid
+      );
+      expect(insertSurveyMetadataPublishRecordStub).to.have.been.calledOnceWith({
+        survey_id: 1,
+        submission_uuid: existingSubmissionUuid
+      });
+      expect(response).to.eql({ submission_uuid: existingSubmissionUuid });
     });
   });
 
@@ -503,6 +571,7 @@ describe('PlatformService', () => {
         .stub(PlatformService.prototype, '_generateSurveyDataPackage')
         .resolves(mockSurveyDataPackage as unknown as any);
 
+      sinon.stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecord').resolves(null);
       sinon.stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord').resolves();
 
       // Stub the TAR creation method to avoid fs stubbing issues
@@ -547,6 +616,7 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
+      sinon.stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecord').resolves(null);
       sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
 
       sinon.stub(AttachmentService.prototype, 'getSurveyAttachmentsForBioHubSubmission').resolves([]);
@@ -583,6 +653,7 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
+      sinon.stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecord').resolves(null);
       sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
 
       sinon.stub(AttachmentService.prototype, 'getSurveyAttachmentsForBioHubSubmission').resolves([]);
@@ -857,7 +928,7 @@ describe('PlatformService', () => {
 
     it('should initiate upload and return presigned URLs', async () => {
       process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
-      process.env.BACKBONE_SUBMISSION_UPLOAD_PATH = '/api/submission/upload/archive';
+      process.env.BACKBONE_SUBMISSION_UPLOAD_PATH = '/api/submission';
 
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
@@ -906,6 +977,57 @@ describe('PlatformService', () => {
       });
     });
 
+    it('should use re-publish URL when existingSubmissionUuid is set', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+      process.env.BACKBONE_SUBMISSION_UPLOAD_PATH = '/api/submission';
+
+      const existingSubmissionUuid = '550e8400-e29b-41d4-a716-446655440000';
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const mockResponse = {
+        data: {
+          submissionId: 42,
+          uploadId: 'upload-123',
+          s3UploadId: 's3-upload-id',
+          uploadArchiveId: 'archive-id',
+          key: 's3-key',
+          partSizeBytes: 5242880,
+          partCount: 2,
+          presignedUrls: [
+            { partNumber: 1, url: 'https://s3.amazonaws.com/url1' },
+            { partNumber: 2, url: 'https://s3.amazonaws.com/url2' }
+          ]
+        }
+      };
+
+      const axiosPostStub = sinon.stub(axios, 'post').resolves(mockResponse);
+
+      const surveyDataPackage = {
+        name: 'Test Survey',
+        description: 'Test Description'
+      } as any;
+
+      await platformService._initiateSubmissionUpload(
+        'token',
+        1024,
+        surveyDataPackage,
+        'comment',
+        existingSubmissionUuid
+      );
+
+      expect(axiosPostStub).to.have.been.calledOnce;
+      expect(axiosPostStub.getCall(0).args[0]).to.equal(
+        'http://backbone-host.dev/api/submission/550e8400-e29b-41d4-a716-446655440000/upload'
+      );
+      expect(axiosPostStub.getCall(0).args[1]).to.deep.equal({
+        bytes: 1024,
+        name: 'Test Survey',
+        description: 'Test Description',
+        comment: 'comment'
+      });
+    });
+
     it('should throw error when file size exceeds maximum', async () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
@@ -928,7 +1050,7 @@ describe('PlatformService', () => {
 
     it('should throw error when API call fails', async () => {
       process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
-      process.env.BACKBONE_SUBMISSION_UPLOAD_PATH = '/api/submission/upload/archive';
+      process.env.BACKBONE_SUBMISSION_UPLOAD_PATH = '/api/submission';
 
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);

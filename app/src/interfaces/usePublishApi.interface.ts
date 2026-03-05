@@ -4,3 +4,10 @@ export interface IProjectSubmitForm {
   reports: IGetProjectReportAttachment[];
   attachments: IGetProjectAttachment[];
 }
+
+export interface ISubmissionHistoryRow {
+  submissionUploadId: string;
+  status: string;
+  createDate: string;
+  id?: number;
+}

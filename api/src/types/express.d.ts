@@ -52,5 +52,10 @@ declare module 'express-serve-static-core' {
      *
      */
     authorization_scheme?: AuthorizationScheme;
+
+    /**
+     * Survey ID resolved from submission UUID (set by submission path middleware).
+     */
+    survey_id_for_submission?: number;
   }
 }

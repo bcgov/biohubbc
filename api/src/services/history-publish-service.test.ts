@@ -25,7 +25,7 @@ describe('HistoryPublishService', () => {
 
       const data = {
         survey_id: 1,
-        submission_uuid: '123-456-789'
+        submission_uuid: '550e8400-e29b-41d4-a716-446655440000'
       };
 
       const repoStub = sinon.stub(HistoryPublishRepository.prototype, 'insertSurveyMetadataPublishRecord').resolves(1);
