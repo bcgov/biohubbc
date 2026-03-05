@@ -48,7 +48,13 @@ describe('Sampling Technique Features BioHub Integration', () => {
         { attractant_name: 'code::attractant_lookup::3' },
         { attractant_name: 'code::attractant_lookup::7' }
       ]);
-      expect(techniqueObj.child_features).to.be.an('array').with.length(3);
+      expect(techniqueObj.properties.method_attribute).to.equal(
+        'code::technique_attribute_qualitative::e0479006-f5ee-40cf-a33b-c1ffce393bf4'
+      );
+      expect(techniqueObj.properties.method_value).to.equal('code::technique_attribute_qualitative_option::20');
+      expect(techniqueObj.properties.vantage_method_attribute).to.equal('code::vantage_category::1');
+      expect(techniqueObj.properties.vantage_method_value).to.equal('code::vantage::5');
+      expect(techniqueObj.child_features).to.be.an('array').with.length(0);
     });
 
     it('should handle sampling technique with null values', () => {
@@ -75,6 +81,10 @@ describe('Sampling Technique Features BioHub Integration', () => {
       expect(techniqueObj.properties.description).to.be.null;
       expect(techniqueObj.properties.method_name).to.equal('code::method_lookup::8');
       expect(techniqueObj.properties.attractant).to.deep.equal([]);
+      expect(techniqueObj.properties.method_attribute).to.be.null;
+      expect(techniqueObj.properties.method_value).to.be.null;
+      expect(techniqueObj.properties.vantage_method_attribute).to.be.null;
+      expect(techniqueObj.properties.vantage_method_value).to.be.null;
       expect(techniqueObj.child_features).to.be.an('array').with.length(0);
     });
 
@@ -112,7 +122,13 @@ describe('Sampling Technique Features BioHub Integration', () => {
       expect(techniqueObj.properties.description).to.equal('Passive acoustic monitoring for species identification');
       expect(techniqueObj.properties.method_name).to.equal('code::method_lookup::12');
       expect(techniqueObj.properties.attractant).to.deep.equal([]);
-      expect(techniqueObj.child_features).to.be.an('array').with.length(2);
+      expect(techniqueObj.properties.method_attribute).to.equal(
+        'code::technique_attribute_quantitative::c3719010-f9ff-44ff-e77f-f5ffff7c7ff8'
+      );
+      expect(techniqueObj.properties.method_value).to.be.null;
+      expect(techniqueObj.properties.vantage_method_attribute).to.equal('code::vantage_category::2');
+      expect(techniqueObj.properties.vantage_method_value).to.equal('code::vantage::8');
+      expect(techniqueObj.child_features).to.be.an('array').with.length(0);
     });
   });
 });
