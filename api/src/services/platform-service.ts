@@ -895,7 +895,9 @@ export class PlatformService extends DBService {
     }
 
     // Create submission upload URL: first-time = {base}/upload/archive, re-publish = {base}/{submission_uuid}/upload
-    const basePath = getBackboneSubmissionUploadPath();
+    // Normalize base: strip trailing /upload/archive so env can be /api/submission or /api/submission/upload/archive
+    const rawPath = getBackboneSubmissionUploadPath();
+    const basePath = rawPath.replace(/\/upload\/archive\/?$/, '') || rawPath;
     const initiatePath = existingSubmissionUuid
       ? `${basePath}/${existingSubmissionUuid}/upload`
       : `${basePath}/upload/archive`;
