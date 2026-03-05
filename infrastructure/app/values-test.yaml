@@ -11,6 +11,7 @@ app:
 
   # BioHub Platform (aka: Backbone)
   backbonePublicApiHost: "https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca"
+  backbonePublicWebHost: "https://test-biohub-platform.apps.silver.devops.gov.bc.ca"
 
   # Siteminder
   siteminderLogoutURL: "https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi" # Siteminder URL to log out and clear the session for the logged in user
