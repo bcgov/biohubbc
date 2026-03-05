@@ -33,6 +33,19 @@ interface ISurveyPublishHistoryDialogProps {
 /**
  * Dialog showing publish history for a survey: table with Date, Status, and delete action for submitted uploads.
  */
+function renderDeleteErrorSnackbar(message: string) {
+  return (
+    <>
+      <Typography variant="body2" component="div">
+        <strong>Error deleting upload</strong>
+      </Typography>
+      <Typography variant="body2" component="div">
+        {message}
+      </Typography>
+    </>
+  );
+}
+
 const SurveyPublishHistoryDialog = (props: ISurveyPublishHistoryDialogProps) => {
   const { open, onClose, submissionId } = props;
   const config = useConfigContext();
@@ -78,12 +91,39 @@ const SurveyPublishHistoryDialog = (props: ISurveyPublishHistoryDialogProps) => 
     }
   }, [open, submissionId, loadHistory]);
 
+  const closeDeleteDialog = useCallback(() => {
+    dialogContext.setYesNoDialog({ open: false });
+    rowToDeleteRef.current = null;
+  }, [dialogContext]);
+
+  const handleConfirmDelete = useCallback(async () => {
+    const toDelete = rowToDeleteRef.current;
+    if (!submissionId || !toDelete) {
+      closeDeleteDialog();
+      return;
+    }
+    try {
+      await biohubApi.publish.deleteSubmissionUpload(submissionId, toDelete.submissionUploadId);
+      closeDeleteDialog();
+      setHistory((prev) =>
+        prev.map((r) => (r.submissionUploadId === toDelete.submissionUploadId ? { ...r, status: 'deleted' } : r))
+      );
+      dialogContext.setSnackbar({ snackbarMessage: 'Upload deleted.', open: true });
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Failed to delete upload';
+      closeDeleteDialog();
+      dialogContext.setSnackbar({
+        snackbarMessage: renderDeleteErrorSnackbar(message),
+        open: true
+      });
+    }
+  }, [submissionId, biohubApi.publish, dialogContext, closeDeleteDialog]);
+
   const handleDeleteClick = () => {
     if (!actionMenuAnchor) {
       return;
     }
-    const row = actionMenuAnchor.row;
-    rowToDeleteRef.current = row;
+    rowToDeleteRef.current = actionMenuAnchor.row;
     setActionMenuAnchor(null);
     dialogContext.setYesNoDialog({
       open: true,
@@ -93,48 +133,9 @@ const SurveyPublishHistoryDialog = (props: ISurveyPublishHistoryDialogProps) => 
       noButtonLabel: 'Cancel',
       yesButtonProps: { color: 'error' },
       noButtonProps: { color: 'primary', variant: 'outlined' },
-      onClose: () => {
-        dialogContext.setYesNoDialog({ open: false });
-        rowToDeleteRef.current = null;
-      },
-      onNo: () => {
-        dialogContext.setYesNoDialog({ open: false });
-        rowToDeleteRef.current = null;
-      },
-      onYes: async () => {
-        const toDelete = rowToDeleteRef.current;
-        if (!submissionId || !toDelete) {
-          dialogContext.setYesNoDialog({ open: false });
-          rowToDeleteRef.current = null;
-          return;
-        }
-        try {
-          await biohubApi.publish.deleteSubmissionUpload(submissionId, toDelete.submissionUploadId);
-          dialogContext.setYesNoDialog({ open: false });
-          rowToDeleteRef.current = null;
-          setHistory((prev) =>
-            prev.map((r) => (r.submissionUploadId === toDelete.submissionUploadId ? { ...r, status: 'deleted' } : r))
-          );
-          dialogContext.setSnackbar({ snackbarMessage: 'Upload deleted.', open: true });
-        } catch (err: unknown) {
-          const message = err instanceof Error ? err.message : 'Failed to delete upload';
-          dialogContext.setYesNoDialog({ open: false });
-          rowToDeleteRef.current = null;
-          dialogContext.setSnackbar({
-            snackbarMessage: (
-              <>
-                <Typography variant="body2" component="div">
-                  <strong>Error deleting upload</strong>
-                </Typography>
-                <Typography variant="body2" component="div">
-                  {message}
-                </Typography>
-              </>
-            ),
-            open: true
-          });
-        }
-      }
+      onClose: closeDeleteDialog,
+      onNo: closeDeleteDialog,
+      onYes: handleConfirmDelete
     });
   };
 
