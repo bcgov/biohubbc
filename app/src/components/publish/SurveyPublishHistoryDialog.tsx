@@ -108,9 +108,9 @@ const SurveyPublishHistoryDialog = (props: ISurveyPublishHistoryDialogProps) => 
       setHistory((prev) =>
         prev.map((r) => (r.submissionUploadId === toDelete.submissionUploadId ? { ...r, status: 'deleted' } : r))
       );
-      dialogContext.setSnackbar({ snackbarMessage: 'Upload deleted.', open: true });
+      dialogContext.setSnackbar({ snackbarMessage: 'Upload request cancelled.', open: true });
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to delete upload';
+      const message = err instanceof Error ? err.message : 'Failed to cancel upload request';
       closeDeleteDialog();
       dialogContext.setSnackbar({
         snackbarMessage: renderDeleteErrorSnackbar(message),
@@ -127,10 +127,10 @@ const SurveyPublishHistoryDialog = (props: ISurveyPublishHistoryDialogProps) => 
     setActionMenuAnchor(null);
     dialogContext.setYesNoDialog({
       open: true,
-      dialogTitle: 'Delete upload',
-      dialogText: 'Are you sure you want to delete this upload?',
-      yesButtonLabel: 'Delete',
-      noButtonLabel: 'Cancel',
+      dialogTitle: 'Cancel Upload Request',
+      dialogText: 'Are you sure you want to cancel this upload request?',
+      yesButtonLabel: 'Cancel request',
+      noButtonLabel: 'Keep request',
       yesButtonProps: { color: 'error' },
       noButtonProps: { color: 'primary', variant: 'outlined' },
       onClose: closeDeleteDialog,
@@ -140,6 +140,9 @@ const SurveyPublishHistoryDialog = (props: ISurveyPublishHistoryDialogProps) => 
   };
 
   const formatStatus = (status: string) => {
+    if (status.toLowerCase() === 'deleted') {
+      return 'Cancelled';
+    }
     return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
   };
 
@@ -151,7 +154,7 @@ const SurveyPublishHistoryDialog = (props: ISurveyPublishHistoryDialogProps) => 
         aria-labelledby="survey-publish-history-dialog-title"
         maxWidth="md"
         fullWidth>
-        <DialogTitle id="survey-publish-history-dialog-title">Publish history</DialogTitle>
+        <DialogTitle id="survey-publish-history-dialog-title">Publish History</DialogTitle>
         <DialogContent>
           {!submissionId && (
             <Typography variant="body2" color="textSecondary">
@@ -247,7 +250,7 @@ const SurveyPublishHistoryDialog = (props: ISurveyPublishHistoryDialogProps) => 
             <ListItemIcon>
               <Icon path={mdiTrashCanOutline} size={1} />
             </ListItemIcon>
-            <ListItemText>Delete</ListItemText>
+            <ListItemText>Cancel</ListItemText>
           </MenuItem>
         )}
       </Menu>
