@@ -1121,4 +1121,123 @@ describe('PlatformService', () => {
       }
     });
   });
+
+  describe('getSubmissionHistory', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should return history when BioHub returns an array', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'https://backbone.example.com';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const submissionId = '550e8400-e29b-41d4-a716-446655440000';
+      const mockHistory = [
+        {
+          submissionUploadId: 'upload-uuid-1',
+          status: 'submitted',
+          createDate: '2024-01-01T00:00:00Z',
+          id: 123
+        }
+      ];
+
+      sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
+      const axiosStub = sinon.stub(axios, 'get').resolves({ data: mockHistory });
+
+      const result = await platformService.getSubmissionHistory(submissionId);
+
+      expect(axiosStub.getCall(0).args[0]).to.include(`/submission/${submissionId}/history`);
+      expect(axiosStub.getCall(0).args[1]?.headers?.authorization).to.equal('Bearer token');
+      expect(result).to.deep.equal(mockHistory);
+    });
+
+    it('should return history and map submissionId onto items when BioHub returns wrapped shape', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'https://backbone.example.com';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const submissionId = '550e8400-e29b-41d4-a716-446655440000';
+      const bioHubId = 456;
+      const mockResponse = {
+        submissionId: bioHubId,
+        history: [
+          {
+            submissionUploadId: 'upload-uuid-1',
+            status: 'submitted',
+            createDate: '2024-01-01T00:00:00Z'
+          }
+        ]
+      };
+
+      sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
+      sinon.stub(axios, 'get').resolves({ data: mockResponse });
+
+      const result = await platformService.getSubmissionHistory(submissionId);
+
+      expect(result).to.have.length(1);
+      expect(result[0].id).to.equal(bioHubId);
+      expect(result[0].submissionUploadId).to.equal('upload-uuid-1');
+    });
+
+    it('should throw ApiError when axios.get fails', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'https://backbone.example.com';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
+      sinon.stub(axios, 'get').rejects(new Error('Network error'));
+
+      try {
+        await platformService.getSubmissionHistory('550e8400-e29b-41d4-a716-446655440000');
+        expect.fail('Should have thrown');
+      } catch (error) {
+        expect((error as ApiError).message).to.equal('Failed to get submission history from BioHub');
+      }
+    });
+  });
+
+  describe('deleteSubmissionUpload', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should call BioHub DELETE and succeed', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'https://backbone.example.com';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const submissionId = '550e8400-e29b-41d4-a716-446655440000';
+      const submissionUploadId = 'upload-uuid-123';
+
+      sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
+      const axiosStub = sinon.stub(axios, 'delete').resolves({ status: 204 });
+
+      await platformService.deleteSubmissionUpload(submissionId, submissionUploadId);
+
+      expect(axiosStub.getCall(0).args[0]).to.include(`/submission/${submissionId}/upload/${submissionUploadId}`);
+      expect(axiosStub.getCall(0).args[1]?.headers?.authorization).to.equal('Bearer token');
+    });
+
+    it('should throw ApiError when axios.delete fails', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'https://backbone.example.com';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
+      sinon.stub(axios, 'delete').rejects(new Error('Network error'));
+
+      try {
+        await platformService.deleteSubmissionUpload('550e8400-e29b-41d4-a716-446655440000', 'upload-uuid-123');
+        expect.fail('Should have thrown');
+      } catch (error) {
+        expect((error as ApiError).message).to.equal('Failed to delete submission upload in BioHub');
+      }
+    });
+  });
 });

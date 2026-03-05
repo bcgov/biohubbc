@@ -132,4 +132,41 @@ describe('HistoryPublishService', () => {
       expect(response).to.eql(mockResponse);
     });
   });
+
+  describe('getSurveyMetadataPublishRecordBySubmissionUuid', () => {
+    it('returns record when repository returns one', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const mockResponse = {
+        survey_metadata_publish_id: 1,
+        survey_id: 2,
+        submission_uuid: '550e8400-e29b-41d4-a716-446655440000'
+      } as unknown as SurveyMetadataPublish;
+      const repositoryStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getSurveyMetadataPublishRecordBySubmissionUuid')
+        .resolves(mockResponse);
+
+      const submissionUuid = '550e8400-e29b-41d4-a716-446655440000';
+      const response = await service.getSurveyMetadataPublishRecordBySubmissionUuid(submissionUuid);
+
+      expect(repositoryStub).to.be.calledOnceWith(submissionUuid);
+      expect(response).to.eql(mockResponse);
+    });
+
+    it('returns null when repository returns null', async () => {
+      const dbConnection = getMockDBConnection();
+      const service = new HistoryPublishService(dbConnection);
+
+      const repositoryStub = sinon
+        .stub(HistoryPublishRepository.prototype, 'getSurveyMetadataPublishRecordBySubmissionUuid')
+        .resolves(null);
+
+      const submissionUuid = '550e8400-e29b-41d4-a716-446655440000';
+      const response = await service.getSurveyMetadataPublishRecordBySubmissionUuid(submissionUuid);
+
+      expect(repositoryStub).to.be.calledOnceWith(submissionUuid);
+      expect(response).to.be.null;
+    });
+  });
 });

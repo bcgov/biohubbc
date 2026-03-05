@@ -209,4 +209,36 @@ describe('HistoryPublishRepository', () => {
       expect(response).to.be.null;
     });
   });
+
+  describe('getSurveyMetadataPublishRecordBySubmissionUuid', () => {
+    it('should return a record when one exists', async () => {
+      const submissionUuid = '550e8400-e29b-41d4-a716-446655440000';
+      const mockRow = {
+        survey_metadata_publish_id: 1,
+        survey_id: 2,
+        submission_uuid: submissionUuid
+      };
+      const mockConnection = getMockDBConnection({
+        sql: async () => ({ rowCount: 1, rows: [mockRow] }) as any as Promise<QueryResult<any>>
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+      const response = await repository.getSurveyMetadataPublishRecordBySubmissionUuid(submissionUuid);
+
+      expect(response).to.be.eql(mockRow);
+    });
+
+    it('should return null when no record exists', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => ({ rowCount: 0, rows: [] }) as any as Promise<QueryResult<any>>
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+      const response = await repository.getSurveyMetadataPublishRecordBySubmissionUuid(
+        '550e8400-e29b-41d4-a716-446655440000'
+      );
+
+      expect(response).to.be.null;
+    });
+  });
 });
