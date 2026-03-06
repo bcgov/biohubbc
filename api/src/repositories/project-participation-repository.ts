@@ -73,7 +73,7 @@ export class ProjectParticipationRepository extends BaseRepository {
   ): Promise<ProjectParticipationRecord> {
     const sqlStatement = SQL`
       DELETE FROM
-        project_participation
+        biohub.project_participation
       WHERE
         project_participation_id = ${projectParticipationId}
       AND
@@ -96,10 +96,10 @@ export class ProjectParticipationRepository extends BaseRepository {
 
   async updateProjectParticipationRole(projectParticipationId: number, role: string): Promise<void> {
     const sql = SQL`
-      UPDATE project_participation
+      UPDATE biohub.project_participation
       SET project_role_id = (
         SELECT project_role_id
-        FROM project_role
+        FROM biohub.project_role
         WHERE name = ${role}
         AND record_end_date IS NULL
       )
@@ -141,23 +141,23 @@ export class ProjectParticipationRepository extends BaseRepository {
         array_remove(array_agg(pr.name), NULL) AS project_role_names,
         array_remove(array_agg(pp2.name), NULL) as project_role_permissions
       FROM
-        project_participation pp
-      LEFT JOIN project_role pr
+        biohub.project_participation pp
+      LEFT JOIN biohub.project_role pr
         ON pp.project_role_id = pr.project_role_id
-      LEFT JOIN project_role_permission prp
+      LEFT JOIN biohub.project_role_permission prp
         ON pp.project_role_id = prp.project_role_id
-      LEFT JOIN project_permission pp2
+      LEFT JOIN biohub.project_permission pp2
         ON pp2.project_permission_id = prp.project_permission_id
-      LEFT JOIN "system_user" su
+      LEFT JOIN biohub."system_user" su
         ON pp.system_user_id = su.system_user_id
       LEFT JOIN
-        system_user_role sur
+        biohub.system_user_role sur
         ON su.system_user_id = sur.system_user_id
       LEFT JOIN
-        system_role sr
+        biohub.system_role sr
         ON sur.system_role_id = sr.system_role_id
       LEFT JOIN
-        user_identity_source uis
+        biohub.user_identity_source uis
         ON uis.user_identity_source_id = su.user_identity_source_id
       WHERE
         pp.project_id = ${projectId}
@@ -226,14 +226,14 @@ export class ProjectParticipationRepository extends BaseRepository {
           array_remove(array_agg(pp2.name), NULL) as project_role_permissions
         `)
       )
-      .from('project_participation as pp')
-      .leftJoin('project_role as pr', 'pp.project_role_id', 'pr.project_role_id')
-      .leftJoin('project_role_permission as prp', 'pp.project_role_id', 'prp.project_role_id')
-      .leftJoin('project_permission as pp2', 'pp2.project_permission_id', 'prp.project_permission_id')
-      .leftJoin('system_user as su', 'pp.system_user_id', 'su.system_user_id')
-      .leftJoin('system_user_role as sur', 'su.system_user_id', 'sur.system_user_id')
-      .leftJoin('system_role as sr', 'sur.system_role_id', 'sr.system_role_id')
-      .leftJoin('user_identity_source as uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
+      .from(`biohub.project_participation as pp`)
+      .leftJoin(`biohub.project_role as pr`, 'pp.project_role_id', 'pr.project_role_id')
+      .leftJoin(`biohub.project_role_permission as prp`, 'pp.project_role_id', 'prp.project_role_id')
+      .leftJoin(`biohub.project_permission as pp2`, 'pp2.project_permission_id', 'prp.project_permission_id')
+      .leftJoin(`biohub.system_user as su`, 'pp.system_user_id', 'su.system_user_id')
+      .leftJoin(`biohub.system_user_role as sur`, 'su.system_user_id', 'sur.system_user_id')
+      .leftJoin(`biohub.system_role as sr`, 'sur.system_role_id', 'sr.system_role_id')
+      .leftJoin('biohub.user_identity_source as uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
       .where('su.record_end_date', null)
       .where('pp.project_id', projectId)
       .where(knex.raw(`LOWER(su.user_guid) = LOWER('${userGuid}')`))
@@ -295,15 +295,15 @@ export class ProjectParticipationRepository extends BaseRepository {
           array_remove(array_agg(pp2.name), NULL) as project_role_permissions
         `)
       )
-      .from('project_participation as pp')
-      .leftJoin('project_role as pr', 'pp.project_role_id', 'pr.project_role_id')
-      .leftJoin('project_role_permission as prp', 'pp.project_role_id', 'prp.project_role_id')
-      .leftJoin('project_permission as pp2', 'pp2.project_permission_id', 'prp.project_permission_id')
-      .leftJoin('system_user as su', 'pp.system_user_id', 'su.system_user_id')
-      .leftJoin('system_user_role as sur', 'su.system_user_id', 'sur.system_user_id')
-      .leftJoin('system_role as sr', 'sur.system_role_id', 'sr.system_role_id')
-      .leftJoin('user_identity_source as uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
-      .leftJoin('survey as s', 's.project_id', 'pp.project_id')
+      .from(`biohub.project_participation as pp`)
+      .leftJoin(`biohub.project_role as pr`, 'pp.project_role_id', 'pr.project_role_id')
+      .leftJoin(`biohub.project_role_permission as prp`, 'pp.project_role_id', 'prp.project_role_id')
+      .leftJoin(`biohub.project_permission as pp2`, 'pp2.project_permission_id', 'prp.project_permission_id')
+      .leftJoin(`biohub.system_user as su`, 'pp.system_user_id', 'su.system_user_id')
+      .leftJoin(`biohub.system_user_role as sur`, 'su.system_user_id', 'sur.system_user_id')
+      .leftJoin(`biohub.system_role as sr`, 'sur.system_role_id', 'sr.system_role_id')
+      .leftJoin('biohub.user_identity_source as uis', 'uis.user_identity_source_id', 'su.user_identity_source_id')
+      .leftJoin('biohub.survey as s', 's.project_id', 'pp.project_id')
       .where('su.record_end_date', null)
       .where('s.survey_id', surveyId)
       .where(knex.raw(`LOWER(su.user_guid) = LOWER('${userGuid}')`))
@@ -355,23 +355,23 @@ export class ProjectParticipationRepository extends BaseRepository {
         array_remove(array_agg(pr.name), NULL) AS project_role_names,
         array_remove(array_agg(pp2.name), NULL) as project_role_permissions
       FROM
-        project_participation pp
-      LEFT JOIN project_role pr
+        biohub.project_participation pp
+      LEFT JOIN biohub.project_role pr
         ON pp.project_role_id = pr.project_role_id
-      LEFT JOIN project_role_permission prp
+      LEFT JOIN biohub.project_role_permission prp
         ON pp.project_role_id = prp.project_role_id
-      LEFT JOIN project_permission pp2
+      LEFT JOIN biohub.project_permission pp2
         ON pp2.project_permission_id = prp.project_permission_id
-      LEFT JOIN "system_user" su
+      LEFT JOIN biohub."system_user" su
         ON pp.system_user_id = su.system_user_id
       LEFT JOIN
-        system_user_role sur
+        biohub.system_user_role sur
         ON su.system_user_id = sur.system_user_id
       LEFT JOIN
-        system_role sr
+        biohub.system_role sr
         ON sur.system_role_id = sr.system_role_id
       LEFT JOIN
-        user_identity_source uis
+        biohub.user_identity_source uis
         ON uis.user_identity_source_id = su.user_identity_source_id
       WHERE
         pp.project_id = ${projectId}
@@ -425,7 +425,7 @@ export class ProjectParticipationRepository extends BaseRepository {
 
     if (isNaN(Number(projectParticipantRole))) {
       sqlStatement = SQL`
-        INSERT INTO project_participation (
+        INSERT INTO biohub.project_participation (
           project_id,
           system_user_id,
           project_role_id
@@ -436,14 +436,14 @@ export class ProjectParticipationRepository extends BaseRepository {
             ${systemUserId},
             project_role_id
           FROM
-            project_role
+            biohub.project_role
           WHERE
             name = ${projectParticipantRole}
         );
       `;
     } else {
       sqlStatement = SQL`
-        INSERT INTO project_participation (
+        INSERT INTO biohub.project_participation (
           project_id,
           system_user_id,
           project_role_id
@@ -495,23 +495,23 @@ export class ProjectParticipationRepository extends BaseRepository {
         array_remove(array_agg(pr.name), NULL) AS project_role_names,
         array_remove(array_agg(pp2.name), NULL) as project_role_permissions
       FROM
-        project_participation pp
-      LEFT JOIN project_role pr
+        biohub.project_participation pp
+      LEFT JOIN biohub.project_role pr
         ON pp.project_role_id = pr.project_role_id
-      LEFT JOIN project_role_permission prp
+      LEFT JOIN biohub.project_role_permission prp
         ON pp.project_role_id = prp.project_role_id
-      LEFT JOIN project_permission pp2
+      LEFT JOIN biohub.project_permission pp2
         ON pp2.project_permission_id = prp.project_permission_id
-      LEFT JOIN "system_user" su
+      LEFT JOIN biohub."system_user" su
         ON pp.system_user_id = su.system_user_id
       LEFT JOIN
-        system_user_role sur
+        biohub.system_user_role sur
         ON su.system_user_id = sur.system_user_id
       LEFT JOIN
-        system_role sr
+        biohub.system_role sr
         ON sur.system_role_id = sr.system_role_id
       LEFT JOIN
-        user_identity_source uis
+        biohub.user_identity_source uis
         ON uis.user_identity_source_id = su.user_identity_source_id
       WHERE
         pp.system_user_id = ${systemUserId}
@@ -558,18 +558,18 @@ export class ProjectParticipationRepository extends BaseRepository {
         array_remove(array_agg(pr.name), NULL) AS project_role_names,
         array_remove(array_agg(pp2.name), NULL) as project_role_permissions
       FROM
-        project_participation pp
+        biohub.project_participation pp
       LEFT JOIN
-        project_role pr
+        biohub.project_role pr
         ON pp.project_role_id = pr.project_role_id
       LEFT JOIN
-        project_role_permission prp
+        biohub.project_role_permission prp
         ON pp.project_role_id = prp.project_role_id
       LEFT JOIN
-        project_permission pp2
+        biohub.project_permission pp2
         ON pp2.project_permission_id = prp.project_permission_id
       LEFT JOIN
-        project p
+        biohub.project p
         ON pp.project_id = p.project_id
       WHERE
         pp.system_user_id = ${systemUserId}

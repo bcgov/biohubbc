@@ -12,8 +12,8 @@ metadata:
     "helm.sh/hook-weight": "0"
     "helm.sh/hook-delete-policy": before-hook-creation
 spec:
-  # Allow up to 30 minutes for the migration
-  activeDeadlineSeconds: 1800
+  # Allow up to 90 minutes for large restores (e.g. ~1.8G); connection drops are mitigated by sectioned restore
+  activeDeadlineSeconds: 5400
   backoffLimit: 1
   template:
     metadata:
@@ -39,7 +39,7 @@ spec:
             - name: OLD_DB_ADMIN
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.migration.oldDb.secretName }}
+                  name: {{ quote .Values.migration.oldDb.secretName }}
                   key: {{ .Values.migration.oldDb.adminKey }}
         # Wait for the new Crunchy DB to be ready (host from postgres secret = primary)
         # Secret name uses cluster name (fullnameOverride), not Helm release name.
@@ -58,12 +58,12 @@ spec:
             - name: NEW_DB_HOST
               valueFrom:
                 secretKeyRef:
-                  name: {{ (index .Values "crunchy-postgres").fullnameOverride }}-pguser-postgres
+                  name: {{ quote (printf "%s-pguser-postgres" (include "crunchy-postgres.fullname" .)) }}
                   key: host
             - name: NEW_DB_ADMIN
               valueFrom:
                 secretKeyRef:
-                  name: {{ (index .Values "crunchy-postgres").fullnameOverride }}-pguser-postgres
+                  name: {{ quote (printf "%s-pguser-postgres" (include "crunchy-postgres.fullname" .)) }}
                   key: {{ .Values.migration.newDb.adminUserKey }}
       containers:
         - name: migrate
@@ -141,16 +141,16 @@ spec:
               "
               echo "biohub_api role ready."
 
-              echo "--- Restoring into Crunchy database (postgres superuser; ACLs restored so biohub_api grants apply) ---"
-              pg_restore \
-                -h "$NEW_DB_HOST" \
-                -p 5432 \
-                -U $NEW_DB_ADMIN \
-                -d $NEW_DB_NAME \
-                --no-owner \
-                --clean \
-                --if-exists \
-                /tmp/migration.dump
+              echo "--- Restoring into Crunchy database (sectioned to reduce connection timeout risk) ---"
+              echo "--- Restore schema (pre-data) ---"
+              pg_restore -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN -d $NEW_DB_NAME \
+                --no-owner --section=pre-data -j 4 /tmp/migration.dump
+              echo "--- Restore data ---"
+              pg_restore -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN -d $NEW_DB_NAME \
+                --no-owner --section=data -j 4 /tmp/migration.dump
+              echo "--- Restore indexes, constraints, triggers (post-data) ---"
+              pg_restore -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN -d $NEW_DB_NAME \
+                --no-owner --section=post-data -j 4 /tmp/migration.dump
 
               # Ensure password is set after restore (restore may have overwritten role)
               psql -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN -d $NEW_DB_NAME -v ON_ERROR_STOP=1 -c "ALTER USER biohub_api PASSWORD '${ESCAPED}';"
@@ -179,43 +179,43 @@ spec:
             - name: OLD_DB_ADMIN
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.migration.oldDb.secretName }}
+                  name: {{ quote .Values.migration.oldDb.secretName }}
                   key: {{ .Values.migration.oldDb.adminKey }}
             - name: OLD_DB_ADMIN_PASS
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.migration.oldDb.secretName }}
+                  name: {{ quote .Values.migration.oldDb.secretName }}
                   key: {{ .Values.migration.oldDb.passwordKey }}
             - name: OLD_DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.migration.oldDb.secretName }}
+                  name: {{ quote .Values.migration.oldDb.secretName }}
                   key: {{ .Values.migration.oldDb.dbNameKey }}
             - name: NEW_DB_HOST
               valueFrom:
                 secretKeyRef:
-                  name: {{ (index .Values "crunchy-postgres").fullnameOverride }}-pguser-postgres
+                  name: {{ quote (printf "%s-pguser-postgres" (include "crunchy-postgres.fullname" .)) }}
                   key: host
             - name: NEW_DB_ADMIN
               valueFrom:
                 secretKeyRef:
-                  name: {{ (index .Values "crunchy-postgres").fullnameOverride }}-pguser-postgres
+                  name: {{ quote (printf "%s-pguser-postgres" (include "crunchy-postgres.fullname" .)) }}
                   key: {{ .Values.migration.newDb.adminUserKey }}
             - name: NEW_DB_ADMIN_PASS
               valueFrom:
                 secretKeyRef:
-                  name: {{ (index .Values "crunchy-postgres").fullnameOverride }}-pguser-postgres
+                  name: {{ quote (printf "%s-pguser-postgres" (include "crunchy-postgres.fullname" .)) }}
                   key: {{ .Values.migration.newDb.adminPasswordKey }}
             - name: NEW_DB_NAME
               valueFrom:
                 secretKeyRef:
-                  name: {{ (index .Values "crunchy-postgres").fullnameOverride }}-pguser-{{ (index .Values "crunchy-postgres").fullnameOverride }}
+                  name: {{ quote (printf "%s-pguser-%s" (include "crunchy-postgres.fullname" .) (include "crunchy-postgres.fullname" .)) }}
                   key: dbname
             # Password for biohub_api role; create this secret manually before running migration (valid name: no underscore, e.g. pguser-biohub-api).
             - name: NEW_DB_APP_PASS
               valueFrom:
                 secretKeyRef:
-                  name: {{ (.Values.migration.newDb.appUserSecretName | default (printf "%s-pguser-biohub-api" (index .Values "crunchy-postgres").fullnameOverride)) }}
+                  name: {{ quote (.Values.migration.newDb.appUserSecretName | default (printf "%s-pguser-biohub-api" (include "crunchy-postgres.fullname" .))) }}
                   key: {{ .Values.migration.newDb.appPasswordKey | default "password" }}
           resources:
             requests:
