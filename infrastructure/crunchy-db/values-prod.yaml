@@ -5,8 +5,10 @@ fullnameOverride: biohubbc-db-prod
 
 instances:
   replicas: 2
+  # Storage: 40Gi to allow one-time migration of ~1.8G dump (data + indexes + WAL/temp during restore).
+  # Can reduce after migration if desired, or keep for growth.
   dataVolumeClaimSpec:
-    storage: 20Gi
+    storage: 40Gi
   requests:
     cpu: 100m
     memory: 512Mi

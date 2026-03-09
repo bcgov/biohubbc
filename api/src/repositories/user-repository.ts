@@ -26,7 +26,7 @@ export class UserRepository extends BaseRepository {
       sr.system_role_id,
       sr.name
     FROM
-      system_role sr
+      biohub.system_role sr
     `;
 
     const response = await this.connection.sql<IGetRoles>(sqlStatement);
@@ -57,17 +57,17 @@ export class UserRepository extends BaseRepository {
       su.family_name,
       su.agency
     FROM
-      "system_user" su
+      biohub."system_user" su
     LEFT JOIN
-      system_user_role sur
+      biohub.system_user_role sur
     ON
       su.system_user_id = sur.system_user_id
     LEFT JOIN
-      system_role sr
+      biohub.system_role sr
     ON
       sur.system_role_id = sr.system_role_id
     LEFT JOIN
-      user_identity_source uis
+      biohub.user_identity_source uis
     ON
       uis.user_identity_source_id = su.user_identity_source_id
     WHERE
@@ -119,17 +119,17 @@ export class UserRepository extends BaseRepository {
       su.family_name,
       su.agency
     FROM
-      "system_user" su
+      biohub."system_user" su
     LEFT JOIN
-      system_user_role sur
+      biohub.system_user_role sur
     ON
       su.system_user_id = sur.system_user_id
     LEFT JOIN
-      system_role sr
+      biohub.system_role sr
     ON
       sur.system_role_id = sr.system_role_id
     LEFT JOIN
-      user_identity_source uis
+      biohub.user_identity_source uis
     ON
       uis.user_identity_source_id = su.user_identity_source_id
     WHERE
@@ -177,17 +177,17 @@ export class UserRepository extends BaseRepository {
         su.family_name,
         su.agency
       FROM
-        "system_user" su
+        biohub."system_user" su
       LEFT JOIN
-        system_user_role sur
+        biohub.system_user_role sur
       ON
         su.system_user_id = sur.system_user_id
       LEFT JOIN
-        system_role sr
+        biohub.system_role sr
       ON
         sur.system_role_id = sr.system_role_id
       LEFT JOIN
-        user_identity_source uis
+        biohub.user_identity_source uis
       ON
         uis.user_identity_source_id = su.user_identity_source_id
       WHERE
@@ -236,7 +236,7 @@ export class UserRepository extends BaseRepository {
   ): Promise<{ system_user_id: number }> {
     const sqlStatement = SQL`
     INSERT INTO
-      "system_user"
+      biohub."system_user"
     (
       user_guid,
       user_identity_source_id,
@@ -253,7 +253,7 @@ export class UserRepository extends BaseRepository {
         SELECT
           user_identity_source_id
         FROM
-          user_identity_source
+          biohub.user_identity_source
         WHERE
           name = ${identitySource.toUpperCase()}
       ),
@@ -302,10 +302,10 @@ export class UserRepository extends BaseRepository {
         'su.family_name',
         'su.agency'
       )
-      .from('system_user as su')
-      .leftJoin('system_user_role as sur', 'su.system_user_id', 'sur.system_user_id')
-      .leftJoin('system_role as sr', 'sur.system_role_id', 'sr.system_role_id')
-      .leftJoin('user_identity_source as uis', 'su.user_identity_source_id', 'uis.user_identity_source_id')
+      .from('biohub.system_user as su')
+      .leftJoin('biohub.system_user_role as sur', 'su.system_user_id', 'sur.system_user_id')
+      .leftJoin('biohub.system_role as sr', 'sur.system_role_id', 'sr.system_role_id')
+      .leftJoin('biohub.user_identity_source as uis', 'su.user_identity_source_id', 'uis.user_identity_source_id')
       .whereNotIn('uis.name', [SYSTEM_IDENTITY_SOURCE.DATABASE, SYSTEM_IDENTITY_SOURCE.SYSTEM])
       .groupBy(
         'su.system_user_id',
@@ -401,7 +401,7 @@ export class UserRepository extends BaseRepository {
   async activateSystemUser(systemUserId: number) {
     const sqlStatement = SQL`
       UPDATE
-        "system_user"
+        biohub."system_user"
       SET
         record_end_date = NULL
       WHERE
@@ -433,7 +433,7 @@ export class UserRepository extends BaseRepository {
   async deleteSystemUser(systemUserId: number) {
     const sqlStatement = SQL`
       DELETE FROM
-        "system_user"
+        biohub."system_user"
       WHERE
         system_user_id = ${systemUserId}
       RETURNING
@@ -459,7 +459,7 @@ export class UserRepository extends BaseRepository {
   async deactivateSystemUser(systemUserId: number) {
     const sqlStatement = SQL`
       UPDATE
-        "system_user"
+        biohub."system_user"
       SET
         record_end_date = now()
       WHERE
@@ -487,7 +487,7 @@ export class UserRepository extends BaseRepository {
   async deleteUserSystemRoles(systemUserId: number) {
     const sqlStatement = SQL`
       DELETE FROM
-        system_user_role
+        biohub.system_user_role
       WHERE
         system_user_id = ${systemUserId}
       RETURNING
@@ -506,7 +506,7 @@ export class UserRepository extends BaseRepository {
   async deleteAdministrativeActivities(systemUserId: number) {
     const sqlStatement = SQL`
         DELETE FROM
-          administrative_activity
+          biohub.administrative_activity
         WHERE
           reported_system_user_id = ${systemUserId}
         OR 
@@ -527,7 +527,7 @@ export class UserRepository extends BaseRepository {
    */
   async addUserSystemRoles(systemUserId: number, roleIds: number[]) {
     const sqlStatement = SQL`
-    INSERT INTO system_user_role (
+    INSERT INTO biohub.system_user_role (
       system_user_id,
       system_role_id
     ) VALUES `;
@@ -563,12 +563,12 @@ export class UserRepository extends BaseRepository {
    */
   async addUserSystemRoleByName(systemUserId: number, roleName: string) {
     const sqlStatement = SQL`
-    INSERT INTO system_user_role (
+    INSERT INTO biohub.system_user_role (
       system_user_id,
       system_role_id
     ) VALUES (
       ${systemUserId},
-      (SELECT system_role_id FROM system_role WHERE name = ${roleName})
+      (SELECT system_role_id FROM biohub.system_role WHERE name = ${roleName})
     );
   `;
 
@@ -585,7 +585,7 @@ export class UserRepository extends BaseRepository {
   async deleteAllProjectRoles(systemUserId: number) {
     const sqlStatement = SQL`
       DELETE FROM
-        project_participation
+        biohub.project_participation
       WHERE
         system_user_id = ${systemUserId}
       RETURNING
@@ -621,10 +621,10 @@ export class UserRepository extends BaseRepository {
         'su.family_name',
         'su.agency'
       )
-      .from('system_user AS su')
-      .leftJoin('system_user_role AS sur', 'su.system_user_id', 'sur.system_user_id')
-      .leftJoin('system_role AS sr', 'sur.system_role_id', 'sr.system_role_id')
-      .leftJoin('user_identity_source AS uis', 'su.user_identity_source_id', 'uis.user_identity_source_id');
+      .from('biohub.system_user AS su')
+      .leftJoin('biohub.system_user_role AS sur', 'su.system_user_id', 'sur.system_user_id')
+      .leftJoin('biohub.system_role AS sr', 'sur.system_role_id', 'sr.system_role_id')
+      .leftJoin('biohub.user_identity_source AS uis', 'su.user_identity_source_id', 'uis.user_identity_source_id');
 
     if (searchCriteria.keyword) {
       const keywords = searchCriteria.keyword.split(' ');
