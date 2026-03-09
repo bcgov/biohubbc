@@ -152,7 +152,6 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
 
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.OBSERVATION;
-    // Single-value properties (first item only) collapsed from observation_environmental_condition children
     let environmental_condition: string | null = null;
     let environmental_condition_value: string | null = null;
     if ('qualitative_environments' in observationRecord && observationRecord.qualitative_environments?.[0]) {
@@ -169,7 +168,6 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
       environmental_condition_value = `${env.value}${unitSuffix}`;
     }
 
-    // Single-value properties (first subcount / first measurement only) collapsed from observation_subcount + observation_subcount_measurement
     let subcount_comment: string | null = null;
     let subcount_count: number | null = null;
     let subcount_measurement_type: string | null = null;
@@ -687,7 +685,6 @@ export class PostSampleTechniqueToBiohubObject implements BioHubSubmissionFeatur
       attractant_name: `code::attractant_lookup::${attractant.attractant_lookup_id}`
     }));
 
-    // Single-value properties (first item only) collapsed from sample_technique_detail
     let method_attribute: string | null = null;
     let method_value: string | null = null;
     const firstAttrib = samplingTechniqueRecord.attribute_data?.find(
@@ -705,7 +702,6 @@ export class PostSampleTechniqueToBiohubObject implements BioHubSubmissionFeatur
       }
     }
 
-    // Single-value properties (first item only) collapsed from sample_technique_vantage
     let vantage_method_attribute: string | null = null;
     let vantage_method_value: string | null = null;
     const firstVantage = samplingTechniqueRecord.vantage_data?.find(
