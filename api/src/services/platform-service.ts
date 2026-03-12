@@ -664,8 +664,10 @@ export class PlatformService extends DBService {
     onComplete: () => void
   ): void {
     blocksByType.forEach((blocks, type) => {
-      const fileName = `${type}.json`;
-      const fileContent = Buffer.from(JSON.stringify(blocks, null, 2));
+      const fileName = type === 'codeset' ? 'codes/codeset.json' : `features/${type}.json`;
+      const payload =
+        type === 'codeset' && blocks.length > 0 && blocks[0].properties !== undefined ? blocks[0].properties : blocks;
+      const fileContent = Buffer.from(JSON.stringify(payload, null, 2));
       this._addFileToArchive(pack, datasetId, fileName, fileContent, onComplete);
     });
   }
