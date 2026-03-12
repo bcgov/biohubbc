@@ -5,6 +5,7 @@ import path from 'node:path';
 import qs from 'qs';
 import * as tarStream from 'tar-stream';
 import { URL } from 'url';
+import { z } from 'zod';
 import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
 import { formatAxiosError } from '../errors/axios-error';
@@ -76,6 +77,25 @@ const getBackboneTaxonTsnPath = () => getEnvironmentVariable('BIOHUB_TAXON_TSN_P
 const getBackboneTaxonPath = () => getEnvironmentVariable('BIOHUB_TAXON_PATH');
 const getBackboneSubmissionUploadPath = () => getEnvironmentVariable('BACKBONE_SUBMISSION_UPLOAD_PATH');
 const getBackboneUploadCompletePath = () => getEnvironmentVariable('BACKBONE_UPLOAD_COMPLETE_PATH');
+const uuidSchema = z.string().uuid();
+
+interface IBioHubSubmissionHistoryRow {
+  submissionUploadId: string;
+  status: string;
+  createDate: string;
+}
+
+interface IBioHubWrappedSubmissionHistoryResponse {
+  submissionId: number;
+  history: IBioHubSubmissionHistoryRow[];
+}
+
+export interface ISubmissionHistoryRow {
+  submissionUploadId: string;
+  status: string;
+  createDate: string;
+  submissionId?: number;
+}
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
@@ -260,7 +280,7 @@ export class PlatformService extends DBService {
     const tarFileSize = fs.statSync(tarFilePath).size;
 
     // Step 1: Initiate upload and get presigned URLs
-    const { uploadId, s3UploadId, key, presignedUrls, partCount, submissionId, submissionUuid } =
+    const { uploadId, s3UploadId, key, presignedUrls, partCount, submissionId, submissionUploadId } =
       await this._initiateSubmissionUpload(
         token,
         tarFileSize,
@@ -274,7 +294,7 @@ export class PlatformService extends DBService {
       message: 'Initiated multipart upload',
       uploadId,
       submissionId,
-      submissionUuid: submissionUuid ?? '(none)',
+      submissionUploadId,
       partCount
     });
 
@@ -310,14 +330,13 @@ export class PlatformService extends DBService {
       }
     }
 
-    // Insert or update publish history record (re-publish uses existing submission_uuid).
-    const submissionUuidToStore = existingSubmissionUuid ?? submissionUuid ?? String(submissionId);
+    // Insert or update publish history record using the UUID returned by BioHub.
     await this.historyPublishService.insertSurveyMetadataPublishRecord({
       survey_id: surveyId,
-      submission_uuid: submissionUuidToStore
+      submission_uuid: submissionId
     });
 
-    return { submission_uuid: submissionUuidToStore };
+    return { submission_uuid: submissionId };
   }
 
   /**
@@ -861,7 +880,7 @@ export class PlatformService extends DBService {
    * @param {PostSurveySubmissionToBioHubObject} surveyDataPackage - Survey data package
    * @param {string} submissionComment - Comment for the submission
    * @param {string | null} existingSubmissionUuid - When set, initiate upload for this existing submission (re-publish)
-   * @return {*}  {Promise<{uploadId: string, s3UploadId: string, key: string, presignedUrls: Array<{partNumber: number, url: string}>, partCount: number, submissionId: number, submissionUuid?: string}>}
+   * @return {*}  {Promise<{uploadId: string, s3UploadId: string, key: string, presignedUrls: Array<{partNumber: number, url: string}>, partCount: number, submissionId: string, submissionUploadId: string}>}
    * @memberof PlatformService
    */
   async _initiateSubmissionUpload(
@@ -869,15 +888,15 @@ export class PlatformService extends DBService {
     tarFileSize: number,
     surveyDataPackage: PostSurveySubmissionToBioHubObject,
     submissionComment: string,
-    existingSubmissionUuid: string | null = null
+    existingSubmissionUuid: string | null
   ): Promise<{
     uploadId: string;
     s3UploadId: string;
     key: string;
     presignedUrls: Array<{ partNumber: number; url: string }>;
     partCount: number;
-    submissionId: number;
-    submissionUuid?: string;
+    submissionId: string;
+    submissionUploadId: string;
   }> {
     defaultLog.debug({
       label: '_initiateSubmissionUpload',
@@ -913,9 +932,9 @@ export class PlatformService extends DBService {
 
     try {
       const response = await axios.post<{
-        submissionId: number;
+        submissionId: string;
+        submissionUploadId: string;
         uploadId: string;
-        submissionUuid?: string;
         s3UploadId: string;
         uploadArchiveId: string;
         key: string;
@@ -933,8 +952,8 @@ export class PlatformService extends DBService {
         label: '_initiateSubmissionUpload',
         message: 'Received presigned URLs',
         submissionId: response.data.submissionId,
+        submissionUploadId: response.data.submissionUploadId,
         uploadId: response.data.uploadId,
-        submissionUuid: response.data.submissionUuid ?? '(none)',
         partCount: response.data.partCount
       });
 
@@ -943,9 +962,15 @@ export class PlatformService extends DBService {
         message: 'BioHub initiate response (full)',
         uploadId: response.data.uploadId,
         submissionId: response.data.submissionId,
-        submissionUuid: response.data.submissionUuid,
+        submissionUploadId: response.data.submissionUploadId,
         fullResponse: response.data
       });
+
+      const submissionId = this._requireUuid(response.data.submissionId, 'BioHub response submissionId');
+      const submissionUploadId = this._requireUuid(
+        response.data.submissionUploadId,
+        'BioHub response submissionUploadId'
+      );
 
       return {
         uploadId: response.data.uploadId,
@@ -953,8 +978,8 @@ export class PlatformService extends DBService {
         key: response.data.key,
         presignedUrls: response.data.presignedUrls,
         partCount: response.data.partCount,
-        submissionId: response.data.submissionId,
-        ...(response.data.submissionUuid && { submissionUuid: response.data.submissionUuid })
+        submissionId,
+        submissionUploadId
       };
     } catch (error) {
       defaultLog.error({
@@ -1160,27 +1185,37 @@ export class PlatformService extends DBService {
   }
 
   /**
+   * Validates a UUID path parameter before constructing downstream URLs.
+   *
+   * @param {string} value
+   * @param {string} fieldName
+   * @return {string}
+   * @memberof PlatformService
+   */
+  _requireUuid(value: string, fieldName: string): string {
+    const parsed = uuidSchema.safeParse(value);
+    if (!parsed.success) {
+      throw new ApiError(ApiErrorType.UNKNOWN, `Invalid ${fieldName}: expected uuid`);
+    }
+
+    return parsed.data;
+  }
+
+  /**
    * Get submission upload history from BioHub.
    *
    * @param {string} submissionId - Submission UUID
-   * @return {*}  {Promise<Array<{ submissionUploadId: string; status: string; createDate: string; id?: number }>>}
+   * @return {*}  {Promise<ISubmissionHistoryRow[]>}
    * @memberof PlatformService
    */
-  async getSubmissionHistory(
-    submissionId: string
-  ): Promise<Array<{ submissionUploadId: string; status: string; createDate: string; id?: number }>> {
+  async getSubmissionHistory(submissionId: string): Promise<ISubmissionHistoryRow[]> {
     const keycloakService = new KeycloakService();
     const token = await keycloakService.getKeycloakServiceToken();
-    const url = new URL(`/submission/${submissionId}/history`, getBackboneInternalApiHost()).href;
+    const validatedSubmissionId = this._requireUuid(submissionId, 'submissionId');
+    const url = new URL(`/submission/${validatedSubmissionId}/history`, getBackboneInternalApiHost()).href;
 
     try {
-      const response = await axios.get<
-        | Array<{ submissionUploadId: string; status: string; createDate: string; id?: number }>
-        | {
-            submissionId?: number;
-            history?: Array<{ submissionUploadId: string; status: string; createDate: string; id?: number }>;
-          }
-      >(url, {
+      const response = await axios.get<IBioHubSubmissionHistoryRow[] | IBioHubWrappedSubmissionHistoryResponse>(url, {
         headers: {
           authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -1190,15 +1225,13 @@ export class PlatformService extends DBService {
       if (Array.isArray(data)) {
         return data ?? [];
       }
-      const history = data?.history ?? [];
-      const submissionIdFromResponse =
-        data && typeof data === 'object' && 'submissionId' in data
-          ? (data as { submissionId?: number }).submissionId
-          : undefined;
-      if (submissionIdFromResponse != null && history.length > 0) {
-        return history.map((item) => ({ ...item, id: item.id ?? submissionIdFromResponse }));
-      }
-      return history;
+
+      return (data.history ?? []).map((item) => ({
+        submissionUploadId: item.submissionUploadId,
+        status: item.status,
+        createDate: item.createDate,
+        submissionId: data.submissionId
+      }));
     } catch (error) {
       defaultLog.error({
         label: 'getSubmissionHistory',
@@ -1221,7 +1254,12 @@ export class PlatformService extends DBService {
   async deleteSubmissionUpload(submissionId: string, submissionUploadId: string): Promise<void> {
     const keycloakService = new KeycloakService();
     const token = await keycloakService.getKeycloakServiceToken();
-    const url = new URL(`/submission/${submissionId}/upload/${submissionUploadId}`, getBackboneInternalApiHost()).href;
+    const validatedSubmissionId = this._requireUuid(submissionId, 'submissionId');
+    const validatedSubmissionUploadId = this._requireUuid(submissionUploadId, 'submissionUploadId');
+    const url = new URL(
+      `/submission/${validatedSubmissionId}/upload/${validatedSubmissionUploadId}`,
+      getBackboneInternalApiHost()
+    ).href;
 
     try {
       await axios.delete(url, {

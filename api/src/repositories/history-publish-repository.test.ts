@@ -210,7 +210,7 @@ describe('HistoryPublishRepository', () => {
     });
   });
 
-  describe('getSurveyMetadataPublishRecordBySubmissionUuid', () => {
+  describe('findSurveyMetadataPublishRecordBySubmissionUuid', () => {
     it('should return a record when one exists', async () => {
       const submissionUuid = '550e8400-e29b-41d4-a716-446655440000';
       const mockRow = {
@@ -223,7 +223,7 @@ describe('HistoryPublishRepository', () => {
       });
 
       const repository = new HistoryPublishRepository(mockConnection);
-      const response = await repository.getSurveyMetadataPublishRecordBySubmissionUuid(submissionUuid);
+      const response = await repository.findSurveyMetadataPublishRecordBySubmissionUuid(submissionUuid);
 
       expect(response).to.be.eql(mockRow);
     });
@@ -234,7 +234,7 @@ describe('HistoryPublishRepository', () => {
       });
 
       const repository = new HistoryPublishRepository(mockConnection);
-      const response = await repository.getSurveyMetadataPublishRecordBySubmissionUuid(
+      const response = await repository.findSurveyMetadataPublishRecordBySubmissionUuid(
         '550e8400-e29b-41d4-a716-446655440000'
       );
 

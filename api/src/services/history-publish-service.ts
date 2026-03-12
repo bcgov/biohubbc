@@ -71,8 +71,8 @@ export class HistoryPublishService extends DBService {
    * @return {*}  {(Promise<SurveyMetadataPublish | null>)}
    * @memberof HistoryPublishService
    */
-  async getSurveyMetadataPublishRecordBySubmissionUuid(submissionUuid: string): Promise<SurveyMetadataPublish | null> {
-    return this.historyRepository.getSurveyMetadataPublishRecordBySubmissionUuid(submissionUuid);
+  async findSurveyMetadataPublishRecordBySubmissionUuid(submissionUuid: string): Promise<SurveyMetadataPublish | null> {
+    return this.historyRepository.findSurveyMetadataPublishRecordBySubmissionUuid(submissionUuid);
   }
 
   /**

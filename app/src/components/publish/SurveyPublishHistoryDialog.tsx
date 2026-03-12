@@ -226,13 +226,9 @@ const SurveyPublishHistoryDialog = (props: ISurveyPublishHistoryDialogProps) => 
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
         {actionMenuAnchor?.row.status === 'approved' && (
           <MenuItem
-            disabled={actionMenuAnchor.row.id == null}
             onClick={() => {
-              if (actionMenuAnchor.row.id == null) {
-                return;
-              }
               const base = (config.BACKBONE_PUBLIC_WEB_HOST || '').replace(/\/$/, '');
-              const url = `${base}/submissions/${actionMenuAnchor.row.id}`;
+              const url = `${base}/submissions/${actionMenuAnchor.row.submissionId}`;
               window.open(url, '_blank', 'noopener,noreferrer');
               setActionMenuAnchor(null);
             }}>

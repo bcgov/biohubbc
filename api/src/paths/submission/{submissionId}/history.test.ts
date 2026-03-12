@@ -8,8 +8,7 @@ import { HistoryPublishService } from '../../../services/history-publish-service
 import { PlatformService } from '../../../services/platform-service';
 import { KeycloakUserInformation } from '../../../utils/keycloak-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
-import { resolveSubmissionToSurvey } from '../resolveSubmissionToSurvey';
-import { GET, getSubmissionHistory } from './history';
+import { GET, getSubmissionHistory, resolveSubmissionToSurvey } from './history';
 
 chai.use(sinonChai);
 
@@ -42,7 +41,7 @@ describe('submission/{submissionId}/history', () => {
     it('returns 404 when submission has no publish record', async () => {
       const dbConnectionObj = getMockDBConnection();
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-      sinon.stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecordBySubmissionUuid').resolves(null);
+      sinon.stub(HistoryPublishService.prototype, 'findSurveyMetadataPublishRecordBySubmissionUuid').resolves(null);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
       mockReq.params = { submissionId: '550e8400-e29b-41d4-a716-446655440000' };
@@ -59,7 +58,7 @@ describe('submission/{submissionId}/history', () => {
       const dbConnectionObj = getMockDBConnection();
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
       sinon
-        .stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecordBySubmissionUuid')
+        .stub(HistoryPublishService.prototype, 'findSurveyMetadataPublishRecordBySubmissionUuid')
         .resolves({ survey_id: 42 } as any);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -87,7 +86,7 @@ describe('submission/{submissionId}/history', () => {
           submissionUploadId: 'upload-uuid-1',
           status: 'submitted',
           createDate: '2024-01-01T00:00:00Z',
-          id: 123
+          submissionId: 123
         }
       ];
       sinon.stub(PlatformService.prototype, 'getSubmissionHistory').resolves(mockHistory);

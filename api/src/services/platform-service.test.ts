@@ -208,15 +208,15 @@ describe('PlatformService', () => {
       sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
       sinon.stub(fs, 'unlinkSync').callsFake(() => {});
 
-      const submissionUuidFromApi = '550e8400-e29b-41d4-a716-446655440001';
+      const submissionIdFromApi = '550e8400-e29b-41d4-a716-446655440001';
       const mockUploadResponse = {
         uploadId: 'upload-123-456-789',
         s3UploadId: 's3-upload-id',
         key: 's3-key',
         presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url' }],
         partCount: 1,
-        submissionId: 42,
-        submissionUuid: submissionUuidFromApi
+        submissionId: submissionIdFromApi,
+        submissionUploadId: '660e8400-e29b-41d4-a716-446655440001'
       };
 
       const _initiateSubmissionUploadStub = sinon
@@ -250,9 +250,9 @@ describe('PlatformService', () => {
       );
       expect(insertSurveyMetadataPublishRecordStub).to.have.been.calledOnceWith({
         survey_id: 1,
-        submission_uuid: submissionUuidFromApi
+        submission_uuid: submissionIdFromApi
       });
-      expect(response).to.eql({ submission_uuid: submissionUuidFromApi });
+      expect(response).to.eql({ submission_uuid: submissionIdFromApi });
     });
 
     it('should use re-publish endpoint and existing submission_uuid when survey was previously published', async () => {
@@ -288,7 +288,8 @@ describe('PlatformService', () => {
         key: 's3-key',
         presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url' }],
         partCount: 1,
-        submissionId: 42
+        submissionId: existingSubmissionUuid,
+        submissionUploadId: '660e8400-e29b-41d4-a716-446655440002'
       };
 
       const _initiateSubmissionUploadStub = sinon
@@ -594,7 +595,8 @@ describe('PlatformService', () => {
         key: 's3-key',
         presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url' }],
         partCount: 1,
-        submissionId: 42
+        submissionId: '550e8400-e29b-41d4-a716-446655440001',
+        submissionUploadId: '660e8400-e29b-41d4-a716-446655440003'
       };
 
       sinon.stub(PlatformService.prototype, '_initiateSubmissionUpload').resolves(mockUploadResponse);
@@ -935,7 +937,8 @@ describe('PlatformService', () => {
 
       const mockResponse = {
         data: {
-          submissionId: 42,
+          submissionId: '550e8400-e29b-41d4-a716-446655440001',
+          submissionUploadId: '660e8400-e29b-41d4-a716-446655440004',
           uploadId: 'upload-123',
           s3UploadId: 's3-upload-id',
           uploadArchiveId: 'archive-id',
@@ -956,7 +959,7 @@ describe('PlatformService', () => {
         description: 'Test Description'
       } as any;
 
-      const result = await platformService._initiateSubmissionUpload('token', 1024, surveyDataPackage, 'comment');
+      const result = await platformService._initiateSubmissionUpload('token', 1024, surveyDataPackage, 'comment', null);
 
       expect(axiosPostStub).to.have.been.calledOnce;
       expect(axiosPostStub.getCall(0).args[1]).to.deep.equal({
@@ -973,7 +976,8 @@ describe('PlatformService', () => {
         key: 's3-key',
         presignedUrls: mockResponse.data.presignedUrls,
         partCount: 2,
-        submissionId: 42
+        submissionId: '550e8400-e29b-41d4-a716-446655440001',
+        submissionUploadId: '660e8400-e29b-41d4-a716-446655440004'
       });
     });
 
@@ -987,7 +991,8 @@ describe('PlatformService', () => {
 
       const mockResponse = {
         data: {
-          submissionId: 42,
+          submissionId: existingSubmissionUuid,
+          submissionUploadId: '660e8400-e29b-41d4-a716-446655440005',
           uploadId: 'upload-123',
           s3UploadId: 's3-upload-id',
           uploadArchiveId: 'archive-id',
@@ -1028,6 +1033,42 @@ describe('PlatformService', () => {
       });
     });
 
+    it('should throw when initiate response has invalid submission UUID values', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+      process.env.BACKBONE_SUBMISSION_UPLOAD_PATH = '/api/submission';
+
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const mockResponse = {
+        data: {
+          submissionId: 'not-a-uuid',
+          submissionUploadId: 'also-not-a-uuid',
+          uploadId: 'upload-123',
+          s3UploadId: 's3-upload-id',
+          uploadArchiveId: 'archive-id',
+          key: 's3-key',
+          partSizeBytes: 5242880,
+          partCount: 2,
+          presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/url1' }]
+        }
+      };
+
+      sinon.stub(axios, 'post').resolves(mockResponse);
+
+      const surveyDataPackage = {
+        name: 'Test Survey',
+        description: 'Test Description'
+      } as any;
+
+      try {
+        await platformService._initiateSubmissionUpload('token', 1024, surveyDataPackage, 'comment', null);
+        expect.fail('Should have thrown');
+      } catch (error) {
+        expect((error as Error).message).to.include('Failed to initiate submission upload to BioHub');
+      }
+    });
+
     it('should throw error when file size exceeds maximum', async () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
@@ -1041,7 +1082,7 @@ describe('PlatformService', () => {
       } as any;
 
       try {
-        await platformService._initiateSubmissionUpload('token', 1073741825, surveyDataPackage, 'comment');
+        await platformService._initiateSubmissionUpload('token', 1073741825, surveyDataPackage, 'comment', null);
         expect.fail('Should have thrown an error');
       } catch (error) {
         expect((error as Error).message).to.include('exceeds maximum allowed size');
@@ -1063,7 +1104,7 @@ describe('PlatformService', () => {
       } as any;
 
       try {
-        await platformService._initiateSubmissionUpload('token', 1024, surveyDataPackage, 'comment');
+        await platformService._initiateSubmissionUpload('token', 1024, surveyDataPackage, 'comment', null);
         expect.fail('Should have thrown an error');
       } catch (error) {
         expect((error as Error).message).to.include('Failed to initiate submission upload to BioHub');
@@ -1139,7 +1180,7 @@ describe('PlatformService', () => {
           submissionUploadId: 'upload-uuid-1',
           status: 'submitted',
           createDate: '2024-01-01T00:00:00Z',
-          id: 123
+          submissionId: 123
         }
       ];
 
@@ -1178,7 +1219,7 @@ describe('PlatformService', () => {
       const result = await platformService.getSubmissionHistory(submissionId);
 
       expect(result).to.have.length(1);
-      expect(result[0].id).to.equal(bioHubId);
+      expect(result[0].submissionId).to.equal(bioHubId);
       expect(result[0].submissionUploadId).to.equal('upload-uuid-1');
     });
 
@@ -1212,7 +1253,7 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(mockDBConnection);
 
       const submissionId = '550e8400-e29b-41d4-a716-446655440000';
-      const submissionUploadId = 'upload-uuid-123';
+      const submissionUploadId = '550e8400-e29b-41d4-a716-446655440001';
 
       sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
       const axiosStub = sinon.stub(axios, 'delete').resolves({ status: 204 });
@@ -1233,7 +1274,10 @@ describe('PlatformService', () => {
       sinon.stub(axios, 'delete').rejects(new Error('Network error'));
 
       try {
-        await platformService.deleteSubmissionUpload('550e8400-e29b-41d4-a716-446655440000', 'upload-uuid-123');
+        await platformService.deleteSubmissionUpload(
+          '550e8400-e29b-41d4-a716-446655440000',
+          '550e8400-e29b-41d4-a716-446655440001'
+        );
         expect.fail('Should have thrown');
       } catch (error) {
         expect((error as ApiError).message).to.equal('Failed to delete submission upload in BioHub');
