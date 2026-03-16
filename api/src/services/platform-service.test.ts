@@ -404,14 +404,16 @@ describe('PlatformService', () => {
             {
               id: 'child-1',
               type: 'species_observation',
-              properties: { count: 5 },
-              child_features: [
-                {
-                  id: 'grandchild-1',
-                  type: 'observation_subcount',
-                  properties: { subcount: 2 }
-                }
-              ]
+              properties: {
+                count: 5,
+                environmental_condition: null,
+                environmental_condition_value: null,
+                subcount_comment: null,
+                subcount_count: null,
+                subcount_measurement_type: null,
+                subcount_measurement_value: null
+              },
+              child_features: []
             }
           ]
         }
@@ -419,7 +421,7 @@ describe('PlatformService', () => {
 
       const result = platformService._flattenToBlockModel(nestedData);
 
-      expect(result).to.have.length(3);
+      expect(result).to.have.length(2);
       expect(result.find((b) => b.id === 'root-id')).to.deep.include({
         id: 'root-id',
         type: 'dataset',
@@ -430,12 +432,6 @@ describe('PlatformService', () => {
         id: 'child-1',
         type: 'species_observation',
         parent: 'root-id',
-        content: ['grandchild-1']
-      });
-      expect(result.find((b) => b.id === 'grandchild-1')).to.deep.include({
-        id: 'grandchild-1',
-        type: 'observation_subcount',
-        parent: 'child-1',
         content: []
       });
     });

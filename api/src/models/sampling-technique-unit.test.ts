@@ -48,6 +48,12 @@ describe('PostSampleTechniqueToBiohubObject Unit Test', () => {
       { attractant_name: 'code::attractant_lookup::3' },
       { attractant_name: 'code::attractant_lookup::7' }
     ]);
-    expect(techniqueObj.child_features).to.be.an('array').with.length(3);
+    expect(techniqueObj.properties.method_attribute).to.equal(
+      'code::technique_attribute_qualitative::e0479006-f5ee-40cf-a33b-c1ffce393bf4'
+    );
+    expect(techniqueObj.properties.method_value).to.equal('code::technique_attribute_qualitative_option::20');
+    expect(techniqueObj.properties.vantage_method_attribute).to.equal('code::vantage_category::1');
+    expect(techniqueObj.properties.vantage_method_value).to.equal('code::vantage::5');
+    expect(techniqueObj.child_features).to.be.an('array').with.length(0);
   });
 });

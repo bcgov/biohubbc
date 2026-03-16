@@ -6,13 +6,11 @@ import { SurveyObservationRecord } from '../database-models/survey_observation';
 import { ICritterDetailed } from '../services/critterbase-service';
 import {
   PostSurveyAnimalToBiohubObject,
-  PostSurveyEnvironmentalConditionToBiohubObject,
   PostSurveyMarkingToBiohubObject,
   PostSurveyMeasurementToBiohubObject,
   PostSurveyMortalityToBiohubObject,
   PostSurveyObservationToBiohubObject,
   PostSurveyReleaseToBiohubObject,
-  PostSurveySubcountToBiohubObject,
   PostSurveySubmissionToBioHubObject,
   PostSurveyToBiohubObject
 } from './biohub-create';
@@ -68,11 +66,17 @@ describe('PostSurveyObservationToBiohubObject', () => {
               properties: {}
             }
           ]
-        }
+        },
+        environmental_condition: null,
+        environmental_condition_value: null,
+        subcount_comment: null,
+        subcount_count: null,
+        subcount_measurement_type: null,
+        subcount_measurement_value: null
       });
     });
 
-    it('sets child_features to empty array when no environmental data', () => {
+    it('sets child_features to empty array', () => {
       expect(data.child_features).to.eql([]);
     });
   });
@@ -113,22 +117,12 @@ describe('PostSurveyObservationToBiohubObject', () => {
       data = new PostSurveyObservationToBiohubObject(objWithEnvironments);
     });
 
-    it('creates environmental condition child features', () => {
-      expect(data.child_features).to.have.length(2);
-
-      const qualitativeEnvFeature = data.child_features[0];
-      expect(qualitativeEnvFeature.type).to.equal('observation_environmental_condition');
-      expect(qualitativeEnvFeature.properties).to.eql({
-        environmental_condition: 'code::environment_qualitative::env-qual-uuid-1',
-        environmental_condition_value: 'code::environment_qualitative_option::env-qual-opt-uuid-1'
-      });
-
-      const quantitativeEnvFeature = data.child_features[1];
-      expect(quantitativeEnvFeature.type).to.equal('observation_environmental_condition');
-      expect(quantitativeEnvFeature.properties).to.eql({
-        environmental_condition: 'code::environment_quantitative::env-quant-uuid-1',
-        environmental_condition_value: '25.5'
-      });
+    it('creates environmental_condition and environmental_condition_value on properties (first only)', () => {
+      expect(data.properties.environmental_condition).to.equal('code::environment_qualitative::env-qual-uuid-1');
+      expect(data.properties.environmental_condition_value).to.equal(
+        'code::environment_qualitative_option::env-qual-opt-uuid-1'
+      );
+      expect(data.child_features).to.eql([]);
     });
   });
 
@@ -202,22 +196,10 @@ describe('PostSurveyObservationToBiohubObject', () => {
       data = new PostSurveyObservationToBiohubObject(objWithEnvironments, environmentDefinitions);
     });
 
-    it('creates environmental condition child features with human-readable names', () => {
-      expect(data.child_features).to.have.length(2);
-
-      const qualitativeEnvFeature = data.child_features[0];
-      expect(qualitativeEnvFeature.type).to.equal('observation_environmental_condition');
-      expect(qualitativeEnvFeature.properties).to.eql({
-        environmental_condition: 'code::environment_qualitative::temp-category-uuid',
-        environmental_condition_value: 'code::environment_qualitative_option::cold-uuid'
-      });
-
-      const quantitativeEnvFeature = data.child_features[1];
-      expect(quantitativeEnvFeature.type).to.equal('observation_environmental_condition');
-      expect(quantitativeEnvFeature.properties).to.eql({
-        environmental_condition: 'code::environment_quantitative::wind-speed-uuid',
-        environmental_condition_value: '15.2 meter'
-      });
+    it('creates environmental_condition with unit from definitions (first only)', () => {
+      expect(data.properties.environmental_condition).to.equal('code::environment_qualitative::temp-category-uuid');
+      expect(data.properties.environmental_condition_value).to.equal('code::environment_qualitative_option::cold-uuid');
+      expect(data.child_features).to.eql([]);
     });
   });
 
@@ -298,318 +280,12 @@ describe('PostSurveyObservationToBiohubObject', () => {
       data = new PostSurveyObservationToBiohubObject(objWithSubcounts, undefined, measurementDefinitions);
     });
 
-    it('creates subcount child features', () => {
-      expect(data.child_features).to.have.length(2);
-
-      const firstSubcountFeature = data.child_features[0];
-      expect(firstSubcountFeature.type).to.equal('observation_subcount');
-      expect(firstSubcountFeature.properties).to.eql({
-        comment: 'Adult males',
-        count: 5
-      });
-
-      const secondSubcountFeature = data.child_features[1];
-      expect(secondSubcountFeature.type).to.equal('observation_subcount');
-      expect(secondSubcountFeature.properties).to.eql({
-        comment: 'Juveniles',
-        count: 10
-      });
-    });
-  });
-});
-
-describe('PostSurveySubcountToBiohubObject', () => {
-  describe('Qualitative measurement subcount', () => {
-    let data: PostSurveySubcountToBiohubObject;
-
-    const qualitativeSubcountData = {
-      observation_subcount_id: 1,
-      comment: 'Adult males with tracking collars',
-      subcount: 8,
-      qualitative_measurements: [
-        {
-          critterbase_taxon_measurement_id: 'age-class-uuid',
-          critterbase_measurement_qualitative_option_id: 'adult-uuid'
-        }
-      ],
-      quantitative_measurements: []
-    };
-
-    const measurementDefinitions = {
-      qualitative_measurements: [
-        {
-          itis_tsn: 180543 as number | null,
-          taxon_measurement_id: 'age-class-uuid',
-          measurement_name: 'Age Class',
-          measurement_desc: 'Age classification',
-          options: [
-            {
-              qualitative_option_id: 'adult-uuid',
-              option_label: 'Adult',
-              option_value: 1,
-              option_desc: 'Mature individual'
-            }
-          ]
-        }
-      ],
-      quantitative_measurements: []
-    };
-
-    before(() => {
-      data = new PostSurveySubcountToBiohubObject(qualitativeSubcountData, measurementDefinitions);
-    });
-
-    it('sets id', () => {
-      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
-    });
-
-    it('sets type', () => {
-      expect(data.type).to.equal('observation_subcount');
-    });
-
-    it('sets properties for qualitative measurements', () => {
-      expect(data.properties).to.eql({
-        comment: 'Adult males with tracking collars',
-        count: 8
-      });
-    });
-
-    it('sets empty child_features', () => {
+    it('creates subcount and measurement single-value properties (first only)', () => {
+      expect(data.properties.subcount_comment).to.equal('Adult males');
+      expect(data.properties.subcount_count).to.equal(5);
+      expect(data.properties.subcount_measurement_type).to.be.null;
+      expect(data.properties.subcount_measurement_value).to.be.null;
       expect(data.child_features).to.eql([]);
-    });
-  });
-
-  describe('Quantitative measurement subcount', () => {
-    let data: PostSurveySubcountToBiohubObject;
-
-    const quantitativeSubcountData = {
-      observation_subcount_id: 2,
-      comment: 'Weighed individuals',
-      subcount: 3,
-      qualitative_measurements: [],
-      quantitative_measurements: [
-        {
-          critterbase_taxon_measurement_id: 'weight-uuid',
-          value: 45.7
-        }
-      ]
-    };
-
-    const measurementDefinitions = {
-      qualitative_measurements: [],
-      quantitative_measurements: [
-        {
-          itis_tsn: 180701 as number | null,
-          taxon_measurement_id: 'weight-uuid',
-          measurement_name: 'Body Weight',
-          measurement_desc: 'Individual body weight' as string | null,
-          min_value: 0 as number | null,
-          max_value: 200 as number | null,
-          unit: 'kilogram' as 'kilogram' | null
-        }
-      ]
-    };
-
-    before(() => {
-      data = new PostSurveySubcountToBiohubObject(quantitativeSubcountData, measurementDefinitions);
-    });
-
-    it('sets id', () => {
-      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
-    });
-
-    it('sets type', () => {
-      expect(data.type).to.equal('observation_subcount');
-    });
-
-    it('sets properties for quantitative measurements', () => {
-      expect(data.properties).to.eql({
-        comment: 'Weighed individuals',
-        count: 3
-      });
-    });
-
-    it('sets empty child_features', () => {
-      expect(data.child_features).to.have.length(1);
-      const measurementChild = data.child_features[0];
-      expect(measurementChild.type).to.equal('observation_subcount_measurement');
-      expect(measurementChild.properties).to.eql({
-        measurement_type: 'Body Weight',
-        measurement_value: 45.7
-      });
-    });
-  });
-
-  describe('With missing measurement definitions', () => {
-    let qualData: PostSurveySubcountToBiohubObject;
-    let quantData: PostSurveySubcountToBiohubObject;
-
-    before(() => {
-      qualData = new PostSurveySubcountToBiohubObject({
-        observation_subcount_id: 3,
-        comment: 'Unknown measurement type',
-        subcount: 2,
-        qualitative_measurements: [
-          {
-            critterbase_taxon_measurement_id: 'unknown-measurement-uuid',
-            critterbase_measurement_qualitative_option_id: 'unknown-option-uuid'
-          }
-        ],
-        quantitative_measurements: []
-      });
-
-      quantData = new PostSurveySubcountToBiohubObject({
-        observation_subcount_id: 4,
-        comment: 'Unknown quantitative measurement',
-        subcount: 1,
-        qualitative_measurements: [],
-        quantitative_measurements: [
-          {
-            critterbase_taxon_measurement_id: 'unknown-quant-uuid',
-            value: 123.4
-          }
-        ]
-      });
-    });
-
-    it('uses IDs when measurement names are missing for qualitative', () => {
-      expect(qualData.properties).to.eql({
-        comment: 'Unknown measurement type',
-        count: 2
-      });
-    });
-
-    it('uses ID and no unit when missing for quantitative', () => {
-      expect(quantData.properties).to.eql({
-        comment: 'Unknown quantitative measurement',
-        count: 1
-      });
-    });
-  });
-
-  describe('With no measurements', () => {
-    let data: PostSurveySubcountToBiohubObject;
-
-    before(() => {
-      data = new PostSurveySubcountToBiohubObject({
-        observation_subcount_id: 5,
-        comment: 'General count',
-        subcount: 20,
-        qualitative_measurements: [],
-        quantitative_measurements: []
-      });
-    });
-
-    it('uses empty strings when no measurements available', () => {
-      expect(data.properties).to.eql({
-        comment: 'General count',
-        count: 20
-      });
-    });
-  });
-});
-
-describe('PostSurveyEnvironmentalConditionToBiohubObject', () => {
-  describe('Qualitative environmental condition', () => {
-    let data: PostSurveyEnvironmentalConditionToBiohubObject;
-
-    const qualitativeEnvData = {
-      type: 'qualitative' as const,
-      environment_qualitative_id: 'temp-category-uuid',
-      environment_qualitative_option_id: 'warm-uuid',
-      name: 'Temperature Category',
-      option_name: 'Warm'
-    };
-
-    before(() => {
-      data = new PostSurveyEnvironmentalConditionToBiohubObject(qualitativeEnvData);
-    });
-
-    it('sets id', () => {
-      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
-    });
-
-    it('sets type', () => {
-      expect(data.type).to.equal('observation_environmental_condition');
-    });
-
-    it('sets properties for qualitative data', () => {
-      expect(data.properties).to.eql({
-        environmental_condition: 'code::environment_qualitative::temp-category-uuid',
-        environmental_condition_value: 'code::environment_qualitative_option::warm-uuid'
-      });
-    });
-
-    it('sets empty child_features', () => {
-      expect(data.child_features).to.eql([]);
-    });
-  });
-
-  describe('Quantitative environmental condition', () => {
-    let data: PostSurveyEnvironmentalConditionToBiohubObject;
-
-    const quantitativeEnvData = {
-      type: 'quantitative' as const,
-      environment_quantitative_id: 'temperature-uuid',
-      value: 23.5,
-      name: 'Temperature',
-      unit: '°C'
-    };
-
-    before(() => {
-      data = new PostSurveyEnvironmentalConditionToBiohubObject(quantitativeEnvData);
-    });
-
-    it('sets id', () => {
-      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
-    });
-
-    it('sets type', () => {
-      expect(data.type).to.equal('observation_environmental_condition');
-    });
-
-    it('sets properties for quantitative data', () => {
-      expect(data.properties).to.eql({
-        environmental_condition: 'code::environment_quantitative::temperature-uuid',
-        environmental_condition_value: '23.5 °C'
-      });
-    });
-
-    it('sets empty child_features', () => {
-      expect(data.child_features).to.eql([]);
-    });
-  });
-
-  describe('With missing optional fields', () => {
-    let qualData: PostSurveyEnvironmentalConditionToBiohubObject;
-    let quantData: PostSurveyEnvironmentalConditionToBiohubObject;
-
-    before(() => {
-      qualData = new PostSurveyEnvironmentalConditionToBiohubObject({
-        type: 'qualitative',
-        environment_qualitative_id: 'env-qual-uuid',
-        environment_qualitative_option_id: 'env-qual-opt-uuid'
-      });
-
-      quantData = new PostSurveyEnvironmentalConditionToBiohubObject({
-        type: 'quantitative',
-        environment_quantitative_id: 'env-quant-uuid',
-        value: 42
-      });
-    });
-
-    it('uses IDs when names are missing for qualitative', () => {
-      expect(qualData.properties).to.eql({
-        environmental_condition: 'code::environment_qualitative::env-qual-uuid',
-        environmental_condition_value: 'code::environment_qualitative_option::env-qual-opt-uuid'
-      });
-    });
-
-    it('uses ID and no unit when missing for quantitative', () => {
-      expect(quantData.properties).to.eql({
-        environmental_condition: 'code::environment_quantitative::env-quant-uuid',
-        environmental_condition_value: '42'
-      });
     });
   });
 });

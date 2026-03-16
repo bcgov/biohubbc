@@ -152,6 +152,40 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
 
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.OBSERVATION;
+    let environmental_condition: string | null = null;
+    let environmental_condition_value: string | null = null;
+    if ('qualitative_environments' in observationRecord && observationRecord.qualitative_environments?.[0]) {
+      const env = observationRecord.qualitative_environments[0];
+      environmental_condition = `code::environment_qualitative::${env.environment_qualitative_id}`;
+      environmental_condition_value = `code::environment_qualitative_option::${env.environment_qualitative_option_id}`;
+    } else if ('quantitative_environments' in observationRecord && observationRecord.quantitative_environments?.[0]) {
+      const env = observationRecord.quantitative_environments[0];
+      const envDef = environmentDefinitions?.quantitative_environments.find(
+        (def) => def.environment_quantitative_id === env.environment_quantitative_id
+      );
+      const unitSuffix = envDef?.unit ? ' ' + envDef.unit : '';
+      environmental_condition = `code::environment_quantitative::${env.environment_quantitative_id}`;
+      environmental_condition_value = `${env.value}${unitSuffix}`;
+    }
+
+    let subcount_comment: string | null = null;
+    let subcount_count: number | null = null;
+    let subcount_measurement_type: string | null = null;
+    let subcount_measurement_value: number | null = null;
+    if ('subcounts' in observationRecord && observationRecord.subcounts?.[0]) {
+      const subcount = observationRecord.subcounts[0];
+      subcount_comment = subcount.comment;
+      subcount_count = subcount.subcount;
+      if (subcount.quantitative_measurements?.[0]) {
+        const measurement = subcount.quantitative_measurements[0];
+        const measurementDef = measurementDefinitions?.quantitative_measurements.find(
+          (def) => def.taxon_measurement_id === measurement.critterbase_taxon_measurement_id
+        );
+        subcount_measurement_type = measurementDef?.measurement_name || measurement.critterbase_taxon_measurement_id;
+        subcount_measurement_value = measurement.value;
+      }
+    }
+
     this.properties = {
       survey_id: observationRecord.survey_id,
       taxon_id: observationRecord.itis_tsn,
@@ -176,199 +210,14 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
                 }
               ]
             }
-          : null
+          : null,
+      environmental_condition,
+      environmental_condition_value,
+      subcount_comment,
+      subcount_count,
+      subcount_measurement_type,
+      subcount_measurement_value
     };
-
-    // Create environmental condition child features if available
-    const childFeatures: BioHubSubmissionFeature[] = [];
-
-    if ('qualitative_environments' in observationRecord && observationRecord.qualitative_environments) {
-      for (const env of observationRecord.qualitative_environments) {
-        // Find the environment definition to get the name
-        const envDef = environmentDefinitions?.qualitative_environments.find(
-          (def) => def.environment_qualitative_id === env.environment_qualitative_id
-        );
-        const optionDef = envDef?.options.find(
-          (opt) => opt.environment_qualitative_option_id === env.environment_qualitative_option_id
-        );
-
-        childFeatures.push(
-          new PostSurveyEnvironmentalConditionToBiohubObject({
-            type: 'qualitative',
-            environment_qualitative_id: env.environment_qualitative_id,
-            environment_qualitative_option_id: env.environment_qualitative_option_id,
-            name: envDef?.name,
-            option_name: optionDef?.name
-          })
-        );
-      }
-    }
-
-    if ('quantitative_environments' in observationRecord && observationRecord.quantitative_environments) {
-      for (const env of observationRecord.quantitative_environments) {
-        // Find the environment definition to get the name and unit
-        const envDef = environmentDefinitions?.quantitative_environments.find(
-          (def) => def.environment_quantitative_id === env.environment_quantitative_id
-        );
-
-        childFeatures.push(
-          new PostSurveyEnvironmentalConditionToBiohubObject({
-            type: 'quantitative',
-            environment_quantitative_id: env.environment_quantitative_id,
-            value: env.value,
-            name: envDef?.name,
-            unit: envDef?.unit || undefined
-          })
-        );
-      }
-    }
-
-    // Create subcount child features if available
-    if ('subcounts' in observationRecord && observationRecord.subcounts) {
-      for (const subcount of observationRecord.subcounts) {
-        childFeatures.push(new PostSurveySubcountToBiohubObject(subcount, measurementDefinitions));
-      }
-    }
-
-    this.child_features = childFeatures;
-  }
-}
-
-/**
- * Object to be sent to Biohub API for creating an observation subcount.
- *
- * @export
- * @class PostSurveySubcountToBiohubObject
- * @implements {BioHubSubmissionFeature}
- */
-export class PostSurveySubcountToBiohubObject implements BioHubSubmissionFeature {
-  id: string;
-  type: string;
-  properties: Record<string, unknown>;
-  child_features: BioHubSubmissionFeature[];
-
-  constructor(
-    subcountData: {
-      observation_subcount_id: number | null;
-      comment: string | null;
-      subcount: number | null;
-      qualitative_measurements: {
-        critterbase_taxon_measurement_id: string;
-        critterbase_measurement_qualitative_option_id: string;
-      }[];
-      quantitative_measurements: {
-        critterbase_taxon_measurement_id: string;
-        value: number;
-      }[];
-    },
-    measurementDefinitions?: {
-      qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
-      quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
-    }
-  ) {
-    defaultLog.debug({ label: 'PostSurveySubcountToBiohubObject', message: 'params', subcountData });
-
-    this.id = crypto.randomUUID();
-    this.type = BiohubFeatureType.OBSERVATION_SUBCOUNT;
-
-    this.properties = {
-      comment: subcountData.comment,
-      count: subcountData.subcount
-    };
-
-    // Create child features for quantitative measurements
-    this.child_features = [];
-
-    if (subcountData.quantitative_measurements && subcountData.quantitative_measurements.length > 0) {
-      for (const measurement of subcountData.quantitative_measurements) {
-        const measurementDef = measurementDefinitions?.quantitative_measurements.find(
-          (def) => def.taxon_measurement_id === measurement.critterbase_taxon_measurement_id
-        );
-
-        this.child_features.push(new PostObservationSubcountMeasurementToBiohubObject(measurement, measurementDef));
-      }
-    }
-  }
-}
-
-/**
- * Observation Subcount Measurement object to be sent to Biohub API for creating a measurement feature.
- *
- * @export
- * @class PostObservationSubcountMeasurementToBiohubObject
- * @implements {BioHubSubmissionFeature}
- */
-export class PostObservationSubcountMeasurementToBiohubObject implements BioHubSubmissionFeature {
-  id: string;
-  type: string;
-  properties: Record<string, unknown>;
-  child_features: BioHubSubmissionFeature[];
-
-  constructor(
-    measurement: {
-      critterbase_taxon_measurement_id: string;
-      value: number;
-    },
-    measurementDefinition?: CBQuantitativeMeasurementTypeDefinition
-  ) {
-    this.id = crypto.randomUUID();
-    this.type = BiohubFeatureType.OBSERVATION_SUBCOUNT_MEASUREMENT;
-
-    this.properties = {
-      measurement_type: measurementDefinition?.measurement_name || measurement.critterbase_taxon_measurement_id,
-      measurement_value: measurement.value
-    };
-
-    this.child_features = [];
-  }
-}
-
-/**
- * Object to be sent to Biohub API for creating an observation environmental condition.
- *
- * @export
- * @class PostSurveyEnvironmentalConditionToBiohubObject
- * @implements {BioHubSubmissionFeature}
- */
-export class PostSurveyEnvironmentalConditionToBiohubObject implements BioHubSubmissionFeature {
-  id: string;
-  type: string;
-  properties: Record<string, unknown>;
-  child_features: BioHubSubmissionFeature[];
-
-  constructor(
-    environmentData:
-      | {
-          type: 'qualitative';
-          environment_qualitative_id: string;
-          environment_qualitative_option_id: string;
-          name?: string;
-          option_name?: string;
-        }
-      | {
-          type: 'quantitative';
-          environment_quantitative_id: string;
-          value: number;
-          name?: string;
-          unit?: string;
-        }
-  ) {
-    defaultLog.debug({ label: 'PostSurveyEnvironmentalConditionToBiohubObject', message: 'params', environmentData });
-
-    this.id = crypto.randomUUID();
-    this.type = BiohubFeatureType.OBSERVATION_ENVIRONMENTAL_CONDITION;
-
-    if (environmentData.type === 'qualitative') {
-      this.properties = {
-        environmental_condition: `code::environment_qualitative::${environmentData.environment_qualitative_id}`,
-        environmental_condition_value: `code::environment_qualitative_option::${environmentData.environment_qualitative_option_id}`
-      };
-    } else {
-      this.properties = {
-        environmental_condition: `code::environment_quantitative::${environmentData.environment_quantitative_id}`,
-        environmental_condition_value: `${environmentData.value}${environmentData.unit ? ' ' + environmentData.unit : ''}`
-      };
-    }
 
     this.child_features = [];
   }
@@ -836,6 +685,37 @@ export class PostSampleTechniqueToBiohubObject implements BioHubSubmissionFeatur
       attractant_name: `code::attractant_lookup::${attractant.attractant_lookup_id}`
     }));
 
+    let method_attribute: string | null = null;
+    let method_value: string | null = null;
+    const firstAttrib = samplingTechniqueRecord.attribute_data?.find(
+      (a) => a.attribute_header != null || a.attribute_value != null
+    );
+    if (firstAttrib) {
+      if (firstAttrib.technique_attribute_qualitative_id != null) {
+        method_attribute = `code::technique_attribute_qualitative::${firstAttrib.technique_attribute_qualitative_id}`;
+      }
+      if (firstAttrib.technique_attribute_qualitative_option_id != null) {
+        method_value = `code::technique_attribute_qualitative_option::${firstAttrib.technique_attribute_qualitative_option_id}`;
+      }
+      if (firstAttrib.technique_attribute_quantitative_id != null) {
+        method_attribute = `code::technique_attribute_quantitative::${firstAttrib.technique_attribute_quantitative_id}`;
+      }
+    }
+
+    let vantage_method_attribute: string | null = null;
+    let vantage_method_value: string | null = null;
+    const firstVantage = samplingTechniqueRecord.vantage_data?.find(
+      (v) => v.vantage_header != null || v.vantage_value != null
+    );
+    if (firstVantage) {
+      if (firstVantage.vantage_category_id != null) {
+        vantage_method_attribute = `code::vantage_category::${firstVantage.vantage_category_id}`;
+      }
+      if (firstVantage.vantage_id != null) {
+        vantage_method_value = `code::vantage::${firstVantage.vantage_id}`;
+      }
+    }
+
     this.properties = {
       name: samplingTechniqueRecord.method_name,
       description: samplingTechniqueRecord.description,
@@ -844,98 +724,12 @@ export class PostSampleTechniqueToBiohubObject implements BioHubSubmissionFeatur
       response_metric: `code::method_response_metric::${samplingTechniqueRecord.method_response_metric_id}`,
       ...(samplingTechniqueRecord.distance_threshold
         ? { detect_distance: samplingTechniqueRecord.distance_threshold }
-        : {})
+        : {}),
+      method_attribute,
+      method_value,
+      vantage_method_attribute,
+      vantage_method_value
     };
-
-    // Create sample technique detail child features from attribute_data, filtering out entries where both values are null
-    const techniqueDetailFeatures = samplingTechniqueRecord.attribute_data
-      ? samplingTechniqueRecord.attribute_data
-          .filter((attrib) => attrib.attribute_header != null || attrib.attribute_value != null)
-          .map(
-            (attrib) =>
-              new PostSampleTechniqueDetailToBiohubObject(
-                attrib.technique_attribute_qualitative_id,
-                attrib.technique_attribute_qualitative_option_id,
-                attrib.technique_attribute_quantitative_id
-              )
-          )
-      : [];
-
-    // Create sample technique vantage child features from vantage_data, filtering out entries where both values are null
-    const techniqueVantageFeatures = samplingTechniqueRecord.vantage_data
-      ? samplingTechniqueRecord.vantage_data
-          .filter((vantage) => vantage.vantage_header != null || vantage.vantage_value != null)
-          .map(
-            (vantage) => new PostSampleTechniqueVantageToBiohubObject(vantage.vantage_category_id, vantage.vantage_id)
-          )
-      : [];
-
-    this.child_features = [...techniqueDetailFeatures, ...techniqueVantageFeatures];
-  }
-}
-
-/**
- * Sample Technique Detail object to be sent to Biohub API for creating a survey sampling technique detail feature.
- *
- * @export
- * @class PostSampleTechniqueDetailToBiohubObject
- * @implements {BioHubSubmissionFeature}
- */
-export class PostSampleTechniqueDetailToBiohubObject implements BioHubSubmissionFeature {
-  id: string;
-  type: string;
-  properties: Record<string, unknown>;
-  child_features: BioHubSubmissionFeature[];
-
-  constructor(
-    techniqueAttributeQualitativeId: string | null,
-    techniqueAttributeQualitativeOptionId: number | null,
-    techniqueAttributeQuantitativeId: string | null
-  ) {
-    this.id = crypto.randomUUID();
-    this.type = BiohubFeatureType.SAMPLE_TECHNIQUE_DETAIL;
-
-    // Only include properties if they are not null, using code format
-    this.properties = {};
-    if (techniqueAttributeQualitativeId != null) {
-      this.properties.method_attribute = `code::technique_attribute_qualitative::${techniqueAttributeQualitativeId}`;
-    }
-    if (techniqueAttributeQualitativeOptionId != null) {
-      this.properties.method_value = `code::technique_attribute_qualitative_option::${techniqueAttributeQualitativeOptionId}`;
-    }
-    if (techniqueAttributeQuantitativeId != null) {
-      this.properties.method_attribute = `code::technique_attribute_quantitative::${techniqueAttributeQuantitativeId}`;
-    }
-
-    this.child_features = [];
-  }
-}
-
-/**
- * Sample Technique Vantage object to be sent to Biohub API for creating a survey sampling technique vantage feature.
- *
- * @export
- * @class PostSampleTechniqueVantageToBiohubObject
- * @implements {BioHubSubmissionFeature}
- */
-export class PostSampleTechniqueVantageToBiohubObject implements BioHubSubmissionFeature {
-  id: string;
-  type: string;
-  properties: Record<string, unknown>;
-  child_features: BioHubSubmissionFeature[];
-
-  constructor(vantageCategoryId: number | null, vantageId: number | null) {
-    this.id = crypto.randomUUID();
-    this.type = BiohubFeatureType.SAMPLE_TECHNIQUE_VANTAGE;
-
-    // Only include properties if they are not null, using code format
-    this.properties = {};
-    if (vantageCategoryId != null) {
-      this.properties.method_vantage = `code::vantage_category::${vantageCategoryId}`;
-    }
-    if (vantageId != null) {
-      this.properties.method_value = `code::vantage::${vantageId}`;
-    }
 
     this.child_features = [];
   }
@@ -1645,16 +1439,11 @@ enum BiohubFeatureType {
   MEASUREMENT = 'measurement',
   MORTALITY = 'mortality',
   OBSERVATION = 'species_observation',
-  OBSERVATION_ENVIRONMENTAL_CONDITION = 'observation_environmental_condition',
-  OBSERVATION_SUBCOUNT = 'observation_subcount',
-  OBSERVATION_SUBCOUNT_MEASUREMENT = 'observation_subcount_measurement',
   RELEASE = 'release',
   REPORT = 'report',
   SAMPLE_PERIOD = 'sample_period',
   SAMPLE_SITE = 'sample_site',
   SAMPLE_TECHNIQUE = 'sample_technique',
-  SAMPLE_TECHNIQUE_DETAIL = 'sample_technique_detail',
-  SAMPLE_TECHNIQUE_VANTAGE = 'sample_technique_vantage',
   STRATUM = 'stratum',
   STUDY_AREA = 'study_area',
   TELEMETRY = 'telemetry',
