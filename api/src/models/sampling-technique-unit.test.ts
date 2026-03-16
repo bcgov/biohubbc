@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PostSampleTechniqueToBiohubObject } from '../models/biohub-create';
+import { minimalCodesetExportContext, PostSampleTechniqueToBiohubObject } from '../models/biohub-create';
 
 describe('PostSampleTechniqueToBiohubObject Unit Test', () => {
   it('should create sampling technique object with correct properties', () => {
@@ -36,7 +36,9 @@ describe('PostSampleTechniqueToBiohubObject Unit Test', () => {
       ]
     };
 
-    const techniqueObj = new PostSampleTechniqueToBiohubObject(samplingTechniqueRecord);
+    const techniqueObj = new PostSampleTechniqueToBiohubObject(samplingTechniqueRecord, {
+      codesetExportContext: minimalCodesetExportContext
+    });
 
     expect(techniqueObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
     expect(techniqueObj.type).to.equal('sample_technique');

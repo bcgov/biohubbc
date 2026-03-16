@@ -5,6 +5,9 @@ import { describe } from 'mocha';
 import { SurveyObservationRecord } from '../database-models/survey_observation';
 import { ICritterDetailed } from '../services/critterbase-service';
 import {
+  buildCodesetExportContext,
+  CodesetCategory,
+  minimalCodesetExportContext,
   PostCodesetToBiohubObject,
   PostSurveyAnimalToBiohubObject,
   PostSurveyMarkingToBiohubObject,
@@ -36,7 +39,9 @@ describe('PostSurveyObservationToBiohubObject', () => {
     };
 
     before(() => {
-      data = new PostSurveyObservationToBiohubObject(obj);
+      data = new PostSurveyObservationToBiohubObject(obj, {
+        codesetExportContext: minimalCodesetExportContext
+      });
     });
 
     it('sets id', () => {
@@ -115,7 +120,9 @@ describe('PostSurveyObservationToBiohubObject', () => {
     };
 
     before(() => {
-      data = new PostSurveyObservationToBiohubObject(objWithEnvironments);
+      data = new PostSurveyObservationToBiohubObject(objWithEnvironments, {
+        codesetExportContext: minimalCodesetExportContext
+      });
     });
 
     it('creates environmental_condition and environmental_condition_value on properties (first only)', () => {
@@ -194,7 +201,10 @@ describe('PostSurveyObservationToBiohubObject', () => {
     };
 
     before(() => {
-      data = new PostSurveyObservationToBiohubObject(objWithEnvironments, environmentDefinitions);
+      data = new PostSurveyObservationToBiohubObject(objWithEnvironments, {
+        environmentDefinitions,
+        codesetExportContext: minimalCodesetExportContext
+      });
     });
 
     it('creates environmental_condition with unit from definitions (first only)', () => {
@@ -278,7 +288,10 @@ describe('PostSurveyObservationToBiohubObject', () => {
     };
 
     before(() => {
-      data = new PostSurveyObservationToBiohubObject(objWithSubcounts, undefined, measurementDefinitions);
+      data = new PostSurveyObservationToBiohubObject(objWithSubcounts, {
+        measurementDefinitions,
+        codesetExportContext: minimalCodesetExportContext
+      });
     });
 
     it('creates subcount and measurement single-value properties (first only)', () => {
@@ -1016,7 +1029,9 @@ describe('PostSurveyToBiohubObject', () => {
       expect(childFeature).to.be.instanceOf(PostSurveyObservationToBiohubObject);
 
       // Create a comparison object to check all properties except the id
-      const expectedChild = new PostSurveyObservationToBiohubObject(observation_obj);
+      const expectedChild = new PostSurveyObservationToBiohubObject(observation_obj, {
+        codesetExportContext: minimalCodesetExportContext
+      });
       expect(childFeature.type).to.equal(expectedChild.type);
       expect(childFeature.properties).to.deep.equal(expectedChild.properties);
       expect(childFeature.child_features).to.deep.equal(expectedChild.child_features);
@@ -1415,54 +1430,57 @@ describe('PostSurveySubmissionToBioHubObject', () => {
 
 describe('PostCodesetToBiohubObject and alias mapping', () => {
   it('creates alias-keyed categories and codes', () => {
-    const codesetCategories = [
+    const codesetCategories: CodesetCategory[] = [
       {
-        name: 'life_stage',
+        key: 'life_stage',
+        label: 'Life Stage',
         description: 'Life stage of the organism',
         codes: [
-          { id: 'juvenile', name: 'Juvenile', description: null },
-          { id: 'adult', name: 'Adult', description: 'Mature life stage' }
+          { key: 'juvenile', label: 'Juvenile', description: null, external_id: '1' },
+          { key: 'adult', label: 'Adult', description: 'Mature life stage', external_id: '2' }
         ]
       },
       {
-        name: 'sex',
+        key: 'sex',
+        label: 'Sex',
         description: null,
         codes: [
-          { id: 'male', name: 'Male', description: null },
-          { id: 'female', name: 'Female', description: null }
+          { key: 'male', label: 'Male', description: null, external_id: '1' },
+          { key: 'female', label: 'Female', description: null, external_id: '2' }
         ]
       }
     ];
 
-    const codeset = new PostCodesetToBiohubObject(codesetCategories as any);
+    const context = buildCodesetExportContext(codesetCategories);
+    const codeset = new PostCodesetToBiohubObject(codesetCategories, context);
 
     const categories = codeset.properties as any;
-    expect(categories).to.have.property('life_stage_v1');
-    expect(categories).to.have.property('sex_v1');
+    expect(categories).to.have.property('life_stage');
+    expect(categories).to.have.property('sex');
 
-    const lifeStageCategory = categories['life_stage_v1'];
+    const lifeStageCategory = categories['life_stage'];
     expect(lifeStageCategory).to.include({
-      id: 'life_stage',
+      key: 'life_stage',
       label: 'Life Stage',
       description: 'Life stage of the organism',
-      version: 'v1'
+      external_id: null
     });
 
-    expect(lifeStageCategory.codes).to.have.property('juvenile_v1');
-    expect(lifeStageCategory.codes).to.have.property('adult_v1');
+    expect(lifeStageCategory.codes).to.have.property('juvenile');
+    expect(lifeStageCategory.codes).to.have.property('adult');
 
-    expect(lifeStageCategory.codes['juvenile_v1']).to.eql({
-      id: 'juvenile',
+    expect(lifeStageCategory.codes['juvenile']).to.eql({
+      key: 'juvenile',
       label: 'Juvenile',
       description: null,
-      version: 'v1'
+      external_id: '1'
     });
 
-    expect(lifeStageCategory.codes['adult_v1']).to.eql({
-      id: 'adult',
+    expect(lifeStageCategory.codes['adult']).to.eql({
+      key: 'adult',
       label: 'Adult',
       description: 'Mature life stage',
-      version: 'v1'
+      external_id: '2'
     });
   });
 
@@ -1485,11 +1503,12 @@ describe('PostCodesetToBiohubObject and alias mapping', () => {
       revision_count: 0
     };
 
-    const codesetCategories = [
+    const codesetCategories: CodesetCategory[] = [
       {
-        name: 'site_strategy',
+        key: 'site_strategy',
+        label: 'Site Strategy',
         description: 'Site selection strategies',
-        codes: [{ id: '5', name: 'Random', description: null }]
+        codes: [{ key: '5', label: 'Random', description: null, external_id: '5' }]
       }
     ];
 
@@ -1502,17 +1521,17 @@ describe('PostCodesetToBiohubObject and alias mapping', () => {
       [],
       {
         siteSelectionStrategies: [5],
-        codesetCategories: codesetCategories as any
+        codesetCategories
       }
     );
 
     const categories = (data.child_features.find((f) => f.type === 'codeset') as any).properties;
-    expect(categories).to.have.property('site_strategy_v1');
-    const siteStrategyCategory = categories['site_strategy_v1'];
-    expect(siteStrategyCategory.id).to.equal('site_strategy');
+    expect(categories).to.have.property('site_strategy');
+    const siteStrategyCategory = categories['site_strategy'];
+    expect(siteStrategyCategory.key).to.equal('site_strategy');
 
     const siteSelectionStrategies = (data.properties as any).site_select_strategy;
-    expect(siteSelectionStrategies).to.eql([{ strategy: 'code::site_strategy_v1::5_v1' }]);
+    expect(siteSelectionStrategies).to.eql([{ strategy: 'code::site_strategy::5' }]);
   });
 
   it('returns canonical code reference when context has no matching category', () => {

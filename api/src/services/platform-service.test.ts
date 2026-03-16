@@ -638,7 +638,7 @@ describe('PlatformService', () => {
       expect(platformService._addFileToArchive).to.be.a('function');
     });
 
-    it('should write JSON files to expected archive paths', () => {
+    it('should write JSON files to expected archive paths', async () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
@@ -652,11 +652,9 @@ describe('PlatformService', () => {
 
       const addFileToArchiveStub = sinon
         .stub(platformService as any, '_addFileToArchive')
-        .callsFake((_pack: any, _dataset: string, _fileName: string, _content: Buffer, onComplete: () => void) => {
-          onComplete();
-        });
+        .callsFake(() => Promise.resolve());
 
-      platformService._addJsonFilesToArchive(pack, datasetId, blocksByType as any, () => undefined);
+      await platformService._addJsonFilesToArchive(pack, datasetId, blocksByType as any);
 
       const writtenPaths = addFileToArchiveStub.getCalls().map((call) => call.args[2]);
       expect(writtenPaths).to.include('features/dataset.json');
@@ -664,24 +662,22 @@ describe('PlatformService', () => {
       expect(writtenPaths).to.include('features/habitat_feature.json');
     });
 
-    it('should write codeset block properties as codes/codeset.json content when first block has properties', () => {
+    it('should write codeset block properties as codes/codeset.json content when first block has properties', async () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
       const pack: any = {};
       const datasetId = 'test-dataset-id';
-      const codesetProperties = { life_stage_v1: { id: 'life_stage', label: 'Life Stage', codes: {} } };
+      const codesetProperties = { life_stage: { id: 'life_stage', label: 'Life Stage', codes: {} } };
       const blocksByType = new Map<string, any[]>([
         ['codeset', [{ id: 'c1', type: 'codeset', properties: codesetProperties, content: [], parent: null }]]
       ]);
 
       const addFileToArchiveStub = sinon
         .stub(platformService as any, '_addFileToArchive')
-        .callsFake((_pack: any, _dataset: string, _fileName: string, _fileContent: Buffer, onComplete: () => void) => {
-          onComplete();
-        });
+        .callsFake(() => Promise.resolve());
 
-      platformService._addJsonFilesToArchive(pack, datasetId, blocksByType as any, () => undefined);
+      await platformService._addJsonFilesToArchive(pack, datasetId, blocksByType as any);
 
       const codesetCall = addFileToArchiveStub.getCalls().find((call) => call.args[2] === 'codes/codeset.json');
       expect(codesetCall).to.exist;

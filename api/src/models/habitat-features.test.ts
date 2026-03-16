@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  minimalCodesetExportContext,
   PostSurveyHabitatFeatureToBiohubObject,
   PostSurveySubmissionToBioHubObject,
   PostSurveyToBiohubObject
@@ -36,7 +37,9 @@ describe('Habitat Features BioHub Integration', () => {
         survey_sample_period_start_datetime: '2024-01-15T10:00:00'
       };
 
-      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature);
+      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature, {
+        codesetExportContext: minimalCodesetExportContext
+      });
 
       expect(habitatFeatureObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(habitatFeatureObj.type).to.equal('habitat_feature');
@@ -71,7 +74,9 @@ describe('Habitat Features BioHub Integration', () => {
         survey_sample_period_start_datetime: null
       };
 
-      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature);
+      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature, {
+        codesetExportContext: minimalCodesetExportContext
+      });
 
       expect(habitatFeatureObj.properties.timestamp).to.equal('2024-01-16T00:00:00.000Z');
       expect(habitatFeatureObj.properties).to.not.have.property('taxon_id');
@@ -96,7 +101,9 @@ describe('Habitat Features BioHub Integration', () => {
         survey_sample_period_start_datetime: null
       };
 
-      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature);
+      const habitatFeatureObj = new PostSurveyHabitatFeatureToBiohubObject(habitatFeature, {
+        codesetExportContext: minimalCodesetExportContext
+      });
 
       expect(habitatFeatureObj.properties.geometry).to.be.null;
       expect(habitatFeatureObj.properties.timestamp).to.be.null;
