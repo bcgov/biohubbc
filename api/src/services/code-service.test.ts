@@ -61,7 +61,7 @@ describe('CodeService', () => {
       sinon.restore();
     });
 
-    it('returns transformed codeset categories with numeric IDs converted to strings', async function () {
+    it('returns transformed codeset categories', async function () {
       const mockRawCategories = [
         {
           name: 'observation_sign',
@@ -88,21 +88,26 @@ describe('CodeService', () => {
 
       expect(response).to.have.length(2);
 
-      // Verify first category
-      expect(response[0].name).to.equal('observation_sign');
+      // Verify first category (key, label, description; codes with key, label, external_id)
+      expect(response[0].key).to.equal('observation_sign');
+      expect(response[0].label).to.equal('Observation Sign');
       expect(response[0].description).to.equal('Signs of species observation');
       expect(response[0].codes).to.have.length(2);
-      expect(response[0].codes[0].id).to.equal('1'); // Converted to string
-      expect(response[0].codes[0].name).to.equal('Tracks');
-      expect(response[0].codes[1].id).to.equal('2'); // Converted to string
+      expect(response[0].codes[0].key).to.equal('1');
+      expect(response[0].codes[0].label).to.equal('Tracks');
+      expect(response[0].codes[0].external_id).to.equal('1');
+      expect(response[0].codes[1].key).to.equal('2');
+      expect(response[0].codes[1].external_id).to.equal('2');
 
       // Verify second category
-      expect(response[1].name).to.equal('device_make');
-      expect(response[1].codes[0].id).to.equal('5'); // Converted to string
+      expect(response[1].key).to.equal('device_make');
+      expect(response[1].codes[0].key).to.equal('5');
+      expect(response[1].codes[0].label).to.equal('Lotek');
+      expect(response[1].codes[0].external_id).to.equal('5');
       expect(response[1].codes[0].description).to.be.null;
     });
 
-    it('handles UUID string IDs correctly (they remain as strings)', async function () {
+    it('sets external_id to string when code id is string (e.g. UUID)', async function () {
       const mockRawCategories = [
         {
           name: 'environment_qualitative',
@@ -126,9 +131,9 @@ describe('CodeService', () => {
       const response = await codeService.getAllCodesetCategories();
 
       expect(response).to.have.length(1);
-      expect(response[0].name).to.equal('environment_qualitative');
-      // UUID should remain as string
-      expect(response[0].codes[0].id).to.equal('323e4567-e89b-12d3-a456-426614174001');
+      expect(response[0].key).to.equal('environment_qualitative');
+      expect(response[0].codes[0].key).to.equal('323e4567-e89b-12d3-a456-426614174001');
+      expect(response[0].codes[0].external_id).to.equal('323e4567-e89b-12d3-a456-426614174001');
     });
 
     it('returns empty array when no categories are found', async function () {
@@ -161,7 +166,7 @@ describe('CodeService', () => {
       const response = await codeService.getAllCodesetCategories();
 
       expect(response).to.have.length(1);
-      expect(response[0].name).to.equal('empty_category');
+      expect(response[0].key).to.equal('empty_category');
       expect(response[0].codes).to.be.an('array').that.is.empty;
     });
   });

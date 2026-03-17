@@ -66,6 +66,11 @@ interface INestedBlock {
   child_features?: INestedBlock[];
 }
 
+export enum TARBALL_FILE_ROLE {
+  CODESET = 'codeset',
+  FEATURE = 'feature'
+}
+
 const getBackboneInternalApiHost = () => getEnvironmentVariable('BACKBONE_INTERNAL_API_HOST');
 const getBackboneTaxonTsnPath = () => getEnvironmentVariable('BIOHUB_TAXON_TSN_PATH');
 const getBackboneTaxonPath = () => getEnvironmentVariable('BIOHUB_TAXON_PATH');
@@ -607,12 +612,14 @@ export class PlatformService extends DBService {
   }
 
   /**
-   * Adds all JSON files from the blocksByType Map to the TAR archive.
-   * Also includes actual file content for blocks with type 'file'.
+   * Adds all JSON files from the blocksByType Map to the TAR archive and then triggers the addition
+   * of binary file content. Codeset content is written to `codes/codeset.json`; all other feature
+   * blocks are written under `features/`.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
    * @param {string} datasetId - The dataset ID
    * @param {Map<string, IFlattenedBlock[]>} blocksByType - Map of block types to their flattened blocks
+   * @return {*}  {Promise<void>}
    * @memberof PlatformService
    */
   async _addJsonFiles(
@@ -626,48 +633,75 @@ export class PlatformService extends DBService {
     }
 
     const fileBlocks = blocksByType.get('file') || [];
-    let jsonFilesProcessed = 0;
-    const totalJsonFiles = blocksByType.size;
-    let fileBlocksProcessed = 0;
-    const totalFileBlocks = fileBlocks.length;
 
-    const checkAndFinalize = () => {
-      if (jsonFilesProcessed === totalJsonFiles && fileBlocksProcessed === totalFileBlocks) {
-        pack.finalize();
-      }
-    };
-
-    this._addJsonFilesToArchive(pack, datasetId, blocksByType, () => {
-      jsonFilesProcessed++;
-      checkAndFinalize();
-    });
-
-    await this._addFileBlocksToArchive(pack, datasetId, fileBlocks, () => {
-      fileBlocksProcessed++;
-      checkAndFinalize();
-    });
+    await Promise.all([
+      this._addJsonFilesToArchive(pack, datasetId, blocksByType),
+      this._addFileBlocksToArchive(pack, datasetId, fileBlocks)
+    ]);
+    pack.finalize();
   }
 
   /**
-   * Adds JSON files for all block types to the TAR archive.
+   * Adds JSON files for all block types to the TAR archive by delegating to _addFeatureToArchive
+   * or _addCodesetToArchive.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
    * @param {string} datasetId - The dataset ID
    * @param {Map<string, IFlattenedBlock[]>} blocksByType - Map of block types to their flattened blocks
-   * @param {() => void} onComplete - Callback when JSON file is added
+   * @return {Promise<void>} Resolves when all JSON files have been added to the archive
    * @memberof PlatformService
    */
   _addJsonFilesToArchive(
     pack: tarStream.Pack,
     datasetId: string,
-    blocksByType: Map<string, IFlattenedBlock[]>,
-    onComplete: () => void
-  ): void {
-    blocksByType.forEach((blocks, type) => {
-      const fileName = `${type}.json`;
-      const fileContent = Buffer.from(JSON.stringify(blocks, null, 2));
-      this._addFileToArchive(pack, datasetId, fileName, fileContent, onComplete);
-    });
+    blocksByType: Map<string, IFlattenedBlock[]>
+  ): Promise<void> {
+    const promises = Array.from(blocksByType.entries()).map(([type, blocks]) =>
+      type === TARBALL_FILE_ROLE.CODESET
+        ? this._addCodesetToArchive(pack, datasetId, blocks)
+        : this._addFeatureToArchive(pack, datasetId, type, blocks)
+    );
+    return Promise.all(promises).then(() => undefined);
+  }
+
+  /**
+   * Adds a feature JSON file for a specific block type to the TAR archive.
+   *
+   * @param {tarStream.Pack} pack - The TAR pack stream
+   * @param {string} datasetId - The dataset ID
+   * @param {string} type - The block type (feature name)
+   * @param {IFlattenedBlock[]} blocks - Flattened blocks of this type
+   * @return {Promise<void>} Resolves when the file has been added to the archive
+   * @memberof PlatformService
+   */
+  _addFeatureToArchive(
+    pack: tarStream.Pack,
+    datasetId: string,
+    type: string,
+    blocks: IFlattenedBlock[]
+  ): Promise<void> {
+    const fileName = `features/${type}.json`;
+    const fileContent = Buffer.from(JSON.stringify(blocks, null, 2));
+    return this._addFileToArchive(pack, datasetId, fileName, fileContent);
+  }
+
+  /**
+   * Adds the consolidated codeset JSON file to the TAR archive.
+   *
+   * @param {tarStream.Pack} pack - The TAR pack stream
+   * @param {string} datasetId - The dataset ID
+   * @param {IFlattenedBlock[]} codesetBlocks - Flattened codeset blocks (expected to contain a single codeset feature)
+   * @return {Promise<void>} Resolves when the file has been added to the archive
+   * @memberof PlatformService
+   */
+  _addCodesetToArchive(pack: tarStream.Pack, datasetId: string, codesetBlocks: IFlattenedBlock[]): Promise<void> {
+    const fileName = 'codes/codeset.json';
+    const payload =
+      codesetBlocks.length > 0 && codesetBlocks[0].properties !== undefined
+        ? codesetBlocks[0].properties
+        : codesetBlocks;
+    const fileContent = Buffer.from(JSON.stringify(payload, null, 2));
+    return this._addFileToArchive(pack, datasetId, fileName, fileContent);
   }
 
   /**
@@ -676,21 +710,16 @@ export class PlatformService extends DBService {
    * @param {tarStream.Pack} pack - The TAR pack stream
    * @param {string} datasetId - The dataset ID
    * @param {IFlattenedBlock[]} fileBlocks - Array of file blocks to process
-   * @param {() => void} onComplete - Callback when file block is processed
+   * @return {Promise<void>} Resolves when all file blocks have been added to the archive
    * @memberof PlatformService
    */
-  async _addFileBlocksToArchive(
-    pack: tarStream.Pack,
-    datasetId: string,
-    fileBlocks: IFlattenedBlock[],
-    onComplete: () => void
-  ): Promise<void> {
+  async _addFileBlocksToArchive(pack: tarStream.Pack, datasetId: string, fileBlocks: IFlattenedBlock[]): Promise<void> {
     if (fileBlocks.length === 0) {
       return;
     }
 
     for (const fileBlock of fileBlocks) {
-      await this._processFileBlock(pack, datasetId, fileBlock, onComplete);
+      await this._processFileBlock(pack, datasetId, fileBlock);
     }
   }
 
@@ -700,36 +729,28 @@ export class PlatformService extends DBService {
    * @param {tarStream.Pack} pack - The TAR pack stream
    * @param {string} datasetId - The dataset ID
    * @param {IFlattenedBlock} fileBlock - The file block to process
-   * @param {() => void} onComplete - Callback when file is processed
+   * @return {Promise<void>} Resolves when the file block has been processed (added or skipped)
    * @memberof PlatformService
    */
-  async _processFileBlock(
-    pack: tarStream.Pack,
-    datasetId: string,
-    fileBlock: IFlattenedBlock,
-    onComplete: () => void
-  ): Promise<void> {
+  async _processFileBlock(pack: tarStream.Pack, datasetId: string, fileBlock: IFlattenedBlock): Promise<void> {
     try {
       const artifactKey = fileBlock.properties?.artifact_key as string | undefined;
       const filename = (fileBlock.properties?.filename as string | undefined) || fileBlock.id;
 
       if (!artifactKey) {
         this._logFileBlockWarning('File block missing artifact_key, skipping', fileBlock.id);
-        onComplete();
         return;
       }
 
       const fileContent = await this._downloadFileFromS3(artifactKey, fileBlock.id);
       if (!fileContent) {
-        onComplete();
         return;
       }
 
       const archivePath = `files/${filename}`;
-      this._addFileToArchive(pack, datasetId, archivePath, fileContent, onComplete);
+      await this._addFileToArchive(pack, datasetId, archivePath, fileContent);
     } catch (error) {
       this._logFileBlockError('Failed to add file block to archive', fileBlock.id, error);
-      onComplete();
     }
   }
 
@@ -800,30 +821,27 @@ export class PlatformService extends DBService {
    * @param {string} datasetId - The dataset ID
    * @param {string} fileName - Filename to add
    * @param {Buffer} fileContent - File content as a Buffer
-   * @param {() => void} onComplete - Callback when file is added
+   * @return {Promise<void>} Resolves when the file entry has been written to the pack
    * @memberof PlatformService
    */
-  _addFileToArchive(
-    pack: tarStream.Pack,
-    datasetId: string,
-    fileName: string,
-    fileContent: Buffer,
-    onComplete: () => void
-  ): void {
-    pack.entry(
-      {
-        name: `${datasetId}/${fileName}`,
-        size: fileContent.length
-      },
-      fileContent,
-      (entryErr?: Error | null) => {
-        if (entryErr) {
-          pack.destroy();
-          throw entryErr;
+  _addFileToArchive(pack: tarStream.Pack, datasetId: string, fileName: string, fileContent: Buffer): Promise<void> {
+    return new Promise((resolve, reject) => {
+      pack.entry(
+        {
+          name: `${datasetId}/${fileName}`,
+          size: fileContent.length
+        },
+        fileContent,
+        (entryErr?: Error | null) => {
+          if (entryErr) {
+            pack.destroy();
+            reject(entryErr);
+            return;
+          }
+          resolve();
         }
-        onComplete();
-      }
-    );
+      );
+    });
   }
 
   /**

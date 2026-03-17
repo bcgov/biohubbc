@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  minimalCodesetExportContext,
   PostSurveySubmissionToBioHubObject,
   PostSurveyToBiohubObject,
   PostTelemetryDeploymentToBiohubObject,
@@ -85,7 +86,9 @@ describe('Telemetry Features BioHub Integration', () => {
         comment: 'Wildlife tracking device'
       };
 
-      const deviceObj = new PostTelemetryDeviceToBiohubObject(deviceRecord);
+      const deviceObj = new PostTelemetryDeviceToBiohubObject(deviceRecord, {
+        codesetExportContext: minimalCodesetExportContext
+      });
 
       expect(deviceObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(deviceObj.type).to.equal('telemetry_device');
@@ -107,7 +110,9 @@ describe('Telemetry Features BioHub Integration', () => {
         comment: null
       };
 
-      const deviceObj = new PostTelemetryDeviceToBiohubObject(deviceRecord);
+      const deviceObj = new PostTelemetryDeviceToBiohubObject(deviceRecord, {
+        codesetExportContext: minimalCodesetExportContext
+      });
 
       expect(deviceObj.properties.device_manufacturer).to.equal('code::device_make::99');
       expect(deviceObj.properties.device_model).to.equal(null);
@@ -141,7 +146,9 @@ describe('Telemetry Features BioHub Integration', () => {
         critterbase_critter_id: 'cb-critter-uuid-123'
       };
 
-      const deploymentObj = new PostTelemetryDeploymentToBiohubObject(deploymentRecord);
+      const deploymentObj = new PostTelemetryDeploymentToBiohubObject(deploymentRecord, {
+        codesetExportContext: minimalCodesetExportContext
+      });
 
       expect(deploymentObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(deploymentObj.type).to.equal('telemetry_deployment');
@@ -183,7 +190,10 @@ describe('Telemetry Features BioHub Integration', () => {
         critterbase_critter_id: 'critter-uuid-empty'
       };
 
-      const deploymentObj = new PostTelemetryDeploymentToBiohubObject(deploymentRecord, []);
+      const deploymentObj = new PostTelemetryDeploymentToBiohubObject(deploymentRecord, {
+        telemetry: [],
+        codesetExportContext: minimalCodesetExportContext
+      });
 
       expect(deploymentObj.properties.animal_identifier).to.equal(null);
       expect(deploymentObj.properties.device_key).to.equal('device-key-124');
@@ -218,7 +228,10 @@ describe('Telemetry Features BioHub Integration', () => {
         critterbase_critter_id: 'test-critter-uuid'
       };
 
-      const deploymentObj = new PostTelemetryDeploymentToBiohubObject(deploymentRecord, []);
+      const deploymentObj = new PostTelemetryDeploymentToBiohubObject(deploymentRecord, {
+        telemetry: [],
+        codesetExportContext: minimalCodesetExportContext
+      });
 
       expect(deploymentObj.child_features).to.be.an('array').with.length(1);
 

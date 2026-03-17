@@ -637,6 +637,52 @@ describe('PlatformService', () => {
       expect(platformService._addJsonFiles).to.be.a('function');
       expect(platformService._addFileToArchive).to.be.a('function');
     });
+
+    it('should write JSON files to expected archive paths', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const pack: any = {};
+      const datasetId = 'test-dataset-id';
+      const blocksByType = new Map<string, any[]>([
+        ['dataset', [{ id: 'd1' }]],
+        ['codeset', [{ id: 'c1' }]],
+        ['habitat_feature', [{ id: 'h1' }]]
+      ]);
+
+      const addFileToArchiveStub = sinon
+        .stub(platformService as any, '_addFileToArchive')
+        .callsFake(() => Promise.resolve());
+
+      await platformService._addJsonFilesToArchive(pack, datasetId, blocksByType as any);
+
+      const writtenPaths = addFileToArchiveStub.getCalls().map((call) => call.args[2]);
+      expect(writtenPaths).to.include('features/dataset.json');
+      expect(writtenPaths).to.include('codes/codeset.json');
+      expect(writtenPaths).to.include('features/habitat_feature.json');
+    });
+
+    it('should write codeset block properties as codes/codeset.json content when first block has properties', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const pack: any = {};
+      const datasetId = 'test-dataset-id';
+      const codesetProperties = { life_stage: { id: 'life_stage', label: 'Life Stage', codes: {} } };
+      const blocksByType = new Map<string, any[]>([
+        ['codeset', [{ id: 'c1', type: 'codeset', properties: codesetProperties, content: [], parent: null }]]
+      ]);
+
+      const addFileToArchiveStub = sinon
+        .stub(platformService as any, '_addFileToArchive')
+        .callsFake(() => Promise.resolve());
+
+      await platformService._addJsonFilesToArchive(pack, datasetId, blocksByType as any);
+
+      const codesetCall = addFileToArchiveStub.getCalls().find((call) => call.args[2] === 'codes/codeset.json');
+      expect(codesetCall).to.exist;
+      expect(JSON.parse(codesetCall!.args[3].toString())).to.deep.equal(codesetProperties);
+    });
   });
 
   describe('_splitFileIntoChunks', () => {

@@ -58,16 +58,33 @@ interface MortalityRecord {
 
 // Codeset types for exporting codetables
 export interface CodesetCode {
-  id: string;
-  name: string;
+  key: string;
+  label: string;
   description: string | null;
+  external_id: string | null;
 }
 
 export interface CodesetCategory {
-  name: string;
+  key: string;
+  label: string;
   description: string | null;
   codes: CodesetCode[];
 }
+
+export interface CodesetExportContext {
+  categoryAliasByName: Record<string, string>;
+  categoryNameByAlias: Record<string, string>;
+  codeAliasByCategoryAndId: Record<string, Record<string, string>>;
+  codeIdByCategoryAndAlias: Record<string, Record<string, string>>;
+}
+
+/** Empty codeset export context for tests or when no category/code alias mapping is needed. */
+export const minimalCodesetExportContext: CodesetExportContext = {
+  categoryAliasByName: {},
+  categoryNameByAlias: {},
+  codeAliasByCategoryAndId: {},
+  codeIdByCategoryAndAlias: {}
+};
 
 const defaultLog = getLogger('models/biohub-create');
 
@@ -119,6 +136,18 @@ export interface BioHubSubmissionFeature {
   child_features: BioHubSubmissionFeature[];
 }
 
+export interface PostSurveyObservationToBiohubOptions {
+  environmentDefinitions?: {
+    qualitative_environments: QualitativeEnvironmentTypeDefinition[];
+    quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
+  };
+  measurementDefinitions?: {
+    qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
+    quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
+  };
+  codesetExportContext: CodesetExportContext;
+}
+
 /**
  * Object to be sent to Biohub API for creating an observation.
  *
@@ -134,16 +163,11 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
 
   constructor(
     observationRecord: SurveyObservationRecord | ObservationRecordWithSamplingAndSubcountData,
-    environmentDefinitions?: {
-      qualitative_environments: QualitativeEnvironmentTypeDefinition[];
-      quantitative_environments: QuantitativeEnvironmentTypeDefinition[];
-    },
-    measurementDefinitions?: {
-      qualitative_measurements: CBQualitativeMeasurementTypeDefinition[];
-      quantitative_measurements: CBQuantitativeMeasurementTypeDefinition[];
-    }
+    options: PostSurveyObservationToBiohubOptions
   ) {
     defaultLog.debug({ label: 'PostSurveyObservationToBiohubObject', message: 'params', observationRecord });
+
+    const { environmentDefinitions, measurementDefinitions, codesetExportContext } = options;
 
     // Combine date and time into a single timestamp
     const timestamp = observationRecord.observation_time
@@ -193,7 +217,7 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
       count: observationRecord.count,
       timestamp: timestamp,
       sign: observationRecord.observation_sign_id
-        ? `code::observation_sign::${observationRecord.observation_sign_id}`
+        ? buildCodesetReference('observation_sign', observationRecord.observation_sign_id, codesetExportContext)
         : null,
       geometry:
         observationRecord.longitude && observationRecord.latitude
@@ -676,13 +700,14 @@ export class PostSampleTechniqueToBiohubObject implements BioHubSubmissionFeatur
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(samplingTechniqueRecord: SampleTechniqueRecord) {
+  constructor(samplingTechniqueRecord: SampleTechniqueRecord, options: { codesetExportContext: CodesetExportContext }) {
+    const { codesetExportContext } = options;
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.SAMPLE_TECHNIQUE;
 
     // Use attractant IDs array from the database and convert to code format
     const attractantsArray = (samplingTechniqueRecord.attractant_ids || []).map((attractant) => ({
-      attractant_name: `code::attractant_lookup::${attractant.attractant_lookup_id}`
+      attractant_name: buildCodesetReference('attractant_lookup', attractant.attractant_lookup_id, codesetExportContext)
     }));
 
     let method_attribute: string | null = null;
@@ -719,9 +744,17 @@ export class PostSampleTechniqueToBiohubObject implements BioHubSubmissionFeatur
     this.properties = {
       name: samplingTechniqueRecord.method_name,
       description: samplingTechniqueRecord.description,
-      method_name: `code::method_lookup::${samplingTechniqueRecord.method_lookup_id}`,
+      method_name: buildCodesetReference(
+        'method_lookup',
+        samplingTechniqueRecord.method_lookup_id,
+        codesetExportContext
+      ),
       attractant: attractantsArray,
-      response_metric: `code::method_response_metric::${samplingTechniqueRecord.method_response_metric_id}`,
+      response_metric: buildCodesetReference(
+        'method_response_metric',
+        samplingTechniqueRecord.method_response_metric_id,
+        codesetExportContext
+      ),
       ...(samplingTechniqueRecord.distance_threshold
         ? { detect_distance: samplingTechniqueRecord.distance_threshold }
         : {}),
@@ -748,8 +781,12 @@ export class PostSurveyHabitatFeatureToBiohubObject implements BioHubSubmissionF
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(habitatFeatureRecord: SurveyHabitatFeatureWithTaxonsAndSampling) {
+  constructor(
+    habitatFeatureRecord: SurveyHabitatFeatureWithTaxonsAndSampling,
+    options: { codesetExportContext: CodesetExportContext }
+  ) {
     defaultLog.debug({ label: 'PostSurveyHabitatFeatureToBiohubObject', message: 'params', habitatFeatureRecord });
+    const { codesetExportContext } = options;
 
     // Combine date and time into a single timestamp
     let timestamp: string | null = null;
@@ -766,7 +803,11 @@ export class PostSurveyHabitatFeatureToBiohubObject implements BioHubSubmissionF
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.HABITAT_FEATURE;
     this.properties = {
-      name: `code::habitat_feature_type::${habitatFeatureRecord.habitat_feature_type_id}`,
+      name: buildCodesetReference(
+        'habitat_feature_type',
+        habitatFeatureRecord.habitat_feature_type_id,
+        codesetExportContext
+      ),
       count: habitatFeatureRecord.count,
       timestamp: timestamp,
       ...(associatedSpeciesArray.length > 0 ? { associated_species: associatedSpeciesArray } : {}),
@@ -804,13 +845,14 @@ export class PostTelemetryDeviceToBiohubObject implements BioHubSubmissionFeatur
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(deviceRecord: DeviceRecord) {
+  constructor(deviceRecord: DeviceRecord, options: { codesetExportContext: CodesetExportContext }) {
     defaultLog.debug({ label: 'PostTelemetryDeviceToBiohubObject', message: 'params', deviceRecord });
+    const { codesetExportContext } = options;
 
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.TELEMETRY_DEVICE;
     this.properties = {
-      device_manufacturer: `code::device_make::${deviceRecord.device_make_id}`,
+      device_manufacturer: buildCodesetReference('device_make', deviceRecord.device_make_id, codesetExportContext),
       device_model: deviceRecord.model || null,
       description: deviceRecord.comment || null,
       serial_number: deviceRecord.serial
@@ -826,14 +868,22 @@ export class PostTelemetryDeviceToBiohubObject implements BioHubSubmissionFeatur
  * @class PostTelemetryDeploymentToBiohubObject
  * @implements {BioHubSubmissionFeature}
  */
+export interface PostTelemetryDeploymentToBiohubOptions {
+  telemetry?: Telemetry[];
+  animalRecords?: ICritterDetailed[];
+  codesetExportContext: CodesetExportContext;
+}
+
 export class PostTelemetryDeploymentToBiohubObject implements BioHubSubmissionFeature {
   id: string;
   type: string;
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(deploymentRecord: ExtendedDeploymentRecord, telemetry?: Telemetry[], animalRecords?: ICritterDetailed[]) {
+  constructor(deploymentRecord: ExtendedDeploymentRecord, options: PostTelemetryDeploymentToBiohubOptions) {
     defaultLog.debug({ label: 'PostTelemetryDeploymentToBiohubObject', message: 'params', deploymentRecord });
+
+    const { telemetry, animalRecords, codesetExportContext } = options;
 
     // Find the matching animal record to get the animal_id
     const matchingAnimal = animalRecords?.find(
@@ -867,7 +917,9 @@ export class PostTelemetryDeploymentToBiohubObject implements BioHubSubmissionFe
     // Add frequency child feature if frequency data exists
     if (deploymentRecord.frequency != null || deploymentRecord.frequency_unit_id != null) {
       this.child_features.push(
-        new PostTelemetryFrequencyToBiohubObject(deploymentRecord.frequency, deploymentRecord.frequency_unit_id)
+        new PostTelemetryFrequencyToBiohubObject(deploymentRecord.frequency, deploymentRecord.frequency_unit_id, {
+          codesetExportContext
+        })
       );
     }
   }
@@ -886,7 +938,12 @@ export class PostTelemetryFrequencyToBiohubObject implements BioHubSubmissionFea
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(frequency: number | null, frequencyUnitId: number | null) {
+  constructor(
+    frequency: number | null,
+    frequencyUnitId: number | null,
+    options: { codesetExportContext: CodesetExportContext }
+  ) {
+    const { codesetExportContext } = options;
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.TELEMETRY_FREQUENCY;
 
@@ -896,7 +953,7 @@ export class PostTelemetryFrequencyToBiohubObject implements BioHubSubmissionFea
       this.properties.frequency = frequency;
     }
     if (frequencyUnitId != null) {
-      this.properties.frequency_unit = `code::frequency_unit::${frequencyUnitId}`;
+      this.properties.frequency_unit = buildCodesetReference('frequency_unit', frequencyUnitId, codesetExportContext);
     }
 
     this.child_features = [];
@@ -1064,7 +1121,7 @@ export class PostCodesetToBiohubObject implements BioHubSubmissionFeature {
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(codesetCategories: CodesetCategory[]) {
+  constructor(codesetCategories: CodesetCategory[], exportContext: CodesetExportContext) {
     defaultLog.debug({
       label: 'PostCodesetToBiohubObject',
       message: 'params',
@@ -1074,50 +1131,7 @@ export class PostCodesetToBiohubObject implements BioHubSubmissionFeature {
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.CODESET;
 
-    // Helper function to convert snake_case to Title Case
-    const toTitleCase = (str: string): string => {
-      return str
-        .split('_')
-        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-        .join(' ');
-    };
-
-    // Convert categories array to object format
-    const categoriesObject: Record<
-      string,
-      {
-        label: string;
-        description: string | null;
-        codes: Record<string, { label: string; description: string | null }>;
-      }
-    > = {};
-
-    for (const category of codesetCategories) {
-      // Create category key: use table name as-is
-      const categoryKey = category.name;
-
-      // Convert snake_case to Title Case for label
-      const categoryLabel = toTitleCase(category.name);
-
-      // Convert codes array to object format
-      const codesObject: Record<string, { label: string; description: string | null }> = {};
-      for (const code of category.codes) {
-        codesObject[code.id] = {
-          label: code.name,
-          description: code.description
-        };
-      }
-
-      categoriesObject[categoryKey] = {
-        label: categoryLabel,
-        description: category.description,
-        codes: codesObject
-      };
-    }
-
-    this.properties = {
-      categories: categoriesObject
-    };
+    this.properties = buildCodesetProperties(codesetCategories, exportContext);
     this.child_features = [];
   }
 }
@@ -1166,9 +1180,15 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
       codesetCategories
     } = options;
 
+    const codesetExportContext = buildCodesetExportContext(codesetCategories ?? []);
+
     const observationFeatures = observationRecords.map(
       (observation) =>
-        new PostSurveyObservationToBiohubObject(observation, environmentDefinitions, measurementDefinitions)
+        new PostSurveyObservationToBiohubObject(observation, {
+          environmentDefinitions,
+          measurementDefinitions,
+          codesetExportContext
+        })
     );
 
     const attachmentFeatures = surveyAttachments.map(
@@ -1194,30 +1214,35 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
 
     const samplingTechniqueFeatures = mapOrEmpty(
       samplingTechniques,
-      (samplingTechnique) => new PostSampleTechniqueToBiohubObject(samplingTechnique)
+      (samplingTechnique) => new PostSampleTechniqueToBiohubObject(samplingTechnique, { codesetExportContext })
     );
 
     // Create habitat features
     const habitatFeatureFeatures = mapOrEmpty(
       habitatFeatures,
-      (habitatFeature) => new PostSurveyHabitatFeatureToBiohubObject(habitatFeature)
+      (habitatFeature) => new PostSurveyHabitatFeatureToBiohubObject(habitatFeature, { codesetExportContext })
     );
 
     // Create telemetry features
     const telemetryDeviceFeatures = mapOrEmpty(
       telemetryDevices,
-      (device) => new PostTelemetryDeviceToBiohubObject(device)
+      (device) => new PostTelemetryDeviceToBiohubObject(device, { codesetExportContext })
     );
 
     const telemetryDeploymentFeatures = mapOrEmpty(
       telemetryDeployments,
-      (deployment) => new PostTelemetryDeploymentToBiohubObject(deployment, telemetry, animalRecords)
+      (deployment) =>
+        new PostTelemetryDeploymentToBiohubObject(deployment, {
+          telemetry,
+          animalRecords,
+          codesetExportContext
+        })
     );
 
     // Create study area feature if survey location data is available
     const studyAreaFeature = createStudyAreaFeature(surveyLocation, surveyData.survey_name);
 
-    const partnershipsValue = buildPartnershipsValue(partnerships, firstNations);
+    const partnershipsValue = buildPartnershipsValue(partnerships, firstNations, { codesetExportContext });
 
     // Create focal species array from focal species
     const focalSpeciesArray = buildFocalSpeciesArray(focalSpecies);
@@ -1230,10 +1255,14 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
     const stratumFeatures = mapOrEmpty(strata, (stratum) => new PostStratumToBiohubObject(stratum));
 
     // Create site selection strategies array
-    const siteSelectionStrategiesArray = buildSiteSelectionStrategiesArray(siteSelectionStrategies);
+    const siteSelectionStrategiesArray = buildSiteSelectionStrategiesArray(siteSelectionStrategies, {
+      codesetExportContext
+    });
 
     // Create codeset feature if codeset categories are available
-    const codesetFeature = codesetCategories ? [new PostCodesetToBiohubObject(codesetCategories)] : [];
+    const codesetFeature = codesetCategories?.length
+      ? [new PostCodesetToBiohubObject(codesetCategories, codesetExportContext)]
+      : [];
 
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.DATASET;
@@ -1370,7 +1399,8 @@ function createStudyAreaFeature(
 
 function buildPartnershipsValue(
   partnerships: { indigenous_partnerships: number[]; stakeholder_partnerships: string[] } | undefined,
-  _firstNations: { id: number; name: string }[] | undefined
+  _firstNations: { id: number; name: string }[] | undefined,
+  options: { codesetExportContext: CodesetExportContext }
 ): {
   indigenous_partnerships: { name: string }[];
   stakeholder_partnerships: { name: string }[];
@@ -1379,8 +1409,9 @@ function buildPartnershipsValue(
     return null;
   }
 
+  const { codesetExportContext } = options;
   const indigenousPartnerships = (partnerships.indigenous_partnerships || []).map((id) => ({
-    name: `code::first_nations::${id}`
+    name: buildCodesetReference('first_nations', id, codesetExportContext)
   }));
   const stakeholderPartnerships = (partnerships.stakeholder_partnerships || []).map((name) => ({
     name: name
@@ -1402,9 +1433,13 @@ function buildFocalSpeciesArray(focalSpecies?: { focal_species: ITaxonomyWithEco
   return focalSpecies?.focal_species?.map((species) => ({ taxon_id: species.tsn })) ?? [];
 }
 
-function buildSiteSelectionStrategiesArray(siteSelectionStrategies?: number[]): { strategy: string }[] {
+function buildSiteSelectionStrategiesArray(
+  siteSelectionStrategies: number[] | undefined,
+  options: { codesetExportContext: CodesetExportContext }
+): { strategy: string }[] {
+  const { codesetExportContext } = options;
   return (siteSelectionStrategies ?? []).map((site_strategy_id) => ({
-    strategy: `code::site_strategy::${site_strategy_id}`
+    strategy: buildCodesetReference('site_strategy', site_strategy_id, codesetExportContext)
   }));
 }
 
@@ -1424,6 +1459,147 @@ function buildSurveyDateProperties(surveyData: GetSurveyData): Record<string, st
   }
 
   return props;
+}
+
+/**
+ * Builds a shared export context for codeset categories, including alias mappings for category and
+ * code keys used in BioHub code references and codeset JSON. The context should be built once per
+ * export and passed to all helpers that emit code references or codeset JSON.
+ *
+ * @param {CodesetCategory[]} codesetCategories - SIMS codeset categories (name, description, codes)
+ * @return {*}  {CodesetExportContext} Context with category/code alias maps
+ */
+export function buildCodesetExportContext(codesetCategories: CodesetCategory[]): CodesetExportContext {
+  const context: CodesetExportContext = {
+    categoryAliasByName: {},
+    categoryNameByAlias: {},
+    codeAliasByCategoryAndId: {},
+    codeIdByCategoryAndAlias: {}
+  };
+
+  codesetCategories.forEach((category) => {
+    const categoryKey = category.key;
+    context.categoryAliasByName[category.key] = categoryKey;
+    context.categoryNameByAlias[categoryKey] = category.key;
+
+    const codeAliasById: Record<string, string> = {};
+    const codeIdByAlias: Record<string, string> = {};
+
+    category.codes.forEach((code) => {
+      const codeKey = String(code.key);
+      codeAliasById[codeKey] = codeKey;
+      codeIdByAlias[codeKey] = codeKey;
+    });
+
+    context.codeAliasByCategoryAndId[category.key] = codeAliasById;
+    context.codeIdByCategoryAndAlias[category.key] = codeIdByAlias;
+  });
+
+  return context;
+}
+
+/**
+ * Builds the `codes/codeset.json` payload from SIMS codeset categories using the provided export context.
+ * The result is a single object keyed by category keys (e.g. `life_stage`), with each category and code
+ * object containing key, label, description, and external_id per the BioHub spec.
+ *
+ * @param {CodesetCategory[]} codesetCategories - SIMS codeset categories to serialize
+ * @param {CodesetExportContext} context - Shared export context from buildCodesetExportContext
+ * @return {*}  {Record<string, unknown>} Object suitable for codes/codeset.json in the tarball
+ */
+function buildCodesetProperties(
+  codesetCategories: CodesetCategory[],
+  context: CodesetExportContext
+): Record<string, unknown> {
+  const categories: Record<
+    string,
+    {
+      key: string;
+      label: string;
+      description: string | null;
+      external_id: string | null;
+      codes: Record<
+        string,
+        {
+          key: string;
+          label: string;
+          description: string | null;
+          external_id: string | null;
+        }
+      >;
+    }
+  > = {};
+
+  for (const category of codesetCategories) {
+    const categoryKey = context.categoryAliasByName[category.key];
+
+    const codes: Record<
+      string,
+      {
+        key: string;
+        label: string;
+        description: string | null;
+        external_id: string | null;
+      }
+    > = {};
+
+    category.codes.forEach((code) => {
+      const codeKey = context.codeAliasByCategoryAndId[category.key]?.[String(code.key)];
+      if (!codeKey) {
+        return;
+      }
+      codes[codeKey] = {
+        key: codeKey,
+        label: code.label,
+        description: code.description,
+        external_id: code.external_id
+      };
+    });
+
+    categories[categoryKey] = {
+      key: categoryKey,
+      label: category.label,
+      description: category.description,
+      external_id: null,
+      codes
+    };
+  }
+
+  return categories;
+}
+
+/**
+ * Builds a code reference string (e.g. `code::life_stage::juvenile`) using the alias mappings in the
+ * export context. Returns the canonical form `code::<category>::<id>` when the category or code is
+ * not present in the context.
+ *
+ * @param {string} categoryName - Codeset category name (e.g. 'observation_sign', 'site_strategy')
+ * @param {string | number} codeId - Code identifier from SIMS
+ * @param {CodesetExportContext} context - Shared export context from buildCodesetExportContext
+ * @return {*}  {string} Code reference or canonical code reference string
+ */
+function buildCodesetReference(
+  categoryName: string,
+  codeId: string | number,
+  context: CodesetExportContext | undefined
+): string {
+  const canonical = `code::${categoryName}::${codeId}`;
+
+  if (!context) {
+    return canonical;
+  }
+
+  const categoryAlias = context.categoryAliasByName[categoryName];
+  if (!categoryAlias) {
+    return canonical;
+  }
+
+  const codeAlias = context.codeAliasByCategoryAndId[categoryName]?.[String(codeId)];
+  if (!codeAlias) {
+    return canonical;
+  }
+
+  return `code::${categoryAlias}::${codeAlias}`;
 }
 
 enum BiohubFeatureType {

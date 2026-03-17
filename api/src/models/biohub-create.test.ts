@@ -5,6 +5,10 @@ import { describe } from 'mocha';
 import { SurveyObservationRecord } from '../database-models/survey_observation';
 import { ICritterDetailed } from '../services/critterbase-service';
 import {
+  buildCodesetExportContext,
+  CodesetCategory,
+  minimalCodesetExportContext,
+  PostCodesetToBiohubObject,
   PostSurveyAnimalToBiohubObject,
   PostSurveyMarkingToBiohubObject,
   PostSurveyMeasurementToBiohubObject,
@@ -35,7 +39,9 @@ describe('PostSurveyObservationToBiohubObject', () => {
     };
 
     before(() => {
-      data = new PostSurveyObservationToBiohubObject(obj);
+      data = new PostSurveyObservationToBiohubObject(obj, {
+        codesetExportContext: minimalCodesetExportContext
+      });
     });
 
     it('sets id', () => {
@@ -114,7 +120,9 @@ describe('PostSurveyObservationToBiohubObject', () => {
     };
 
     before(() => {
-      data = new PostSurveyObservationToBiohubObject(objWithEnvironments);
+      data = new PostSurveyObservationToBiohubObject(objWithEnvironments, {
+        codesetExportContext: minimalCodesetExportContext
+      });
     });
 
     it('creates environmental_condition and environmental_condition_value on properties (first only)', () => {
@@ -193,7 +201,10 @@ describe('PostSurveyObservationToBiohubObject', () => {
     };
 
     before(() => {
-      data = new PostSurveyObservationToBiohubObject(objWithEnvironments, environmentDefinitions);
+      data = new PostSurveyObservationToBiohubObject(objWithEnvironments, {
+        environmentDefinitions,
+        codesetExportContext: minimalCodesetExportContext
+      });
     });
 
     it('creates environmental_condition with unit from definitions (first only)', () => {
@@ -277,7 +288,10 @@ describe('PostSurveyObservationToBiohubObject', () => {
     };
 
     before(() => {
-      data = new PostSurveyObservationToBiohubObject(objWithSubcounts, undefined, measurementDefinitions);
+      data = new PostSurveyObservationToBiohubObject(objWithSubcounts, {
+        measurementDefinitions,
+        codesetExportContext: minimalCodesetExportContext
+      });
     });
 
     it('creates subcount and measurement single-value properties (first only)', () => {
@@ -1015,7 +1029,9 @@ describe('PostSurveyToBiohubObject', () => {
       expect(childFeature).to.be.instanceOf(PostSurveyObservationToBiohubObject);
 
       // Create a comparison object to check all properties except the id
-      const expectedChild = new PostSurveyObservationToBiohubObject(observation_obj);
+      const expectedChild = new PostSurveyObservationToBiohubObject(observation_obj, {
+        codesetExportContext: minimalCodesetExportContext
+      });
       expect(childFeature.type).to.equal(expectedChild.type);
       expect(childFeature.properties).to.deep.equal(expectedChild.properties);
       expect(childFeature.child_features).to.deep.equal(expectedChild.child_features);
@@ -1409,5 +1425,200 @@ describe('PostSurveySubmissionToBioHubObject', () => {
       expect(data.content.properties).to.eql(expectedContent.properties);
       expect(data.content.child_features).to.have.length(expectedContent.child_features.length);
     });
+  });
+});
+
+describe('PostCodesetToBiohubObject and alias mapping', () => {
+  it('creates alias-keyed categories and codes', () => {
+    const codesetCategories: CodesetCategory[] = [
+      {
+        key: 'life_stage',
+        label: 'Life Stage',
+        description: 'Life stage of the organism',
+        codes: [
+          { key: 'juvenile', label: 'Juvenile', description: null, external_id: '1' },
+          { key: 'adult', label: 'Adult', description: 'Mature life stage', external_id: '2' }
+        ]
+      },
+      {
+        key: 'sex',
+        label: 'Sex',
+        description: null,
+        codes: [
+          { key: 'male', label: 'Male', description: null, external_id: '1' },
+          { key: 'female', label: 'Female', description: null, external_id: '2' }
+        ]
+      }
+    ];
+
+    const context = buildCodesetExportContext(codesetCategories);
+    const codeset = new PostCodesetToBiohubObject(codesetCategories, context);
+
+    const categories = codeset.properties as any;
+    expect(categories).to.have.property('life_stage');
+    expect(categories).to.have.property('sex');
+
+    const lifeStageCategory = categories['life_stage'];
+    expect(lifeStageCategory).to.include({
+      key: 'life_stage',
+      label: 'Life Stage',
+      description: 'Life stage of the organism',
+      external_id: null
+    });
+
+    expect(lifeStageCategory.codes).to.have.property('juvenile');
+    expect(lifeStageCategory.codes).to.have.property('adult');
+
+    expect(lifeStageCategory.codes['juvenile']).to.eql({
+      key: 'juvenile',
+      label: 'Juvenile',
+      description: null,
+      external_id: '1'
+    });
+
+    expect(lifeStageCategory.codes['adult']).to.eql({
+      key: 'adult',
+      label: 'Adult',
+      description: 'Mature life stage',
+      external_id: '2'
+    });
+  });
+
+  it('uses alias-based code references when codeset categories are provided', () => {
+    const survey_obj: GetSurveyData = {
+      id: 1,
+      uuid: '1',
+      project_id: 1,
+      survey_name: 'survey_name',
+      progress_id: 1,
+      start_date: 'start_date',
+      end_date: 'end_date',
+      survey_types: [9],
+      revision_count: 1
+    };
+
+    const survey_purpose_obj: GetSurveyPurposeAndMethodologyData = {
+      intended_outcome_ids: [],
+      additional_details: 'A description of the purpose',
+      revision_count: 0
+    };
+
+    const codesetCategories: CodesetCategory[] = [
+      {
+        key: 'site_strategy',
+        label: 'Site Strategy',
+        description: 'Site selection strategies',
+        codes: [{ key: '5', label: 'Random', description: null, external_id: '5' }]
+      }
+    ];
+
+    const data = new PostSurveyToBiohubObject(
+      survey_obj,
+      survey_purpose_obj,
+      [],
+      { type: 'FeatureCollection', features: [] },
+      [],
+      [],
+      {
+        siteSelectionStrategies: [5],
+        codesetCategories
+      }
+    );
+
+    const categories = (data.child_features.find((f) => f.type === 'codeset') as any).properties;
+    expect(categories).to.have.property('site_strategy');
+    const siteStrategyCategory = categories['site_strategy'];
+    expect(siteStrategyCategory.key).to.equal('site_strategy');
+
+    const siteSelectionStrategies = (data.properties as any).site_select_strategy;
+    expect(siteSelectionStrategies).to.eql([{ strategy: 'code::site_strategy::5' }]);
+  });
+
+  it('returns canonical code reference when context has no matching category', () => {
+    const survey_obj: GetSurveyData = {
+      id: 1,
+      uuid: '1',
+      project_id: 1,
+      survey_name: 'survey_name',
+      progress_id: 1,
+      start_date: 'start_date',
+      end_date: 'end_date',
+      survey_types: [9],
+      revision_count: 1
+    };
+
+    const survey_purpose_obj: GetSurveyPurposeAndMethodologyData = {
+      intended_outcome_ids: [],
+      additional_details: 'A description of the purpose',
+      revision_count: 0
+    };
+
+    const observation_obj: SurveyObservationRecord = {
+      survey_observation_id: 1,
+      survey_id: 1,
+      survey_sample_period_id: 1,
+      latitude: 1,
+      longitude: 1,
+      count: 1,
+      itis_tsn: 1,
+      itis_scientific_name: 'test',
+      observation_time: '12:00',
+      observation_date: '2023-01-01',
+      observation_sign_id: 1
+    };
+
+    const codesetCategories = [
+      { name: 'site_strategy', description: null, codes: [{ id: '5', name: 'Random', description: null }] }
+    ];
+
+    const data = new PostSurveyToBiohubObject(
+      survey_obj,
+      survey_purpose_obj,
+      [observation_obj],
+      { type: 'FeatureCollection', features: [] },
+      [],
+      [],
+      { codesetCategories: codesetCategories as any }
+    );
+
+    const observation = data.child_features.find((f) => f.type === 'species_observation');
+    expect(observation?.properties).to.have.property('sign', 'code::observation_sign::1');
+  });
+
+  it('returns canonical code reference when context has category but no matching code', () => {
+    const survey_obj: GetSurveyData = {
+      id: 1,
+      uuid: '1',
+      project_id: 1,
+      survey_name: 'survey_name',
+      progress_id: 1,
+      start_date: 'start_date',
+      end_date: 'end_date',
+      survey_types: [9],
+      revision_count: 1
+    };
+
+    const survey_purpose_obj: GetSurveyPurposeAndMethodologyData = {
+      intended_outcome_ids: [],
+      additional_details: 'A description of the purpose',
+      revision_count: 0
+    };
+
+    const codesetCategories = [
+      { name: 'site_strategy', description: null, codes: [{ id: '5', name: 'Random', description: null }] }
+    ];
+
+    const data = new PostSurveyToBiohubObject(
+      survey_obj,
+      survey_purpose_obj,
+      [],
+      { type: 'FeatureCollection', features: [] },
+      [],
+      [],
+      { siteSelectionStrategies: [999], codesetCategories: codesetCategories as any }
+    );
+
+    const siteSelectionStrategies = (data.properties as any).site_select_strategy;
+    expect(siteSelectionStrategies).to.eql([{ strategy: 'code::site_strategy::999' }]);
   });
 });

@@ -106,14 +106,19 @@ export class CodeService extends DBService {
 
     const rawCategories = await this.codeRepository.getAllCodesetCategories();
 
-    // Transform to CodesetCategory format, converting all IDs to strings
+    // Transform to CodesetCategory format (key, label, description, external_id per BioHub spec)
     return rawCategories.map((category) => ({
-      name: category.name,
+      key: category.name,
+      label: category.name
+        .split('_')
+        .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+        .join(' '),
       description: category.description,
       codes: category.codes.map((code) => ({
-        id: String(code.id),
-        name: code.name,
-        description: code.description
+        key: String(code.id),
+        label: code.name,
+        description: code.description,
+        external_id: code.id == null ? null : String(code.id)
       }))
     }));
   }
