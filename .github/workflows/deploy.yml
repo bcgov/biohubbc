@@ -383,10 +383,10 @@ jobs:
     if: ${{ always() &&
       github.event.pull_request.merged == false &&
       github.event.pull_request.draft == false &&
-      ( needs.buildAndPushApp.result == 'success' ||
-      needs.buildAndPushDatabase.result == 'success' ||
-      needs.buildAndPushDatabaseSetup.result == 'success' ||
-      needs.buildAndPushAPI.result == 'success' ) }}
+      needs.buildAndPushApp.result == 'success' &&
+      needs.buildAndPushDatabase.result == 'success' &&
+      needs.buildAndPushDatabaseSetup.result == 'success' &&
+      needs.buildAndPushAPI.result == 'success' }}
     environment: dev
     env:
       PR_NUMBER: ${{ github.event.number }}
