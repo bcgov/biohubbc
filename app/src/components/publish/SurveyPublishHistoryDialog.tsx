@@ -1,5 +1,6 @@
 import { mdiDotsVertical, mdiOpenInNew, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -10,86 +11,53 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Menu from '@mui/material/Menu';
 import MenuItem from '@mui/material/MenuItem';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableContainer from '@mui/material/TableContainer';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
+import { GridColDef } from '@mui/x-data-grid';
+import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
+import { LoadingGuard } from 'components/loading/LoadingGuard';
+import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useConfigContext, useDialogContext } from 'hooks/useContext';
+import useDataLoader from 'hooks/useDataLoader';
 import { ISubmissionHistoryRow } from 'interfaces/usePublishApi.interface';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 
 interface ISurveyPublishHistoryDialogProps {
   open: boolean;
   onClose: () => void;
+  projectId: number;
+  surveyId: number;
   submissionId: string | undefined;
 }
 
-/**
- * Dialog showing publish history for a survey: table with Date, Status, and delete action for submitted uploads.
- */
-function renderDeleteErrorSnackbar(message: string) {
-  return (
-    <>
-      <Typography variant="body2" component="div">
-        <strong>Error deleting upload</strong>
-      </Typography>
-      <Typography variant="body2" component="div">
-        {message}
-      </Typography>
-    </>
-  );
-}
-
 const SurveyPublishHistoryDialog = (props: ISurveyPublishHistoryDialogProps) => {
-  const { open, onClose, submissionId } = props;
+  const { open, onClose, projectId, surveyId, submissionId } = props;
   const config = useConfigContext();
   const biohubApi = useBiohubApi();
   const dialogContext = useDialogContext();
 
-  const [history, setHistory] = useState<ISubmissionHistoryRow[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [actionMenuAnchor, setActionMenuAnchor] = useState<{
     anchor: HTMLElement;
     row: ISubmissionHistoryRow;
   } | null>(null);
   const rowToDeleteRef = useRef<ISubmissionHistoryRow | null>(null);
 
-  const loadHistory = useCallback(async () => {
-    if (!submissionId) {
-      setHistory([]);
-      return;
-    }
-    setLoading(true);
-    setError(null);
-    try {
-      const data = await biohubApi.publish.getSubmissionHistory(submissionId);
-      setHistory(data ?? []);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to load publish history';
-      setError(message);
-      setHistory([]);
-    } finally {
-      setLoading(false);
-    }
-  }, [submissionId, biohubApi.publish]);
+  const historyDataLoader = useDataLoader((projectId: number, surveyId: number, submissionId: string) =>
+    biohubApi.publish.getSubmissionHistory(projectId, surveyId, submissionId)
+  );
 
   useEffect(() => {
     if (open && submissionId) {
-      loadHistory();
+      historyDataLoader.load(projectId, surveyId, submissionId);
     } else if (!open) {
-      setHistory([]);
-      setError(null);
+      historyDataLoader.clearData();
       setActionMenuAnchor(null);
       rowToDeleteRef.current = null;
     }
-  }, [open, submissionId, loadHistory]);
+  }, [open, submissionId, projectId, surveyId, historyDataLoader]);
 
   const closeDeleteDialog = useCallback(() => {
     dialogContext.setYesNoDialog({ open: false });
@@ -102,22 +70,30 @@ const SurveyPublishHistoryDialog = (props: ISurveyPublishHistoryDialogProps) => 
       closeDeleteDialog();
       return;
     }
+
     try {
-      await biohubApi.publish.deleteSubmissionUpload(submissionId, toDelete.submissionUploadId);
+      await biohubApi.publish.deleteSubmissionUpload(projectId, surveyId, submissionId, toDelete.submissionUploadId);
       closeDeleteDialog();
-      setHistory((prev) =>
-        prev.map((r) => (r.submissionUploadId === toDelete.submissionUploadId ? { ...r, status: 'deleted' } : r))
-      );
+      await historyDataLoader.refresh(projectId, surveyId, submissionId);
       dialogContext.setSnackbar({ snackbarMessage: 'Upload request cancelled.', open: true });
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Failed to cancel upload request';
+    } catch (error: unknown) {
+      const message = (error as APIError).message || 'Failed to cancel upload request';
       closeDeleteDialog();
       dialogContext.setSnackbar({
-        snackbarMessage: renderDeleteErrorSnackbar(message),
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              <strong>Error deleting upload</strong>
+            </Typography>
+            <Typography variant="body2" component="div">
+              {message}
+            </Typography>
+          </>
+        ),
         open: true
       });
     }
-  }, [submissionId, biohubApi.publish, dialogContext, closeDeleteDialog]);
+  }, [submissionId, projectId, surveyId, biohubApi.publish, historyDataLoader, dialogContext, closeDeleteDialog]);
 
   const handleDeleteClick = () => {
     if (!actionMenuAnchor) {
@@ -139,12 +115,76 @@ const SurveyPublishHistoryDialog = (props: ISurveyPublishHistoryDialogProps) => 
     });
   };
 
-  const formatStatus = (status: string) => {
+  const formatStatus = useCallback((status: string) => {
     if (status.toLowerCase() === 'deleted') {
       return 'Cancelled';
     }
+
     return status.charAt(0).toUpperCase() + status.slice(1).toLowerCase();
-  };
+  }, []);
+
+  const openBioHubSubmission = useCallback(
+    (row: ISubmissionHistoryRow) => {
+      if (!row.submissionId) {
+        setActionMenuAnchor(null);
+        return;
+      }
+
+      const base = (config.BACKBONE_PUBLIC_WEB_HOST || '').replace(/\/$/, '');
+      window.open(`${base}/submissions/${row.submissionId}`, '_blank', 'noopener,noreferrer');
+      setActionMenuAnchor(null);
+    },
+    [config.BACKBONE_PUBLIC_WEB_HOST]
+  );
+
+  const rows = historyDataLoader.data ?? [];
+  const errorMessage = historyDataLoader.error ? (historyDataLoader.error as APIError).message : '';
+
+  const columns = useMemo<GridColDef<ISubmissionHistoryRow>[]>(
+    () => [
+      {
+        field: 'createDate',
+        headerName: 'Date',
+        flex: 1.5,
+        sortable: false,
+        renderCell: (params) => {
+          return getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, params.row.createDate) || params.row.createDate;
+        }
+      },
+      {
+        field: 'status',
+        headerName: 'Status',
+        flex: 1,
+        sortable: false,
+        renderCell: (params) => formatStatus(params.row.status)
+      },
+      {
+        field: 'actions',
+        headerName: '',
+        sortable: false,
+        filterable: false,
+        width: 72,
+        align: 'right',
+        headerAlign: 'right',
+        renderCell: (params) => {
+          if (!(params.row.status === 'submitted' || params.row.status === 'approved')) {
+            return null;
+          }
+
+          return (
+            <IconButton
+              size="small"
+              aria-label="Row actions"
+              onClick={(e) => setActionMenuAnchor({ anchor: e.currentTarget, row: params.row })}
+              sx={{ minWidth: 40, minHeight: 40 }}>
+              <Icon path={mdiDotsVertical} size={1.25} />
+            </IconButton>
+          );
+        }
+      }
+    ],
+    [formatStatus]
+  );
 
   return (
     <>
@@ -161,54 +201,40 @@ const SurveyPublishHistoryDialog = (props: ISurveyPublishHistoryDialogProps) => 
               No submission found for this survey.
             </Typography>
           )}
-          {submissionId && loading && (
-            <Typography variant="body2" color="textSecondary">
-              Loading...
-            </Typography>
-          )}
-          {submissionId && error && (
+
+          {submissionId && !!errorMessage && (
             <Typography variant="body2" color="error">
-              {error}
+              {errorMessage}
             </Typography>
           )}
-          {submissionId && !loading && !error && history.length === 0 && (
-            <Typography variant="body2" color="textSecondary">
-              No history yet.
-            </Typography>
-          )}
-          {submissionId && !loading && !error && history.length > 0 && (
-            <TableContainer>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Status</TableCell>
-                    <TableCell align="right" padding="checkbox" sx={{ width: 48 }} />
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {history.map((row) => (
-                    <TableRow key={row.submissionUploadId}>
-                      <TableCell>
-                        {getFormattedDate(DATE_FORMAT.MediumDateTimeFormat, row.createDate) || row.createDate}
-                      </TableCell>
-                      <TableCell>{formatStatus(row.status)}</TableCell>
-                      <TableCell align="right" padding="checkbox">
-                        {(row.status === 'submitted' || row.status === 'approved') && (
-                          <IconButton
-                            size="small"
-                            aria-label="Row actions"
-                            onClick={(e) => setActionMenuAnchor({ anchor: e.currentTarget, row })}
-                            sx={{ minWidth: 40, minHeight: 40 }}>
-                            <Icon path={mdiDotsVertical} size={1.25} />
-                          </IconButton>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </TableContainer>
+
+          {submissionId && !errorMessage && (
+            <LoadingGuard
+              isLoading={historyDataLoader.isLoading || !historyDataLoader.isReady}
+              isLoadingFallback={<SkeletonTable />}
+              hasNoData={!rows.length}
+              hasNoDataFallback={
+                <Typography variant="body2" color="textSecondary">
+                  No history yet.
+                </Typography>
+              }>
+              <Box>
+                <StyledDataGrid
+                  noRowsMessage="No history yet."
+                  rows={rows}
+                  columns={columns}
+                  loading={historyDataLoader.isLoading || !historyDataLoader.isReady}
+                  getRowId={(row) => row.submissionUploadId}
+                  rowSelection={false}
+                  checkboxSelection={false}
+                  disableRowSelectionOnClick
+                  disableColumnSelector
+                  disableColumnFilter
+                  disableColumnMenu
+                  hideFooter
+                />
+              </Box>
+            </LoadingGuard>
           )}
         </DialogContent>
         <DialogActions>
@@ -225,13 +251,7 @@ const SurveyPublishHistoryDialog = (props: ISurveyPublishHistoryDialogProps) => 
         anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}>
         {actionMenuAnchor?.row.status === 'approved' && (
-          <MenuItem
-            onClick={() => {
-              const base = (config.BACKBONE_PUBLIC_WEB_HOST || '').replace(/\/$/, '');
-              const url = `${base}/submissions/${actionMenuAnchor.row.submissionId}`;
-              window.open(url, '_blank', 'noopener,noreferrer');
-              setActionMenuAnchor(null);
-            }}>
+          <MenuItem onClick={() => openBioHubSubmission(actionMenuAnchor.row)}>
             <ListItemIcon>
               <Icon path={mdiOpenInNew} size={1} />
             </ListItemIcon>

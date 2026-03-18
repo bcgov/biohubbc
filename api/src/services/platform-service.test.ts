@@ -1033,7 +1033,7 @@ describe('PlatformService', () => {
       });
     });
 
-    it('should throw when initiate response has invalid submission UUID values', async () => {
+    it('should return initiate response ids without additional uuid validation', async () => {
       process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
       process.env.BACKBONE_SUBMISSION_UPLOAD_PATH = '/api/submission';
 
@@ -1061,12 +1061,10 @@ describe('PlatformService', () => {
         description: 'Test Description'
       } as any;
 
-      try {
-        await platformService._initiateSubmissionUpload('token', 1024, surveyDataPackage, 'comment', null);
-        expect.fail('Should have thrown');
-      } catch (error) {
-        expect((error as Error).message).to.include('Failed to initiate submission upload to BioHub');
-      }
+      const result = await platformService._initiateSubmissionUpload('token', 1024, surveyDataPackage, 'comment', null);
+
+      expect(result.submissionId).to.equal('not-a-uuid');
+      expect(result.submissionUploadId).to.equal('also-not-a-uuid');
     });
 
     it('should throw error when file size exceeds maximum', async () => {
@@ -1163,7 +1161,7 @@ describe('PlatformService', () => {
     });
   });
 
-  describe('getSubmissionHistory', () => {
+  describe('getSubmissionHistoryForSurvey', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -1174,6 +1172,7 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
+      const surveyId = 42;
       const submissionId = '550e8400-e29b-41d4-a716-446655440000';
       const mockHistory = [
         {
@@ -1184,10 +1183,13 @@ describe('PlatformService', () => {
         }
       ];
 
+      sinon
+        .stub(HistoryPublishService.prototype, 'findSurveyMetadataPublishRecordBySubmissionUuid')
+        .resolves({ survey_id: surveyId, submission_uuid: submissionId } as any);
       sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
       const axiosStub = sinon.stub(axios, 'get').resolves({ data: mockHistory });
 
-      const result = await platformService.getSubmissionHistory(submissionId);
+      const result = await platformService.getSubmissionHistoryForSurvey(surveyId, submissionId);
 
       expect(axiosStub.getCall(0).args[0]).to.include(`/submission/${submissionId}/history`);
       expect(axiosStub.getCall(0).args[1]?.headers?.authorization).to.equal('Bearer token');
@@ -1200,6 +1202,7 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
+      const surveyId = 42;
       const submissionId = '550e8400-e29b-41d4-a716-446655440000';
       const bioHubId = 456;
       const mockResponse = {
@@ -1213,14 +1216,18 @@ describe('PlatformService', () => {
         ]
       };
 
+      sinon
+        .stub(HistoryPublishService.prototype, 'findSurveyMetadataPublishRecordBySubmissionUuid')
+        .resolves({ survey_id: surveyId, submission_uuid: submissionId } as any);
       sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
       sinon.stub(axios, 'get').resolves({ data: mockResponse });
 
-      const result = await platformService.getSubmissionHistory(submissionId);
+      const result = await platformService.getSubmissionHistoryForSurvey(surveyId, submissionId);
 
+      expect(result).to.not.equal(null);
       expect(result).to.have.length(1);
-      expect(result[0].submissionId).to.equal(bioHubId);
-      expect(result[0].submissionUploadId).to.equal('upload-uuid-1');
+      expect(result?.[0].submissionId).to.equal(bioHubId);
+      expect(result?.[0].submissionUploadId).to.equal('upload-uuid-1');
     });
 
     it('should throw ApiError when axios.get fails', async () => {
@@ -1229,19 +1236,35 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
+      sinon
+        .stub(HistoryPublishService.prototype, 'findSurveyMetadataPublishRecordBySubmissionUuid')
+        .resolves({ survey_id: 42, submission_uuid: '550e8400-e29b-41d4-a716-446655440000' } as any);
       sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
       sinon.stub(axios, 'get').rejects(new Error('Network error'));
 
       try {
-        await platformService.getSubmissionHistory('550e8400-e29b-41d4-a716-446655440000');
+        await platformService.getSubmissionHistoryForSurvey(42, '550e8400-e29b-41d4-a716-446655440000');
         expect.fail('Should have thrown');
       } catch (error) {
         expect((error as ApiError).message).to.equal('Failed to get submission history from BioHub');
       }
     });
+
+    it('should return null when submission is not linked to survey', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(HistoryPublishService.prototype, 'findSurveyMetadataPublishRecordBySubmissionUuid').resolves(null);
+      const axiosStub = sinon.stub(axios, 'get');
+
+      const result = await platformService.getSubmissionHistoryForSurvey(42, '550e8400-e29b-41d4-a716-446655440000');
+
+      expect(result).to.equal(null);
+      expect(axiosStub).to.not.have.been.called;
+    });
   });
 
-  describe('deleteSubmissionUpload', () => {
+  describe('deleteSubmissionUploadForSurvey', () => {
     afterEach(() => {
       sinon.restore();
     });
@@ -1252,14 +1275,19 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
+      const surveyId = 42;
       const submissionId = '550e8400-e29b-41d4-a716-446655440000';
       const submissionUploadId = '550e8400-e29b-41d4-a716-446655440001';
 
+      sinon
+        .stub(HistoryPublishService.prototype, 'findSurveyMetadataPublishRecordBySubmissionUuid')
+        .resolves({ survey_id: surveyId, submission_uuid: submissionId } as any);
       sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
       const axiosStub = sinon.stub(axios, 'delete').resolves({ status: 204 });
 
-      await platformService.deleteSubmissionUpload(submissionId, submissionUploadId);
+      const result = await platformService.deleteSubmissionUploadForSurvey(surveyId, submissionId, submissionUploadId);
 
+      expect(result).to.equal(true);
       expect(axiosStub.getCall(0).args[0]).to.include(`/submission/${submissionId}/upload/${submissionUploadId}`);
       expect(axiosStub.getCall(0).args[1]?.headers?.authorization).to.equal('Bearer token');
     });
@@ -1270,11 +1298,15 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
+      sinon
+        .stub(HistoryPublishService.prototype, 'findSurveyMetadataPublishRecordBySubmissionUuid')
+        .resolves({ survey_id: 42, submission_uuid: '550e8400-e29b-41d4-a716-446655440000' } as any);
       sinon.stub(KeycloakService.prototype, 'getKeycloakServiceToken').resolves('token');
       sinon.stub(axios, 'delete').rejects(new Error('Network error'));
 
       try {
-        await platformService.deleteSubmissionUpload(
+        await platformService.deleteSubmissionUploadForSurvey(
+          42,
           '550e8400-e29b-41d4-a716-446655440000',
           '550e8400-e29b-41d4-a716-446655440001'
         );
@@ -1282,6 +1314,23 @@ describe('PlatformService', () => {
       } catch (error) {
         expect((error as ApiError).message).to.equal('Failed to delete submission upload in BioHub');
       }
+    });
+
+    it('should return false when submission is not linked to survey', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(HistoryPublishService.prototype, 'findSurveyMetadataPublishRecordBySubmissionUuid').resolves(null);
+      const axiosStub = sinon.stub(axios, 'delete');
+
+      const result = await platformService.deleteSubmissionUploadForSurvey(
+        42,
+        '550e8400-e29b-41d4-a716-446655440000',
+        '550e8400-e29b-41d4-a716-446655440001'
+      );
+
+      expect(result).to.equal(false);
+      expect(axiosStub).to.not.have.been.called;
     });
   });
 });

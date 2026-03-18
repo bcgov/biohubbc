@@ -271,6 +271,8 @@ const SurveyHeader = () => {
       <SurveyPublishHistoryDialog
         open={historyDialogOpen}
         onClose={() => setHistoryDialogOpen(false)}
+        projectId={surveyContext.projectId}
+        surveyId={surveyWithDetails.surveyData.survey_details.id}
         submissionId={surveyWithDetails.surveySupplementaryData.survey_metadata_publish?.submission_uuid}
       />
     </>

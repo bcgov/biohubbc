@@ -3,15 +3,15 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as db from '../../../../database/db';
-import { PlatformService } from '../../../../services/platform-service';
-import { KeycloakUserInformation } from '../../../../utils/keycloak-utils';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
+import * as db from '../../../../../../../../database/db';
+import { PlatformService } from '../../../../../../../../services/platform-service';
+import { KeycloakUserInformation } from '../../../../../../../../utils/keycloak-utils';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../__mocks__/db';
 import { DELETE, deleteSubmissionUpload } from './{submissionUploadId}';
 
 chai.use(sinonChai);
 
-describe('submission/{submissionId}/upload/{submissionUploadId}', () => {
+describe('project/{projectId}/survey/{surveyId}/submission/{submissionId}/upload/{submissionUploadId}', () => {
   describe('openapi schema', () => {
     const ajv = new Ajv();
 
@@ -28,12 +28,13 @@ describe('submission/{submissionId}/upload/{submissionUploadId}', () => {
     it('returns 204 when delete succeeds', async () => {
       const dbConnectionObj = getMockDBConnection();
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-      sinon.stub(PlatformService.prototype, 'deleteSubmissionUpload').resolves();
+      sinon.stub(PlatformService.prototype, 'deleteSubmissionUploadForSurvey').resolves(true);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
       mockReq.params = {
+        surveyId: '42',
         submissionId: '550e8400-e29b-41d4-a716-446655440000',
-        submissionUploadId: 'upload-uuid-123'
+        submissionUploadId: '550e8400-e29b-41d4-a716-446655440001'
       };
       mockReq.keycloak_token = {} as KeycloakUserInformation;
 
@@ -44,15 +45,38 @@ describe('submission/{submissionId}/upload/{submissionUploadId}', () => {
       expect(mockRes.sendValue).to.equal(undefined);
     });
 
-    it('rethrows error and calls connection.release', async () => {
-      const dbConnectionObj = getMockDBConnection({ release: sinon.stub() });
+    it('returns 404 when submission is not found for survey', async () => {
+      const dbConnectionObj = getMockDBConnection();
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-      sinon.stub(PlatformService.prototype, 'deleteSubmissionUpload').rejects(new Error('BioHub delete failed'));
+      sinon.stub(PlatformService.prototype, 'deleteSubmissionUploadForSurvey').resolves(false);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
       mockReq.params = {
+        surveyId: '42',
         submissionId: '550e8400-e29b-41d4-a716-446655440000',
-        submissionUploadId: 'upload-uuid-123'
+        submissionUploadId: '550e8400-e29b-41d4-a716-446655440001'
+      };
+      mockReq.keycloak_token = {} as KeycloakUserInformation;
+
+      const handler = deleteSubmissionUpload();
+      await handler(mockReq, mockRes as any, mockNext);
+
+      expect(mockRes.statusValue).to.equal(404);
+      expect(mockRes.jsonValue).to.eql({ message: 'Submission not found for survey' });
+    });
+
+    it('rethrows error and calls connection.release', async () => {
+      const dbConnectionObj = getMockDBConnection({ release: sinon.stub() });
+      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+      sinon
+        .stub(PlatformService.prototype, 'deleteSubmissionUploadForSurvey')
+        .rejects(new Error('BioHub delete failed'));
+
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+      mockReq.params = {
+        surveyId: '42',
+        submissionId: '550e8400-e29b-41d4-a716-446655440000',
+        submissionUploadId: '550e8400-e29b-41d4-a716-446655440001'
       };
       mockReq.keycloak_token = {} as KeycloakUserInformation;
 

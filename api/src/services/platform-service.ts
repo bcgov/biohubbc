@@ -5,7 +5,6 @@ import path from 'node:path';
 import qs from 'qs';
 import * as tarStream from 'tar-stream';
 import { URL } from 'url';
-import { z } from 'zod';
 import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
 import { formatAxiosError } from '../errors/axios-error';
@@ -23,6 +22,11 @@ import { SurveyHabitatFeatureService } from './habitat-feature-services/survey-h
 import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
 import { ObservationService } from './observation-services/observation-service';
+import {
+  IBioHubSubmissionHistoryRow,
+  IBioHubWrappedSubmissionHistoryResponse,
+  ISubmissionHistoryRow
+} from './platform-service.interface';
 import { SamplePeriodService } from './sample-period-service';
 import { SampleSiteService } from './sample-site-service';
 import { SampleTechniqueService } from './sample-technique-service';
@@ -77,25 +81,6 @@ const getBackboneTaxonTsnPath = () => getEnvironmentVariable('BIOHUB_TAXON_TSN_P
 const getBackboneTaxonPath = () => getEnvironmentVariable('BIOHUB_TAXON_PATH');
 const getBackboneSubmissionUploadPath = () => getEnvironmentVariable('BACKBONE_SUBMISSION_UPLOAD_PATH');
 const getBackboneUploadCompletePath = () => getEnvironmentVariable('BACKBONE_UPLOAD_COMPLETE_PATH');
-const uuidSchema = z.string().uuid();
-
-interface IBioHubSubmissionHistoryRow {
-  submissionUploadId: string;
-  status: string;
-  createDate: string;
-}
-
-interface IBioHubWrappedSubmissionHistoryResponse {
-  submissionId: number;
-  history: IBioHubSubmissionHistoryRow[];
-}
-
-export interface ISubmissionHistoryRow {
-  submissionUploadId: string;
-  status: string;
-  createDate: string;
-  submissionId?: number;
-}
 
 export class PlatformService extends DBService {
   attachmentService: AttachmentService;
@@ -966,20 +951,14 @@ export class PlatformService extends DBService {
         fullResponse: response.data
       });
 
-      const submissionId = this._requireUuid(response.data.submissionId, 'BioHub response submissionId');
-      const submissionUploadId = this._requireUuid(
-        response.data.submissionUploadId,
-        'BioHub response submissionUploadId'
-      );
-
       return {
         uploadId: response.data.uploadId,
         s3UploadId: response.data.s3UploadId,
         key: response.data.key,
         presignedUrls: response.data.presignedUrls,
         partCount: response.data.partCount,
-        submissionId,
-        submissionUploadId
+        submissionId: response.data.submissionId,
+        submissionUploadId: response.data.submissionUploadId
       };
     } catch (error) {
       defaultLog.error({
@@ -1185,34 +1164,41 @@ export class PlatformService extends DBService {
   }
 
   /**
-   * Validates a UUID path parameter before constructing downstream URLs.
+   * Resolves and validates a survey-linked submission UUID.
    *
-   * @param {string} value
-   * @param {string} fieldName
-   * @return {string}
+   * @param {string} submissionId - Submission UUID
+   * @param {number} surveyId - SIMS survey ID
+   * @return {*}  {Promise<string | null>}
    * @memberof PlatformService
    */
-  _requireUuid(value: string, fieldName: string): string {
-    const parsed = uuidSchema.safeParse(value);
-    if (!parsed.success) {
-      throw new ApiError(ApiErrorType.UNKNOWN, `Invalid ${fieldName}: expected uuid`);
+  async _validateSubmissionSurvey(submissionId: string, surveyId: number): Promise<string | null> {
+    const publishRecord =
+      await this.historyPublishService.findSurveyMetadataPublishRecordBySubmissionUuid(submissionId);
+
+    if (publishRecord?.survey_id !== surveyId) {
+      return null;
     }
 
-    return parsed.data;
+    return publishRecord.submission_uuid;
   }
 
   /**
    * Get submission upload history from BioHub.
    *
+   * @param {number} surveyId - SIMS Survey ID
    * @param {string} submissionId - Submission UUID
-   * @return {*}  {Promise<ISubmissionHistoryRow[]>}
+   * @return {*}  {Promise<ISubmissionHistoryRow[] | null>}
    * @memberof PlatformService
    */
-  async getSubmissionHistory(submissionId: string): Promise<ISubmissionHistoryRow[]> {
+  async getSubmissionHistoryForSurvey(surveyId: number, submissionId: string): Promise<ISubmissionHistoryRow[] | null> {
+    const validatedSubmissionUuid = await this._validateSubmissionSurvey(submissionId, surveyId);
+    if (!validatedSubmissionUuid) {
+      return null;
+    }
+
     const keycloakService = new KeycloakService();
     const token = await keycloakService.getKeycloakServiceToken();
-    const validatedSubmissionId = this._requireUuid(submissionId, 'submissionId');
-    const url = new URL(`/submission/${validatedSubmissionId}/history`, getBackboneInternalApiHost()).href;
+    const url = new URL(`/submission/${validatedSubmissionUuid}/history`, getBackboneInternalApiHost()).href;
 
     try {
       const response = await axios.get<IBioHubSubmissionHistoryRow[] | IBioHubWrappedSubmissionHistoryResponse>(url, {
@@ -1246,18 +1232,26 @@ export class PlatformService extends DBService {
   /**
    * Soft-delete a submission upload in BioHub (only when status is submitted).
    *
+   * @param {number} surveyId - SIMS Survey ID
    * @param {string} submissionId - Submission UUID
    * @param {string} submissionUploadId - Submission upload UUID
-   * @return {*}  {Promise<void>}
+   * @return {*}  {Promise<boolean>}
    * @memberof PlatformService
    */
-  async deleteSubmissionUpload(submissionId: string, submissionUploadId: string): Promise<void> {
+  async deleteSubmissionUploadForSurvey(
+    surveyId: number,
+    submissionId: string,
+    submissionUploadId: string
+  ): Promise<boolean> {
+    const validatedSubmissionUuid = await this._validateSubmissionSurvey(submissionId, surveyId);
+    if (!validatedSubmissionUuid) {
+      return false;
+    }
+
     const keycloakService = new KeycloakService();
     const token = await keycloakService.getKeycloakServiceToken();
-    const validatedSubmissionId = this._requireUuid(submissionId, 'submissionId');
-    const validatedSubmissionUploadId = this._requireUuid(submissionUploadId, 'submissionUploadId');
     const url = new URL(
-      `/submission/${validatedSubmissionId}/upload/${validatedSubmissionUploadId}`,
+      `/submission/${validatedSubmissionUuid}/upload/${submissionUploadId}`,
       getBackboneInternalApiHost()
     ).href;
 
@@ -1268,6 +1262,7 @@ export class PlatformService extends DBService {
           'Content-Type': 'application/json'
         }
       });
+      return true;
     } catch (error) {
       defaultLog.error({
         label: 'deleteSubmissionUpload',
