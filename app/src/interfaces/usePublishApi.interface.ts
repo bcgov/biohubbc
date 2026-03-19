@@ -9,5 +9,5 @@ export interface ISubmissionHistoryRow {
   submissionUploadId: string;
   status: string;
   createDate: string;
-  submissionId?: number;
+  submissionId: number;
 }
