@@ -18,6 +18,7 @@ app:
 
   # BioHub Platform (aka: Backbone)
   backbonePublicApiHost: "" # Backbone API host for application frontend
+  backbonePublicWebHost: "" # Backbone web app host for "View in BioHub" links (e.g. submission pages)
   biohubTaxonPath: /api/taxonomy/taxon # API path for BioHub Platform Backbone taxon endpoint. Example "/api/path/to/taxon"
   biohubTaxonTsnPath: /api/taxonomy/taxon/tsn # API path for BioHub Platform Backbone taxon TSN endpoint. Example "/api/path/to/taxon/tsn"
 

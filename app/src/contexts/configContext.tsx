@@ -18,6 +18,7 @@ export interface IConfig {
   MAX_UPLOAD_FILE_SIZE: number;
   S3_PUBLIC_HOST_URL: string;
   BACKBONE_PUBLIC_API_HOST: string;
+  BACKBONE_PUBLIC_WEB_HOST: string;
   BIOHUB_TAXON_PATH: string;
   BIOHUB_TAXON_TSN_PATH: string;
   /**
@@ -85,6 +86,7 @@ const getLocalConfig = (): IConfig => {
      * BioHub settings
      */
     BACKBONE_PUBLIC_API_HOST: import.meta.env.VITE_APP_BACKBONE_PUBLIC_API_HOST || '',
+    BACKBONE_PUBLIC_WEB_HOST: import.meta.env.VITE_APP_BACKBONE_PUBLIC_WEB_HOST || '',
     BIOHUB_TAXON_PATH: import.meta.env.VITE_APP_BIOHUB_TAXON_PATH || '',
     BIOHUB_TAXON_TSN_PATH: import.meta.env.VITE_APP_BIOHUB_TAXON_TSN_PATH || '',
     /**

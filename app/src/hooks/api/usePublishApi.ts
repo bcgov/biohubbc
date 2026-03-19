@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { ISubmitSurvey } from 'components/publish/PublishSurveyDialog';
-import { IProjectSubmitForm } from 'interfaces/usePublishApi.interface';
+import { IProjectSubmitForm, ISubmissionHistoryRow } from 'interfaces/usePublishApi.interface';
 
 /**
  * Returns a list of all resources
@@ -48,9 +48,33 @@ const usePublishApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const getSubmissionHistory = async (
+    projectId: number,
+    surveyId: number,
+    submissionId: string
+  ): Promise<ISubmissionHistoryRow[]> => {
+    const { data } = await axios.get<ISubmissionHistoryRow[]>(
+      `/api/project/${projectId}/survey/${surveyId}/submission/${submissionId}/history`
+    );
+    return data;
+  };
+
+  const deleteSubmissionUpload = async (
+    projectId: number,
+    surveyId: number,
+    submissionId: string,
+    submissionUploadId: string
+  ): Promise<void> => {
+    await axios.delete(
+      `/api/project/${projectId}/survey/${surveyId}/submission/${submissionId}/upload/${submissionUploadId}`
+    );
+  };
+
   return {
     publishSurveyData,
-    publishProject
+    publishProject,
+    getSubmissionHistory,
+    deleteSubmissionUpload
   };
 };
 

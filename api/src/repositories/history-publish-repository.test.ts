@@ -23,7 +23,10 @@ describe('HistoryPublishRepository', () => {
       });
 
       const repo = new HistoryPublishRepository(mockConnection);
-      const response = await repo.insertSurveyMetadataPublishRecord({ survey_id: 1, submission_uuid: '123-456-789' });
+      const response = await repo.insertSurveyMetadataPublishRecord({
+        survey_id: 1,
+        submission_uuid: '550e8400-e29b-41d4-a716-446655440000'
+      });
 
       expect(response).to.be.eql(1);
     });
@@ -37,7 +40,10 @@ describe('HistoryPublishRepository', () => {
 
       const repo = new HistoryPublishRepository(mockConnection);
       try {
-        await repo.insertSurveyMetadataPublishRecord({ survey_id: 1, submission_uuid: '123-456-789' });
+        await repo.insertSurveyMetadataPublishRecord({
+          survey_id: 1,
+          submission_uuid: '550e8400-e29b-41d4-a716-446655440000'
+        });
         expect.fail();
       } catch (error) {
         expect((error as ApiExecuteSQLError).message).to.equal('Failed to insert Survey Metadata Publish record');
@@ -199,6 +205,38 @@ describe('HistoryPublishRepository', () => {
 
       const surveyReportAttachmentId = 1;
       const response = await repository.getSurveyReportPublishRecord(surveyReportAttachmentId);
+
+      expect(response).to.be.null;
+    });
+  });
+
+  describe('findSurveyMetadataPublishRecordBySubmissionUuid', () => {
+    it('should return a record when one exists', async () => {
+      const submissionUuid = '550e8400-e29b-41d4-a716-446655440000';
+      const mockRow = {
+        survey_metadata_publish_id: 1,
+        survey_id: 2,
+        submission_uuid: submissionUuid
+      };
+      const mockConnection = getMockDBConnection({
+        sql: async () => ({ rowCount: 1, rows: [mockRow] }) as any as Promise<QueryResult<any>>
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+      const response = await repository.findSurveyMetadataPublishRecordBySubmissionUuid(submissionUuid);
+
+      expect(response).to.be.eql(mockRow);
+    });
+
+    it('should return null when no record exists', async () => {
+      const mockConnection = getMockDBConnection({
+        sql: async () => ({ rowCount: 0, rows: [] }) as any as Promise<QueryResult<any>>
+      });
+
+      const repository = new HistoryPublishRepository(mockConnection);
+      const response = await repository.findSurveyMetadataPublishRecordBySubmissionUuid(
+        '550e8400-e29b-41d4-a716-446655440000'
+      );
 
       expect(response).to.be.null;
     });

@@ -7,7 +7,6 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import useTheme from '@mui/material/styles/useTheme';
-import Typography from '@mui/material/Typography';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -112,8 +111,6 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
-  const publishDate = surveyWithDetails.surveySupplementaryData.survey_metadata_publish?.event_timestamp.split(' ')[0];
-
   return (
     <>
       <ComponentDialog
@@ -148,19 +145,6 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
                 <PublishSurveyIdContent />
               </DialogContent>
               <DialogActions>
-                <Typography component="span" variant="subtitle2" sx={{ mr: 2 }}>
-                  <Typography component="span" color="textSecondary" variant="inherit">
-                    {publishDate ? (
-                      <span>
-                        Status:&nbsp;&nbsp;<b>Published ({publishDate})</b>
-                      </span>
-                    ) : (
-                      <span>
-                        Status:&nbsp;&nbsp;<b>Unpublished</b>
-                      </span>
-                    )}
-                  </Typography>
-                </Typography>
                 <LoadingButton
                   onClick={formikProps.submitForm}
                   color="primary"

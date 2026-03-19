@@ -11,6 +11,7 @@ app:
 
   # BioHub Platform (aka: Backbone)
   backbonePublicApiHost: "https://api-biohub-platform.apps.silver.devops.gov.bc.ca"
+  backbonePublicWebHost: "https://biohub-platform.apps.silver.devops.gov.bc.ca"
 
   # Siteminder
   siteminderLogoutURL: "https://logon7.gov.bc.ca/clp-cgi/logoff.cgi"

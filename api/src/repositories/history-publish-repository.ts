@@ -214,7 +214,15 @@ export class HistoryPublishRepository extends BaseRepository {
     // Select 1 record with latest timestamp
     const sqlStatement = SQL`
       select
-        *
+        survey_metadata_publish_id,
+        survey_id,
+        event_timestamp,
+        submission_uuid,
+        create_date,
+        create_user,
+        update_date,
+        update_user,
+        revision_count
       from
         survey_metadata_publish
       where
@@ -224,9 +232,40 @@ export class HistoryPublishRepository extends BaseRepository {
       limit 1;
     `;
 
-    const response = await this.connection.sql<SurveyMetadataPublish>(sqlStatement);
+    const response = await this.connection.sql(sqlStatement, SurveyMetadataPublish);
 
-    return (response.rows.length && response.rows[0]) || null;
+    return response.rows[0] ?? null;
+  }
+
+  /**
+   * Gets a record from `survey_metadata_publish` for a given submission_uuid.
+   *
+   * @param {string} submissionUuid
+   * @return {*}  {Promise<(SurveyMetadataPublish | null)>}
+   * @memberof HistoryPublishRepository
+   */
+  async findSurveyMetadataPublishRecordBySubmissionUuid(submissionUuid: string): Promise<SurveyMetadataPublish | null> {
+    const sqlStatement = SQL`
+      select
+        survey_metadata_publish_id,
+        survey_id,
+        event_timestamp,
+        submission_uuid,
+        create_date,
+        create_user,
+        update_date,
+        update_user,
+        revision_count
+      from
+        survey_metadata_publish
+      where
+        submission_uuid = ${submissionUuid}
+      limit 1;
+    `;
+
+    const response = await this.connection.sql(sqlStatement, SurveyMetadataPublish);
+
+    return response.rows[0] ?? null;
   }
 
   /**

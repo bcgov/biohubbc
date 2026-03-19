@@ -27,7 +27,7 @@ app:
   # BioHub Platform (aka: Backbone)
   backboneInternalApiHost: "" # API host for BioHub Platform Backbone. Example "https://platform.com".
   backbonePublicApiHost: ""
-  backboneSubmissionUploadPath: /api/submission/upload/archive # The multipart upload initiation endpoint path for BioHub Platform submissions. Example "/api/path/to/upload/archive".
+  backboneSubmissionUploadPath: /api/submission # Base path: first-time = {path}/upload/archive, re-publish = {path}/{submission_uuid}/upload.
   backboneUploadCompletePath: /api/upload # The multipart upload completion endpoint path for BioHub Platform submissions. Example "/api/path/to/upload".
   biohubTaxonPath: /api/taxonomy/taxon # API path for BioHub Platform Backbone taxon endpoint. Example "/api/path/to/taxon"
   biohubTaxonTsnPath: /api/taxonomy/taxon/tsn # API path for BioHub Platform Backbone taxon TSN endpoint. Example "/api/path/to/taxon/tsn"

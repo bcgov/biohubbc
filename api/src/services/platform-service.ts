@@ -22,6 +22,11 @@ import { SurveyHabitatFeatureService } from './habitat-feature-services/survey-h
 import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
 import { ObservationService } from './observation-services/observation-service';
+import {
+  IBioHubSubmissionHistoryRow,
+  IBioHubWrappedSubmissionHistoryResponse,
+  ISubmissionHistoryRow
+} from './platform-service.interface';
 import { SamplePeriodService } from './sample-period-service';
 import { SampleSiteService } from './sample-site-service';
 import { SampleTechniqueService } from './sample-technique-service';
@@ -197,6 +202,10 @@ export class PlatformService extends DBService {
       throw new ApiGeneralError('Publishing to BioHub is not currently enabled.');
     }
 
+    // If survey was previously published, use existing submission_uuid for re-publish endpoint
+    const existingPublishRecord = await this.historyPublishService.getSurveyMetadataPublishRecord(surveyId);
+    const existingSubmissionUuid = existingPublishRecord?.submission_uuid ?? null;
+
     // Get keycloak token for SIMS service client account
     const keycloakService = new KeycloakService();
     const token = await keycloakService.getKeycloakServiceToken();
@@ -256,18 +265,21 @@ export class PlatformService extends DBService {
     const tarFileSize = fs.statSync(tarFilePath).size;
 
     // Step 1: Initiate upload and get presigned URLs
-    const { uploadId, s3UploadId, key, presignedUrls, partCount, submissionId } = await this._initiateSubmissionUpload(
-      token,
-      tarFileSize,
-      surveyDataPackage,
-      data.submissionComment
-    );
+    const { uploadId, s3UploadId, key, presignedUrls, partCount, submissionId, submissionUploadId } =
+      await this._initiateSubmissionUpload(
+        token,
+        tarFileSize,
+        surveyDataPackage,
+        data.submissionComment,
+        existingSubmissionUuid
+      );
 
     defaultLog.info({
       label: 'submitSurveyToBioHub',
       message: 'Initiated multipart upload',
       uploadId,
       submissionId,
+      submissionUploadId,
       partCount
     });
 
@@ -303,13 +315,13 @@ export class PlatformService extends DBService {
       }
     }
 
-    // Insert publish history record
+    // Insert or update publish history record using the UUID returned by BioHub.
     await this.historyPublishService.insertSurveyMetadataPublishRecord({
       survey_id: surveyId,
-      submission_uuid: uploadId
+      submission_uuid: submissionId
     });
 
-    return { submission_uuid: uploadId };
+    return { submission_uuid: submissionId };
   }
 
   /**
@@ -846,28 +858,36 @@ export class PlatformService extends DBService {
 
   /**
    * Initiates a multipart upload to BioHub and gets presigned URLs for S3.
+   * When existingSubmissionUuid is set, uses /submission/:submissionId/upload for re-publish.
    *
    * @param {string} token - Keycloak service token
    * @param {number} tarFileSize - Size of the TAR file in bytes
    * @param {PostSurveySubmissionToBioHubObject} surveyDataPackage - Survey data package
    * @param {string} submissionComment - Comment for the submission
-   * @return {*}  {Promise<{uploadId: string, s3UploadId: string, key: string, presignedUrls: Array<{partNumber: number, url: string}>, partCount: number, submissionId: number}>}
+   * @param {string | null} existingSubmissionUuid - When set, initiate upload for this existing submission (re-publish)
+   * @return {*}  {Promise<{uploadId: string, s3UploadId: string, key: string, presignedUrls: Array<{partNumber: number, url: string}>, partCount: number, submissionId: string, submissionUploadId: string}>}
    * @memberof PlatformService
    */
   async _initiateSubmissionUpload(
     token: string,
     tarFileSize: number,
     surveyDataPackage: PostSurveySubmissionToBioHubObject,
-    submissionComment: string
+    submissionComment: string,
+    existingSubmissionUuid: string | null
   ): Promise<{
     uploadId: string;
     s3UploadId: string;
     key: string;
     presignedUrls: Array<{ partNumber: number; url: string }>;
     partCount: number;
-    submissionId: number;
+    submissionId: string;
+    submissionUploadId: string;
   }> {
-    defaultLog.debug({ label: '_initiateSubmissionUpload', tarFileSize });
+    defaultLog.debug({
+      label: '_initiateSubmissionUpload',
+      tarFileSize,
+      existingSubmissionUuid: !!existingSubmissionUuid
+    });
 
     // Validate file size
     const SUBMISSION_UPLOAD_MAX_SIZE = getEnvironmentVariable('SUBMISSION_UPLOAD_MAX_SIZE');
@@ -878,8 +898,14 @@ export class PlatformService extends DBService {
       );
     }
 
-    // Create submission upload URL
-    const backboneSubmissionUploadUrl = new URL(getBackboneSubmissionUploadPath(), getBackboneInternalApiHost()).href;
+    // Create submission upload URL: first-time = {base}/upload/archive, re-publish = {base}/{submission_uuid}/upload
+    // Normalize base: strip trailing /upload/archive so env can be /api/submission or /api/submission/upload/archive
+    const rawPath = getBackboneSubmissionUploadPath();
+    const basePath = rawPath.replace(/\/upload\/archive\/?$/, '') || rawPath;
+    const initiatePath = existingSubmissionUuid
+      ? `${basePath}/${existingSubmissionUuid}/upload`
+      : `${basePath}/upload/archive`;
+    const backboneSubmissionUploadUrl = new URL(initiatePath, getBackboneInternalApiHost()).href;
 
     // Prepare request body
     const requestBody = {
@@ -891,7 +917,8 @@ export class PlatformService extends DBService {
 
     try {
       const response = await axios.post<{
-        submissionId: number;
+        submissionId: string;
+        submissionUploadId: string;
         uploadId: string;
         s3UploadId: string;
         uploadArchiveId: string;
@@ -910,8 +937,18 @@ export class PlatformService extends DBService {
         label: '_initiateSubmissionUpload',
         message: 'Received presigned URLs',
         submissionId: response.data.submissionId,
+        submissionUploadId: response.data.submissionUploadId,
         uploadId: response.data.uploadId,
         partCount: response.data.partCount
+      });
+
+      defaultLog.debug({
+        label: '_initiateSubmissionUpload',
+        message: 'BioHub initiate response (full)',
+        uploadId: response.data.uploadId,
+        submissionId: response.data.submissionId,
+        submissionUploadId: response.data.submissionUploadId,
+        fullResponse: response.data
       });
 
       return {
@@ -920,12 +957,14 @@ export class PlatformService extends DBService {
         key: response.data.key,
         presignedUrls: response.data.presignedUrls,
         partCount: response.data.partCount,
-        submissionId: response.data.submissionId
+        submissionId: response.data.submissionId,
+        submissionUploadId: response.data.submissionUploadId
       };
     } catch (error) {
       defaultLog.error({
         label: '_initiateSubmissionUpload',
         message: 'Failed to initiate submission upload',
+        url: backboneSubmissionUploadUrl,
         error: formatAxiosError(error)
       });
       throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to initiate submission upload to BioHub');
@@ -1121,6 +1160,118 @@ export class PlatformService extends DBService {
         error: formatAxiosError(error)
       });
       throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to complete submission upload to BioHub');
+    }
+  }
+
+  /**
+   * Resolves and validates a survey-linked submission UUID.
+   *
+   * @param {string} submissionId - Submission UUID
+   * @param {number} surveyId - SIMS survey ID
+   * @return {*}  {Promise<string | null>}
+   * @memberof PlatformService
+   */
+  async _validateSubmissionSurvey(submissionId: string, surveyId: number): Promise<string | null> {
+    const publishRecord =
+      await this.historyPublishService.findSurveyMetadataPublishRecordBySubmissionUuid(submissionId);
+
+    if (publishRecord?.survey_id !== surveyId) {
+      return null;
+    }
+
+    return publishRecord.submission_uuid;
+  }
+
+  /**
+   * Get submission upload history from BioHub.
+   *
+   * @param {number} surveyId - SIMS Survey ID
+   * @param {string} submissionId - Submission UUID
+   * @return {*}  {Promise<ISubmissionHistoryRow[] | null>}
+   * @memberof PlatformService
+   */
+  async getSubmissionHistoryForSurvey(surveyId: number, submissionId: string): Promise<ISubmissionHistoryRow[] | null> {
+    const validatedSubmissionUuid = await this._validateSubmissionSurvey(submissionId, surveyId);
+    if (!validatedSubmissionUuid) {
+      return null;
+    }
+
+    const keycloakService = new KeycloakService();
+    const token = await keycloakService.getKeycloakServiceToken();
+    const url = new URL(`/submission/${validatedSubmissionUuid}/history`, getBackboneInternalApiHost()).href;
+
+    try {
+      const response = await axios.get<IBioHubSubmissionHistoryRow[] | IBioHubWrappedSubmissionHistoryResponse>(url, {
+        headers: {
+          authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      const data = response.data;
+      if (Array.isArray(data)) {
+        return data ?? [];
+      }
+
+      return (data.history ?? []).map((item) => ({
+        submissionUploadId: item.submissionUploadId,
+        status: item.status,
+        createDate: item.createDate,
+        submissionId: data.submissionId
+      }));
+    } catch (error) {
+      defaultLog.error({
+        label: 'getSubmissionHistory',
+        message: 'Failed to get submission history from BioHub',
+        submissionId,
+        error: formatAxiosError(error)
+      });
+      throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to get submission history from BioHub');
+    }
+  }
+
+  /**
+   * Soft-delete a submission upload in BioHub (only when status is submitted).
+   *
+   * @param {number} surveyId - SIMS Survey ID
+   * @param {string} submissionId - Submission UUID
+   * @param {string} submissionUploadId - Submission upload UUID
+   * @return {*}  {Promise<boolean>}
+   * @memberof PlatformService
+   */
+  async deleteSubmissionUploadForSurvey(
+    surveyId: number,
+    submissionId: string,
+    submissionUploadId: string
+  ): Promise<boolean> {
+    const validatedSubmissionUuid = await this._validateSubmissionSurvey(submissionId, surveyId);
+    if (!validatedSubmissionUuid) {
+      return false;
+    }
+
+    const keycloakService = new KeycloakService();
+    const token = await keycloakService.getKeycloakServiceToken();
+    const url = new URL(
+      `/submission/${validatedSubmissionUuid}/upload/${submissionUploadId}`,
+      getBackboneInternalApiHost()
+    ).href;
+
+    try {
+      await axios.delete(url, {
+        headers: {
+          authorization: `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      });
+      return true;
+    } catch (error) {
+      defaultLog.error({
+        label: 'deleteSubmissionUpload',
+        message: 'Failed to delete submission upload in BioHub',
+        submissionId,
+        submissionUploadId,
+        error: formatAxiosError(error)
+      });
+      throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to delete submission upload in BioHub');
     }
   }
 }

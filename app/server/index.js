@@ -88,6 +88,7 @@ import { fileURLToPath } from 'url';
        * BioHub settings
        */
       BACKBONE_PUBLIC_API_HOST: process.env.VITE_APP_BACKBONE_PUBLIC_API_HOST,
+      BACKBONE_PUBLIC_WEB_HOST: process.env.VITE_APP_BACKBONE_PUBLIC_WEB_HOST,
       BIOHUB_TAXON_PATH: process.env.VITE_APP_BIOHUB_TAXON_PATH,
       BIOHUB_TAXON_TSN_PATH: process.env.VITE_APP_BIOHUB_TAXON_TSN_PATH,
       /**

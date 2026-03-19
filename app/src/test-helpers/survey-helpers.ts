@@ -97,7 +97,7 @@ export const surveySupplementaryData: SurveySupplementaryData = {
     survey_metadata_publish_id: 1,
     survey_id: 1,
     event_timestamp: '2000-11-10 11:53:53',
-    submission_uuid: '123-456-789',
+    submission_uuid: '550e8400-e29b-41d4-a716-446655440000',
     create_date: '2000-12-10 11:53:53',
     create_user: 1,
     update_date: '2000-12-20 11:53:53',

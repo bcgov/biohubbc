@@ -65,6 +65,17 @@ export class HistoryPublishService extends DBService {
   }
 
   /**
+   * Gets a record from `survey_metadata_publish` for a given submission_uuid, if one exists.
+   *
+   * @param {string} submissionUuid
+   * @return {*}  {(Promise<SurveyMetadataPublish | null>)}
+   * @memberof HistoryPublishService
+   */
+  async findSurveyMetadataPublishRecordBySubmissionUuid(submissionUuid: string): Promise<SurveyMetadataPublish | null> {
+    return this.historyRepository.findSurveyMetadataPublishRecordBySubmissionUuid(submissionUuid);
+  }
+
+  /**
    * Gets a record from `survey_attachment_publish` for a given project id, if one exists.
    *
    * @param {ISurveyAttachmentPublish} data

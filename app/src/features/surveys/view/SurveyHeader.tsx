@@ -2,6 +2,7 @@ import {
   mdiCalendarRange,
   mdiChevronDown,
   mdiCogOutline,
+  mdiHistory,
   mdiPencilOutline,
   mdiTrashCanOutline,
   mdiTrayArrowDown
@@ -22,6 +23,7 @@ import HelpButtonDialog from 'components/buttons/HelpButtonDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import PageHeader from 'components/layout/PageHeader';
 import PublishSurveyIdDialog from 'components/publish/PublishSurveyDialog';
+import SurveyPublishHistoryDialog from 'components/publish/SurveyPublishHistoryDialog';
 import { ProjectRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
@@ -126,6 +128,7 @@ const SurveyHeader = () => {
 
   const [menuAnchorEl, setMenuAnchorEl] = useState<null | HTMLElement>(null);
   const [publishSurveyDialogOpen, setPublishSurveyDialogOpen] = useState<boolean>(false);
+  const [historyDialogOpen, setHistoryDialogOpen] = useState<boolean>(false);
 
   if (!surveyWithDetails) {
     return <CircularProgress className="pageProgress" size={40} />;
@@ -170,30 +173,11 @@ const SurveyHeader = () => {
           <ProjectRoleGuard
             validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR, PROJECT_PERMISSION.COLLABORATOR]}
             validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-            <Stack flexDirection="row" alignItems="center" gap={2}>
+            <Stack flexDirection="row" alignItems="center" gap={1}>
               <HelpButtonDialog markdownType={MarkdownTypeNameEnum.SURVEY_PAGE} />
               <ProjectRoleGuard
                 validProjectPermissions={[PROJECT_PERMISSION.COORDINATOR]}
                 validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR]}>
-                <Typography
-                  component="span"
-                  variant="body2"
-                  color="textSecondary"
-                  sx={{
-                    flex: '0 0 auto',
-                    mr: { sm: 0, md: 0.5 },
-                    order: { sm: 3, md: 0 }
-                  }}>
-                  {publishDate ? (
-                    <span>
-                      Status:&nbsp;&nbsp;<b>Published ({publishDate})</b>
-                    </span>
-                  ) : (
-                    <span>
-                      Status:&nbsp;&nbsp;<b>Unpublished</b>
-                    </span>
-                  )}
-                </Typography>
                 <Button
                   title="Submit Survey Data and Documents"
                   color="primary"
@@ -202,22 +186,31 @@ const SurveyHeader = () => {
                   style={{ minWidth: '7rem' }}>
                   Publish
                 </Button>
+                {publishDate && (
+                  <Button
+                    variant="outlined"
+                    color="primary"
+                    startIcon={<Icon path={mdiHistory} size={1} />}
+                    onClick={() => setHistoryDialogOpen(true)}
+                    title="View publish history">
+                    History
+                  </Button>
+                )}
               </ProjectRoleGuard>
+              <Button
+                id="survey_settings_button"
+                aria-label="Survey Settings"
+                aria-controls="surveySettingsMenu"
+                aria-haspopup="true"
+                variant="outlined"
+                color="primary"
+                data-testid="settings-survey-button"
+                startIcon={<Icon path={mdiCogOutline} size={0.75} />}
+                endIcon={<Icon path={mdiChevronDown} size={0.75} />}
+                onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
+                Settings
+              </Button>
             </Stack>
-
-            <Button
-              id="survey_settings_button"
-              aria-label="Survey Settings"
-              aria-controls="surveySettingsMenu"
-              aria-haspopup="true"
-              variant="outlined"
-              color="primary"
-              data-testid="settings-survey-button"
-              startIcon={<Icon path={mdiCogOutline} size={0.75} />}
-              endIcon={<Icon path={mdiChevronDown} size={0.75} />}
-              onClick={(event: React.MouseEvent<HTMLButtonElement>) => setMenuAnchorEl(event.currentTarget)}>
-              Settings
-            </Button>
 
             <SurveyExportDialog
               open={openSurveyExportDialog}
@@ -275,6 +268,13 @@ const SurveyHeader = () => {
       />
 
       <PublishSurveyIdDialog open={publishSurveyDialogOpen} onClose={() => setPublishSurveyDialogOpen(false)} />
+      <SurveyPublishHistoryDialog
+        open={historyDialogOpen}
+        onClose={() => setHistoryDialogOpen(false)}
+        projectId={surveyContext.projectId}
+        surveyId={surveyWithDetails.surveyData.survey_details.id}
+        submissionId={surveyWithDetails.surveySupplementaryData.survey_metadata_publish?.submission_uuid}
+      />
     </>
   );
 };
