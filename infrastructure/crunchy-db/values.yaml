@@ -93,7 +93,9 @@ pgBackRest:
 
 patroni:
   postgresql:
-    pg_hba: "host all all 0.0.0.0/0 md5"
+    pg_hba: |
+      host all all 0.0.0.0/0 md5
+      host all all ::0/0 md5
     parameters:
       shared_buffers: 16MB
       wal_buffers: "64kB"
