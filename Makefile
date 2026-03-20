@@ -228,11 +228,19 @@ cypress: ## Runs `npm run test:e2e` for api, and app projects
 	@echo "==============================================="
 	@cd testing/e2e && npm run test:e2e && cd ../..
 
-lint: ## Runs `npm lint` for all projects
+lint: ## Runs `npm typecheck` and `npm lint` for all projects
+	@echo "==============================================="
+	@echo "Running /api typecheck"
+	@echo "==============================================="
+	@cd api && npm run typecheck && cd ..
 	@echo "==============================================="
 	@echo "Running /api lint"
 	@echo "==============================================="
 	@cd api && npm run lint && cd ..
+	@echo "==============================================="
+	@echo "Running /app typecheck"
+	@echo "==============================================="
+	@cd app && npm run typecheck && cd ..
 	@echo "==============================================="
 	@echo "Running /app lint"
 	@echo "==============================================="
@@ -242,11 +250,19 @@ lint: ## Runs `npm lint` for all projects
 	@echo "==============================================="
 	@cd database && npm run lint && cd ..
 
-lint-fix: ## Runs `npm run lint-fix ` for all projects
+lint-fix: ## Runs `npm typecheck` and `npm run lint-fix ` for all projects
+	@echo "==============================================="
+	@echo "Running /api typecheck"
+	@echo "==============================================="
+	@cd api && npm run typecheck && cd ..
 	@echo "==============================================="
 	@echo "Running /api lint-fix"
 	@echo "==============================================="
 	@cd api && npm run lint-fix && cd ..
+	@echo "==============================================="
+	@echo "Running /app typecheck"
+	@echo "==============================================="
+	@cd app && npm run typecheck && cd ..
 	@echo "==============================================="
 	@echo "Running /app lint-fix"
 	@echo "==============================================="

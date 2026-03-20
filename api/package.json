@@ -10,6 +10,7 @@
   },
   "scripts": {
     "start": "ts-node src/app",
+    "typecheck": "tsc --project tsconfig.production.json",
     "build": "tsc --project tsconfig.production.json",
     "start-reload": "./node_modules/.bin/nodemon src/app.ts --exec ts-node",
     "test": "mocha",

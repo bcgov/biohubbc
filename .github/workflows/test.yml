@@ -86,6 +86,10 @@ jobs:
         working-directory: api
         run: npm ci --include=dev
 
+      - name: Run api typecheck
+        working-directory: api
+        run: CI=true npm run typecheck
+
       - name: Run api tests with coverage
         working-directory: api
         run: CI=true npm run coverage
@@ -111,6 +115,10 @@ jobs:
       - name: Install app dependencies
         working-directory: app
         run: npm ci --include=dev
+
+      - name: Run app typecheck
+        working-directory: app
+        run: CI=true npm run typecheck
 
       - name: Run app tests with coverage
         working-directory: app
