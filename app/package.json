@@ -10,6 +10,7 @@
   "type": "module",
   "scripts": {
     "start": "vite",
+    "typecheck": "tsc --noEmit",
     "build": "vite build",
     "preview": "vite preview",
     "test": "vitest run",
