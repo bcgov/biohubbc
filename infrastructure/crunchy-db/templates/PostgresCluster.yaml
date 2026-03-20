@@ -97,6 +97,13 @@ spec:
             name: {{ .Values.dataSource.secretName }}
       global:
         {{ .Values.dataSource.repo.name }}-path: {{ .Values.dataSource.repo.path | quote }}
+        {{ .Values.dataSource.repo.name }}-s3-uri-style: {{ $.Values.pgBackRest.s3.s3UriStyle }}
+      {{- if .Values.dataSource.options }}
+      options:
+        {{- range .Values.dataSource.options }}
+        - {{ . | quote }}
+        {{- end }}
+      {{- end }}
       repo:
         name: {{ .Values.dataSource.repo.name }}
         s3:

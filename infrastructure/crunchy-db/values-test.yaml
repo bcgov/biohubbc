@@ -43,6 +43,17 @@ patroni:
     parameters:
       shared_buffers: 32MB
 
+# One-time restore: set dataSource.enabled: true, deploy, wait for recovery, then set enabled: false and redeploy.
+# repo1 + daily path avoids --repo=2 bootstrap issues
+# For a specific backup, set dataSource.options, e.g. ["--set=20260320-000008F"], or use time/LSN options per pgBackRest docs.
+dataSource:
+  enabled: false
+  repo:
+    name: repo1
+    path: "/biohubbc/test/daily"
+  options:
+    - "--set=20260320-000008F"
+
 # To perform the one-time data migration from the old database, set:
 #   migration.enabled: true
 #   migration.oldDb.host: "biohubbc-db-test"
