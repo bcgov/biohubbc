@@ -32,12 +32,14 @@ instances:
       cpu: 1m
       memory: 32Mi
 
-# If we need to restore the cluster from a backup, set dataSource.enabled and point repo to the desired tier (e.g. repo2 = daily).
+# Restore from backup: edit the environment file you deploy with (values-dev.yaml, values-test.yaml, or values-prod.yaml),
+# not this base file.
 dataSource:
   enabled: false
   secretName: s3-pgbackrest
+  options: []
   repo:
-    name: repo2
+    name: repo1
     path: "/biohubbc/dev/daily"
     s3:
       bucket: "vjfnyw"
@@ -93,7 +95,9 @@ pgBackRest:
 
 patroni:
   postgresql:
-    pg_hba: "host all all 0.0.0.0/0 md5"
+    pg_hba: |
+      host all all 0.0.0.0/0 md5
+      host all all ::0/0 md5
     parameters:
       shared_buffers: 16MB
       wal_buffers: "64kB"
