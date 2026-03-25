@@ -1,10 +1,10 @@
 {
   "compilerOptions": {
     "module": "commonjs",
-    "lib": ["es2020"],
+    "lib": ["ES2023"],
     "baseUrl": "src",
     "outDir": "dist",
-    "target": "es2018",
+    "target": "ES2023",
     "sourceMap": true,
     "allowJs": false,
     "moduleResolution": "node",
