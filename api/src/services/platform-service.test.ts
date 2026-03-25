@@ -1,5 +1,6 @@
 import axios from 'axios';
 import chai, { expect } from 'chai';
+import fs from 'fs';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
@@ -213,7 +214,7 @@ describe('PlatformService', () => {
         uploadId: 'upload-123-456-789',
         s3UploadId: 's3-upload-id',
         key: 's3-key',
-        presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url' }],
+        presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url', partSizeBytes: 55 }],
         partCount: 1,
         submissionId: submissionIdFromApi,
         submissionUploadId: '660e8400-e29b-41d4-a716-446655440001'
@@ -286,7 +287,7 @@ describe('PlatformService', () => {
         uploadId: 'multipart-session-upload-id',
         s3UploadId: 's3-upload-id',
         key: 's3-key',
-        presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url' }],
+        presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url', partSizeBytes: 55 }],
         partCount: 1,
         submissionId: existingSubmissionUuid,
         submissionUploadId: '660e8400-e29b-41d4-a716-446655440002'
@@ -593,7 +594,7 @@ describe('PlatformService', () => {
         uploadId: 'upload-123-456-789',
         s3UploadId: 's3-upload-id',
         key: 's3-key',
-        presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url' }],
+        presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url', partSizeBytes: 55 }],
         partCount: 1,
         submissionId: '550e8400-e29b-41d4-a716-446655440001',
         submissionUploadId: '660e8400-e29b-41d4-a716-446655440003'
@@ -704,8 +705,6 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
-      // Test that helper methods exist and can be called
-      // Full integration testing would require mocking fs which is non-configurable
       expect(platformService._addMetadataFile).to.be.a('function');
       expect(platformService._addJsonFiles).to.be.a('function');
       expect(platformService._addFileToArchive).to.be.a('function');
@@ -763,40 +762,71 @@ describe('PlatformService', () => {
       sinon.restore();
     });
 
-    it('should split file into single chunk when numChunks is 1', () => {
+    it('should split file into a single chunk when one part matches the full size', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
       const fileBuffer = Buffer.from('test file content');
-      const chunks = platformService._splitFileIntoChunks(fileBuffer, 1);
+      const chunks = platformService._splitFileIntoChunks(fileBuffer, [
+        { partNumber: 1, url: 'https://s3.amazonaws.com/url1', partSizeBytes: fileBuffer.length }
+      ]);
 
       expect(chunks).to.have.length(1);
-      expect(chunks[0]).to.deep.equal(fileBuffer);
+      expect(Buffer.from(chunks[0])).to.deep.equal(fileBuffer);
     });
 
-    it('should split file into multiple chunks', () => {
+    it('should split file into multiple chunks using exact part sizes', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
       const fileBuffer = Buffer.from('1234567890');
-      const chunks = platformService._splitFileIntoChunks(fileBuffer, 3);
+      const chunks = platformService._splitFileIntoChunks(fileBuffer, [
+        { partNumber: 1, url: 'https://s3.amazonaws.com/url1', partSizeBytes: 4 },
+        { partNumber: 2, url: 'https://s3.amazonaws.com/url2', partSizeBytes: 4 },
+        { partNumber: 3, url: 'https://s3.amazonaws.com/url3', partSizeBytes: 2 }
+      ]);
 
       expect(chunks).to.have.length(3);
-      expect(chunks[0].toString()).to.equal('1234');
-      expect(chunks[1].toString()).to.equal('5678');
-      expect(chunks[2].toString()).to.equal('90');
+      expect(Buffer.from(chunks[0]).toString()).to.equal('1234');
+      expect(Buffer.from(chunks[1]).toString()).to.equal('5678');
+      expect(Buffer.from(chunks[2]).toString()).to.equal('90');
     });
 
-    it('should handle uneven division correctly', () => {
+    it('should throw when no parts are provided', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
       const fileBuffer = Buffer.from('12345');
-      const chunks = platformService._splitFileIntoChunks(fileBuffer, 2);
 
-      expect(chunks).to.have.length(2);
-      expect(chunks[0].toString()).to.equal('123');
-      expect(chunks[1].toString()).to.equal('45');
+      expect(() => platformService._splitFileIntoChunks(fileBuffer, [])).to.throw('Part count must be positive');
+    });
+
+    it('should throw when part instructions do not match file size', () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const fileBuffer = Buffer.from('12345');
+
+      expect(() =>
+        platformService._splitFileIntoChunks(fileBuffer, [
+          { partNumber: 1, url: 'https://s3.amazonaws.com/url1', partSizeBytes: 2 },
+          { partNumber: 2, url: 'https://s3.amazonaws.com/url2', partSizeBytes: 2 }
+        ])
+      ).to.throw('Part instructions do not match file size.');
+    });
+
+    it('should throw when a part size is invalid', () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const fileBuffer = Buffer.from('12345');
+
+      expect(() =>
+        platformService._splitFileIntoChunks(fileBuffer, [
+          { partNumber: 1, url: 'https://s3.amazonaws.com/url1', partSizeBytes: 0 },
+          { partNumber: 2, url: 'https://s3.amazonaws.com/url2', partSizeBytes: 5 }
+        ])
+      ).to.throw('Invalid part size for part 1.');
     });
   });
 
@@ -810,12 +840,14 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(mockDBConnection);
 
       const mockResponse = {
+        status: 200,
+        statusText: 'OK',
         headers: {
           etag: '"abc123def456"'
         }
       };
 
-      const axiosPutStub = sinon.stub(axios, 'put').resolves(mockResponse);
+      const axiosPutStub = sinon.stub(axios, 'put').resolves(mockResponse as any);
 
       const result = await platformService._uploadChunkToS3(
         'https://s3.amazonaws.com/presigned-url',
@@ -839,12 +871,14 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(mockDBConnection);
 
       const mockResponse = {
+        status: 200,
+        statusText: 'OK',
         headers: {
           ETag: '"xyz789"'
         }
       };
 
-      sinon.stub(axios, 'put').resolves(mockResponse);
+      sinon.stub(axios, 'put').resolves(mockResponse as any);
 
       const result = await platformService._uploadChunkToS3(
         'https://s3.amazonaws.com/presigned-url',
@@ -860,17 +894,39 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(mockDBConnection);
 
       const mockResponse = {
+        status: 200,
+        statusText: 'OK',
         headers: {}
       };
 
-      sinon.stub(axios, 'put').resolves(mockResponse);
+      sinon.stub(axios, 'put').resolves(mockResponse as any);
 
       try {
         await platformService._uploadChunkToS3('https://s3.amazonaws.com/presigned-url', Buffer.from('chunk'), 1);
         expect.fail('Should have thrown an error');
       } catch (error) {
-        // The error gets caught and re-thrown, but the original error message should be in the error chain
-        // We check for the wrapped error message
+        expect((error as Error).message).to.include('Failed to upload part 1 to S3');
+      }
+    });
+
+    it('should throw error when upload returns non-200 status', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const mockResponse = {
+        status: 500,
+        statusText: 'Internal Server Error',
+        headers: {
+          etag: '"abc123def456"'
+        }
+      };
+
+      sinon.stub(axios, 'put').resolves(mockResponse as any);
+
+      try {
+        await platformService._uploadChunkToS3('https://s3.amazonaws.com/presigned-url', Buffer.from('chunk'), 1);
+        expect.fail('Should have thrown an error');
+      } catch (error) {
         expect((error as Error).message).to.include('Failed to upload part 1 to S3');
       }
     });
@@ -899,27 +955,99 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
-      const fs = require('node:fs');
-      sinon.stub(fs, 'readFileSync').returns(Buffer.from('1234567890'));
+      sinon.stub(fs, 'readFileSync').returns(Buffer.from('1234567890') as any);
 
       const presignedUrls = [
-        { partNumber: 1, url: 'https://s3.amazonaws.com/url1' },
-        { partNumber: 2, url: 'https://s3.amazonaws.com/url2' },
-        { partNumber: 3, url: 'https://s3.amazonaws.com/url3' }
+        { partNumber: 2, url: 'https://s3.amazonaws.com/url2', partSizeBytes: 5 },
+        { partNumber: 1, url: 'https://s3.amazonaws.com/url1', partSizeBytes: 3 },
+        { partNumber: 3, url: 'https://s3.amazonaws.com/url3', partSizeBytes: 2 }
       ];
 
-      const uploadChunkStub = sinon.stub(PlatformService.prototype, '_uploadChunkToS3');
-      uploadChunkStub.onCall(0).resolves({ PartNumber: 2, ETag: 'etag2' });
-      uploadChunkStub.onCall(1).resolves({ PartNumber: 1, ETag: 'etag1' });
+      const uploadChunkStub = sinon.stub(platformService, '_uploadChunkToS3');
+      uploadChunkStub.onCall(0).resolves({ PartNumber: 1, ETag: 'etag1' });
+      uploadChunkStub.onCall(1).resolves({ PartNumber: 2, ETag: 'etag2' });
       uploadChunkStub.onCall(2).resolves({ PartNumber: 3, ETag: 'etag3' });
 
-      const result = await platformService._uploadTarFileParts('/path/to/file.tar', presignedUrls, 3);
+      const result = await platformService._uploadTarFileParts(
+        '/path/to/file.tar',
+        presignedUrls,
+        presignedUrls.length
+      );
 
       expect(uploadChunkStub).to.have.been.calledThrice;
-      expect(result).to.have.length(3);
-      expect(result[0].PartNumber).to.equal(1);
-      expect(result[1].PartNumber).to.equal(2);
-      expect(result[2].PartNumber).to.equal(3);
+
+      expect(uploadChunkStub.getCall(0).args[0]).to.equal('https://s3.amazonaws.com/url1');
+      expect(uploadChunkStub.getCall(0).args[1]).to.deep.equal(Buffer.from('123'));
+      expect(uploadChunkStub.getCall(0).args[2]).to.equal(1);
+
+      expect(uploadChunkStub.getCall(1).args[0]).to.equal('https://s3.amazonaws.com/url2');
+      expect(uploadChunkStub.getCall(1).args[1]).to.deep.equal(Buffer.from('45678'));
+      expect(uploadChunkStub.getCall(1).args[2]).to.equal(2);
+
+      expect(uploadChunkStub.getCall(2).args[0]).to.equal('https://s3.amazonaws.com/url3');
+      expect(uploadChunkStub.getCall(2).args[1]).to.deep.equal(Buffer.from('90'));
+      expect(uploadChunkStub.getCall(2).args[2]).to.equal(3);
+
+      expect(result).to.deep.equal([
+        { PartNumber: 1, ETag: 'etag1' },
+        { PartNumber: 2, ETag: 'etag2' },
+        { PartNumber: 3, ETag: 'etag3' }
+      ]);
+    });
+
+    it('should respect concurrencyLimit batching', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(fs, 'readFileSync').returns(Buffer.from('abcdefghij') as any);
+
+      const presignedUrls = [
+        { partNumber: 1, url: 'https://s3.amazonaws.com/url1', partSizeBytes: 2 },
+        { partNumber: 2, url: 'https://s3.amazonaws.com/url2', partSizeBytes: 2 },
+        { partNumber: 3, url: 'https://s3.amazonaws.com/url3', partSizeBytes: 2 },
+        { partNumber: 4, url: 'https://s3.amazonaws.com/url4', partSizeBytes: 2 },
+        { partNumber: 5, url: 'https://s3.amazonaws.com/url5', partSizeBytes: 2 }
+      ];
+
+      const uploadChunkStub = sinon
+        .stub(platformService, '_uploadChunkToS3')
+        .callsFake(async (_url, _chunk, partNumber) => {
+          return { PartNumber: partNumber, ETag: `etag${partNumber}` };
+        });
+
+      const result = await platformService._uploadTarFileParts(
+        '/path/to/file.tar',
+        presignedUrls,
+        presignedUrls.length,
+        {
+          concurrencyLimit: 2
+        }
+      );
+
+      expect(uploadChunkStub.callCount).to.equal(5);
+      expect(result).to.deep.equal([
+        { PartNumber: 1, ETag: 'etag1' },
+        { PartNumber: 2, ETag: 'etag2' },
+        { PartNumber: 3, ETag: 'etag3' },
+        { PartNumber: 4, ETag: 'etag4' },
+        { PartNumber: 5, ETag: 'etag5' }
+      ]);
+    });
+
+    it('should throw when presigned URL count does not match expected part count', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(fs, 'readFileSync').returns(Buffer.from('12345') as any);
+
+      const presignedUrls = [{ partNumber: 1, url: 'https://s3.amazonaws.com/url1', partSizeBytes: 5 }];
+
+      try {
+        await platformService._uploadTarFileParts('/path/to/file.tar', presignedUrls, 2);
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect((error as Error).message).to.equal('Presigned URL count (1) does not match expected part count (2)');
+      }
     });
   });
 

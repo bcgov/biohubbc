@@ -25,7 +25,8 @@ import { ObservationService } from './observation-services/observation-service';
 import {
   IBioHubSubmissionHistoryRow,
   IBioHubWrappedSubmissionHistoryResponse,
-  ISubmissionHistoryRow
+  ISubmissionHistoryRow,
+  UploadResult
 } from './platform-service.interface';
 import { SamplePeriodService } from './sample-period-service';
 import { SampleSiteService } from './sample-site-service';
@@ -878,7 +879,7 @@ export class PlatformService extends DBService {
     uploadId: string;
     s3UploadId: string;
     key: string;
-    presignedUrls: Array<{ partNumber: number; url: string }>;
+    presignedUrls: Array<{ partNumber: number; url: string; partSizeBytes: number }>;
     partCount: number;
     submissionId: string;
     submissionUploadId: string;
@@ -923,9 +924,8 @@ export class PlatformService extends DBService {
         s3UploadId: string;
         uploadArchiveId: string;
         key: string;
-        partSizeBytes: number;
         partCount: number;
-        presignedUrls: Array<{ partNumber: number; url: string }>;
+        presignedUrls: Array<{ partNumber: number; url: string; partSizeBytes: number }>;
       }>(backboneSubmissionUploadUrl, requestBody, {
         headers: {
           authorization: `Bearer ${token}`,
@@ -972,29 +972,45 @@ export class PlatformService extends DBService {
   }
 
   /**
-   * Splits a file buffer into chunks for multipart upload.
+   * Splits TAR data into chunks using exact backend per-part byte instructions.
    *
-   * @param {Buffer} fileBuffer - The file buffer to split
-   * @param {number} numChunks - Number of chunks to create
-   * @return {*}  {Buffer[]} Array of buffer chunks
-   * @memberof PlatformService
+   * Example:
+   * - backend parts: [{part:1,size:5MiB}, {part:2,size:5MiB}, {part:3,size:3MiB}]
+   * - client slices the tarball as [0..5MiB), [5..10MiB), [10..13MiB)
+   *
+   * @param tarData - The complete TAR archive data to split
+   * @param orderedPresignedParts - Presigned parts sorted by part number
+   * @returns Array of Uint8Array chunks ready for upload
+   * @throws {Error} When instructions are invalid or do not match file size
    */
-  _splitFileIntoChunks(fileBuffer: Buffer, numChunks: number): Buffer[] {
-    if (numChunks === 1) {
-      return [fileBuffer];
+  _splitFileIntoChunks = (
+    tarData: Uint8Array,
+    orderedPresignedParts: Array<{ partNumber: number; url: string; partSizeBytes: number }>
+  ): Uint8Array[] => {
+    if (!orderedPresignedParts.length) {
+      throw new Error('Part count must be positive');
     }
 
-    const chunkSize = Math.ceil(fileBuffer.length / numChunks);
-    const chunks: Buffer[] = [];
+    const expectedBytes = orderedPresignedParts.reduce((sum, part) => sum + part.partSizeBytes, 0);
+    if (expectedBytes !== tarData.length) {
+      throw new Error('Part instructions do not match file size.');
+    }
 
-    for (let i = 0; i < numChunks; i++) {
-      const start = i * chunkSize;
-      const end = Math.min(start + chunkSize, fileBuffer.length);
-      chunks.push(fileBuffer.slice(start, end));
+    const chunks: Uint8Array[] = [];
+    let start = 0;
+
+    for (const part of orderedPresignedParts) {
+      if (!Number.isFinite(part.partSizeBytes) || part.partSizeBytes <= 0) {
+        throw new Error(`Invalid part size for part ${part.partNumber}.`);
+      }
+
+      const end = start + part.partSizeBytes;
+      chunks.push(tarData.slice(start, end));
+      start = end;
     }
 
     return chunks;
-  }
+  };
 
   /**
    * Uploads a single chunk to S3 using a presigned URL.
@@ -1002,7 +1018,7 @@ export class PlatformService extends DBService {
    * @param {string} presignedUrl - The presigned S3 URL
    * @param {Buffer} chunk - The chunk data to upload
    * @param {number} partNumber - The part number (1-indexed)
-   * @return {*}  {Promise<{PartNumber: number, ETag: string}>}
+   * @return {*}  {Promise<UploadResult>}
    * @memberof PlatformService
    */
   async _uploadChunkToS3(
@@ -1019,13 +1035,15 @@ export class PlatformService extends DBService {
         maxContentLength: Infinity
       });
 
-      // Get ETag from response headers (case-insensitive)
+      if (response.status !== 200) {
+        throw new Error(`Upload failed with status ${response.status}: ${response.statusText}`);
+      }
+
       const etag = response.headers.etag || response.headers.ETag;
       if (!etag) {
         throw new Error(`No ETag returned from S3 upload for part ${partNumber}`);
       }
 
-      // Remove quotes from ETag
       const cleanEtag = etag.replaceAll('"', '');
 
       defaultLog.debug({
@@ -1046,6 +1064,7 @@ export class PlatformService extends DBService {
         partNumber,
         error: formatAxiosError(error)
       });
+
       throw new Error(`Failed to upload part ${partNumber} to S3`);
     }
   }
@@ -1053,49 +1072,55 @@ export class PlatformService extends DBService {
   /**
    * Uploads TAR file parts to S3 using presigned URLs with concurrency control.
    *
+   * Part boundaries are derived from `presignedUrls[].partSizeBytes`, so each
+   * uploaded chunk aligns with the backend-issued multipart layout.
+   *
    * @param {string} tarFilePath - Path to the TAR file
-   * @param {Array<{partNumber: number, url: string}>} presignedUrls - Array of presigned URLs
+   * @param {Array<{partNumber: number, url: string, partSizeBytes: number}>} presignedUrls - Array of presigned URLs with per-part sizes
    * @param {number} partCount - Total number of parts
-   * @return {*}  {Promise<Array<{PartNumber: number, ETag: string}>>} Array of uploaded parts with ETags
+   * @return {*}  {Promise<Array<UploadResult>>} Array of uploaded parts with ETags
    * @memberof PlatformService
    */
   async _uploadTarFileParts(
     tarFilePath: string,
-    presignedUrls: Array<{ partNumber: number; url: string }>,
-    partCount: number
+    presignedUrls: Array<{ partNumber: number; url: string; partSizeBytes: number }>,
+    partCount: number,
+    options: {
+      concurrencyLimit?: number;
+    } = {}
   ): Promise<Array<{ PartNumber: number; ETag: string }>> {
-    defaultLog.debug({ label: '_uploadTarFileParts', tarFilePath, partCount });
+    const { concurrencyLimit = 4 } = options;
 
-    // Read TAR file as Buffer
-    const fileBuffer = fs.readFileSync(tarFilePath);
+    defaultLog.debug({
+      label: '_uploadTarFileParts',
+      tarFilePath,
+      partCount,
+      presignedUrlCount: presignedUrls.length
+    });
 
-    // Split into chunks
-    const chunks = this._splitFileIntoChunks(fileBuffer, partCount);
-
-    // Upload with concurrency limit (4 parallel uploads)
-    const concurrencyLimit = 4;
-    const parts: Array<{ PartNumber: number; ETag: string }> = [];
-
-    for (let i = 0; i < presignedUrls.length; i += concurrencyLimit) {
-      const batch = presignedUrls.slice(i, i + concurrencyLimit);
-      const chunkBatch = chunks.slice(i, i + concurrencyLimit);
-
-      defaultLog.debug({
-        label: '_uploadTarFileParts',
-        message: 'Uploading batch',
-        batchStart: i,
-        batchSize: batch.length
-      });
-
-      const batchResults = await Promise.all(
-        batch.map((urlObj, idx) => this._uploadChunkToS3(urlObj.url, chunkBatch[idx], urlObj.partNumber))
+    if (presignedUrls.length !== partCount) {
+      throw new Error(
+        `Presigned URL count (${presignedUrls.length}) does not match expected part count (${partCount})`
       );
-
-      parts.push(...batchResults);
     }
 
-    // Sort parts by PartNumber
-    parts.sort((a, b) => a.PartNumber - b.PartNumber);
+    const orderedPresignedUrls = [...presignedUrls].sort((a, b) => a.partNumber - b.partNumber);
+    const fileBuffer = fs.readFileSync(tarFilePath);
+    const chunks = this._splitFileIntoChunks(fileBuffer, orderedPresignedUrls);
+    const results: UploadResult[] = [];
+
+    for (let i = 0; i < orderedPresignedUrls.length; i += concurrencyLimit) {
+      const partBatch = orderedPresignedUrls.slice(i, i + concurrencyLimit);
+      const dataBatch = chunks.slice(i, i + concurrencyLimit);
+
+      const batchResults = await Promise.all(
+        partBatch.map((part, index) => this._uploadChunkToS3(part.url, Buffer.from(dataBatch[index]), part.partNumber))
+      );
+
+      results.push(...batchResults);
+    }
+
+    const parts = results.sort((a, b) => a.PartNumber - b.PartNumber);
 
     defaultLog.info({
       label: '_uploadTarFileParts',
@@ -1113,7 +1138,7 @@ export class PlatformService extends DBService {
    * @param {string} uploadId - Upload ID from initiate response
    * @param {string} s3UploadId - S3 upload ID from initiate response
    * @param {string} key - S3 key from initiate response
-   * @param {Array<{PartNumber: number, ETag: string}>} parts - Array of uploaded parts with ETags
+   * @param {Array<UploadResult>} parts - Array of uploaded parts with ETags
    * @return {*}  {Promise<void>}
    * @memberof PlatformService
    */
