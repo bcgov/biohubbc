@@ -1120,7 +1120,7 @@ export class PlatformService extends DBService {
       results.push(...batchResults);
     }
 
-    const parts = results.sort((a, b) => a.PartNumber - b.PartNumber);
+    const parts = results.toSorted((a, b) => a.PartNumber - b.PartNumber);
 
     defaultLog.info({
       label: '_uploadTarFileParts',
