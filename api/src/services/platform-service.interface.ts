@@ -20,8 +20,6 @@ export interface ISubmissionHistoryRow {
  * Interface for multipart upload result
  */
 export interface UploadResult {
-  /** The part number in the multipart upload sequence */
   PartNumber: number;
-  /** The ETag returned by the server for this part */
   ETag: string;
 }

@@ -847,7 +847,7 @@ describe('PlatformService', () => {
         }
       };
 
-      const axiosPutStub = sinon.stub(axios, 'put').resolves(mockResponse as any);
+      const axiosPutStub = sinon.stub(axios, 'put').resolves(mockResponse);
 
       const result = await platformService._uploadChunkToS3(
         'https://s3.amazonaws.com/presigned-url',
@@ -878,7 +878,7 @@ describe('PlatformService', () => {
         }
       };
 
-      sinon.stub(axios, 'put').resolves(mockResponse as any);
+      sinon.stub(axios, 'put').resolves(mockResponse);
 
       const result = await platformService._uploadChunkToS3(
         'https://s3.amazonaws.com/presigned-url',
@@ -899,7 +899,7 @@ describe('PlatformService', () => {
         headers: {}
       };
 
-      sinon.stub(axios, 'put').resolves(mockResponse as any);
+      sinon.stub(axios, 'put').resolves(mockResponse);
 
       try {
         await platformService._uploadChunkToS3('https://s3.amazonaws.com/presigned-url', Buffer.from('chunk'), 1);
@@ -921,7 +921,7 @@ describe('PlatformService', () => {
         }
       };
 
-      sinon.stub(axios, 'put').resolves(mockResponse as any);
+      sinon.stub(axios, 'put').resolves(mockResponse);
 
       try {
         await platformService._uploadChunkToS3('https://s3.amazonaws.com/presigned-url', Buffer.from('chunk'), 1);
@@ -955,7 +955,7 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(fs, 'readFileSync').returns(Buffer.from('1234567890') as any);
+      sinon.stub(fs, 'readFileSync').returns(Buffer.from('1234567890'));
 
       const presignedUrls = [
         { partNumber: 2, url: 'https://s3.amazonaws.com/url2', partSizeBytes: 5 },
@@ -999,7 +999,7 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(fs, 'readFileSync').returns(Buffer.from('abcdefghij') as any);
+      sinon.stub(fs, 'readFileSync').returns(Buffer.from('abcdefghij'));
 
       const presignedUrls = [
         { partNumber: 1, url: 'https://s3.amazonaws.com/url1', partSizeBytes: 2 },
@@ -1038,7 +1038,7 @@ describe('PlatformService', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
 
-      sinon.stub(fs, 'readFileSync').returns(Buffer.from('12345') as any);
+      sinon.stub(fs, 'readFileSync').returns(Buffer.from('12345'));
 
       const presignedUrls = [{ partNumber: 1, url: 'https://s3.amazonaws.com/url1', partSizeBytes: 5 }];
 
