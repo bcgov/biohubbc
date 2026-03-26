@@ -26,7 +26,12 @@ import {
   IBioHubSubmissionHistoryRow,
   IBioHubWrappedSubmissionHistoryResponse,
   ISubmissionHistoryRow,
-  UploadResult
+  SubmissionUploadInitiateResponse,
+  SubmissionUploadInitiateResult,
+  UploadPart,
+  UploadPartByteRange,
+  UploadResult,
+  UploadTarFilePartsOptions
 } from './platform-service.interface';
 import { SamplePeriodService } from './sample-period-service';
 import { SampleSiteService } from './sample-site-service';
@@ -866,7 +871,7 @@ export class PlatformService extends DBService {
    * @param {PostSurveySubmissionToBioHubObject} surveyDataPackage - Survey data package
    * @param {string} submissionComment - Comment for the submission
    * @param {string | null} existingSubmissionUuid - When set, initiate upload for this existing submission (re-publish)
-   * @return {*}  {Promise<{uploadId: string, s3UploadId: string, key: string, presignedUrls: Array<{partNumber: number, url: string}>, partCount: number, submissionId: string, submissionUploadId: string}>}
+   * @return {*}  {Promise<SubmissionUploadInitiateResult>}
    * @memberof PlatformService
    */
   async _initiateSubmissionUpload(
@@ -875,15 +880,7 @@ export class PlatformService extends DBService {
     surveyDataPackage: PostSurveySubmissionToBioHubObject,
     submissionComment: string,
     existingSubmissionUuid: string | null
-  ): Promise<{
-    uploadId: string;
-    s3UploadId: string;
-    key: string;
-    presignedUrls: Array<{ partNumber: number; url: string; partSizeBytes: number }>;
-    partCount: number;
-    submissionId: string;
-    submissionUploadId: string;
-  }> {
+  ): Promise<SubmissionUploadInitiateResult> {
     defaultLog.debug({
       label: '_initiateSubmissionUpload',
       tarFileSize,
@@ -917,16 +914,7 @@ export class PlatformService extends DBService {
     };
 
     try {
-      const response = await axios.post<{
-        submissionId: string;
-        submissionUploadId: string;
-        uploadId: string;
-        s3UploadId: string;
-        uploadArchiveId: string;
-        key: string;
-        partCount: number;
-        presignedUrls: Array<{ partNumber: number; url: string; partSizeBytes: number }>;
-      }>(backboneSubmissionUploadUrl, requestBody, {
+      const response = await axios.post<SubmissionUploadInitiateResponse>(backboneSubmissionUploadUrl, requestBody, {
         headers: {
           authorization: `Bearer ${token}`,
           'Content-Type': 'application/json'
@@ -972,31 +960,24 @@ export class PlatformService extends DBService {
   }
 
   /**
-   * Splits TAR data into chunks using exact backend per-part byte instructions.
+   * Builds byte ranges for multipart upload directly from backend part instructions.
    *
-   * Example:
-   * - backend parts: [{part:1,size:5MiB}, {part:2,size:5MiB}, {part:3,size:3MiB}]
-   * - client slices the tarball as [0..5MiB), [5..10MiB), [10..13MiB)
-   *
-   * @param tarData - The complete TAR archive data to split
-   * @param orderedPresignedParts - Presigned parts sorted by part number
-   * @returns Array of Uint8Array chunks ready for upload
-   * @throws {Error} When instructions are invalid or do not match file size
+   * @param {number} fileSize - TAR file size in bytes
+   * @param {UploadPart[]} orderedPresignedParts - Presigned parts sorted by part number
+   * @return {*}  {UploadPartByteRange[]}
+   * @memberof PlatformService
    */
-  _splitFileIntoChunks = (
-    tarData: Uint8Array,
-    orderedPresignedParts: Array<{ partNumber: number; url: string; partSizeBytes: number }>
-  ): Uint8Array[] => {
+  _buildPartByteRanges(fileSize: number, orderedPresignedParts: UploadPart[]): UploadPartByteRange[] {
     if (!orderedPresignedParts.length) {
       throw new Error('Part count must be positive');
     }
 
     const expectedBytes = orderedPresignedParts.reduce((sum, part) => sum + part.partSizeBytes, 0);
-    if (expectedBytes !== tarData.length) {
+    if (expectedBytes !== fileSize) {
       throw new Error('Part instructions do not match file size.');
     }
 
-    const chunks: Uint8Array[] = [];
+    const partRanges: UploadPartByteRange[] = [];
     let start = 0;
 
     for (const part of orderedPresignedParts) {
@@ -1004,32 +985,38 @@ export class PlatformService extends DBService {
         throw new Error(`Invalid part size for part ${part.partNumber}.`);
       }
 
-      const end = start + part.partSizeBytes;
-      chunks.push(tarData.slice(start, end));
-      start = end;
+      const end = start + part.partSizeBytes - 1;
+      partRanges.push({
+        ...part,
+        start,
+        end
+      });
+      start += part.partSizeBytes;
     }
 
-    return chunks;
-  };
+    return partRanges;
+  }
 
   /**
    * Uploads a single chunk to S3 using a presigned URL.
    *
    * @param {string} presignedUrl - The presigned S3 URL
-   * @param {Buffer} chunk - The chunk data to upload
+   * @param {NodeJS.ReadableStream} chunk - The chunk data stream to upload
    * @param {number} partNumber - The part number (1-indexed)
    * @return {*}  {Promise<UploadResult>}
    * @memberof PlatformService
    */
   async _uploadChunkToS3(
     presignedUrl: string,
-    chunk: Buffer,
-    partNumber: number
-  ): Promise<{ PartNumber: number; ETag: string }> {
+    chunk: NodeJS.ReadableStream,
+    partNumber: number,
+    partSizeBytes?: number
+  ): Promise<UploadResult> {
     try {
       const response = await axios.put(presignedUrl, chunk, {
         headers: {
-          'Content-Type': 'application/x-tar'
+          'Content-Type': 'application/x-tar',
+          ...(partSizeBytes ? { 'Content-Length': String(partSizeBytes) } : {})
         },
         maxBodyLength: Infinity,
         maxContentLength: Infinity
@@ -1076,20 +1063,22 @@ export class PlatformService extends DBService {
    * uploaded chunk aligns with the backend-issued multipart layout.
    *
    * @param {string} tarFilePath - Path to the TAR file
-   * @param {Array<{partNumber: number, url: string, partSizeBytes: number}>} presignedUrls - Array of presigned URLs with per-part sizes
+   * @param {UploadPart[]} presignedUrls - Array of presigned URLs with per-part sizes
    * @param {number} partCount - Total number of parts
-   * @return {*}  {Promise<Array<UploadResult>>} Array of uploaded parts with ETags
+   * @param {UploadTarFilePartsOptions} options - Optional upload settings
+   * @return {*}  {Promise<UploadResult[]>} Array of uploaded parts with ETags
    * @memberof PlatformService
    */
   async _uploadTarFileParts(
     tarFilePath: string,
-    presignedUrls: Array<{ partNumber: number; url: string; partSizeBytes: number }>,
+    presignedUrls: UploadPart[],
     partCount: number,
-    options: {
-      concurrencyLimit?: number;
-    } = {}
-  ): Promise<Array<{ PartNumber: number; ETag: string }>> {
+    options: UploadTarFilePartsOptions = {}
+  ): Promise<UploadResult[]> {
     const { concurrencyLimit = 4 } = options;
+    if (!Number.isInteger(concurrencyLimit) || concurrencyLimit <= 0) {
+      throw new Error('concurrencyLimit must be a positive integer');
+    }
 
     defaultLog.debug({
       label: '_uploadTarFileParts',
@@ -1105,16 +1094,22 @@ export class PlatformService extends DBService {
     }
 
     const orderedPresignedUrls = [...presignedUrls].sort((a, b) => a.partNumber - b.partNumber);
-    const fileBuffer = fs.readFileSync(tarFilePath);
-    const chunks = this._splitFileIntoChunks(fileBuffer, orderedPresignedUrls);
+    const fileSize = fs.statSync(tarFilePath).size;
+    const partRanges = this._buildPartByteRanges(fileSize, orderedPresignedUrls);
     const results: UploadResult[] = [];
 
-    for (let i = 0; i < orderedPresignedUrls.length; i += concurrencyLimit) {
-      const partBatch = orderedPresignedUrls.slice(i, i + concurrencyLimit);
-      const dataBatch = chunks.slice(i, i + concurrencyLimit);
+    for (let i = 0; i < partRanges.length; i += concurrencyLimit) {
+      const partBatch = partRanges.slice(i, i + concurrencyLimit);
 
       const batchResults = await Promise.all(
-        partBatch.map((part, index) => this._uploadChunkToS3(part.url, Buffer.from(dataBatch[index]), part.partNumber))
+        partBatch.map((part) =>
+          this._uploadChunkToS3(
+            part.url,
+            fs.createReadStream(tarFilePath, { start: part.start, end: part.end }),
+            part.partNumber,
+            part.partSizeBytes
+          )
+        )
       );
 
       results.push(...batchResults);
@@ -1138,7 +1133,7 @@ export class PlatformService extends DBService {
    * @param {string} uploadId - Upload ID from initiate response
    * @param {string} s3UploadId - S3 upload ID from initiate response
    * @param {string} key - S3 key from initiate response
-   * @param {Array<UploadResult>} parts - Array of uploaded parts with ETags
+   * @param {UploadResult[]} parts - Array of uploaded parts with ETags
    * @return {*}  {Promise<void>}
    * @memberof PlatformService
    */
@@ -1147,7 +1142,7 @@ export class PlatformService extends DBService {
     uploadId: string,
     s3UploadId: string,
     key: string,
-    parts: Array<{ PartNumber: number; ETag: string }>
+    parts: UploadResult[]
   ): Promise<void> {
     defaultLog.debug({ label: '_completeSubmissionUpload', uploadId, partCount: parts.length });
 
