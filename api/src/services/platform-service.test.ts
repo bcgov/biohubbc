@@ -6,6 +6,7 @@ import { Readable } from 'node:stream';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiError, ApiErrorType } from '../errors/api-error';
+import { BiohubFeatureType } from '../models/biohub-create';
 import { ObservationRecordWithSamplingAndSubcountData } from '../repositories/observation-repository/observation-repository.interface';
 import * as envConfig from '../utils/env-config';
 import * as featureFlagUtils from '../utils/feature-flag-utils';
@@ -25,6 +26,7 @@ import { SurveyCritterService } from './survey-critter-service';
 import { SurveyService } from './survey-service';
 import { TelemetryDeploymentService } from './telemetry-services/telemetry-deployment-service';
 import { TelemetryDeviceService } from './telemetry-services/telemetry-device-service';
+import { TelemetryVendorService } from './telemetry-services/telemetry-vendor-service';
 
 chai.use(sinonChai);
 
@@ -175,7 +177,13 @@ describe('PlatformService', () => {
       } catch (error) {
         expect((error as Error).message).to.include('Failed to initiate submission upload to BioHub');
         expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
-        expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], [], 'test');
+        expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(
+          1,
+          [],
+          [],
+          'test',
+          sinon.match((value) => value instanceof Set)
+        );
         expect(_initiateSubmissionUploadStub).to.have.been.calledOnce;
       }
     });
@@ -240,7 +248,13 @@ describe('PlatformService', () => {
       const response = await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
 
       expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
-      expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], [], 'test');
+      expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(
+        1,
+        [],
+        [],
+        'test',
+        sinon.match((value) => value instanceof Set)
+      );
       expect(_initiateSubmissionUploadStub).to.have.been.calledOnce;
       expect(_uploadTarFilePartsStub).to.have.been.calledOnce;
       expect(_completeSubmissionUploadStub).to.have.been.calledOnceWith(
@@ -318,6 +332,33 @@ describe('PlatformService', () => {
         submission_uuid: existingSubmissionUuid
       });
       expect(response).to.eql({ submission_uuid: existingSubmissionUuid });
+    });
+  });
+
+  describe('getSurveyPublishableFeatures', () => {
+    it('includes parent feature types when only child data exists', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(SampleSiteService.prototype, 'getSampleSitesCountBySurveyId').resolves(0);
+      sinon.stub(SamplePeriodService.prototype, 'getSamplePeriodsCountForSurvey').resolves(1);
+      sinon.stub(SampleTechniqueService.prototype, 'getSamplingTechniquesCountForSurvey').resolves(0);
+      sinon.stub(ObservationService.prototype, 'getSurveyObservationsCount').resolves(0);
+      sinon.stub(SurveyHabitatFeatureService.prototype, 'getSurveyHabitatFeaturesCount').resolves(0);
+      sinon.stub(TelemetryDeviceService.prototype, 'getDevicesCount').resolves(0);
+      sinon.stub(TelemetryDeploymentService.prototype, 'getDeploymentsCount').resolves(1);
+      sinon.stub(AttachmentService.prototype, 'getSurveyAttachmentsForBioHubSubmissionCount').resolves(0);
+      sinon
+        .stub(TelemetryVendorService.prototype, 'getTelemetryForSurvey')
+        .resolves([[], { count: 1, start_date: null, end_date: null }]);
+
+      const response = await platformService.getSurveyPublishableFeatures(1);
+
+      expect(response.featureTypes).to.include(BiohubFeatureType.SAMPLE_PERIOD);
+      expect(response.featureTypes).to.include(BiohubFeatureType.SAMPLE_SITE);
+      expect(response.featureTypes).to.include(BiohubFeatureType.TELEMETRY);
+      expect(response.featureTypes).to.include(BiohubFeatureType.TELEMETRY_DEPLOYMENT);
+      expect(response.featureTypes).to.include(BiohubFeatureType.TELEMETRY_DEVICE);
     });
   });
 

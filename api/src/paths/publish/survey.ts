@@ -2,6 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { BiohubFeatureType, PUBLISHABLE_FEATURE_TYPES } from '../../models/biohub-create';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { PlatformService } from '../../services/platform-service';
 import { getLogger } from '../../utils/logger';
@@ -43,8 +44,12 @@ POST.apiDoc = {
         schema: {
           type: 'object',
           additionalProperties: false,
-          required: ['surveyId', 'data'],
+          required: ['projectId', 'surveyId', 'data'],
           properties: {
+            projectId: {
+              type: 'integer',
+              minimum: 1
+            },
             surveyId: {
               type: 'integer',
               minimum: 1
@@ -74,6 +79,14 @@ POST.apiDoc = {
                   type: 'boolean',
                   enum: [true],
                   description: 'Publishing agreement 3. Agreement must be accepted.'
+                },
+                featureTypes: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                    enum: [...PUBLISHABLE_FEATURE_TYPES]
+                  },
+                  description: 'Selected survey feature types to include in the BioHub submission package.'
                 }
               }
             }
@@ -128,7 +141,10 @@ export function publishSurvey(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req.keycloak_token);
 
-    const { surveyId, data } = req.body;
+    const { surveyId, data } = req.body as {
+      surveyId: number;
+      data: { submissionComment: string; featureTypes?: BiohubFeatureType[] };
+    };
 
     try {
       await connection.open();

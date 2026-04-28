@@ -5,6 +5,7 @@ import { describe } from 'mocha';
 import { SurveyObservationRecord } from '../database-models/survey_observation';
 import { ICritterDetailed } from '../services/critterbase-service';
 import {
+  BiohubFeatureType,
   buildCodesetExportContext,
   CodesetCategory,
   minimalCodesetExportContext,
@@ -1620,5 +1621,71 @@ describe('PostCodesetToBiohubObject and alias mapping', () => {
 
     const siteSelectionStrategies = (data.properties as any).site_select_strategy;
     expect(siteSelectionStrategies).to.eql([{ strategy: 'code::site_strategy::999' }]);
+  });
+});
+
+describe('Selective publish feature filtering', () => {
+  it('filters child features by includeFeatureTypes', () => {
+    const survey_obj: GetSurveyData = {
+      id: 1,
+      uuid: '1',
+      project_id: 1,
+      survey_name: 'survey_name',
+      progress_id: 1,
+      start_date: 'start_date',
+      end_date: 'end_date',
+      survey_types: [9],
+      revision_count: 1
+    };
+
+    const survey_purpose_obj: GetSurveyPurposeAndMethodologyData = {
+      intended_outcome_ids: [],
+      additional_details: 'A description of the purpose',
+      revision_count: 0
+    };
+
+    const observation_obj: SurveyObservationRecord = {
+      survey_observation_id: 1,
+      survey_id: 1,
+      survey_sample_period_id: 1,
+      latitude: 1,
+      longitude: 1,
+      count: 1,
+      itis_tsn: 1,
+      itis_scientific_name: 'test',
+      observation_time: '12:00',
+      observation_date: '2023-01-01',
+      observation_sign_id: 1
+    };
+
+    const data = new PostSurveyToBiohubObject(
+      survey_obj,
+      survey_purpose_obj,
+      [observation_obj],
+      { type: 'FeatureCollection', features: [] },
+      [
+        {
+          survey_attachment_id: 1,
+          file_name: 'attachment.csv',
+          file_size: '10',
+          file_type: 'text/csv',
+          key: 'a',
+          uuid: '123e4567-e89b-12d3-a456-426614174000',
+          create_date: '2024-01-01',
+          update_date: '2024-01-01',
+          create_user: 1,
+          title: null,
+          description: null,
+          revision_count: 1
+        }
+      ],
+      [],
+      {
+        includeFeatureTypes: new Set([BiohubFeatureType.OBSERVATION])
+      }
+    );
+
+    expect(data.child_features.some((feature) => feature.type === BiohubFeatureType.OBSERVATION)).to.equal(true);
+    expect(data.child_features.some((feature) => feature.type === BiohubFeatureType.FILE)).to.equal(false);
   });
 });

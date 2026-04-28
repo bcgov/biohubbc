@@ -484,6 +484,30 @@ export class AttachmentRepository extends BaseRepository {
   }
 
   /**
+   * Get count of survey attachments that are publishable to BioHub.
+   *
+   * @param {number} surveyId
+   * @return {Promise<number>}
+   * @memberof AttachmentRepository
+   */
+  async getSurveyAttachmentsForBioHubSubmissionCount(surveyId: number): Promise<number> {
+    defaultLog.debug({ label: 'getSurveyAttachmentsForBioHubSubmissionCount' });
+
+    const sqlStatement = SQL`
+      SELECT
+        COUNT(*)::integer AS count
+      FROM
+        survey_attachment
+      WHERE
+        survey_id = ${surveyId};
+    `;
+
+    const response = await this.connection.sql<{ count: number }>(sqlStatement);
+
+    return response.rows[0]?.count ?? 0;
+  }
+
+  /**
    * Query to return all survey report attachments belonging to the given survey.
    * @param {number} surveyId the ID of the survey
    * @return {Promise<ISurveyReportAttachment[]>} Promise resolving all of the attachments for the
