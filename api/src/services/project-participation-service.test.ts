@@ -2,12 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import { ApiGeneralError } from '../errors/api-error';
 import { PostParticipantData } from '../models/project-create';
 import { ProjectParticipationRepository, ProjectUser } from '../repositories/project-participation-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { ProjectParticipationService } from './project-participation-service';
 import { UserService } from './user-service';
 

@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { deleteCritterCaptureAttachments } from '.';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../../../__mocks__/db';
 import * as db from '../../../../../../../../../../database/db';
 import { CritterAttachmentService } from '../../../../../../../../../../services/critter-attachment-service';
 import * as S3 from '../../../../../../../../../../utils/file-utils';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../../../__mocks__/db';
 
 describe('deleteCritterCaptureAttachments', () => {
   afterEach(() => {

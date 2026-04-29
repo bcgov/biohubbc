@@ -2,12 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { ApiError } from '../errors/api-error';
 import { SystemUserWithRoles } from '../models/system-user-view';
 import { UserRepository } from '../repositories/user-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { UserService } from './user-service';
 
 chai.use(sinonChai);

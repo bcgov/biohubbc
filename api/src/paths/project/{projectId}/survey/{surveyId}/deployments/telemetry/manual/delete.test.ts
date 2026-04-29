@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../__mocks__/db';
 import * as db from '../../../../../../../../database/db';
 import { TelemetryVendorService } from '../../../../../../../../services/telemetry-services/telemetry-vendor-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../__mocks__/db';
 import { bulkDeleteManualTelemetry } from './delete';
 
 describe('delete', () => {

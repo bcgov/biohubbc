@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { createDevice, getDevicesInSurvey } from '.';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as db from '../../../../../../database/db';
 import { ApiError, ApiGeneralError } from '../../../../../../errors/api-error';
 import { TelemetryDeviceService } from '../../../../../../services/telemetry-services/telemetry-device-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 
 describe('getDevicesInSurvey', () => {
   afterEach(() => {

@@ -3,13 +3,13 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../../../../../__mocks__/db';
 import * as db from '../../../../../database/db';
 import { HTTPError } from '../../../../../errors/http-error';
 import { ISurveyAttachment } from '../../../../../repositories/attachment-repository';
 import { AttachmentService } from '../../../../../services/attachment-service';
 import { SurveyService } from '../../../../../services/survey-service';
 import * as file_utils from '../../../../../utils/file-utils';
-import { getMockDBConnection } from '../../../../../__mocks__/db';
 import * as del from './delete';
 
 chai.use(sinonChai);

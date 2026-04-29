@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { createDeployment } from '.';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../__mocks__/db';
 import * as db from '../../../../../../../../database/db';
 import { TelemetryDeploymentService } from '../../../../../../../../services/telemetry-services/telemetry-deployment-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../__mocks__/db';
 
 describe('createDeployment', () => {
   afterEach(() => {

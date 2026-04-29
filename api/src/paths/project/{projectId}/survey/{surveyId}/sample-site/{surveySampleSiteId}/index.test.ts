@@ -3,11 +3,11 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { deleteSurveySampleSiteRecord, getSurveySampleSite, updateSurveySampleSite } from '.';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
 import { ObservationService } from '../../../../../../../services/observation-services/observation-service';
 import { SampleSiteService, UpdateSampleSiteObject } from '../../../../../../../services/sample-site-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 
 chai.use(sinonChai);
 

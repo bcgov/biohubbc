@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../../../../../../__mocks__/db';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import {
@@ -9,7 +10,6 @@ import {
   IProjectReportAttachmentAuthor
 } from '../../../../../../repositories/attachment-repository';
 import { AttachmentService } from '../../../../../../services/attachment-service';
-import { getMockDBConnection } from '../../../../../../__mocks__/db';
 import * as get from './get';
 
 chai.use(sinonChai);

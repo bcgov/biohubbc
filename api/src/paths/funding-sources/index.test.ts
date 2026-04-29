@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
@@ -9,7 +10,6 @@ import { HTTPError } from '../../errors/http-error';
 import { SystemUserWithRoles } from '../../models/system-user-view';
 import { FundingSource, FundingSourceSupplementaryData } from '../../repositories/funding-source-repository';
 import { FundingSourceService } from '../../services/funding-source-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { getFundingSources, postFundingSource } from '../funding-sources';
 
 chai.use(sinonChai);

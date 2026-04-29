@@ -3,11 +3,11 @@ import { Request } from 'express';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getRequestHandlerMocks, registerMockDBConnection } from '../../__mocks__/db';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { HTTPError } from '../../errors/http-error';
 import { SystemUserWithRoles } from '../../models/system-user-view';
 import { AuthorizationService } from '../../services/authorization-service';
-import { getRequestHandlerMocks, registerMockDBConnection } from '../../__mocks__/db';
 import * as authorization from './authorization';
 
 chai.use(sinonChai);

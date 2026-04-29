@@ -1,8 +1,8 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { MarkdownRepository } from '../repositories/markdown-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import { MarkdownRepository } from '../repositories/markdown-repository';
 import { MarkdownService } from './markdown-service';
 
 chai.use(sinonChai);

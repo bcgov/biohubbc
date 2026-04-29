@@ -1,9 +1,9 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { PostSurveyLocationData } from '../models/survey-update';
 import { SurveyLocationRecord, SurveyLocationRepository } from '../repositories/survey-location-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { SurveyLocationService } from './survey-location-service';
 
 chai.use(sinonChai);

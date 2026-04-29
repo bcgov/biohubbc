@@ -2,13 +2,13 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import {
   HistoryPublishRepository,
   SurveyAttachmentPublish,
   SurveyMetadataPublish,
   SurveyReportPublish
 } from '../repositories/history-publish-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { HistoryPublishService } from './history-publish-service';
 
 chai.use(sinonChai);

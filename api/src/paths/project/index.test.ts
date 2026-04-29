@@ -2,13 +2,13 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { FindProjectsResponse } from '../../models/project-view';
 import { ProjectService } from '../../services/project-service';
 import { KeycloakUserInformation } from '../../utils/keycloak-utils';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { findProjects } from './index';
 
 chai.use(sinonChai);

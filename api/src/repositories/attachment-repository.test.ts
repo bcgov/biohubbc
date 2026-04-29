@@ -3,10 +3,10 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
 import { AttachmentRepository } from '../repositories/attachment-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 
 chai.use(sinonChai);
 

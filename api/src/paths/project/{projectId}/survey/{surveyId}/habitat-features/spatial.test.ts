@@ -2,11 +2,11 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import { SurveyHabitatFeaturesGeometryWithSupplementaryData } from '../../../../../../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
 import { SurveyHabitatFeatureService } from '../../../../../../services/habitat-feature-services/survey-habitat-feature-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import { getSurveyHabitatFeaturesGeometry } from './spatial';
 
 chai.use(sinonChai);

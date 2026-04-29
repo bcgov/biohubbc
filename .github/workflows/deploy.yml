@@ -53,7 +53,7 @@ jobs:
 
       # Cache the repo
       - name: Cache repo
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -83,7 +83,7 @@ jobs:
     steps:
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -142,7 +142,7 @@ jobs:
           limit-severities-for-sarif: true
 
       - name: Upload Trivy scan results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: trivy-${{ env.APP_NAME }}-results
           path: trivy-${{ env.APP_NAME }}-results.sarif
@@ -161,7 +161,7 @@ jobs:
     steps:
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -220,7 +220,7 @@ jobs:
           limit-severities-for-sarif: true
 
       - name: Upload Trivy scan results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: trivy-${{ env.APP_NAME }}-results
           path: trivy-${{ env.APP_NAME }}-results.sarif
@@ -239,7 +239,7 @@ jobs:
     steps:
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -292,7 +292,7 @@ jobs:
           limit-severities-for-sarif: true
 
       - name: Upload Trivy scan results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: trivy-${{ env.APP_NAME }}-results
           path: trivy-${{ env.APP_NAME }}-results.sarif
@@ -311,7 +311,7 @@ jobs:
     steps:
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -370,7 +370,7 @@ jobs:
           limit-severities-for-sarif: true
           
       - name: Upload Trivy scan results
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: trivy-${{ env.APP_NAME }}-results
           path: trivy-${{ env.APP_NAME }}-results.sarif
@@ -398,7 +398,7 @@ jobs:
     steps:
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-repo
         env:
           cache-name: cache-repo

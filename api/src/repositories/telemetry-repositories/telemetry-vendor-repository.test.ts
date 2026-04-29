@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
+import { getMockDBConnection } from '../../__mocks__/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
 import { IAllTelemetryAdvancedFilters } from '../../models/telemetry-view';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
-import { getMockDBConnection } from '../../__mocks__/db';
 import { TelemetryVendorRepository } from './telemetry-vendor-repository';
 import { Telemetry, TelemetrySpatial, TelemetryVendorEnum } from './telemetry-vendor-repository.interface';
 

@@ -205,9 +205,10 @@ export const isServiceClientUserInformation = (
  * @return {*}  {(SOURCE_SYSTEM | null)}
  */
 export const getKeycloakSource = (keycloakToken: object): SOURCE_SYSTEM | null => {
-  const clientId = keycloakToken?.['clientId']?.toUpperCase();
+  const parsedToken = keycloakToken as Record<string, any>;
+  const clientId = parsedToken?.clientId?.toUpperCase();
 
-  const azp = keycloakToken?.['azp']?.toUpperCase();
+  const azp = parsedToken?.azp?.toUpperCase();
 
   if (!clientId && !azp) {
     return null;
