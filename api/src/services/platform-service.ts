@@ -153,6 +153,8 @@ export class PlatformService extends DBService {
     const sampleSiteService = new SampleSiteService(this.connection);
     const samplePeriodService = new SamplePeriodService(this.connection);
     const sampleTechniqueService = new SampleTechniqueService(this.connection);
+    const surveyService = new SurveyService(this.connection);
+    const surveyCritterService = new SurveyCritterService(this.connection);
     const habitatFeatureService = new SurveyHabitatFeatureService(this.connection);
     const telemetryDeviceService = new TelemetryDeviceService(this.connection);
     const telemetryDeploymentService = new TelemetryDeploymentService(this.connection);
@@ -166,7 +168,12 @@ export class PlatformService extends DBService {
       habitatFeatureCount,
       telemetryDeviceCount,
       telemetryDeploymentCount,
-      surveyAttachmentCount
+      surveyAttachmentCount,
+      surveyLocations,
+      surveyReportAttachments,
+      surveyAnimals,
+      sampleSitesForBlocks,
+      siteSelectionData
     ] = await Promise.all([
       sampleSiteService.getSampleSitesCountBySurveyId(surveyId),
       samplePeriodService.getSamplePeriodsCountForSurvey(surveyId),
@@ -175,7 +182,12 @@ export class PlatformService extends DBService {
       habitatFeatureService.getSurveyHabitatFeaturesCount(surveyId),
       telemetryDeviceService.getDevicesCount(surveyId),
       telemetryDeploymentService.getDeploymentsCount(surveyId),
-      this.attachmentService.getSurveyAttachmentsForBioHubSubmissionCount(surveyId)
+      this.attachmentService.getSurveyAttachmentsForBioHubSubmissionCount(surveyId),
+      surveyService.getSurveyLocationsData(surveyId),
+      this.attachmentService.getSurveyReportAttachments(surveyId),
+      surveyCritterService.getCritterbaseSurveyCritters(surveyId),
+      sampleSiteService.getSampleSitesForSurveyId(surveyId, {}),
+      surveyService.siteSelectionStrategyService.getSiteSelectionDataForBioHubSubmission(surveyId)
     ]);
 
     let telemetryCount = 0;
@@ -226,6 +238,40 @@ export class PlatformService extends DBService {
 
     if (surveyAttachmentCount > 0) {
       featureTypes.add(BiohubFeatureType.FILE);
+    }
+
+    if (surveyLocations.length > 0) {
+      featureTypes.add(BiohubFeatureType.STUDY_AREA);
+    }
+
+    if (surveyReportAttachments.length > 0) {
+      featureTypes.add(BiohubFeatureType.REPORT);
+    }
+
+    if (siteSelectionData.stratums.length > 0) {
+      featureTypes.add(BiohubFeatureType.STRATUM);
+    }
+
+    if (
+      sampleSitesForBlocks.some(
+        (sampleSite: { blocks?: unknown[] }) => Array.isArray(sampleSite.blocks) && sampleSite.blocks.length > 0
+      )
+    ) {
+      featureTypes.add(BiohubFeatureType.BLOCK);
+    }
+
+    if (surveyAnimals.length > 0) {
+      featureTypes.add(BiohubFeatureType.ANIMAL);
+      featureTypes.add(BiohubFeatureType.CAPTURE);
+      featureTypes.add(BiohubFeatureType.MORTALITY);
+      featureTypes.add(BiohubFeatureType.ECOLOGICAL_UNIT);
+      featureTypes.add(BiohubFeatureType.MARKING);
+      featureTypes.add(BiohubFeatureType.MEASUREMENT);
+      featureTypes.add(BiohubFeatureType.RELEASE);
+    }
+
+    if (telemetryDeploymentCount > 0) {
+      featureTypes.add(BiohubFeatureType.TELEMETRY_FREQUENCY);
     }
 
     return { featureTypes: [...this.normalizePublishFeatureTypes([...featureTypes])] };
@@ -353,7 +399,9 @@ export class PlatformService extends DBService {
       : [];
 
     // Get survey report attachments
-    const surveyReportAttachments = await this.attachmentService.getSurveyReportAttachments(surveyId);
+    const surveyReportAttachments = includeFeatureTypes.has(BiohubFeatureType.REPORT)
+      ? await this.attachmentService.getSurveyReportAttachments(surveyId)
+      : [];
 
     // Generate survey data package
     const surveyDataPackage = await this._generateSurveyDataPackage(
@@ -510,7 +558,10 @@ export class PlatformService extends DBService {
         };
     const surveyObservations = observationData.surveyObservations;
     const purposeAndMethodology = await surveyService.getSurveyPurposeAndMethodology(surveyId);
-    const surveyLocation = await surveyService.getSurveyLocationsData(surveyId);
+    const surveyLocation =
+      (includeFeatureTypes?.has(BiohubFeatureType.STUDY_AREA) ?? true)
+        ? await surveyService.getSurveyLocationsData(surveyId)
+        : [];
 
     // Get partnerships and focal species data for BioHub submission
     const partnerships = await surveyService.getSurveyPartnershipsData(surveyId);
@@ -591,7 +642,10 @@ export class PlatformService extends DBService {
     const codesetCategories = await codeService.getAllCodesetCategories();
 
     // Get survey animals from Critterbase (via SIMS survey-critter associations)
-    const surveyAnimals = await surveyCritterService.getCritterbaseSurveyCritters(surveyId);
+    const surveyAnimals =
+      (includeFeatureTypes?.has(BiohubFeatureType.ANIMAL) ?? true)
+        ? await surveyCritterService.getCritterbaseSurveyCritters(surveyId)
+        : [];
 
     // Enrich mortality data with detailed information
     const enrichedSurveyAnimals: ICritterDetailed[] = await Promise.all(
@@ -653,7 +707,7 @@ export class PlatformService extends DBService {
         focalSpecies,
         surveyLocation,
         firstNations: allCodes.first_nations,
-        strata: siteSelectionData.stratums,
+        strata: (includeFeatureTypes?.has(BiohubFeatureType.STRATUM) ?? true) ? siteSelectionData.stratums : [],
         siteSelectionStrategies: siteSelectionData.strategies,
         codesetCategories,
         includeFeatureTypes

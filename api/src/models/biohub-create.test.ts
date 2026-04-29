@@ -1688,4 +1688,133 @@ describe('Selective publish feature filtering', () => {
     expect(data.child_features.some((feature) => feature.type === BiohubFeatureType.OBSERVATION)).to.equal(true);
     expect(data.child_features.some((feature) => feature.type === BiohubFeatureType.FILE)).to.equal(false);
   });
+
+  it('omits unselected study area, report, animal and stratum features', () => {
+    const survey_obj = {
+      id: 1,
+      uuid: '1',
+      project_id: 1,
+      survey_name: 'survey_name',
+      progress_id: 1,
+      start_date: 'start_date',
+      end_date: 'end_date',
+      survey_types: [9],
+      revision_count: 1
+    } as GetSurveyData;
+
+    const survey_purpose_obj = {
+      intended_outcome_ids: [],
+      additional_details: 'A description of the purpose',
+      revision_count: 0
+    } as GetSurveyPurposeAndMethodologyData;
+
+    const data = new PostSurveyToBiohubObject(
+      survey_obj,
+      survey_purpose_obj,
+      [],
+      { type: 'FeatureCollection', features: [] },
+      [],
+      [
+        {
+          survey_report_attachment_id: 1,
+          file_name: 'report.pdf',
+          file_size: '10',
+          key: 'report-key',
+          uuid: 'report-uuid',
+          title: 'Report',
+          description: null,
+          year_published: null
+        } as any
+      ],
+      {
+        animalRecords: [
+          {
+            critter_id: 'animal-1',
+            animal_id: 'ANIMAL-001',
+            itis_tsn: 1234,
+            critter_comment: 'Test animal',
+            sex: null,
+            captures: []
+          } as any
+        ],
+        surveyLocation: [{ geojson: [] }] as any,
+        strata: [{ name: 'Stratum A', description: 'Description' }],
+        includeFeatureTypes: new Set([BiohubFeatureType.OBSERVATION])
+      }
+    );
+
+    expect(data.child_features.some((feature) => feature.type === BiohubFeatureType.REPORT)).to.equal(false);
+    expect(data.child_features.some((feature) => feature.type === BiohubFeatureType.STUDY_AREA)).to.equal(false);
+    expect(data.child_features.some((feature) => feature.type === BiohubFeatureType.ANIMAL)).to.equal(false);
+    expect(data.child_features.some((feature) => feature.type === BiohubFeatureType.STRATUM)).to.equal(false);
+  });
+
+  it('filters nested animal children by selected feature types', () => {
+    const survey_obj = {
+      id: 1,
+      uuid: '1',
+      project_id: 1,
+      survey_name: 'survey_name',
+      progress_id: 1,
+      start_date: 'start_date',
+      end_date: 'end_date',
+      survey_types: [9],
+      revision_count: 1
+    } as GetSurveyData;
+
+    const survey_purpose_obj = {
+      intended_outcome_ids: [],
+      additional_details: 'A description of the purpose',
+      revision_count: 0
+    } as GetSurveyPurposeAndMethodologyData;
+
+    const animalRecord = {
+      critter_id: 'animal-1',
+      animal_id: 'ANIMAL-001',
+      itis_tsn: 1234,
+      critter_comment: 'Test animal',
+      sex: null,
+      captures: [
+        {
+          capture_date: '2024-01-01',
+          capture_time: null,
+          capture_location: null,
+          markings: [],
+          quantitative_measurements: [],
+          release_date: null
+        }
+      ],
+      mortality: [
+        {
+          mortality_comment: 'deceased',
+          mortality_timestamp: '2024-01-02',
+          location: null,
+          proximate_cause_of_death: null
+        }
+      ]
+    } as any;
+
+    const data = new PostSurveyToBiohubObject(
+      survey_obj,
+      survey_purpose_obj,
+      [],
+      { type: 'FeatureCollection', features: [] },
+      [],
+      [],
+      {
+        animalRecords: [animalRecord],
+        includeFeatureTypes: new Set([BiohubFeatureType.ANIMAL, BiohubFeatureType.CAPTURE])
+      }
+    );
+
+    const animalFeature = data.child_features.find((feature) => feature.type === BiohubFeatureType.ANIMAL);
+    expect(animalFeature).to.exist;
+    expect(animalFeature!.child_features.some((feature) => feature.type === BiohubFeatureType.CAPTURE)).to.equal(true);
+    expect(animalFeature!.child_features.some((feature) => feature.type === BiohubFeatureType.MORTALITY)).to.equal(
+      false
+    );
+    expect(
+      animalFeature!.child_features.some((feature) => feature.type === BiohubFeatureType.ECOLOGICAL_UNIT)
+    ).to.equal(false);
+  });
 });

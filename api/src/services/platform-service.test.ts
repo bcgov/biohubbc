@@ -348,6 +348,14 @@ describe('PlatformService', () => {
       sinon.stub(TelemetryDeviceService.prototype, 'getDevicesCount').resolves(0);
       sinon.stub(TelemetryDeploymentService.prototype, 'getDeploymentsCount').resolves(1);
       sinon.stub(AttachmentService.prototype, 'getSurveyAttachmentsForBioHubSubmissionCount').resolves(0);
+      sinon.stub(SurveyService.prototype, 'getSurveyLocationsData').resolves([]);
+      sinon.stub(AttachmentService.prototype, 'getSurveyReportAttachments').resolves([]);
+      sinon.stub(SurveyCritterService.prototype, 'getCritterbaseSurveyCritters').resolves([]);
+      sinon.stub(SampleSiteService.prototype, 'getSampleSitesForSurveyId').resolves([]);
+      sinon.stub(SiteSelectionStrategyService.prototype, 'getSiteSelectionDataForBioHubSubmission').resolves({
+        stratums: [],
+        strategies: []
+      });
       sinon
         .stub(TelemetryVendorService.prototype, 'getTelemetryForSurvey')
         .resolves([[], { count: 1, start_date: null, end_date: null }]);
@@ -359,6 +367,7 @@ describe('PlatformService', () => {
       expect(response.featureTypes).to.include(BiohubFeatureType.TELEMETRY);
       expect(response.featureTypes).to.include(BiohubFeatureType.TELEMETRY_DEPLOYMENT);
       expect(response.featureTypes).to.include(BiohubFeatureType.TELEMETRY_DEVICE);
+      expect(response.featureTypes).to.include(BiohubFeatureType.TELEMETRY_FREQUENCY);
     });
   });
 
