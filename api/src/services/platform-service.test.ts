@@ -175,12 +175,15 @@ describe('PlatformService', () => {
         await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
         expect.fail('Should have thrown an error');
       } catch (error) {
+        const noSurveyAttachments: unknown[] = [];
+        const noReportAttachments: unknown[] = [];
+
         expect((error as Error).message).to.include('Failed to initiate submission upload to BioHub');
         expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
         expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(
           1,
-          [],
-          [],
+          noSurveyAttachments,
+          noReportAttachments,
           'test',
           sinon.match((value) => value instanceof Set)
         );
@@ -247,11 +250,14 @@ describe('PlatformService', () => {
 
       const response = await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
 
+      const noSurveyAttachments: unknown[] = [];
+      const noReportAttachments: unknown[] = [];
+
       expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
       expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(
         1,
-        [],
-        [],
+        noSurveyAttachments,
+        noReportAttachments,
         'test',
         sinon.match((value) => value instanceof Set)
       );

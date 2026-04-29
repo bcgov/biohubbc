@@ -35,21 +35,21 @@ const PublishSurveyContent = (props: IPublishSurveyContentProps) => {
       props.availableFeatureTypes.includes(childFeatureType)
     );
 
-    const nestedRowSpacingSx =
-      depth === 1
-        ? {
-            my: -0.1,
-            mt: -1.5,
-            '& .MuiTypography-root': { lineHeight: 1.3 },
-            '& .MuiCheckbox-root': { mr: 0.5, py: '4px' }
-          }
-        : depth > 1
-          ? {
-              my: -0.15,
-              '& .MuiTypography-root': { lineHeight: 1.25 },
-              '& .MuiCheckbox-root': { mr: 0.5, py: '3px' }
-            }
-          : {};
+    let nestedRowSpacingSx = {};
+    if (depth === 1) {
+      nestedRowSpacingSx = {
+        my: -0.1,
+        mt: -1.5,
+        '& .MuiTypography-root': { lineHeight: 1.3 },
+        '& .MuiCheckbox-root': { mr: 0.5, py: '4px' }
+      };
+    } else if (depth > 1) {
+      nestedRowSpacingSx = {
+        my: -0.15,
+        '& .MuiTypography-root': { lineHeight: 1.25 },
+        '& .MuiCheckbox-root': { mr: 0.5, py: '3px' }
+      };
+    }
 
     return (
       <Box key={featureType} sx={{ mb: depth === 0 && childFeatureTypes.length ? 0.35 : 0 }}>

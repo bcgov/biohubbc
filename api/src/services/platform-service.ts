@@ -202,6 +202,81 @@ export class PlatformService extends DBService {
       telemetryCount = surveyTelemetry[1].count;
     }
 
+    const featureTypes = this._collectPublishableFeatureTypes({
+      sampleSiteCount,
+      samplePeriodCount,
+      sampleTechniqueCount,
+      observationCount,
+      habitatFeatureCount,
+      telemetryDeviceCount,
+      telemetryDeploymentCount,
+      telemetryCount,
+      surveyAttachmentCount,
+      surveyLocations,
+      surveyReportAttachments,
+      surveyAnimals,
+      sampleSitesForBlocks,
+      siteSelectionData
+    });
+
+    return { featureTypes: [...this.normalizePublishFeatureTypes([...featureTypes])] };
+  }
+
+  /**
+   * Collect publishable feature types from survey data presence signals.
+   *
+   * @param {{
+   *     sampleSiteCount: number;
+   *     samplePeriodCount: number;
+   *     sampleTechniqueCount: number;
+   *     observationCount: number;
+   *     habitatFeatureCount: number;
+   *     telemetryDeviceCount: number;
+   *     telemetryDeploymentCount: number;
+   *     telemetryCount: number;
+   *     surveyAttachmentCount: number;
+   *     surveyLocations: unknown[];
+   *     surveyReportAttachments: ISurveyReportAttachment[];
+   *     surveyAnimals: ICritterDetailed[];
+   *     sampleSitesForBlocks: { blocks?: unknown[] }[];
+   *     siteSelectionData: { stratums: { name: string; description: string }[] };
+   *   }} params
+   * @return {Set<BiohubFeatureType>}
+   * @memberof PlatformService
+   */
+  private _collectPublishableFeatureTypes(params: {
+    sampleSiteCount: number;
+    samplePeriodCount: number;
+    sampleTechniqueCount: number;
+    observationCount: number;
+    habitatFeatureCount: number;
+    telemetryDeviceCount: number;
+    telemetryDeploymentCount: number;
+    telemetryCount: number;
+    surveyAttachmentCount: number;
+    surveyLocations: unknown[];
+    surveyReportAttachments: ISurveyReportAttachment[];
+    surveyAnimals: ICritterDetailed[];
+    sampleSitesForBlocks: { blocks?: unknown[] }[];
+    siteSelectionData: { stratums: { name: string; description: string }[] };
+  }): Set<BiohubFeatureType> {
+    const {
+      sampleSiteCount,
+      samplePeriodCount,
+      sampleTechniqueCount,
+      observationCount,
+      habitatFeatureCount,
+      telemetryDeviceCount,
+      telemetryDeploymentCount,
+      telemetryCount,
+      surveyAttachmentCount,
+      surveyLocations,
+      surveyReportAttachments,
+      surveyAnimals,
+      sampleSitesForBlocks,
+      siteSelectionData
+    } = params;
+
     const featureTypes = new Set<BiohubFeatureType>();
 
     if (sampleSiteCount > 0) {
@@ -230,6 +305,7 @@ export class PlatformService extends DBService {
 
     if (telemetryDeploymentCount > 0) {
       featureTypes.add(BiohubFeatureType.TELEMETRY_DEPLOYMENT);
+      featureTypes.add(BiohubFeatureType.TELEMETRY_FREQUENCY);
     }
 
     if (telemetryCount > 0) {
@@ -270,11 +346,7 @@ export class PlatformService extends DBService {
       featureTypes.add(BiohubFeatureType.RELEASE);
     }
 
-    if (telemetryDeploymentCount > 0) {
-      featureTypes.add(BiohubFeatureType.TELEMETRY_FREQUENCY);
-    }
-
-    return { featureTypes: [...this.normalizePublishFeatureTypes([...featureTypes])] };
+    return featureTypes;
   }
 
   /**
