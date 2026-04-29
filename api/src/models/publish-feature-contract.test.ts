@@ -1,7 +1,7 @@
-import fs from 'fs';
-import path from 'path';
 import { expect } from 'chai';
+import fs from 'fs';
 import { describe, it } from 'mocha';
+import path from 'path';
 
 describe('Publish feature contract between api and app', () => {
   const sortValues = (values: string[]) => [...values].sort((left, right) => left.localeCompare(right));
@@ -15,8 +15,14 @@ describe('Publish feature contract between api and app', () => {
   };
 
   const apiBiohubCreatePath = path.resolve(process.cwd(), 'src/models/biohub-create.ts');
-  const appPublishFeatureTypesPath = path.resolve(process.cwd(), '../app/src/components/publish/publishFeatureTypes.ts');
-  const appFeatureDependenciesPath = path.resolve(process.cwd(), '../app/src/components/publish/featureDependencies.ts');
+  const appPublishFeatureTypesPath = path.resolve(
+    process.cwd(),
+    '../app/src/components/publish/publishFeatureTypes.ts'
+  );
+  const appFeatureDependenciesPath = path.resolve(
+    process.cwd(),
+    '../app/src/components/publish/featureDependencies.ts'
+  );
 
   const apiBiohubCreateSource = fs.readFileSync(apiBiohubCreatePath, 'utf8');
   const appPublishFeatureTypesSource = fs.readFileSync(appPublishFeatureTypesPath, 'utf8');
@@ -128,7 +134,9 @@ describe('Publish feature contract between api and app', () => {
 
     const graph: Partial<Record<string, string[]>> = {};
     for (const [, childSymbol, parentsBody] of entries) {
-      const dependencySymbols = [...parentsBody.matchAll(/PUBLISH_FEATURE_TYPES\.([A-Z_]+)/g)].map(([, symbol]) => symbol);
+      const dependencySymbols = [...parentsBody.matchAll(/PUBLISH_FEATURE_TYPES\.([A-Z_]+)/g)].map(
+        ([, symbol]) => symbol
+      );
       graph[frontendFeatureTypeMap[childSymbol]] = dependencySymbols
         .map((dependencySymbol) => frontendFeatureTypeMap[dependencySymbol])
         .filter((value): value is string => Boolean(value));
