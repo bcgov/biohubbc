@@ -1,10 +1,10 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { initialize } from 'express-openapi';
 import multer from 'multer';
+import { fileURLToPath } from 'node:url';
 import { OpenAPIV3 } from 'openapi-types';
 import path from 'path';
 import swaggerUIExperss from 'swagger-ui-express';
-import { fileURLToPath } from 'node:url';
 import { getDefaultPoolConfig, initDBPool } from './database/db';
 import { ensureHTTPError, HTTP400, HTTP500 } from './errors/http-error';
 import {
