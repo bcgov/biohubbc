@@ -487,7 +487,7 @@ export class PlatformService extends DBService {
     } finally {
       // Clean up TAR file
       try {
-        fs.unlinkSync(tarFilePath);
+        //fs.unlinkSync(tarFilePath);
         defaultLog.info({
           label: 'submitSurveyToBioHub',
           message: 'TAR file cleaned up',

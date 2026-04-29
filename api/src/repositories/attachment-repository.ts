@@ -1,6 +1,7 @@
 import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
@@ -475,7 +476,9 @@ export class AttachmentRepository extends BaseRepository {
       FROM
         survey_attachment
       WHERE
-        survey_id = ${surveyId};
+        survey_id = ${surveyId}
+      AND
+        file_type = ${ATTACHMENT_TYPE.OTHER};
     `;
 
     const response = await this.connection.sql<ISurveyAttachment>(sqlStatement);
@@ -499,7 +502,9 @@ export class AttachmentRepository extends BaseRepository {
       FROM
         survey_attachment
       WHERE
-        survey_id = ${surveyId};
+        survey_id = ${surveyId}
+      AND
+        file_type = ${ATTACHMENT_TYPE.OTHER};
     `;
 
     const response = await this.connection.sql<{ count: number }>(sqlStatement);

@@ -710,6 +710,39 @@ describe('AttachmentService', () => {
         });
       });
 
+      describe('getSurveyAttachmentsForBioHubSubmission', () => {
+        it('should return publishable survey attachments', async () => {
+          const dbConnection = getMockDBConnection();
+          const service = new AttachmentService(dbConnection);
+
+          const data = [{ id: 1 } as unknown as ISurveyAttachment];
+          const repoStub = sinon
+            .stub(AttachmentRepository.prototype, 'getSurveyAttachmentsForBioHubSubmission')
+            .resolves(data);
+
+          const response = await service.getSurveyAttachmentsForBioHubSubmission(1);
+
+          expect(repoStub).to.have.been.calledOnceWith(1);
+          expect(response).to.eql(data);
+        });
+      });
+
+      describe('getSurveyAttachmentsForBioHubSubmissionCount', () => {
+        it('should return publishable survey attachment count', async () => {
+          const dbConnection = getMockDBConnection();
+          const service = new AttachmentService(dbConnection);
+
+          const repoStub = sinon
+            .stub(AttachmentRepository.prototype, 'getSurveyAttachmentsForBioHubSubmissionCount')
+            .resolves(2);
+
+          const response = await service.getSurveyAttachmentsForBioHubSubmissionCount(1);
+
+          expect(repoStub).to.have.been.calledOnceWith(1);
+          expect(response).to.equal(2);
+        });
+      });
+
       describe('_deleteSurveyAttachmentRecord', () => {
         it('should return key string', async () => {
           const dbConnection = getMockDBConnection();

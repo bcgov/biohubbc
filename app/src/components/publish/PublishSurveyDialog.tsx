@@ -18,7 +18,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import yup from 'utils/YupSchema';
-import PublishSurveyIdContent from './components/PublishSurveyContent';
+import PublishSurveyContent from './components/PublishSurveyContent';
 import { PublishFeatureType } from './publishFeatureTypes';
 
 export interface ISubmitSurvey {
@@ -101,14 +101,6 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
   }, [publishFeaturesDataLoader.data]);
 
   const handleSubmit = async (values: ISubmitSurvey) => {
-    if (values === surveySubmitFormInitialValues) {
-      showErrorDialog({
-        dialogTitle: SubmitBiohubI18N.noInformationDialogTitle,
-        dialogText: SubmitBiohubI18N.noInformationDialogText
-      });
-      return;
-    }
-
     setIsSubmitting(true);
 
     return biohubApi.publish
@@ -166,7 +158,7 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
                 {SubmitSurveyBiohubI18N.submitSurveyBiohubDialogTitle}
               </DialogTitle>
               <DialogContent>
-                <PublishSurveyIdContent
+                <PublishSurveyContent
                   availableFeatureTypes={(publishFeaturesDataLoader.data?.featureTypes as PublishFeatureType[]) || []}
                 />
               </DialogContent>
