@@ -10,9 +10,9 @@ import {
   CSVHeaderConfig,
   CSVRowValidated
 } from '../../../utils/csv-utils/csv-config-validation.interface';
-import { getDescriptionCellValidator } from '../../../utils/csv-utils/csv-header-configs';
+import { csvHeaderConfigDependencies } from '../../../utils/csv-utils/csv-header-configs';
 import { getAllAliases } from '../../../utils/csv-utils/csv-helpers';
-import { getTaxonRowValidator } from '../../../utils/csv-utils/row-validators/taxon-row-validator';
+import { taxonRowValidatorDependencies } from '../../../utils/csv-utils/row-validators/taxon-row-validator';
 import { getLogger } from '../../../utils/logger';
 import { NestedRecord } from '../../../utils/nested-record';
 import { CritterbaseService, IBulkCreate } from '../../critterbase-service';
@@ -20,13 +20,8 @@ import { DBService } from '../../db-service';
 import { PlatformService } from '../../platform-service';
 import { SurveyCritterService } from '../../survey-critter-service';
 import { getTaxonFromRowState } from '../utils/row-state';
-import { getTaxonMap, getTsnsFromTaxonMap } from '../utils/taxon';
-import {
-  getCritterAliasCellValidator,
-  getCritterCollectionUnitCellValidator,
-  getCritterSexCellValidator,
-  getWlhIDCellValidator
-} from './utils/critter-header-configs';
+import { getTsnsFromTaxonMap, taxonDependencies } from '../utils/taxon';
+import { critterHeaderDependencies } from './utils/critter-header-configs';
 
 const defaultLog = getLogger('services/import/import-critters-service');
 
@@ -128,7 +123,7 @@ export class ImportCrittersService extends DBService {
   async getCSVConfig(): Promise<CSVConfig<CritterCSVStaticHeader>> {
     // Generate the taxon map from the worksheet taxon identifiers
     const taxonIdentifiers = this.utils.getUniqueCellValues('SPECIES').filter(Boolean) as Array<string | number>;
-    const taxonMap = await getTaxonMap(taxonIdentifiers, this.platformService);
+    const taxonMap = await taxonDependencies.getTaxonMap(taxonIdentifiers, this.platformService);
 
     // this should only contain valid TSNs
     const worksheetTsns = getTsnsFromTaxonMap(taxonMap);
@@ -146,12 +141,14 @@ export class ImportCrittersService extends DBService {
       SPECIES: { validateCell: () => [] },
       ALIAS: aliasHeaderConfig,
       SEX: sexHeaderConfig,
-      WLH_ID: { validateCell: getWlhIDCellValidator(this.utils) },
-      DESCRIPTION: { validateCell: getDescriptionCellValidator({ optional: true }) }
+      WLH_ID: { validateCell: critterHeaderDependencies.getWlhIDCellValidator(this.utils) },
+      DESCRIPTION: { validateCell: csvHeaderConfigDependencies.getDescriptionCellValidator({ optional: true }) }
     });
 
     // Add the taxon row validator - validates the taxon / tsn and sets the TSN in the row state
-    this.utils.config.rowValidators = [getTaxonRowValidator(taxonMap, this.utils, 'SPECIES')];
+    this.utils.config.rowValidators = [
+      taxonRowValidatorDependencies.getTaxonRowValidator(taxonMap, this.utils, 'SPECIES')
+    ];
 
     // Set the dynamic header config - validates the collection unit columns
     this.utils.config.dynamicHeadersConfig = dynamicHeadersConfig;
@@ -221,7 +218,7 @@ export class ImportCrittersService extends DBService {
     const surveyAliases = await this.surveyCritterService.getUniqueSurveyCritterAliases(this.surveyId);
 
     return {
-      validateCell: getCritterAliasCellValidator(surveyAliases, this.utils),
+      validateCell: critterHeaderDependencies.getCritterAliasCellValidator(surveyAliases, this.utils),
       setCellValue: (params) => String(params.cell)
     };
   }
@@ -261,7 +258,7 @@ export class ImportCrittersService extends DBService {
     });
 
     return {
-      validateCell: getCritterSexCellValidator(rowDictionary)
+      validateCell: critterHeaderDependencies.getCritterSexCellValidator(rowDictionary)
     };
   }
 
@@ -295,7 +292,7 @@ export class ImportCrittersService extends DBService {
     });
 
     return {
-      validateCell: getCritterCollectionUnitCellValidator(rowDictionary)
+      validateCell: critterHeaderDependencies.getCritterCollectionUnitCellValidator(rowDictionary)
     };
   }
 }

@@ -155,7 +155,7 @@ telemetry-cronjob: ## Run the telemetry cronjob
 	@echo "==============================================="
 	@echo "Telemetry Cronjob"
 	@echo "==============================================="
-	@docker compose exec api npx ts-node src/cronjobs/telemetry/index --deviceLimit=2 -- $(args)
+	@docker compose exec api npx tsx src/cronjobs/telemetry/index.ts --deviceLimit=2 -- $(args)
 ## ------------------------------------------------------------------------------
 ## Database migration commands
 ## ------------------------------------------------------------------------------

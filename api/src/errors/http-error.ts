@@ -1,7 +1,9 @@
-import { DatabaseError } from 'pg';
+import pg from 'pg';
 import { CSVError } from '../utils/csv-utils/csv-config-validation.interface';
 import { ApiConflictError, ApiError } from './api-error';
 import { BaseError } from './base-error';
+
+const { DatabaseError } = pg;
 
 export enum HTTPErrorType {
   BAD_REQUEST = 'Bad Request',

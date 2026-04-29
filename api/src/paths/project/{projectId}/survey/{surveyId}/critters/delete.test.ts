@@ -2,7 +2,7 @@ import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
-import * as db from '../../../../../../database/db';
+import { dbDependencies as db } from '../../../../../../database/db';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { POST, removeCrittersFromSurvey } from './delete';
 

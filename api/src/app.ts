@@ -4,6 +4,7 @@ import multer from 'multer';
 import { OpenAPIV3 } from 'openapi-types';
 import path from 'path';
 import swaggerUIExperss from 'swagger-ui-express';
+import { fileURLToPath } from 'url';
 import { getDefaultPoolConfig, initDBPool } from './database/db';
 import { ensureHTTPError, HTTP400, HTTP500 } from './errors/http-error';
 import {
@@ -22,6 +23,8 @@ import { getLogger } from './utils/logger';
 loadEnvironmentVariables();
 
 const defaultLog = getLogger('app');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const HOST = process.env.API_HOST;
 const PORT = process.env.API_PORT;

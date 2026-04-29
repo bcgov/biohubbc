@@ -3,13 +3,13 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { CaseInsensitiveMap } from '../../../utils/case-insensitive-map';
-import * as validate from '../../../utils/csv-utils/csv-config-validation';
+import { csvValidationDependencies as validate } from '../../../utils/csv-utils/csv-config-validation';
 import { CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { SurveyHabitatFeatureService } from '../../habitat-feature-services/survey-habitat-feature-service';
 import { IItisSearchResult, PlatformService } from '../../platform-service';
-import * as taxonMap from '../utils/taxon';
+import { taxonDependencies as taxonMap } from '../utils/taxon';
 import { ImportHabitatFeaturesService } from './import-habitat-features-service';
-import * as habitatFeatureSamplingRowValidator from './utils/habitat-feature-sampling-row-validator';
+import { habitatFeatureSamplingRowValidatorDependencies as habitatFeatureSamplingRowValidator } from './utils/habitat-feature-sampling-row-validator';
 
 chai.use(sinonChai);
 

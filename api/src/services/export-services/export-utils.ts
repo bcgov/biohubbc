@@ -30,6 +30,10 @@ export function getArchiveStream(): archiver.Archiver {
   return archiveStream;
 }
 
+export const exportUtilsDependencies = {
+  getArchiveStream
+};
+
 /**
  * Get a query stream from a SQLStatement or Knex.QueryBuilder.
  *

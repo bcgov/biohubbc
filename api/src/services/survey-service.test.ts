@@ -1,6 +1,8 @@
 import chai, { expect } from 'chai';
 import { Feature } from 'geojson';
-import { flatten } from 'lodash';
+import lodash from 'lodash';
+const { flatten } = lodash;
+
 import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';

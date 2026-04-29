@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getRequestHandlerMocks } from '../../__mocks__/db';
 import { HTTPError } from '../../errors/http-error';
-import * as fileUtils from '../../utils/file-utils';
+import { fileUtilsDependencies as fileUtils } from '../../utils/file-utils';
 import { listResources } from './list';
 
 chai.use(sinonChai);

@@ -16,9 +16,9 @@ export const parseUnknownMedia = async (
   rawMedia: Express.Multer.File | GetObjectCommandOutput
 ): Promise<null | MediaFile | ArchiveFile> => {
   if ((rawMedia as Express.Multer.File).originalname) {
-    return parseUnknownMulterFile(rawMedia as Express.Multer.File);
+    return mediaUtilsDependencies.parseUnknownMulterFile(rawMedia as Express.Multer.File);
   } else {
-    return parseUnknownS3File(rawMedia as GetObjectCommandOutput);
+    return mediaUtilsDependencies.parseUnknownS3File(rawMedia as GetObjectCommandOutput);
   }
 };
 
@@ -142,4 +142,14 @@ export const isZipMimetype = (mimetype: string): boolean => {
   return [/application\/zip/, /application\/x-zip-compressed/, /application\/x-rar-compressed/].some((regex) =>
     regex.test(mimetype)
   );
+};
+
+export const mediaUtilsDependencies = {
+  parseUnknownMedia,
+  parseUnknownMulterFile,
+  parseUnknownS3File,
+  parseUnknownZipFile,
+  parseMulterFile,
+  parseS3File,
+  isZipMimetype
 };

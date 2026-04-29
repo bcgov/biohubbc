@@ -23,7 +23,7 @@ import {
  * @param {CSVConfigType} config - The CSV configuration
  * @returns {*} {{ errors: Required<CSVError>[]; rows: CSVRowValidated[] }} - The CSV errors and rows
  */
-export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>(
+const validateCSVWorksheetCore = <StaticHeaderType extends Uppercase<string>>(
   worksheet: WorkSheet,
   config: CSVConfig<StaticHeaderType>
 ): { errors: Required<CSVError>[]; rows: CSVRowValidated<StaticHeaderType>[] } => {
@@ -79,6 +79,17 @@ export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>
   }
 
   return { errors: [], rows: rows };
+};
+
+export const csvValidationDependencies = {
+  validateCSVWorksheet: validateCSVWorksheetCore
+};
+
+export const validateCSVWorksheet = <StaticHeaderType extends Uppercase<string>>(
+  worksheet: WorkSheet,
+  config: CSVConfig<StaticHeaderType>
+): { errors: Required<CSVError>[]; rows: CSVRowValidated<StaticHeaderType>[] } => {
+  return csvValidationDependencies.validateCSVWorksheet(worksheet, config);
 };
 
 /**

@@ -4,10 +4,11 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
-import * as db from '../../database/db';
+import { dbDependencies as db } from '../../database/db';
 import { SystemUserWithRoles } from '../../models/system-user-view';
 import { UserService } from '../../services/user-service';
-import * as keycloakUtils from '../../utils/keycloak-utils';
+import type { KeycloakUserInformation } from '../../utils/keycloak-utils';
+import { keycloakUtilsDependencies as keycloakUtils } from '../../utils/keycloak-utils';
 import { addSystemRoleUser } from './add';
 
 chai.use(sinonChai);
@@ -26,7 +27,7 @@ describe('user', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      mockReq.keycloak_token = {} as keycloakUtils.KeycloakUserInformation;
+      mockReq.keycloak_token = {} as KeycloakUserInformation;
 
       mockReq.body = {
         userGuid: 'aaaa',
@@ -75,7 +76,7 @@ describe('user', () => {
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      mockReq.keycloak_token = {} as keycloakUtils.KeycloakUserInformation;
+      mockReq.keycloak_token = {} as KeycloakUserInformation;
 
       mockReq.body = {
         identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,

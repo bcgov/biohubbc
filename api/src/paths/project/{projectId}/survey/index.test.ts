@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getSurveys } from '.';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
-import * as db from '../../../../database/db';
+import { dbDependencies as db } from '../../../../database/db';
 import { HTTPError } from '../../../../errors/http-error';
 import { SurveyService } from '../../../../services/survey-service';
 import { KeycloakUserInformation } from '../../../../utils/keycloak-utils';

@@ -1,4 +1,6 @@
-import { isNumber, partition } from 'lodash';
+import lodash from 'lodash';
+const { isNumber, partition } = lodash;
+
 import { CaseInsensitiveMap } from '../../../utils/case-insensitive-map';
 import { IItisSearchResult, PlatformService } from '../../platform-service';
 
@@ -11,7 +13,7 @@ export type TaxonMap = CaseInsensitiveMap<string | number, IItisSearchResult>;
  * @param {PlatformService} platformService The platform service
  * @return {*} {Promise<CaseInsensitiveMap<string | number, IItisSearchResult>>} The taxon map - case insensitive
  */
-export const getTaxonMap = async (
+const getTaxonMapCore = async (
   taxonIdentifiers: Array<string | number>,
   platformService: PlatformService
 ): Promise<TaxonMap> => {
@@ -48,6 +50,17 @@ export const getTaxonMap = async (
   });
 
   return taxonMap;
+};
+
+export const taxonDependencies = {
+  getTaxonMap: getTaxonMapCore
+};
+
+export const getTaxonMap = async (
+  taxonIdentifiers: Array<string | number>,
+  platformService: PlatformService
+): Promise<TaxonMap> => {
+  return taxonDependencies.getTaxonMap(taxonIdentifiers, platformService);
 };
 
 /**

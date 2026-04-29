@@ -1,4 +1,6 @@
-import { flatten } from 'lodash';
+import lodash from 'lodash';
+const { flatten } = lodash;
+
 import { IDBConnection } from '../database/db';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PostSurveyLocationData, PutPartnershipsData, PutSurveyObject } from '../models/survey-update';

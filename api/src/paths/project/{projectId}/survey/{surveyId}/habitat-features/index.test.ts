@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getSurveyHabitatFeatures, postSurveyHabitatFeatures } from '.';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
-import * as db from '../../../../../../database/db';
+import { dbDependencies as db } from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import { SurveyHabitatFeaturesWithSupplementaryData } from '../../../../../../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
 import { SurveyHabitatFeatureService } from '../../../../../../services/habitat-feature-services/survey-habitat-feature-service';

@@ -8,7 +8,7 @@ import { SYSTEM_ROLE } from '../../constants/roles';
 import { HTTPError } from '../../errors/http-error';
 import { SystemUserWithRoles } from '../../models/system-user-view';
 import { AuthorizationService } from '../../services/authorization-service';
-import * as authorization from './authorization';
+import { authorizationDependencies as authorization, authorizeRequest, authorizeRequestHandler } from './authorization';
 
 chai.use(sinonChai);
 
@@ -28,7 +28,7 @@ describe('authorizeRequestHandler', function () {
       return { or: [] };
     };
 
-    const requestHandler = authorization.authorizeRequestHandler(mockAuthorizationSchemeCallback);
+    const requestHandler = authorizeRequestHandler(mockAuthorizationSchemeCallback);
 
     try {
       await requestHandler(mockReq, mockRes, mockNext);
@@ -52,7 +52,7 @@ describe('authorizeRequestHandler', function () {
       return { or: [] };
     };
 
-    const requestHandler = authorization.authorizeRequestHandler(mockAuthorizationSchemeCallback);
+    const requestHandler = authorizeRequestHandler(mockAuthorizationSchemeCallback);
 
     await requestHandler(mockReq, mockRes, mockNext);
 
@@ -72,7 +72,7 @@ describe('authorizeRequest', function () {
     sinon.stub(AuthorizationService.prototype, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     const mockReq = { authorization_scheme: {} } as unknown as Request;
-    const isAuthorized = await authorization.authorizeRequest(mockReq);
+    const isAuthorized = await authorizeRequest(mockReq);
 
     expect(isAuthorized).to.equal(false);
   });

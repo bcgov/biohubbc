@@ -1,7 +1,9 @@
-import { countBy, difference } from 'lodash';
+import lodash from 'lodash';
 import { WorkSheet } from 'xlsx';
 import { getHeadersUpperCase, getWorksheetRowObjects } from '../xlsx-utils/worksheet-utils';
 import { CSVCell, CSVConfig, CSVHeaderConfig, CSVRow } from './csv-config-validation.interface';
+
+const { countBy, difference } = lodash;
 
 /**
  * CSV Config Utils - A collection of methods useful when building CSVConfigs

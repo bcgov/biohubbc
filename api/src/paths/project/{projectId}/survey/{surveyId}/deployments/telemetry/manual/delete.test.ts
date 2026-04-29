@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../__mocks__/db';
-import * as db from '../../../../../../../../database/db';
+import { dbDependencies as db } from '../../../../../../../../database/db';
 import { TelemetryVendorService } from '../../../../../../../../services/telemetry-services/telemetry-vendor-service';
 import { bulkDeleteManualTelemetry } from './delete';
 

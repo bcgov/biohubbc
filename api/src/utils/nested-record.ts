@@ -1,4 +1,6 @@
-import { get, setWith } from 'lodash';
+import lodash from 'lodash';
+
+const { get, setWith } = lodash;
 
 type IKey = string | number;
 

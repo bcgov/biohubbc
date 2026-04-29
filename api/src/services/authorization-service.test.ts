@@ -5,7 +5,7 @@ import sinonChai from 'sinon-chai';
 import { getMockDBConnection } from '../__mocks__/db';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
-import * as db from '../database/db';
+import { dbDependencies as db } from '../database/db';
 import { SystemUserWithRoles } from '../models/system-user-view';
 import { ProjectUser } from '../repositories/project-participation-repository';
 import {

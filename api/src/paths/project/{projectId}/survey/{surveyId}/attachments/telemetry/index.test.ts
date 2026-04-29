@@ -5,12 +5,12 @@ import sinonChai from 'sinon-chai';
 import { getSurveyTelemetryCredentialAttachments, postSurveyTelemetryCredentialAttachment } from '.';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 import { TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING } from '../../../../../../../constants/attachments';
-import * as db from '../../../../../../../database/db';
+import { dbDependencies as db } from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
 import { SurveyTelemetryCredentialAttachment } from '../../../../../../../repositories/attachment-repository';
 import { AttachmentService } from '../../../../../../../services/attachment-service';
 import { TelemetryVectronicService } from '../../../../../../../services/telemetry-services/telemetry-vectronic-service';
-import * as file_utils from '../../../../../../../utils/file-utils';
+import { fileUtilsDependencies as file_utils } from '../../../../../../../utils/file-utils';
 import { KeycloakUserInformation } from '../../../../../../../utils/keycloak-utils';
 
 chai.use(sinonChai);

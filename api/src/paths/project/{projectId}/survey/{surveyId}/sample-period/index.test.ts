@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { postSamplePeriods } from '.';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
-import * as db from '../../../../../../database/db';
+import { dbDependencies as db } from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import { SamplePeriodService } from '../../../../../../services/sample-period-service';
 

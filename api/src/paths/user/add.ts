@@ -6,7 +6,7 @@ import { getDBConnection, getServiceClientDBConnection } from '../../database/db
 import { HTTP409 } from '../../errors/http-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { UserService } from '../../services/user-service';
-import { getKeycloakSource } from '../../utils/keycloak-utils';
+import { keycloakUtilsDependencies } from '../../utils/keycloak-utils';
 import { getLogger } from '../../utils/logger';
 import { getKeycloakTokenFromRequest } from '../../utils/request';
 
@@ -140,7 +140,7 @@ export function addSystemRoleUser(): RequestHandler {
 
     const keycloakToken = getKeycloakTokenFromRequest(req);
 
-    const sourceSystem = getKeycloakSource(keycloakToken);
+    const sourceSystem = keycloakUtilsDependencies.getKeycloakSource(keycloakToken);
 
     const connection = sourceSystem ? getServiceClientDBConnection(sourceSystem) : getDBConnection(keycloakToken);
 

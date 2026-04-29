@@ -2,10 +2,10 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getMockDBConnection } from '../../__mocks__/db';
-import * as db from '../../database/db';
+import { dbDependencies as db } from '../../database/db';
 import { TelemetryLotekService } from '../../services/telemetry-services/telemetry-lotek-service';
 import { TelemetryVectronicService } from '../../services/telemetry-services/telemetry-vectronic-service';
-import * as cronjob from './cronjob';
+import { telemetryCronjobDependencies as cronjob, telemetryCronjob } from './cronjob';
 
 chai.use(sinonChai);
 
@@ -45,7 +45,7 @@ describe('Telemetry Cronjob', () => {
       lotekProcessStub.resolves([{ task: { serial: 1 }, value: { new: 1, created: 1 } }]);
       vectronicProcessStub.resolves([{ task: { serial: 1, key: 'test-collar-key' }, value: { new: 1, created: 1 } }]);
 
-      await cronjob.telemetryCronjob();
+      await telemetryCronjob();
 
       expect(mockConnection.open).to.have.been.calledOnceWithExactly({ transaction: false });
 
@@ -88,7 +88,7 @@ describe('Telemetry Cronjob', () => {
       sinon.stub(TelemetryLotekService.prototype, 'fetchDevicesFromLotek').rejects('failed');
 
       try {
-        await cronjob.telemetryCronjob();
+        await telemetryCronjob();
         expect.fail();
       } catch (_error) {
         expect(mockConnection.open).to.have.been.calledOnce;

@@ -221,3 +221,10 @@ export const getWlhIDCellValidator = (configUtils: CSVConfigUtils<CritterCSVStat
     return cellErrors;
   };
 };
+
+export const critterHeaderDependencies = {
+  getCritterAliasCellValidator,
+  getCritterCollectionUnitCellValidator,
+  getCritterSexCellValidator,
+  getWlhIDCellValidator
+};

@@ -45,12 +45,12 @@ export const getDynamicEnvironmentCellValidator = (
 
     // Environment type is qualitative
     if (isQualitativeEnvironmentTypeDefinition(environment)) {
-      return validateQualitativeEnvironmentCell(params, environment);
+      return environmentDynamicHeaderDependencies.validateQualitativeEnvironmentCell(params, environment);
     }
 
     // Environment type is quantitative
     if (isQuantitativeEnvironmentTypeDefinition(environment)) {
-      return validateQuantitativeEnvironmentCell(params, environment);
+      return environmentDynamicHeaderDependencies.validateQuantitativeEnvironmentCell(params, environment);
     }
 
     // Can this path ever be reached?
@@ -136,4 +136,9 @@ export const validateQuantitativeEnvironmentCell = (
   });
 
   return [];
+};
+
+export const environmentDynamicHeaderDependencies = {
+  validateQualitativeEnvironmentCell,
+  validateQuantitativeEnvironmentCell
 };

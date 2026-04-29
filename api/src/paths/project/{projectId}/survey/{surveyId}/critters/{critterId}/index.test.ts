@@ -2,7 +2,7 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { getSurveyCritter, updateSurveyCritter } from '.';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
-import * as db from '../../../../../../../database/db';
+import { dbDependencies as db } from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
 import { CritterAttachmentService } from '../../../../../../../services/critter-attachment-service';
 import { CritterbaseService } from '../../../../../../../services/critterbase-service';

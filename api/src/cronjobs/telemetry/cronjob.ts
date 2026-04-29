@@ -1,6 +1,6 @@
 import { parseArgs } from 'util';
 import { z } from 'zod';
-import { getAPIUserDBConnection, getDefaultPoolConfig, initDBPool } from '../../database/db';
+import { dbDependencies } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';
 import { TelemetryLotekService } from '../../services/telemetry-services/telemetry-lotek-service';
 import { TelemetryVectronicService } from '../../services/telemetry-services/telemetry-vectronic-service';
@@ -44,12 +44,12 @@ const PROCESS_ALL_DEVICES = -1;
  */
 export async function telemetryCronjob() {
   // 0. SETUP - Parse CLI arguments, initialize the database and get a connection
-  const args = parseArguments();
+  const args = telemetryCronjobDependencies.parseArguments();
   defaultLog.info({ message: 'Cronjob starting.', args });
 
-  initDBPool(getDefaultPoolConfig());
+  dbDependencies.initDBPool(dbDependencies.getDefaultPoolConfig());
 
-  const connection = getAPIUserDBConnection();
+  const connection = dbDependencies.getAPIUserDBConnection();
 
   try {
     await connection.open({ transaction: false }); // Open a non-transaction database connection
@@ -179,4 +179,8 @@ export const parseArguments = () => {
     })
     .strict()
     .parse(parsedArgs.values);
+};
+
+export const telemetryCronjobDependencies = {
+  parseArguments
 };

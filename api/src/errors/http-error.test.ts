@@ -1,8 +1,10 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { DatabaseError } from 'pg';
+import pg from 'pg';
 import { ApiError, ApiErrorType } from './api-error';
 import { ensureHTTPError, HTTP400, HTTP401, HTTP403, HTTP409, HTTP500, HTTPError, isAjvError } from './http-error';
+
+const { DatabaseError } = pg;
 
 describe('HTTPError', () => {
   describe('No error value provided', () => {

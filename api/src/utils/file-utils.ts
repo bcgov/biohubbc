@@ -109,7 +109,7 @@ export const getS3KeyPrefix = (): string => {
  * @param {string} key the unique key assigned to the file in S3 when it was originally uploaded
  * @returns {Promise<DeleteObjectCommandOutput>} the response from S3 or null if required parameters are null
  */
-export async function deleteFileFromS3(key: string): Promise<DeleteObjectCommandOutput | null> {
+async function deleteFileFromS3Core(key: string): Promise<DeleteObjectCommandOutput | null> {
   const s3Client = _getS3Client();
   if (!key || !s3Client) {
     return null;
@@ -159,7 +159,7 @@ export async function bulkDeleteFilesFromS3(keys: string[]): Promise<DeleteObjec
  * @param {Record<string, string>} [metadata={}] A metadata object to store additional information with the file
  * @returns {Promise<PutObjectCommandOutput>} the response from S3
  */
-export async function uploadFileToS3(
+async function uploadFileToS3Core(
   file: Express.Multer.File,
   key: string,
   metadata: Record<string, string> = {}
@@ -264,7 +264,7 @@ export async function getFileFromS3(key: string, versionId?: string): Promise<Ge
  * @return {Promise<ListObjectsCommandOutput>} All objects at the given path, also including
  * the directory itself.
  */
-export const listFilesFromS3 = async (path: string): Promise<ListObjectsCommandOutput> => {
+const listFilesFromS3Core = async (path: string): Promise<ListObjectsCommandOutput> => {
   const s3Client = _getS3Client();
 
   return s3Client.send(
@@ -282,7 +282,7 @@ export const listFilesFromS3 = async (path: string): Promise<ListObjectsCommandO
  * @param {string} key the key of the object
  * @returns {Promise<HeadObjectCommandOutput}
  */
-export async function getObjectMeta(key: string): Promise<HeadObjectCommandOutput> {
+async function getObjectMetaCore(key: string): Promise<HeadObjectCommandOutput> {
   const s3Client = _getS3Client();
 
   return s3Client.send(new HeadObjectCommand({ Bucket: _getObjectStoreBucketName(), Key: key }));
@@ -294,7 +294,7 @@ export async function getObjectMeta(key: string): Promise<HeadObjectCommandOutpu
  * @param {string} key S3 object key
  * @return {*}  {(Promise<string | null>)} the response from S3 or null if required parameters are null
  */
-export async function getS3SignedURL(key: string): Promise<string | null> {
+async function getS3SignedURLCore(key: string): Promise<string | null> {
   const s3Client = _getS3Client();
 
   if (!key || !s3Client) {
@@ -311,6 +311,40 @@ export async function getS3SignedURL(key: string): Promise<string | null> {
       expiresIn: 300000 // 5 minutes
     }
   );
+}
+
+export const fileUtilsDependencies = {
+  deleteFileFromS3: deleteFileFromS3Core,
+  uploadFileToS3: uploadFileToS3Core,
+  uploadStreamToS3,
+  listFilesFromS3: listFilesFromS3Core,
+  getObjectMeta: getObjectMetaCore,
+  getS3SignedURL: getS3SignedURLCore,
+  generateS3FileKey
+};
+
+export async function deleteFileFromS3(key: string): Promise<DeleteObjectCommandOutput | null> {
+  return fileUtilsDependencies.deleteFileFromS3(key);
+}
+
+export async function uploadFileToS3(
+  file: Express.Multer.File,
+  key: string,
+  metadata: Record<string, string> = {}
+): Promise<PutObjectCommandOutput> {
+  return fileUtilsDependencies.uploadFileToS3(file, key, metadata);
+}
+
+export const listFilesFromS3 = async (path: string): Promise<ListObjectsCommandOutput> => {
+  return fileUtilsDependencies.listFilesFromS3(path);
+};
+
+export async function getObjectMeta(key: string): Promise<HeadObjectCommandOutput> {
+  return fileUtilsDependencies.getObjectMeta(key);
+}
+
+export async function getS3SignedURL(key: string): Promise<string | null> {
+  return fileUtilsDependencies.getS3SignedURL(key);
 }
 
 /**

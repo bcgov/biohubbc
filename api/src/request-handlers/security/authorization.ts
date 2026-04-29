@@ -22,7 +22,7 @@ export function authorizeRequestHandler(authorizationSchemeCallback: Authorizati
   return async (req, _, next) => {
     req.authorization_scheme = authorizationSchemeCallback(req);
 
-    const isAuthorized = await authorizeRequest(req);
+    const isAuthorized = await authorizationDependencies.authorizeRequest(req);
 
     if (!isAuthorized) {
       defaultLog.warn({ label: 'authorize', message: 'User is not authorized' });
@@ -78,6 +78,10 @@ export const authorizeRequest = async (req: Request): Promise<boolean> => {
   } finally {
     connection.release();
   }
+};
+
+export const authorizationDependencies = {
+  authorizeRequest
 };
 
 /**

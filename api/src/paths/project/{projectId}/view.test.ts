@@ -4,7 +4,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
-import * as db from '../../../database/db';
+import { dbDependencies as db } from '../../../database/db';
 import { HTTPError } from '../../../errors/http-error';
 import { IGetProject } from '../../../models/project-view';
 import { ProjectService } from '../../../services/project-service';

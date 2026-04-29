@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import { SYSTEM_ROLE } from '../../../constants/roles';
-import * as db from '../../../database/db';
+import { dbDependencies as db } from '../../../database/db';
 import { HTTPError } from '../../../errors/http-error';
 import { FlattenedObservationRecordWithSamplingAndSubcountData } from '../../../repositories/observation-repository/observation-repository.interface';
 import { ObservationService } from '../../../services/observation-services/observation-service';

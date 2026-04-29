@@ -1,6 +1,8 @@
 import { XMLParser } from 'fast-xml-parser';
 import { Feature } from 'geojson';
-import { flatten } from 'lodash';
+import lodash from 'lodash';
+const { flatten } = lodash;
+
 import { z } from 'zod';
 import { IDBConnection } from '../database/db';
 import { getLogger } from '../utils/logger';

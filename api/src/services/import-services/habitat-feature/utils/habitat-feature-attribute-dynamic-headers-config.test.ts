@@ -2,7 +2,10 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { CSVRowState } from '../../../../utils/csv-utils/csv-config-validation.interface';
-import * as dynamicHeadersConfig from './habitat-feature-attribute-dynamic-headers-config';
+import {
+  habitatFeatureDynamicHeaderDependencies as dynamicHeadersConfig,
+  getDynamicHabitatFeatureAttributeCellValidator
+} from './habitat-feature-attribute-dynamic-headers-config';
 
 chai.use(sinonChai);
 
@@ -14,8 +17,7 @@ describe('habitat-feature-attribute-dynamic-headers-config', () => {
   describe('getDynamicHabitatFeatureAttributeCellValidator', () => {
     it('should return an empty array when the cell is undefined', () => {
       const habitatFeatureDefinitionMap = new Map();
-      const validator =
-        dynamicHeadersConfig.getDynamicHabitatFeatureAttributeCellValidator(habitatFeatureDefinitionMap);
+      const validator = getDynamicHabitatFeatureAttributeCellValidator(habitatFeatureDefinitionMap);
 
       const result = validator({ cell: undefined } as any);
       expect(result).to.be.deep.equal([]);
@@ -23,8 +25,7 @@ describe('habitat-feature-attribute-dynamic-headers-config', () => {
 
     it('should return an error when the column header does not exist', () => {
       const habitatFeatureDefinitionMap = new Map();
-      const validator =
-        dynamicHeadersConfig.getDynamicHabitatFeatureAttributeCellValidator(habitatFeatureDefinitionMap);
+      const validator = getDynamicHabitatFeatureAttributeCellValidator(habitatFeatureDefinitionMap);
 
       const result = validator({ cell: 'test', header: 'bad' } as any);
       expect(result[0].error).to.contain("'bad' does not exist");
@@ -43,8 +44,7 @@ describe('habitat-feature-attribute-dynamic-headers-config', () => {
         .stub(dynamicHeadersConfig, 'validateQualitativeHabitatFeatureAttributeCell')
         .returns([]);
 
-      const validator =
-        dynamicHeadersConfig.getDynamicHabitatFeatureAttributeCellValidator(habitatFeatureDefinitionMap);
+      const validator = getDynamicHabitatFeatureAttributeCellValidator(habitatFeatureDefinitionMap);
 
       expect(validateQualitativeStub).to.not.have.been.calledOnce;
 
@@ -65,8 +65,7 @@ describe('habitat-feature-attribute-dynamic-headers-config', () => {
         .stub(dynamicHeadersConfig, 'validateQuantitativeHabitatFeatureAttributeCell')
         .returns([]);
 
-      const validator =
-        dynamicHeadersConfig.getDynamicHabitatFeatureAttributeCellValidator(habitatFeatureDefinitionMap);
+      const validator = getDynamicHabitatFeatureAttributeCellValidator(habitatFeatureDefinitionMap);
 
       expect(validateQuantitativeStub).to.not.have.been.calledOnce;
 
@@ -82,8 +81,7 @@ describe('habitat-feature-attribute-dynamic-headers-config', () => {
 
       habitatFeatureDefinitionMap.set('header', habitatFeatureAttributeData);
 
-      const validator =
-        dynamicHeadersConfig.getDynamicHabitatFeatureAttributeCellValidator(habitatFeatureDefinitionMap);
+      const validator = getDynamicHabitatFeatureAttributeCellValidator(habitatFeatureDefinitionMap);
 
       const result = validator({ cell: 'test', header: 'header' } as any);
       expect(result[0].error.toLowerCase()).to.contain('invalid habitat feature attribute type');
