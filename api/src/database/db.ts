@@ -19,7 +19,7 @@ import { asyncErrorWrapper, getGenericizedKeycloakUserInformation, syncErrorWrap
 const defaultLog = getLogger('database/db');
 
 const getDbHost = () => process.env.DB_HOST;
-const getDbPort = () => process.env.DB_PORT;
+const getDbPort = () => Number(process.env.DB_PORT);
 const getDbUsername = () => process.env.DB_USER_API;
 const getDbPassword = () => process.env.DB_USER_API_PASS;
 const getDbDatabase = () => process.env.DB_DATABASE;
@@ -28,6 +28,7 @@ const DB_POOL_SIZE = 20;
 const DB_CONNECTION_TIMEOUT = 0;
 const DB_IDLE_TIMEOUT = 10000;
 const pgModule = (pg as any).default ?? pg;
+const DB_POOL_GLOBAL_KEY = '__sims_db_pool__';
 
 export const DB_CLIENT = 'pg';
 
@@ -72,11 +73,11 @@ pgModule.types.setTypeParser(pgModule.types.builtins.NUMERIC, (stringValue: stri
 });
 
 const getStoredDBPool = (): pg.Pool | undefined => {
-  return (globalThis as any).DBPool;
+  return (globalThis as any)[DB_POOL_GLOBAL_KEY];
 };
 
 const setStoredDBPool = (pool: pg.Pool | undefined): void => {
-  (globalThis as any).DBPool = pool;
+  (globalThis as any)[DB_POOL_GLOBAL_KEY] = pool;
 };
 
 /**
