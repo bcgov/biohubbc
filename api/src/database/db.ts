@@ -71,8 +71,13 @@ pgModule.types.setTypeParser(pgModule.types.builtins.NUMERIC, (stringValue: stri
   return parseFloat(stringValue);
 });
 
-// singleton pg pool instance used by the api
-let DBPool: pg.Pool | undefined;
+const getStoredDBPool = (): pg.Pool | undefined => {
+  return (globalThis as any).DBPool;
+};
+
+const setStoredDBPool = (pool: pg.Pool | undefined): void => {
+  (globalThis as any).DBPool = pool;
+};
 
 /**
  * Initializes the singleton pg pool instance used by the api.
@@ -83,7 +88,7 @@ let DBPool: pg.Pool | undefined;
  * @param {pg.PoolConfig} poolConfig
  */
 const initDBPoolCore = function (poolConfig: pg.PoolConfig): void {
-  if (DBPool) {
+  if (getStoredDBPool()) {
     // the pool has already been initialized, do nothing
     return;
   }
@@ -91,7 +96,7 @@ const initDBPoolCore = function (poolConfig: pg.PoolConfig): void {
   defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig: { ...poolConfig, password: '***' } });
 
   try {
-    DBPool = new pgModule.Pool(poolConfig);
+    setStoredDBPool(new pgModule.Pool(poolConfig));
   } catch (error) {
     defaultLog.error({ label: 'create db pool', message: 'failed to create db pool', error });
     process.exit(1);
@@ -106,7 +111,7 @@ const initDBPoolCore = function (poolConfig: pg.PoolConfig): void {
  * @return {*}  {(pg.Pool | undefined)}
  */
 const getDBPoolCore = function (): pg.Pool | undefined {
-  return DBPool;
+  return getStoredDBPool();
 };
 
 export interface IDBConnection {
