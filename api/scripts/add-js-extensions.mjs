@@ -2,13 +2,21 @@ import fs from 'node:fs/promises';
 import path from 'node:path';
 
 const distDir = new URL('../dist', import.meta.url);
+const runtimeExtensions = new Set(['.js', '.mjs', '.cjs', '.json', '.node']);
 
 const needsJsExtension = (specifier) => {
-  if (!specifier.startsWith('./') && !specifier.startsWith('../')) {
+  const isRelative = specifier.startsWith('./') || specifier.startsWith('../');
+  // dayjs ships plugins as files under node_modules; Node ESM needs explicit ".js".
+  const isDayjsPlugin = specifier.startsWith('dayjs/plugin/');
+
+  if (!isRelative && !isDayjsPlugin) {
     return false;
   }
 
-  return path.extname(specifier) === '';
+  // Treat only real Node-resolvable runtime extensions as complete.
+  // Specifiers like "./foo.interface" still need ".js" appended.
+  const currentExtension = path.extname(specifier);
+  return !runtimeExtensions.has(currentExtension);
 };
 
 const patchImports = (content) => {
