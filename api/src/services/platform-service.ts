@@ -714,10 +714,10 @@ export class PlatformService extends DBService {
     const codesetCategories = await codeService.getAllCodesetCategories();
 
     // Get survey animals from Critterbase (via SIMS survey-critter associations)
-    const surveyAnimals =
-      (includeFeatureTypes?.has(BiohubFeatureType.ANIMAL) ?? true)
-        ? await surveyCritterService.getCritterbaseSurveyCritters(surveyId)
-        : [];
+    const shouldIncludeAnimals =
+      (includeFeatureTypes?.has(BiohubFeatureType.ANIMAL) ?? true) ||
+      includeFeatureTypes?.has(BiohubFeatureType.TELEMETRY_DEPLOYMENT) === true;
+    const surveyAnimals = shouldIncludeAnimals ? await surveyCritterService.getCritterbaseSurveyCritters(surveyId) : [];
 
     // Enrich mortality data with detailed information
     const enrichedSurveyAnimals: ICritterDetailed[] = await Promise.all(

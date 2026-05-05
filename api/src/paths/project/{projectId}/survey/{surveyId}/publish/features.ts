@@ -2,8 +2,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
+import { HTTP400 } from '../../../../../../errors/http-error';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { PlatformService } from '../../../../../../services/platform-service';
+import { SurveyService } from '../../../../../../services/survey-service';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/publish/features');
@@ -65,10 +67,18 @@ GET.apiDoc = {
 export function getSurveyPublishableFeatures(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req.keycloak_token);
+    const projectId = Number(req.params.projectId);
     const surveyId = Number(req.params.surveyId);
 
     try {
       await connection.open();
+
+      const surveyService = new SurveyService(connection);
+      const surveyData = await surveyService.getSurveyData(surveyId);
+
+      if (surveyData.project_id !== projectId) {
+        throw new HTTP400('Invalid project or survey identifier.');
+      }
 
       const platformService = new PlatformService(connection);
       const response = await platformService.getSurveyPublishableFeatures(surveyId);

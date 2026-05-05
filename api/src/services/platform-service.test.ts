@@ -511,6 +511,41 @@ describe('PlatformService', () => {
       expect(response.content).to.have.property('type', 'dataset');
       expect(response.content.properties).to.have.property('survey_id', 1);
     });
+
+    it('loads animal records when telemetry deployments are selected without animal feature type', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(SurveyService.prototype, 'getSurveyData').resolves({ id: 1, uuid: '1', survey_types: [] } as any);
+      sinon
+        .stub(SurveyService.prototype, 'getSurveyPurposeAndMethodology')
+        .resolves({ additional_details: 'a description of the purpose' } as any);
+      sinon.stub(SurveyService.prototype, 'getSurveyPartnershipsData').resolves({
+        indigenous_partnerships: [],
+        stakeholder_partnerships: []
+      });
+      sinon.stub(SurveyService.prototype, 'getSpeciesData').resolves({ focal_species: [] } as any);
+      sinon.stub(CodeService.prototype, 'getAllCodeSets').resolves({} as any);
+      sinon.stub(CodeService.prototype, 'getAllCodesetCategories').resolves([]);
+      sinon
+        .stub(SiteSelectionStrategyService.prototype, 'getSiteSelectionDataForBioHubSubmission')
+        .resolves({ strategies: [], stratums: [] });
+      sinon.stub(TelemetryDeploymentService.prototype, 'getDeploymentsForSurvey').resolves([]);
+
+      const getCritterbaseSurveyCrittersStub = sinon
+        .stub(SurveyCritterService.prototype, 'getCritterbaseSurveyCritters')
+        .resolves([]);
+
+      await platformService._generateSurveyDataPackage(
+        1,
+        [],
+        [],
+        'a comment about the submission',
+        new Set([BiohubFeatureType.TELEMETRY_DEPLOYMENT])
+      );
+
+      expect(getCritterbaseSurveyCrittersStub).to.have.been.calledOnceWith(1);
+    });
   });
 
   describe('_flattenToBlockModel', () => {
