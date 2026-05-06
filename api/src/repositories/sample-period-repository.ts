@@ -117,7 +117,7 @@ export class SamplePeriodRepository extends BaseRepository {
     const queryBuilder = knex.queryBuilder();
 
     queryBuilder
-      .select('count(*)::integer as count')
+      .select(knex.raw('count(*)::integer as count'))
       .from('survey_sample_period')
       .leftJoin('method_technique', 'method_technique.method_technique_id', 'survey_sample_period.method_technique_id')
       .leftJoin(

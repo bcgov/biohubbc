@@ -11,7 +11,6 @@ import {
 } from '../repositories/observation-environment-repository';
 import { ObservationRecordWithSamplingAndSubcountData } from '../repositories/observation-repository/observation-repository.interface';
 import { SurveySamplePeriodDetails } from '../repositories/sample-period-repository';
-import { SampleSiteRecordExtendedNonSpatial } from '../repositories/sample-site-repository/sample-site-repository';
 import { SurveyLocationRecord } from '../repositories/survey-location-repository';
 import { ExtendedDeploymentRecord } from '../repositories/telemetry-repositories/telemetry-deployment-repository.interface';
 import { Telemetry } from '../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
@@ -26,8 +25,11 @@ import { getLogger } from '../utils/logger';
 import { GetSurveyData, GetSurveyPurposeAndMethodologyData } from './survey-view';
 
 // Extended interface for sampling sites with geometry data
-interface SampleSiteRecordWithGeojson extends SampleSiteRecordExtendedNonSpatial {
-  geojson: Feature;
+interface SampleSiteRecordWithGeojson {
+  name: string;
+  description: string | null;
+  blocks?: { name: string; description: string }[];
+  geojson: Feature | null;
 }
 
 // Measurement record types
@@ -126,6 +128,7 @@ interface PostSurveyToBiohubOptions {
   strata?: { name: string; description: string }[];
   siteSelectionStrategies?: number[];
   codesetCategories?: CodesetCategory[];
+  includeFeatureTypes?: Set<BiohubFeatureType>;
 }
 
 type PostSurveySubmissionOptions = PostSurveyToBiohubOptions;
@@ -134,6 +137,26 @@ export interface BioHubSubmissionFeature {
   type: string;
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
+}
+
+interface PostSurveyCaptureToBiohubOptions {
+  includeMarking?: boolean;
+  includeMeasurement?: boolean;
+  includeRelease?: boolean;
+}
+
+interface PostSurveyAnimalToBiohubOptions {
+  includeCapture?: boolean;
+  includeMortality?: boolean;
+  includeEcologicalUnit?: boolean;
+  includeMarking?: boolean;
+  includeMeasurement?: boolean;
+  includeRelease?: boolean;
+}
+
+interface PostSurveySamplingSiteToBiohubOptions {
+  includeBlock?: boolean;
+  includeStratum?: boolean;
 }
 
 export interface PostSurveyObservationToBiohubOptions {
@@ -260,8 +283,9 @@ export class PostSurveyCaptureToBiohubObject implements BioHubSubmissionFeature 
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(captureRecord: ICritterDetailed['captures'][0]) {
+  constructor(captureRecord: ICritterDetailed['captures'][0], options: PostSurveyCaptureToBiohubOptions = {}) {
     defaultLog.debug({ label: 'PostSurveyCaptureToBiohubObject', message: 'params', captureRecord });
+    const { includeMarking = true, includeMeasurement = true, includeRelease = true } = options;
 
     // Combine date and time into a single timestamp
     const timestamp = captureRecord.capture_time
@@ -294,14 +318,14 @@ export class PostSurveyCaptureToBiohubObject implements BioHubSubmissionFeature 
     const childFeatures: BioHubSubmissionFeature[] = [];
 
     // Add marking features
-    if (captureRecord.markings) {
+    if (captureRecord.markings && includeMarking) {
       for (const marking of captureRecord.markings) {
         childFeatures.push(new PostSurveyMarkingToBiohubObject(marking));
       }
     }
 
     // Add quantitative measurement features
-    if (captureRecord.quantitative_measurements) {
+    if (captureRecord.quantitative_measurements && includeMeasurement) {
       for (const measurement of captureRecord.quantitative_measurements) {
         childFeatures.push(new PostSurveyMeasurementToBiohubObject(measurement));
       }
@@ -310,7 +334,7 @@ export class PostSurveyCaptureToBiohubObject implements BioHubSubmissionFeature 
     // Note: qualitative_measurements could also be added here if needed
 
     // Add release feature as child of capture if release data exists
-    if (captureRecord.release_date) {
+    if (captureRecord.release_date && includeRelease) {
       childFeatures.push(new PostSurveyReleaseToBiohubObject(captureRecord));
     }
 
@@ -488,36 +512,52 @@ export class PostSurveyAnimalToBiohubObject implements BioHubSubmissionFeature {
 
   constructor(
     animalRecord: ICritterDetailed & { mortality?: MortalityRecord | MortalityRecord[] },
-    focalSpeciesData?: { focal_species: ITaxonomyWithEcologicalUnits[] }
+    focalSpeciesData?: { focal_species: ITaxonomyWithEcologicalUnits[] },
+    options: PostSurveyAnimalToBiohubOptions = {}
   ) {
     defaultLog.debug({ label: 'PostSurveyAnimalToBiohubObject', message: 'params', animalRecord });
+    const {
+      includeCapture = true,
+      includeMortality = true,
+      includeEcologicalUnit = true,
+      includeMarking = true,
+      includeMeasurement = true,
+      includeRelease = true
+    } = options;
 
     // Create capture features for each capture record
     const childFeatures: BioHubSubmissionFeature[] = [];
 
-    if (animalRecord.captures) {
+    if (animalRecord.captures && includeCapture) {
       for (const capture of animalRecord.captures) {
-        // Always create capture feature (release will be a child of capture)
-        childFeatures.push(new PostSurveyCaptureToBiohubObject(capture));
+        childFeatures.push(
+          new PostSurveyCaptureToBiohubObject(capture, {
+            includeMarking,
+            includeMeasurement,
+            includeRelease
+          })
+        );
       }
     }
 
     // Create mortality features if mortality data exists
     // Note: The actual JSON data shows mortality as an array, but the interface shows it as a single object
     const mortalityArray = animalRecord.mortality || [];
-    if (Array.isArray(mortalityArray)) {
+    if (includeMortality && Array.isArray(mortalityArray)) {
       for (const mortality of mortalityArray) {
         childFeatures.push(new PostSurveyMortalityToBiohubObject(mortality));
       }
-    } else if (animalRecord.mortality) {
+    } else if (includeMortality && animalRecord.mortality) {
       // Handle case where mortality is a single object (according to interface)
       childFeatures.push(new PostSurveyMortalityToBiohubObject(animalRecord.mortality));
     }
 
     // Create ecological unit features for this animal if focal species data exists
-    if (focalSpeciesData?.focal_species) {
+    if (includeEcologicalUnit && focalSpeciesData?.focal_species) {
       // Find the species that matches this animal's taxon
-      const matchingSpecies = focalSpeciesData.focal_species.find((species) => species.tsn === animalRecord.itis_tsn);
+      const matchingSpecies = focalSpeciesData.focal_species.find(
+        (species: ITaxonomyWithEcologicalUnits) => species.tsn === animalRecord.itis_tsn
+      );
 
       if (matchingSpecies?.ecological_units && matchingSpecies.ecological_units.length > 0) {
         const ecologicalUnitFeatures = matchingSpecies.ecological_units.map(
@@ -617,8 +657,13 @@ export class PostSurveySamplingSiteToBiohubObject implements BioHubSubmissionFea
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(sampleSiteRecord: SampleSiteRecordWithGeojson, strata?: { name: string; description: string }[]) {
+  constructor(
+    sampleSiteRecord: SampleSiteRecordWithGeojson,
+    strata?: { name: string; description: string }[],
+    options: PostSurveySamplingSiteToBiohubOptions = {}
+  ) {
     defaultLog.debug({ label: 'PostSurveySamplingSiteToBiohubObject', message: 'params', sampleSiteRecord });
+    const { includeBlock = true, includeStratum = true } = options;
 
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.SAMPLE_SITE;
@@ -634,12 +679,16 @@ export class PostSurveySamplingSiteToBiohubObject implements BioHubSubmissionFea
     };
 
     // Create stratum child features if strata data is available
-    const stratumChildFeatures = strata ? strata.map((stratum) => new PostStratumToBiohubObject(stratum)) : [];
+    const stratumChildFeatures =
+      strata && includeStratum ? strata.map((stratum) => new PostStratumToBiohubObject(stratum)) : [];
 
     // Create block child features if blocks data is available in the sample site record
-    const blockChildFeatures = sampleSiteRecord.blocks
-      ? sampleSiteRecord.blocks.map((block) => new PostBlockToBiohubObject(block))
-      : [];
+    const blockChildFeatures =
+      includeBlock && sampleSiteRecord.blocks
+        ? sampleSiteRecord.blocks.map(
+            (block: { name: string; description: string }) => new PostBlockToBiohubObject(block)
+          )
+        : [];
 
     this.child_features = [...stratumChildFeatures, ...blockChildFeatures];
   }
@@ -798,7 +847,9 @@ export class PostSurveyHabitatFeatureToBiohubObject implements BioHubSubmissionF
 
     // Create associated species array from focal species
     const associatedSpeciesArray =
-      habitatFeatureRecord.survey_habitat_feature_taxons?.map((species) => ({ taxon_id: species.itis_tsn })) || [];
+      habitatFeatureRecord.survey_habitat_feature_taxons?.map((species: { itis_tsn: number }) => ({
+        taxon_id: species.itis_tsn
+      })) || [];
 
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.HABITAT_FEATURE;
@@ -872,6 +923,8 @@ export interface PostTelemetryDeploymentToBiohubOptions {
   telemetry?: Telemetry[];
   animalRecords?: ICritterDetailed[];
   codesetExportContext: CodesetExportContext;
+  includeTelemetry?: boolean;
+  includeTelemetryFrequency?: boolean;
 }
 
 export class PostTelemetryDeploymentToBiohubObject implements BioHubSubmissionFeature {
@@ -883,7 +936,13 @@ export class PostTelemetryDeploymentToBiohubObject implements BioHubSubmissionFe
   constructor(deploymentRecord: ExtendedDeploymentRecord, options: PostTelemetryDeploymentToBiohubOptions) {
     defaultLog.debug({ label: 'PostTelemetryDeploymentToBiohubObject', message: 'params', deploymentRecord });
 
-    const { telemetry, animalRecords, codesetExportContext } = options;
+    const {
+      telemetry,
+      animalRecords,
+      codesetExportContext,
+      includeTelemetry = true,
+      includeTelemetryFrequency = true
+    } = options;
 
     // Find the matching animal record to get the animal_id
     const matchingAnimal = animalRecords?.find(
@@ -903,7 +962,7 @@ export class PostTelemetryDeploymentToBiohubObject implements BioHubSubmissionFe
     this.child_features = [];
 
     // Add telemetry child features
-    if (telemetry) {
+    if (telemetry && includeTelemetry) {
       const telemetryFeatures = telemetry
         .filter((telemetryRecord) => {
           // Filter telemetry records that belong to this deployment
@@ -915,7 +974,10 @@ export class PostTelemetryDeploymentToBiohubObject implements BioHubSubmissionFe
     }
 
     // Add frequency child feature if frequency data exists
-    if (deploymentRecord.frequency != null || deploymentRecord.frequency_unit_id != null) {
+    if (
+      includeTelemetryFrequency &&
+      (deploymentRecord.frequency != null || deploymentRecord.frequency_unit_id != null)
+    ) {
       this.child_features.push(
         new PostTelemetryFrequencyToBiohubObject(deploymentRecord.frequency, deploymentRecord.frequency_unit_id, {
           codesetExportContext
@@ -1177,8 +1239,13 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
       firstNations,
       strata,
       siteSelectionStrategies,
-      codesetCategories
+      codesetCategories,
+      includeFeatureTypes
     } = options;
+
+    const isFeatureIncluded = (featureType: BiohubFeatureType) => {
+      return includeFeatureTypes ? includeFeatureTypes.has(featureType) : true;
+    };
 
     const codesetExportContext = buildCodesetExportContext(codesetCategories ?? []);
 
@@ -1199,12 +1266,26 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
       (attachment) => new PostSurveyReportAttachmentsToBiohubObject(attachment)
     );
 
-    const animalFeatures = animalRecords.map((animal) => new PostSurveyAnimalToBiohubObject(animal, focalSpecies));
+    const animalFeatures = animalRecords.map(
+      (animal) =>
+        new PostSurveyAnimalToBiohubObject(animal, focalSpecies, {
+          includeCapture: isFeatureIncluded(BiohubFeatureType.CAPTURE),
+          includeMortality: isFeatureIncluded(BiohubFeatureType.MORTALITY),
+          includeEcologicalUnit: isFeatureIncluded(BiohubFeatureType.ECOLOGICAL_UNIT),
+          includeMarking: isFeatureIncluded(BiohubFeatureType.MARKING),
+          includeMeasurement: isFeatureIncluded(BiohubFeatureType.MEASUREMENT),
+          includeRelease: isFeatureIncluded(BiohubFeatureType.RELEASE)
+        })
+    );
 
     // Create sampling features
     const samplingSiteFeatures = mapOrEmpty(
       samplingSites,
-      (samplingSite) => new PostSurveySamplingSiteToBiohubObject(samplingSite, strata)
+      (samplingSite) =>
+        new PostSurveySamplingSiteToBiohubObject(samplingSite, strata, {
+          includeBlock: isFeatureIncluded(BiohubFeatureType.BLOCK),
+          includeStratum: isFeatureIncluded(BiohubFeatureType.STRATUM)
+        })
     );
 
     const samplingPeriodFeatures = mapOrEmpty(
@@ -1235,7 +1316,9 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
         new PostTelemetryDeploymentToBiohubObject(deployment, {
           telemetry,
           animalRecords,
-          codesetExportContext
+          codesetExportContext,
+          includeTelemetry: isFeatureIncluded(BiohubFeatureType.TELEMETRY),
+          includeTelemetryFrequency: isFeatureIncluded(BiohubFeatureType.TELEMETRY_FREQUENCY)
         })
     );
 
@@ -1283,18 +1366,18 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
       ...buildOptionalArrayProperty(siteSelectionStrategiesArray, 'site_select_strategy')
     };
     this.child_features = [
-      ...observationFeatures,
-      ...reportAttachmentFeatures,
-      ...attachmentFeatures,
-      ...animalFeatures,
-      ...samplingSiteFeatures,
-      ...samplingPeriodFeatures,
-      ...samplingTechniqueFeatures,
-      ...habitatFeatureFeatures,
-      ...telemetryDeviceFeatures,
-      ...telemetryDeploymentFeatures,
-      ...studyAreaFeature,
-      ...stratumFeatures,
+      ...(isFeatureIncluded(BiohubFeatureType.OBSERVATION) ? observationFeatures : []),
+      ...(isFeatureIncluded(BiohubFeatureType.REPORT) ? reportAttachmentFeatures : []),
+      ...(isFeatureIncluded(BiohubFeatureType.FILE) ? attachmentFeatures : []),
+      ...(isFeatureIncluded(BiohubFeatureType.ANIMAL) ? animalFeatures : []),
+      ...(isFeatureIncluded(BiohubFeatureType.SAMPLE_SITE) ? samplingSiteFeatures : []),
+      ...(isFeatureIncluded(BiohubFeatureType.SAMPLE_PERIOD) ? samplingPeriodFeatures : []),
+      ...(isFeatureIncluded(BiohubFeatureType.SAMPLE_TECHNIQUE) ? samplingTechniqueFeatures : []),
+      ...(isFeatureIncluded(BiohubFeatureType.HABITAT_FEATURE) ? habitatFeatureFeatures : []),
+      ...(isFeatureIncluded(BiohubFeatureType.TELEMETRY_DEVICE) ? telemetryDeviceFeatures : []),
+      ...(isFeatureIncluded(BiohubFeatureType.TELEMETRY_DEPLOYMENT) ? telemetryDeploymentFeatures : []),
+      ...(isFeatureIncluded(BiohubFeatureType.STUDY_AREA) ? studyAreaFeature : []),
+      ...(isFeatureIncluded(BiohubFeatureType.STRATUM) ? stratumFeatures : []),
       ...codesetFeature
     ];
   }
@@ -1366,7 +1449,8 @@ export class PostSurveySubmissionToBioHubObject implements BioHubSubmission {
         firstNations,
         strata,
         siteSelectionStrategies,
-        codesetCategories
+        codesetCategories,
+        includeFeatureTypes: options.includeFeatureTypes
       }
     );
 
@@ -1602,7 +1686,7 @@ function buildCodesetReference(
   return `code::${categoryAlias}::${codeAlias}`;
 }
 
-enum BiohubFeatureType {
+export enum BiohubFeatureType {
   ANIMAL = 'animal',
   BLOCK = 'block',
   CAPTURE = 'capture',
@@ -1627,3 +1711,43 @@ enum BiohubFeatureType {
   TELEMETRY_FREQUENCY = 'telemetry_frequency',
   TELEMETRY_DEVICE = 'telemetry_device'
 }
+
+export const PUBLISHABLE_FEATURE_TYPES = [
+  BiohubFeatureType.ANIMAL,
+  BiohubFeatureType.BLOCK,
+  BiohubFeatureType.CAPTURE,
+  BiohubFeatureType.ECOLOGICAL_UNIT,
+  BiohubFeatureType.FILE,
+  BiohubFeatureType.HABITAT_FEATURE,
+  BiohubFeatureType.MARKING,
+  BiohubFeatureType.MEASUREMENT,
+  BiohubFeatureType.MORTALITY,
+  BiohubFeatureType.OBSERVATION,
+  BiohubFeatureType.RELEASE,
+  BiohubFeatureType.REPORT,
+  BiohubFeatureType.SAMPLE_SITE,
+  BiohubFeatureType.SAMPLE_PERIOD,
+  BiohubFeatureType.SAMPLE_TECHNIQUE,
+  BiohubFeatureType.STRATUM,
+  BiohubFeatureType.STUDY_AREA,
+  BiohubFeatureType.TELEMETRY,
+  BiohubFeatureType.TELEMETRY_DEVICE,
+  BiohubFeatureType.TELEMETRY_DEPLOYMENT,
+  BiohubFeatureType.TELEMETRY_FREQUENCY
+] as const;
+
+export const PUBLISHABLE_FEATURE_TYPE_PARENTS: Partial<Record<BiohubFeatureType, BiohubFeatureType[]>> = {
+  [BiohubFeatureType.BLOCK]: [BiohubFeatureType.SAMPLE_SITE],
+  [BiohubFeatureType.CAPTURE]: [BiohubFeatureType.ANIMAL],
+  [BiohubFeatureType.ECOLOGICAL_UNIT]: [BiohubFeatureType.ANIMAL],
+  [BiohubFeatureType.MARKING]: [BiohubFeatureType.CAPTURE],
+  [BiohubFeatureType.MEASUREMENT]: [BiohubFeatureType.CAPTURE],
+  [BiohubFeatureType.MORTALITY]: [BiohubFeatureType.ANIMAL],
+  [BiohubFeatureType.RELEASE]: [BiohubFeatureType.CAPTURE],
+  [BiohubFeatureType.SAMPLE_PERIOD]: [BiohubFeatureType.SAMPLE_SITE],
+  [BiohubFeatureType.SAMPLE_TECHNIQUE]: [BiohubFeatureType.SAMPLE_SITE],
+  [BiohubFeatureType.STRATUM]: [BiohubFeatureType.SAMPLE_SITE],
+  [BiohubFeatureType.TELEMETRY_DEPLOYMENT]: [BiohubFeatureType.TELEMETRY_DEVICE],
+  [BiohubFeatureType.TELEMETRY]: [BiohubFeatureType.TELEMETRY_DEPLOYMENT],
+  [BiohubFeatureType.TELEMETRY_FREQUENCY]: [BiohubFeatureType.TELEMETRY_DEPLOYMENT]
+};

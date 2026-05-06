@@ -1,6 +1,7 @@
 import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
 import { z } from 'zod';
+import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { getKnex } from '../database/db';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
@@ -475,12 +476,40 @@ export class AttachmentRepository extends BaseRepository {
       FROM
         survey_attachment
       WHERE
-        survey_id = ${surveyId};
+        survey_id = ${surveyId}
+      AND
+        file_type = ${ATTACHMENT_TYPE.OTHER};
     `;
 
     const response = await this.connection.sql<ISurveyAttachment>(sqlStatement);
 
     return response.rows;
+  }
+
+  /**
+   * Get count of survey attachments that are publishable to BioHub.
+   *
+   * @param {number} surveyId
+   * @return {Promise<number>}
+   * @memberof AttachmentRepository
+   */
+  async getSurveyAttachmentsForBioHubSubmissionCount(surveyId: number): Promise<number> {
+    defaultLog.debug({ label: 'getSurveyAttachmentsForBioHubSubmissionCount' });
+
+    const sqlStatement = SQL`
+      SELECT
+        COUNT(*)::integer AS count
+      FROM
+        survey_attachment
+      WHERE
+        survey_id = ${surveyId}
+      AND
+        file_type = ${ATTACHMENT_TYPE.OTHER};
+    `;
+
+    const response = await this.connection.sql<{ count: number }>(sqlStatement);
+
+    return response.rows[0]?.count ?? 0;
   }
 
   /**
