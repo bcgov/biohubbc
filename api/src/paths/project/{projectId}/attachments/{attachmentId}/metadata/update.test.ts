@@ -2,10 +2,10 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../../../../../../__mocks__/db';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import { AttachmentService } from '../../../../../../services/attachment-service';
-import { getMockDBConnection } from '../../../../../../__mocks__/db';
 import * as update_project_metadata from './update';
 
 chai.use(sinonChai);

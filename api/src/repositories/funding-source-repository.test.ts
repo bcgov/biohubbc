@@ -3,9 +3,9 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { ApiError } from '../errors/api-error';
 import { ICreateFundingSource } from '../services/funding-source-service';
-import { getMockDBConnection } from '../__mocks__/db';
 import { FundingSource, FundingSourceRepository, SurveyFundingSource } from './funding-source-repository';
 
 chai.use(sinonChai);

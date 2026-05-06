@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { PROJECT_PERMISSION, PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import * as db from '../database/db';
@@ -17,7 +18,6 @@ import {
 } from '../services/authorization-service';
 import { UserService } from '../services/user-service';
 import { KeycloakUserInformation, ServiceClientUserInformation } from '../utils/keycloak-utils';
-import { getMockDBConnection } from '../__mocks__/db';
 import { ProjectParticipationService } from './project-participation-service';
 
 chai.use(sinonChai);

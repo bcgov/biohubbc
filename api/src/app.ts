@@ -212,9 +212,13 @@ function getAdditionalMiddleware(): express.RequestHandler[] {
  * @param {NextFunction} next
  */
 function validateAllResponses(req: Request, res: Response, next: NextFunction) {
-  const isStrictValidation = !!req['apiDoc']['x-express-openapi-validation-strict'] || false;
+  const openApiReq = req as Request & { apiDoc?: Record<string, any> };
+  const openApiRes = res as Response & {
+    validateResponse?: (statusCode: number, body: unknown) => { message: any; errors: any[] } | undefined;
+  };
+  const isStrictValidation = !!openApiReq.apiDoc?.['x-express-openapi-validation-strict'] || false;
 
-  if (typeof res['validateResponse'] === 'function') {
+  if (typeof openApiRes.validateResponse === 'function') {
     const json = res.json;
 
     res.json = (...args) => {
@@ -226,7 +230,7 @@ function validateAllResponses(req: Request, res: Response, next: NextFunction) {
       const reqBody = args[0];
 
       // Run openapi response validation function
-      const validationResult: { message: any; errors: any[] } | undefined = res['validateResponse'](
+      const validationResult: { message: any; errors: any[] } | undefined = openApiRes.validateResponse!(
         res.statusCode,
         reqBody
       );

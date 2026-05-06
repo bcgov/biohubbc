@@ -1,12 +1,12 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import {
   InsertSamplePeriodObject,
   SamplePeriodRepository,
   UpdateSamplePeriodObject
 } from '../repositories/sample-period-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { SamplePeriodService } from './sample-period-service';
 
 chai.use(sinonChai);

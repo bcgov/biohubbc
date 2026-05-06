@@ -1,10 +1,10 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../../../__mocks__/db';
 import { CaseInsensitiveMap } from '../../../utils/case-insensitive-map';
 import * as validate from '../../../utils/csv-utils/csv-config-validation';
 import { CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
-import { getMockDBConnection } from '../../../__mocks__/db';
 import { SurveyHabitatFeatureService } from '../../habitat-feature-services/survey-habitat-feature-service';
 import { IItisSearchResult, PlatformService } from '../../platform-service';
 import * as taxonMap from '../utils/taxon';

@@ -3,8 +3,8 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { HTTPError } from '../errors/http-error';
 import { getMockDBConnection } from '../__mocks__/db';
+import { HTTPError } from '../errors/http-error';
 import { TechniqueVantageRepository } from './technique-vantage-repository';
 import { VantagePostData } from './vantage-mode-repository';
 

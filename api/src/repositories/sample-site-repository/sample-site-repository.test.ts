@@ -3,8 +3,8 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ApiExecuteSQLError } from '../../errors/api-error';
 import { getMockDBConnection } from '../../__mocks__/db';
+import { ApiExecuteSQLError } from '../../errors/api-error';
 import { InsertSampleSiteRecord, SampleSiteRepository, UpdateSampleSiteRecord } from './sample-site-repository';
 
 chai.use(sinonChai);

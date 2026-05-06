@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import {
@@ -9,7 +10,6 @@ import {
   ObservationGeometryRecord
 } from '../../../../../../repositories/observation-repository/observation-repository.interface';
 import { ObservationService } from '../../../../../../services/observation-services/observation-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import { getSurveyObservationsGeometry } from './spatial';
 
 chai.use(sinonChai);

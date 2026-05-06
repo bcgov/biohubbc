@@ -2,10 +2,10 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../../../constants/administrative-activity';
 import * as db from '../../../../database/db';
 import { AdministrativeActivityService } from '../../../../services/administrative-activity-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 import * as reject_request from './reject';
 
 chai.use(sinonChai);

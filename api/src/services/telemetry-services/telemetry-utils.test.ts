@@ -4,6 +4,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../../__mocks__/db';
 import {
   TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING,
   TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE
@@ -12,7 +13,6 @@ import * as telemetry_utils from '../../services/telemetry-services/telemetry-ut
 import { TelemetryVectronicService } from '../../services/telemetry-services/telemetry-vectronic-service';
 import { MediaFile } from '../../utils/media/media-file';
 import * as media_utils from '../../utils/media/media-utils';
-import { getMockDBConnection } from '../../__mocks__/db';
 
 chai.use(sinonChai);
 

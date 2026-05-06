@@ -319,8 +319,10 @@ const _getErrorRowIndex = (params: { row: CSVRow; rowIndex: number }, errorIndex
   }
 
   // This is injected by the `getWorksheetRowObjects` function
-  if (params.row[WorksheetRowIndexSymbol]) {
-    return params.row[WorksheetRowIndexSymbol] + 1;
+  const worksheetRowIndex = (params.row as Record<PropertyKey, any>)[WorksheetRowIndexSymbol];
+
+  if (worksheetRowIndex) {
+    return worksheetRowIndex + 1;
   }
 
   // Params row index is 0 based

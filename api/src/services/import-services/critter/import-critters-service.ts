@@ -191,9 +191,11 @@ export class ImportCrittersService extends DBService {
 
       // Critterbase dynamic headers payload
       this.utils.worksheetDynamicHeaders.forEach((header) => {
-        if (row[header]) {
+        const rowValue = (row as Record<string, any>)[header];
+
+        if (rowValue) {
           critterbasePayload.collections?.push({
-            collection_unit_id: row[header],
+            collection_unit_id: rowValue,
             critter_id: critterId
           });
         }

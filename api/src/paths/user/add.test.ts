@@ -2,12 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import * as db from '../../database/db';
 import { SystemUserWithRoles } from '../../models/system-user-view';
 import { UserService } from '../../services/user-service';
 import * as keycloakUtils from '../../utils/keycloak-utils';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { addSystemRoleUser } from './add';
 
 chai.use(sinonChai);

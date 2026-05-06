@@ -3,8 +3,8 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL, { SQLStatement } from 'sql-template-strings';
-import { SurveyRepository } from '../../../repositories/survey-repository';
 import { getMockDBConnection } from '../../../__mocks__/db';
+import { SurveyRepository } from '../../../repositories/survey-repository';
 import { ExportSamplingStrategy } from './export-sampling-strategy';
 
 chai.use(sinonChai);

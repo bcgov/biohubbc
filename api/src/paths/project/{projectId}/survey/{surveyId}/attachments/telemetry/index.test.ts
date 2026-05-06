@@ -3,6 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getSurveyTelemetryCredentialAttachments, postSurveyTelemetryCredentialAttachment } from '.';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 import { TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING } from '../../../../../../../constants/attachments';
 import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/http-error';
@@ -11,7 +12,6 @@ import { AttachmentService } from '../../../../../../../services/attachment-serv
 import { TelemetryVectronicService } from '../../../../../../../services/telemetry-services/telemetry-vectronic-service';
 import * as file_utils from '../../../../../../../utils/file-utils';
 import { KeycloakUserInformation } from '../../../../../../../utils/keycloak-utils';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 
 chai.use(sinonChai);
 

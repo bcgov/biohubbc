@@ -3,11 +3,11 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { createTechniques, getTechniques } from '.';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as db from '../../../../../../database/db';
 import { HTTPError } from '../../../../../../errors/http-error';
 import { TechniqueObject } from '../../../../../../repositories/technique-repository';
 import { TechniqueService } from '../../../../../../services/technique-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 
 chai.use(sinonChai);
 

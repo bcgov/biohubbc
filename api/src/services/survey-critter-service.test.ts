@@ -1,9 +1,9 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { SurveyCritterRepository } from '../repositories/survey-critter-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { CritterbaseService, getCritterbaseUserFromConnection } from './critterbase-service';
 import { SurveyCritterService } from './survey-critter-service';
 

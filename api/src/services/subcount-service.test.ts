@@ -2,10 +2,10 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { ObservationSubcountModel } from '../database-models/observation_subcount';
 import { ObservationSubCountMeasurementRepository } from '../repositories/observation-subcount-measurement-repository';
 import { InsertObservationSubCount, SubCountRepository } from '../repositories/subcount-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { SubCountService } from './subcount-service';
 
 chai.use(sinonChai);

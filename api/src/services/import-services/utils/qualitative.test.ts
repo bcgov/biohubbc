@@ -44,7 +44,12 @@ describe('validateQualitativeValue', () => {
     };
     const result = validateQualitativeValue(value, qualitativeTypeDefinition);
 
-    expect(result[0]['error']).to.contain('a string');
+    expect(Array.isArray(result)).to.be.true;
+    if (!Array.isArray(result)) {
+      expect.fail('Expected validation errors array');
+    }
+
+    expect(result[0].error).to.contain('a string');
   });
 
   it('should return an error if the value is not a valid option', () => {
@@ -59,7 +64,12 @@ describe('validateQualitativeValue', () => {
     };
     const result = validateQualitativeValue(value, qualitativeTypeDefinition);
 
-    expect(result[0]['error']).to.contain('Invalid qualitative option');
-    expect(result[0]['values']).to.be.an('array').that.has.a.lengthOf(1).and.includes('red');
+    expect(Array.isArray(result)).to.be.true;
+    if (!Array.isArray(result)) {
+      expect.fail('Expected validation errors array');
+    }
+
+    expect(result[0].error).to.contain('Invalid qualitative option');
+    expect(result[0].values).to.be.an('array').that.has.a.lengthOf(1).and.includes('red');
   });
 });

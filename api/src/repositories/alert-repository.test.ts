@@ -2,9 +2,9 @@ import chai, { expect } from 'chai';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { AlertSeverity } from '../database-units/alert_severity';
 import { AlertRecordWithStatus, IAlertCreateObject, IAlertUpdateObject } from '../models/alert-view';
-import { getMockDBConnection } from '../__mocks__/db';
 import { AlertRepository } from './alert-repository';
 
 chai.use(sinonChai);

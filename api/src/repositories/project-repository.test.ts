@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { PostProjectObject } from '../models/project-create';
 import {
   GetAttachmentsData,
@@ -9,7 +10,6 @@ import {
   GetObjectivesData,
   GetReportAttachmentsData
 } from '../models/project-view';
-import { getMockDBConnection } from '../__mocks__/db';
 import { ProjectRepository } from './project-repository';
 
 chai.use(sinonChai);

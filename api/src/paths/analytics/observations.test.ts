@@ -2,11 +2,11 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { ObservationAnalyticsResponse } from '../../models/observation-analytics';
 import { AnalyticsService } from '../../services/analytics-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { getObservationCountByGroup } from './observations';
 
 chai.use(sinonChai);

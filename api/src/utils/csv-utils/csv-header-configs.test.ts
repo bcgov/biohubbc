@@ -214,7 +214,7 @@ describe('CSVHeaderConfigs', () => {
       };
 
       surveyCritterAliasValidator(params);
-      expect(params.row[CSVRowState]?.critterId).to.be.equal('uuid');
+      expect((params.row as Record<PropertyKey, any>)[CSVRowState]?.critterId).to.be.equal('uuid');
     });
   });
 

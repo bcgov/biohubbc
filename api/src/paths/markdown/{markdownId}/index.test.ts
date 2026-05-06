@@ -1,10 +1,10 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import * as db from '../../../database/db';
 import { MarkdownService } from '../../../services/markdown-service';
 import { KeycloakUserInformation } from '../../../utils/keycloak-utils';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import { scoreMarkdown } from './index';
 
 chai.use(sinonChai);

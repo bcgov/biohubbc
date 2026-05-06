@@ -69,7 +69,7 @@ export const BcgwWildlifeManagementUnitsLayerGeometryField = 'GEOMETRY';
  *
  * Note: some ENV regions map to multiple NRM regions.
  */
-const envToNrmRegionsMapping = {
+const envToNrmRegionsMapping: Record<string, string> = {
   'Vancouver Island': 'West Coast Natural Resource Region',
   'Lower Mainland': 'South Coast Natural Resource Region',
   Thompson: 'Thompson-Okanagan Natural Resource Region',

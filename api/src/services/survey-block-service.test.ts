@@ -3,8 +3,8 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { PostSurveyBlock, SurveyBlockRepository } from '../repositories/survey-block-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import { PostSurveyBlock, SurveyBlockRepository } from '../repositories/survey-block-repository';
 import { SampleBlockService } from './sample-block-service';
 import { SurveyBlockService } from './survey-block-service';
 

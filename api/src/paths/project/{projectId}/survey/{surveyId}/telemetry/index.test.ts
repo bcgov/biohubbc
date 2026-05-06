@@ -8,8 +8,8 @@ import {
   TelemetryVendorEnum
 } from '../../../../../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 
-import { TelemetryVendorService } from '../../../../../../services/telemetry-services/telemetry-vendor-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
+import { TelemetryVendorService } from '../../../../../../services/telemetry-services/telemetry-vendor-service';
 
 describe('getTelemetryInSurvey', () => {
   afterEach(() => {

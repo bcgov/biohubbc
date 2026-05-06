@@ -21,7 +21,7 @@ import {
 describe('db', () => {
   beforeEach(() => {
     // reset singleton pg pool instance so that each test can control its existence as needed
-    global['DBPool'] = undefined;
+    (global as any).DBPool = undefined;
   });
 
   describe('getDBPool', () => {
