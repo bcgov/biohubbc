@@ -39,12 +39,12 @@ export const proxyFilter = (pathname: string, req: Request) => {
   const origin = (req.headers.origin ?? '').replace('https://', '');
 
   // Reject requests NOT coming directly from SIMS APP / frontend.
-  if (origin !== getSimsAppHost()) {
+  if (origin !== critterbaseProxyDependencies.getSimsAppHost()) {
     defaultLog.debug({
       label: 'proxyFilter',
       message: `${req.method} ${pathname} -> Invalid origin`,
       requestOrigin: req.headers.origin,
-      allowedOrigin: getSimsAppHost()
+      allowedOrigin: critterbaseProxyDependencies.getSimsAppHost()
     });
 
     return false;
@@ -84,6 +84,10 @@ export const proxyFilter = (pathname: string, req: Request) => {
  */
 export const getSimsAppHost = () => {
   return (process.env.APP_HOST as string).replace('https://', '');
+};
+
+export const critterbaseProxyDependencies = {
+  getSimsAppHost
 };
 
 /**

@@ -101,7 +101,7 @@ type Env = z.infer<typeof EnvSchema>;
  *
  * @returns {*} {Env} Validated environment variables
  */
-export const loadEnvironmentVariables = (): Env => {
+const loadEnvironmentVariablesCore = (): Env => {
   const parsed = EnvSchema.safeParse(process.env);
 
   if (!parsed.success) {
@@ -126,8 +126,21 @@ export const loadEnvironmentVariables = (): Env => {
  * @param {EnvKey} envVariable The environment variable to get
  * @returns {*} {Env[EnvKey]} The environment variable value
  */
-export const getEnvironmentVariable = <EnvKey extends keyof Env>(envVariable: EnvKey): Env[EnvKey] => {
+const getEnvironmentVariableCore = <EnvKey extends keyof Env>(envVariable: EnvKey): Env[EnvKey] => {
   return process.env[envVariable] as Env[EnvKey];
+};
+
+export const envConfigDependencies = {
+  loadEnvironmentVariables: loadEnvironmentVariablesCore,
+  getEnvironmentVariable: getEnvironmentVariableCore
+};
+
+export const loadEnvironmentVariables = (): Env => {
+  return envConfigDependencies.loadEnvironmentVariables();
+};
+
+export const getEnvironmentVariable = <EnvKey extends keyof Env>(envVariable: EnvKey): Env[EnvKey] => {
+  return envConfigDependencies.getEnvironmentVariable(envVariable);
 };
 
 // Extend NodeJS ProcessEnv to include the EnvSchema

@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getMockDBConnection } from '../../__mocks__/db';
-import * as env from '../../utils/env-config';
+import { envConfigDependencies as env } from '../../utils/env-config';
 import { TelemetryLotekService } from './telemetry-lotek-service';
 
 chai.use(sinonChai);

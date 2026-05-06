@@ -60,11 +60,11 @@ export const getDynamicMeasurementCellValidator = (
     }
 
     if (isCBQualitativeMeasurementTypeDefinition(measurement)) {
-      return validateQualitativeMeasurementCell(params, measurement);
+      return measurementDynamicHeaderDependencies.validateQualitativeMeasurementCell(params, measurement);
     }
 
     if (isCBQuantitativeMeasurementTypeDefinition(measurement)) {
-      return validateQuantitativeMeasurementCell(params, measurement);
+      return measurementDynamicHeaderDependencies.validateQuantitativeMeasurementCell(params, measurement);
     }
 
     // Can this path ever be reached?
@@ -147,4 +147,9 @@ export const validateQuantitativeMeasurementCell = (
   });
 
   return [];
+};
+
+export const measurementDynamicHeaderDependencies = {
+  validateQualitativeMeasurementCell,
+  validateQuantitativeMeasurementCell
 };

@@ -100,4 +100,4 @@ EXPOSE 6100
 USER 1001
 
 # Application Entry point
-CMD ["node", "src/app.js"]
+CMD ["node", "--experimental-specifier-resolution=node", "src/app.js"]

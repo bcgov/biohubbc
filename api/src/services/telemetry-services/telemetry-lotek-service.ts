@@ -1,5 +1,7 @@
 import axios, { AxiosInstance } from 'axios';
-import { chunk } from 'lodash';
+import lodash from 'lodash';
+const { chunk } = lodash;
+
 import qs from 'qs';
 import { IDBConnection } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';

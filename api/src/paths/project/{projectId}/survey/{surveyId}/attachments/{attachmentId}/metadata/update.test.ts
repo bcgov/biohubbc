@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
-import * as db from '../../../../../../../../database/db';
+import { dbDependencies as db } from '../../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../../errors/http-error';
 import { AttachmentService } from '../../../../../../../../services/attachment-service';
 import * as update_survey_metadata from './update';

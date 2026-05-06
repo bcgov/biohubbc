@@ -5,12 +5,12 @@ import xlsx from 'xlsx';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import { CSVConfigUtils } from '../../../utils/csv-utils/csv-config-utils';
 import { CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
-import * as headerConfig from '../../../utils/csv-utils/csv-header-configs';
+import { csvHeaderConfigDependencies as headerConfig } from '../../../utils/csv-utils/csv-header-configs';
 import { NestedRecord } from '../../../utils/nested-record';
 import { CritterbaseService } from '../../critterbase-service';
 import { SurveyCritterService } from '../../survey-critter-service';
 import { ImportCrittersService } from './import-critters-service';
-import * as critterConfig from './utils/critter-header-configs';
+import { critterHeaderDependencies as critterConfig } from './utils/critter-header-configs';
 
 chai.use(sinonChai);
 

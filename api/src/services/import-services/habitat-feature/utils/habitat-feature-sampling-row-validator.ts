@@ -1,7 +1,9 @@
 import dayjs from 'dayjs';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import { compact } from 'lodash';
+import lodash from 'lodash';
+const { compact } = lodash;
+
 import { DefaultTimeFormat, DefaultTimeFormatNoSeconds } from '../../../../constants/dates';
 import { ApiGeneralError } from '../../../../errors/api-error';
 import { SurveySamplePeriodDetails } from '../../../../repositories/sample-period-repository';
@@ -211,6 +213,10 @@ export function getHabitatFeatureSamplingInformationRowValidator(
     );
   };
 }
+
+export const habitatFeatureSamplingRowValidatorDependencies = {
+  getHabitatFeatureSamplingInformationRowValidator
+};
 
 /**
  * Validate Habitat feature Date, Latitude, and Longitude all exist - used when sampling information is not provided.

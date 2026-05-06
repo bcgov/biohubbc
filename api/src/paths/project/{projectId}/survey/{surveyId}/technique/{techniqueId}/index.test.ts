@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { deleteTechnique, getTechniqueById, updateTechnique } from '.';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
-import * as db from '../../../../../../../database/db';
+import { dbDependencies as db } from '../../../../../../../database/db';
 import { ApiError } from '../../../../../../../errors/api-error';
 import { HTTPError } from '../../../../../../../errors/http-error';
 import { AttractantService } from '../../../../../../../services/attractants-service';

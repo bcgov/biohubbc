@@ -17,7 +17,7 @@ import {
   ISurveyReportAttachmentAuthor
 } from '../repositories/attachment-repository';
 import { SurveyAttachmentPublish, SurveyReportPublish } from '../repositories/history-publish-repository';
-import * as fileUtils from './../utils/file-utils';
+import { fileUtilsDependencies as fileUtils } from './../utils/file-utils';
 import { AttachmentService } from './attachment-service';
 import { HistoryPublishService } from './history-publish-service';
 

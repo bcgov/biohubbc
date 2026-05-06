@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as db from '../../../../../../database/db';
+import { dbDependencies as db } from '../../../../../../database/db';
 import { TelemetryDeviceService } from '../../../../../../services/telemetry-services/telemetry-device-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../.././../../__mocks__/db';
 import { deleteDevices } from './delete';

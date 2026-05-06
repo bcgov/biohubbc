@@ -7,10 +7,10 @@ import SQL from 'sql-template-strings';
 import { PassThrough } from 'stream';
 import { getMockDBConnection } from '../../__mocks__/db';
 import { ApiError } from '../../errors/api-error';
-import * as file_utils from '../../utils/file-utils';
+import { fileUtilsDependencies as file_utils } from '../../utils/file-utils';
 import { ExportService } from './export-service';
 import { ExportConfig, ExportStrategy } from './export-strategy';
-import * as export_utils from './export-utils';
+import { exportUtilsDependencies as export_utils } from './export-utils';
 
 chai.use(sinonChai);
 

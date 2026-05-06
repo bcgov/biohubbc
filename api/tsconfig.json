@@ -1,12 +1,13 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
+    "module": "preserve",
     "lib": ["es2023"],
     "outDir": "dist",
     "target": "es2023",
+    "noEmit": true,
     "sourceMap": true,
     "allowJs": false,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "forceConsistentCasingInFileNames": true,
     "noImplicitThis": true,
     "noImplicitAny": true,
@@ -21,8 +22,5 @@
     "strict": true,
     "typeRoots": ["node_modules/@types", "src/types"]
   },
-  "include": ["src"],
-  "ts-node": {
-    "files": true
-  }
+  "include": ["src"]
 }

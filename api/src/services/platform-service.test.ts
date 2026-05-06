@@ -9,8 +9,8 @@ import { getMockDBConnection } from '../__mocks__/db';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { BiohubFeatureType } from '../models/biohub-create';
 import { ObservationRecordWithSamplingAndSubcountData } from '../repositories/observation-repository/observation-repository.interface';
-import * as envConfig from '../utils/env-config';
-import * as featureFlagUtils from '../utils/feature-flag-utils';
+import { envConfigDependencies as envConfig } from '../utils/env-config';
+import { featureFlagDependencies as featureFlagUtils } from '../utils/feature-flag-utils';
 import { AttachmentService } from './attachment-service';
 import { CodeService } from './code-service';
 import { SurveyHabitatFeatureService } from './habitat-feature-services/survey-habitat-feature-service';
@@ -164,7 +164,6 @@ describe('PlatformService', () => {
 
       sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
 
-      const fs = require('node:fs');
       sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
 
       const _initiateSubmissionUploadStub = sinon
@@ -217,7 +216,6 @@ describe('PlatformService', () => {
 
       sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
 
-      const fs = require('node:fs');
       sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
       sinon.stub(fs, 'unlinkSync').callsFake(() => {});
 
@@ -300,7 +298,6 @@ describe('PlatformService', () => {
         .returns([{ id: 'test-dataset-id', type: 'dataset', properties: {}, content: [], parent: null }]);
       sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
 
-      const fs = require('node:fs');
       sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
       sinon.stub(fs, 'unlinkSync').callsFake(() => {});
 
@@ -678,7 +675,6 @@ describe('PlatformService', () => {
         { id: 'obs-1', type: 'species_observation', properties: {}, content: [], parent: 'test-dataset-id' }
       ]);
 
-      const fs = require('node:fs');
       sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
       sinon.stub(fs, 'unlinkSync').callsFake(() => {});
 

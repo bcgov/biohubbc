@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { SYSTEM_ROLE } from '../../constants/roles';
-import * as db from '../../database/db';
+import { dbDependencies as db } from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { FindSampleSiteRecord } from '../../repositories/sample-site-repository/sample-site-repository';
 import { SampleSiteService } from '../../services/sample-site-service';

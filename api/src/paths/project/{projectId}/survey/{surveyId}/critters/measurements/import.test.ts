@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
-import * as db from '../../../../../../../database/db';
+import { dbDependencies as db } from '../../../../../../../database/db';
 import { HTTP422CSVValidationError } from '../../../../../../../errors/http-error';
 import { ImportMeasurementsService } from '../../../../../../../services/import-services/measurement/import-measurements-service';
 import { importMeasurementCSV } from './import';

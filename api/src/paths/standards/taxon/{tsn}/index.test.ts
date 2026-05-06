@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getSpeciesStandards } from '.';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
-import * as db from '../../../../database/db';
+import { dbDependencies as db } from '../../../../database/db';
 import { CBMeasurementUnit } from '../../../../services/critterbase-service';
 import { StandardsService } from '../../../../services/standards-service';
 

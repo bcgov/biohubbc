@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../../../../__mocks__/db';
-import * as db from '../../../../../../../../../../database/db';
+import { dbDependencies as db } from '../../../../../../../../../../database/db';
 import { CritterAttachmentService } from '../../../../../../../../../../services/critter-attachment-service';
-import * as S3 from '../../../../../../../../../../utils/file-utils';
+import { fileUtilsDependencies as S3 } from '../../../../../../../../../../utils/file-utils';
 import { uploadCaptureAttachments } from './upload';
 
 describe('uploadCaptureAttachments', () => {

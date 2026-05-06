@@ -1,4 +1,4 @@
-import { JwtPayload } from 'jsonwebtoken';
+import type { JwtPayload } from 'jsonwebtoken';
 import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 
 /**
@@ -204,7 +204,7 @@ export const isServiceClientUserInformation = (
  * @param {object} keycloakToken
  * @return {*}  {(SOURCE_SYSTEM | null)}
  */
-export const getKeycloakSource = (keycloakToken: object): SOURCE_SYSTEM | null => {
+const getKeycloakSourceCore = (keycloakToken: object): SOURCE_SYSTEM | null => {
   const parsedToken = keycloakToken as Record<string, any>;
   const clientId = parsedToken?.clientId?.toUpperCase();
 
@@ -219,4 +219,12 @@ export const getKeycloakSource = (keycloakToken: object): SOURCE_SYSTEM | null =
   }
 
   return null;
+};
+
+export const keycloakUtilsDependencies = {
+  getKeycloakSource: getKeycloakSourceCore
+};
+
+export const getKeycloakSource = (keycloakToken: object): SOURCE_SYSTEM | null => {
+  return keycloakUtilsDependencies.getKeycloakSource(keycloakToken);
 };

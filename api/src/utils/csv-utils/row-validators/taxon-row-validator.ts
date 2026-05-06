@@ -18,7 +18,7 @@ import { getTaxonCellValidator } from '../csv-header-configs';
  * @param {CSVCellValidatorOptions} [options] cell validator options
  * @returns {*} {CSVCellValidator} The validate cell callback
  */
-export const getTaxonRowValidator = <StaticHeaderType extends Uppercase<string> = Uppercase<string>>(
+const getTaxonRowValidatorCore = <StaticHeaderType extends Uppercase<string> = Uppercase<string>>(
   taxonMap: TaxonMap,
   utils: CSVConfigUtils<StaticHeaderType>,
   taxonStaticHeader: StaticHeaderType,
@@ -45,4 +45,17 @@ export const getTaxonRowValidator = <StaticHeaderType extends Uppercase<string> 
       };
     });
   };
+};
+
+export const taxonRowValidatorDependencies = {
+  getTaxonRowValidator: getTaxonRowValidatorCore
+};
+
+export const getTaxonRowValidator = <StaticHeaderType extends Uppercase<string> = Uppercase<string>>(
+  taxonMap: TaxonMap,
+  utils: CSVConfigUtils<StaticHeaderType>,
+  taxonStaticHeader: StaticHeaderType,
+  options?: CSVCellValidatorOptions
+): CSVRowValidator => {
+  return taxonRowValidatorDependencies.getTaxonRowValidator(taxonMap, utils, taxonStaticHeader, options);
 };

@@ -2,10 +2,10 @@ import { expect } from 'chai';
 import sinon from 'sinon';
 import { v4 } from 'uuid';
 import { getMockDBConnection } from '../../../__mocks__/db';
-import * as csv from '../../../utils/csv-utils/csv-config-validation';
+import { csvValidationDependencies as csv } from '../../../utils/csv-utils/csv-config-validation';
 import { CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
 import { NestedRecord } from '../../../utils/nested-record';
-import * as measurementUtils from '../utils/measurement';
+import { measurementDependencies as measurementUtils } from '../utils/measurement';
 import { ImportMeasurementsService } from './import-measurements-service';
 
 describe('import-measurements-service', () => {

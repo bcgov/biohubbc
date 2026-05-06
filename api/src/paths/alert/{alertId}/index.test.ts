@@ -7,7 +7,7 @@ import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/
 import { SYSTEM_IDENTITY_SOURCE } from '../../../constants/database';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { AlertSeverity } from '../../../database-units/alert_severity';
-import * as db from '../../../database/db';
+import { dbDependencies as db } from '../../../database/db';
 import { HTTPError } from '../../../errors/http-error';
 import { AlertRecordWithStatus } from '../../../models/alert-view';
 import { AlertService } from '../../../services/alert-service';

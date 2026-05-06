@@ -95,7 +95,7 @@ export const isCBQuantitativeMeasurementStub = (measurement: unknown): boolean =
  * @param {CritterbaseService} critterbaseService
  * @returns {*} {Promise<TSNMeasurementDictionary>} Measurement dictionary
  */
-export const getTsnMeasurementDictionary = async (
+const getTsnMeasurementDictionaryCore = async (
   tsns: number[],
   critterbaseService: CritterbaseService
 ): Promise<TSNMeasurementDictionary> => {
@@ -144,4 +144,15 @@ export const getTsnMeasurementDictionary = async (
   });
 
   return measurementDictionary;
+};
+
+export const measurementDependencies = {
+  getTsnMeasurementDictionary: getTsnMeasurementDictionaryCore
+};
+
+export const getTsnMeasurementDictionary = async (
+  tsns: number[],
+  critterbaseService: CritterbaseService
+): Promise<TSNMeasurementDictionary> => {
+  return measurementDependencies.getTsnMeasurementDictionary(tsns, critterbaseService);
 };

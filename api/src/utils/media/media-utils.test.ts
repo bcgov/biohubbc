@@ -5,7 +5,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ArchiveFile, MediaFile } from './media-file';
-import * as media_utils from './media-utils';
+import { mediaUtilsDependencies as media_utils } from './media-utils';
 
 chai.use(sinonChai);
 

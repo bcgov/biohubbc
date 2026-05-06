@@ -1,8 +1,7 @@
 import { expect } from 'chai';
 import { Request } from 'express';
 import sinon from 'sinon';
-import * as CritterbaseProxy from './critterbase-proxy';
-import { proxyFilter } from './critterbase-proxy';
+import { critterbaseProxyDependencies as CritterbaseProxy, proxyFilter } from './critterbase-proxy';
 
 describe('CritterbaseProxy', () => {
   describe('proxyFilter', () => {

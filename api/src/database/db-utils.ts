@@ -1,4 +1,4 @@
-import { DatabaseError } from 'pg';
+import pg from 'pg';
 import { z } from 'zod';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError } from '../errors/api-error';
@@ -9,6 +9,8 @@ import {
   isServiceClientUserInformation,
   KeycloakUserInformation
 } from '../utils/keycloak-utils';
+
+const { DatabaseError } = pg;
 
 /**
  * A type for a set of generic keycloak user information properties.

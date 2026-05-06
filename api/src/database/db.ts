@@ -19,7 +19,7 @@ import { asyncErrorWrapper, getGenericizedKeycloakUserInformation, syncErrorWrap
 const defaultLog = getLogger('database/db');
 
 const getDbHost = () => process.env.DB_HOST;
-const getDbPort = () => process.env.DB_PORT;
+const getDbPort = () => Number(process.env.DB_PORT);
 const getDbUsername = () => process.env.DB_USER_API;
 const getDbPassword = () => process.env.DB_USER_API_PASS;
 const getDbDatabase = () => process.env.DB_DATABASE;
@@ -27,6 +27,8 @@ const getDbDatabase = () => process.env.DB_DATABASE;
 const DB_POOL_SIZE = 20;
 const DB_CONNECTION_TIMEOUT = 0;
 const DB_IDLE_TIMEOUT = 10000;
+const pgModule = (pg as any).default ?? pg;
+const DB_POOL_GLOBAL_KEY = '__sims_db_pool__';
 
 export const DB_CLIENT = 'pg';
 
@@ -52,26 +54,31 @@ export const getDefaultPoolConfig = (): pg.PoolConfig => ({
 // This Can lead to unexpected behavior when the original psql `DATE` value was intentionally omitting time/zone information.
 // PSQL date types: https://www.postgresql.org/docs/12/datatype-datetime.html
 // node-postgres type handling (see bottom of page): https://node-postgres.com/features/types
-pg.types.setTypeParser(pg.types.builtins.DATE, (stringValue: string) => {
+pgModule.types.setTypeParser(pgModule.types.builtins.DATE, (stringValue: string) => {
   return stringValue; // 1082 for `DATE` type
 });
 
 // Adding a TIMESTAMP type parser to keep all dates used in the system consistent
-pg.types.setTypeParser(pg.types.builtins.TIMESTAMP, (stringValue: string) => {
+pgModule.types.setTypeParser(pgModule.types.builtins.TIMESTAMP, (stringValue: string) => {
   return stringValue; // 1082 for `TIMESTAMP` type
 });
 // Adding a TIMESTAMPTZ type parser to keep all dates used in the system consistent
-pg.types.setTypeParser(pg.types.builtins.TIMESTAMPTZ, (stringValue: string) => {
+pgModule.types.setTypeParser(pgModule.types.builtins.TIMESTAMPTZ, (stringValue: string) => {
   return stringValue; // 1082 for `DATE` type
 });
 // NUMERIC column types return as strings to maintain precision. Converting this to a float so it is usable by the system
 // Explanation of why Numeric returns as a string: https://github.com/brianc/node-postgres/issues/811
-pg.types.setTypeParser(pg.types.builtins.NUMERIC, (stringValue: string) => {
+pgModule.types.setTypeParser(pgModule.types.builtins.NUMERIC, (stringValue: string) => {
   return parseFloat(stringValue);
 });
 
-// singleton pg pool instance used by the api
-let DBPool: pg.Pool | undefined;
+const getStoredDBPool = (): pg.Pool | undefined => {
+  return (globalThis as any)[DB_POOL_GLOBAL_KEY];
+};
+
+const setStoredDBPool = (pool: pg.Pool | undefined): void => {
+  (globalThis as any)[DB_POOL_GLOBAL_KEY] = pool;
+};
 
 /**
  * Initializes the singleton pg pool instance used by the api.
@@ -81,8 +88,8 @@ let DBPool: pg.Pool | undefined;
  *
  * @param {pg.PoolConfig} poolConfig
  */
-export const initDBPool = function (poolConfig: pg.PoolConfig): void {
-  if (DBPool) {
+const initDBPoolCore = function (poolConfig: pg.PoolConfig): void {
+  if (getStoredDBPool()) {
     // the pool has already been initialized, do nothing
     return;
   }
@@ -90,7 +97,7 @@ export const initDBPool = function (poolConfig: pg.PoolConfig): void {
   defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig: { ...poolConfig, password: '***' } });
 
   try {
-    DBPool = new pg.Pool(poolConfig);
+    setStoredDBPool(new pgModule.Pool(poolConfig));
   } catch (error) {
     defaultLog.error({ label: 'create db pool', message: 'failed to create db pool', error });
     process.exit(1);
@@ -104,8 +111,8 @@ export const initDBPool = function (poolConfig: pg.PoolConfig): void {
  *
  * @return {*}  {(pg.Pool | undefined)}
  */
-export const getDBPool = function (): pg.Pool | undefined {
-  return DBPool;
+const getDBPoolCore = function (): pg.Pool | undefined {
+  return getStoredDBPool();
 };
 
 export interface IDBConnection {
@@ -240,7 +247,7 @@ export interface IDBConnection {
  * @param {object} keycloakToken
  * @return {*} {IDBConnection}
  */
-export const getDBConnection = function (keycloakToken?: KeycloakUserInformation): IDBConnection {
+const getDBConnectionCore = function (keycloakToken?: KeycloakUserInformation): IDBConnection {
   if (!keycloakToken) {
     throw Error('Keycloak token is undefined');
   }
@@ -629,7 +636,7 @@ export const getDBConnection = function (keycloakToken?: KeycloakUserInformation
  * @param {SOURCE_SYSTEM} sourceSystem
  * @return {*}  {IDBConnection}
  */
-export const getServiceClientDBConnection = (sourceSystem: SOURCE_SYSTEM): IDBConnection => {
+const getServiceClientDBConnectionCore = (sourceSystem: SOURCE_SYSTEM): IDBConnection => {
   return getDBConnection({
     database_user_guid: sourceSystem,
     identity_provider: SYSTEM_IDENTITY_SOURCE.SYSTEM.toLowerCase(),
@@ -648,7 +655,7 @@ export const getServiceClientDBConnection = (sourceSystem: SOURCE_SYSTEM): IDBCo
  *
  * @return {*}  {IDBConnection}
  */
-export const getAPIUserDBConnection = (): IDBConnection => {
+const getAPIUserDBConnectionCore = (): IDBConnection => {
   return getDBConnection({
     database_user_guid: getDbUsername(),
     identity_provider: SYSTEM_IDENTITY_SOURCE.DATABASE.toLowerCase(),
@@ -668,4 +675,37 @@ export const getKnex = <TRecord extends Record<string, any> = any, TResult = Rec
   TResult
 > => {
   return knex<TRecord, TResult>({ client: DB_CLIENT });
+};
+
+export const initDBPool = function (poolConfig: pg.PoolConfig): void {
+  return dbDependencies.initDBPool(poolConfig);
+};
+
+export const getDBPool = function (): pg.Pool | undefined {
+  return dbDependencies.getDBPool();
+};
+
+export const getDBConnection = function (keycloakToken?: KeycloakUserInformation): IDBConnection {
+  return dbDependencies.getDBConnection(keycloakToken);
+};
+
+export const getServiceClientDBConnection = (sourceSystem: SOURCE_SYSTEM): IDBConnection => {
+  return dbDependencies.getServiceClientDBConnection(sourceSystem);
+};
+
+export const getAPIUserDBConnection = (): IDBConnection => {
+  return dbDependencies.getAPIUserDBConnection();
+};
+
+/**
+ * Mutable seam object for tests that need to stub db dependencies under ESM.
+ */
+export const dbDependencies = {
+  getDBConnection: getDBConnectionCore,
+  initDBPool: initDBPoolCore,
+  getDBPool: getDBPoolCore,
+  getServiceClientDBConnection: getServiceClientDBConnectionCore,
+  getAPIUserDBConnection: getAPIUserDBConnectionCore,
+  getKnex,
+  getDefaultPoolConfig
 };
