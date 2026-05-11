@@ -37,7 +37,7 @@ jobs:
           cache-name: cache-repo
         with:
           # Cache repo based on the commit sha that triggered the workflow
-          path: ${{ github.workspace }}/*
+          path: ${{ github.workspace }}
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
   test:
@@ -59,7 +59,7 @@ jobs:
         env:
           cache-name: cache-repo
         with:
-          path: ${{ github.workspace }}/*
+          path: ${{ github.workspace }}
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache

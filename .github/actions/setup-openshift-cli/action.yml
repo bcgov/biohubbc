@@ -1,0 +1,77 @@
+name: Set up OpenShift CLI (oc)
+description: Download a pinned oc from the mirror (with actions/cache), install to PATH, and optionally log in.
+
+inputs:
+  oc-version:
+    description: OpenShift client version (e.g. 4.16.60)
+    required: false
+    default: "4.16.60"
+  cache-dir:
+    description: Cache root directory (leave empty for $HOME/.cache/oc). Leading ~ is expanded.
+    required: false
+    default: ""
+  login:
+    description: If true, run oc login using env OPENSHIFT_TOKEN
+    required: false
+    default: "false"
+  openshift-server-url:
+    description: Cluster API URL
+    required: false
+    default: "https://api.silver.devops.gov.bc.ca:6443"
+  namespace:
+    description: If non-empty, select this namespace after login (oc project)
+    required: false
+    default: ""
+
+runs:
+  using: composite
+  steps:
+    - name: Resolve cache directory
+      id: paths
+      shell: bash
+      env:
+        INPUT_CACHE: ${{ inputs.cache-dir }}
+      run: |
+        if [ -z "${INPUT_CACHE}" ]; then
+          CACHED="${HOME}/.cache/oc"
+        else
+          CACHED="${INPUT_CACHE/#\~/${HOME}}"
+        fi
+        echo "cache_dir=${CACHED}" >> "${GITHUB_OUTPUT}"
+
+    - name: Restore cached oc
+      id: cache-oc
+      uses: actions/cache@v5
+      with:
+        path: ${{ steps.paths.outputs.cache_dir }}/${{ inputs.oc-version }}/${{ runner.arch }}/oc
+        key: ${{ runner.os }}-oc-${{ inputs.oc-version }}-${{ runner.arch }}
+
+    - name: Download oc (cache miss)
+      if: steps.cache-oc.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        OC_VERSION: ${{ inputs.oc-version }}
+        OC_CACHE_DIR: ${{ steps.paths.outputs.cache_dir }}
+        RUNNER_ARCH: ${{ runner.arch }}
+      run: bash "${{ github.action_path }}/download-oc.sh"
+
+    - name: Install oc to PATH
+      shell: bash
+      env:
+        OC_VERSION: ${{ inputs.oc-version }}
+        OC_CACHE_DIR: ${{ steps.paths.outputs.cache_dir }}
+      run: |
+        sudo install -m 0755 "${OC_CACHE_DIR}/${OC_VERSION}/${{ runner.arch }}/oc" /usr/local/bin/oc
+        oc version --client
+
+    - name: Log in to OpenShift
+      if: inputs.login == 'true'
+      shell: bash
+      env:
+        OPENSHIFT_TOKEN: ${{ env.OPENSHIFT_TOKEN }}
+      run: |
+        oc login --token="${OPENSHIFT_TOKEN}" --server="${{ inputs.openshift-server-url }}"
+        NS="${{ inputs.namespace }}"
+        if [ -n "${NS}" ]; then
+          oc project "${NS}"
+        fi
