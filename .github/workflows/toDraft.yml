@@ -6,6 +6,10 @@ on:
   pull_request:
     types: [converted_to_draft]
 
+env:
+  OC_VERSION: "4.16.60"
+  OC_CACHE_DIR: ~/.cache/oc
+
 jobs:
   scaleDownPods:
     name: Scale down the pods for this PR
@@ -14,20 +18,17 @@ jobs:
     env:
       PR_NUMBER: ${{ github.event.number }}
     steps:
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
-        with:
-          oc: "4.16"
+      - name: Checkout Target Branch
+        uses: actions/checkout@v6
 
-      # Log in to OpenShift
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        uses: redhat-actions/oc-login@v1
+      # Install oc (see .github/actions/setup-openshift-cli). Fork PRs have no secrets — oc commands will fail.
+      - uses: ./.github/actions/setup-openshift-cli
+        env:
+          OPENSHIFT_TOKEN: ${{ secrets.TOOLS_SA_TOKEN }}
         with:
-          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
-          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          oc-version: ${{ env.OC_VERSION }}
+          cache-dir: ${{ env.OC_CACHE_DIR }}
+          login: "true"
 
       - name: Scale down
         run: |

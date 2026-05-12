@@ -15,6 +15,10 @@ concurrency:
 
 env:
   IMAGE_TAG: build-1.0.0-${{ github.event.number }}
+  OC_VERSION: "4.16.60"
+  OC_CACHE_DIR: ~/.cache/oc
+  # Opt composite JS actions (e.g. actions/download-artifact@v6) into Node.js 24 until they ship node24 runtimes.
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   # Print variables for logging and debugging purposes
@@ -47,7 +51,7 @@ jobs:
       - checkEnv
     steps:
       - name: Checkout Target Branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
 
@@ -59,7 +63,7 @@ jobs:
           cache-name: cache-repo
         with:
           # Cache repo based on the commit sha that triggered the workflow
-          path: ${{ github.workspace }}/*
+          path: ${{ github.workspace }}
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Install Node - for `node` and `npm` commands
@@ -88,28 +92,22 @@ jobs:
         env:
           cache-name: cache-repo
         with:
-          path: ${{ github.workspace }}/*
+          path: ${{ github.workspace }}
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
+      # Install oc (see .github/actions/setup-openshift-cli). Fork PRs have no secrets — oc commands will fail.
+      - uses: ./.github/actions/setup-openshift-cli
+        env:
+          OPENSHIFT_TOKEN: ${{ secrets.TOOLS_SA_TOKEN }}
         with:
-          oc: "4.16"
-
-      # Log in to OpenShift
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
-          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          oc-version: ${{ env.OC_VERSION }}
+          cache-dir: ${{ env.OC_CACHE_DIR }}
+          login: "true"
           namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
       # Authenticate Docker with OpenShift registry
@@ -131,7 +129,7 @@ jobs:
           docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/${{ env.APP_NAME }}:${{ env.IMAGE_TAG }}
           format: 'sarif'
@@ -166,28 +164,22 @@ jobs:
         env:
           cache-name: cache-repo
         with:
-          path: ${{ github.workspace }}/*
+          path: ${{ github.workspace }}
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
+      # Install oc (see .github/actions/setup-openshift-cli). Fork PRs have no secrets — oc commands will fail.
+      - uses: ./.github/actions/setup-openshift-cli
+        env:
+          OPENSHIFT_TOKEN: ${{ secrets.TOOLS_SA_TOKEN }}
         with:
-          oc: "4.16"
-
-      # Log in to OpenShift
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
-          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          oc-version: ${{ env.OC_VERSION }}
+          cache-dir: ${{ env.OC_CACHE_DIR }}
+          login: "true"
           namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
       # Authenticate Docker with OpenShift registry
@@ -209,7 +201,7 @@ jobs:
           docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/${{ env.APP_NAME }}:${{ env.IMAGE_TAG }}
           format: 'sarif'
@@ -244,28 +236,22 @@ jobs:
         env:
           cache-name: cache-repo
         with:
-          path: ${{ github.workspace }}/*
+          path: ${{ github.workspace }}
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
+      # Install oc (see .github/actions/setup-openshift-cli). Fork PRs have no secrets — oc commands will fail.
+      - uses: ./.github/actions/setup-openshift-cli
+        env:
+          OPENSHIFT_TOKEN: ${{ secrets.TOOLS_SA_TOKEN }}
         with:
-          oc: "4.16"
-
-      # Log in to OpenShift
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
-          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          oc-version: ${{ env.OC_VERSION }}
+          cache-dir: ${{ env.OC_CACHE_DIR }}
+          login: "true"
           namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
       # Authenticate Docker with OpenShift registry
@@ -281,7 +267,7 @@ jobs:
           docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/${{ env.APP_NAME }}:${{ env.IMAGE_TAG }}
           format: 'sarif'
@@ -316,28 +302,22 @@ jobs:
         env:
           cache-name: cache-repo
         with:
-          path: ${{ github.workspace }}/*
+          path: ${{ github.workspace }}
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
+      # Install oc (see .github/actions/setup-openshift-cli). Fork PRs have no secrets — oc commands will fail.
+      - uses: ./.github/actions/setup-openshift-cli
+        env:
+          OPENSHIFT_TOKEN: ${{ secrets.TOOLS_SA_TOKEN }}
         with:
-          oc: "4.16"
-
-      # Log in to OpenShift
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
-          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          oc-version: ${{ env.OC_VERSION }}
+          cache-dir: ${{ env.OC_CACHE_DIR }}
+          login: "true"
           namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
       # Authenticate Docker with OpenShift registry
@@ -359,7 +339,7 @@ jobs:
           docker push ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/$APP_NAME:${{ env.IMAGE_TAG }}
 
       - name: Run Trivy vulnerability scanner
-        uses: aquasecurity/trivy-action@v0.35.0
+        uses: aquasecurity/trivy-action@v0.36.0
         with:
           image-ref: ${{ vars.OPENSHIFT_REGISTRY }}/${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools/${{ env.APP_NAME }}:${{ env.IMAGE_TAG }}
           format: 'sarif'
@@ -403,28 +383,22 @@ jobs:
         env:
           cache-name: cache-repo
         with:
-          path: ${{ github.workspace }}/*
+          path: ${{ github.workspace }}
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
-      # Install oc, which was removed from the ubuntu-latest image in v24.04
-      - name: Install OpenShift CLI tools
-        uses: redhat-actions/openshift-tools-installer@v1
+      # Install oc (see .github/actions/setup-openshift-cli). Fork PRs have no secrets — oc commands will fail.
+      - uses: ./.github/actions/setup-openshift-cli
+        env:
+          OPENSHIFT_TOKEN: ${{ secrets.TOOLS_SA_TOKEN }}
         with:
-          oc: "4.16"
-
-      # Log in to OpenShift
-      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
-      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
-      - name: Log in to OpenShift
-        uses: redhat-actions/oc-login@v1
-        with:
-          openshift_server_url: https://api.silver.devops.gov.bc.ca:6443
-          openshift_token: ${{ secrets.TOOLS_SA_TOKEN }}
+          oc-version: ${{ env.OC_VERSION }}
+          cache-dir: ${{ env.OC_CACHE_DIR }}
+          login: "true"
           namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
       # Deploy the Helm chart
