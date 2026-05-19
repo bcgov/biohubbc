@@ -1,8 +1,7 @@
 import { Request, Response } from 'express';
 import { PoolClient, QueryResult } from 'pg';
 import sinon from 'sinon';
-import * as db from '../database/db';
-import { IDBConnection } from '../database/db';
+import { dbDependencies as db, IDBConnection } from '../database/db';
 
 /**
  * Registers and returns a mock `IDBConnection` with empty methods.

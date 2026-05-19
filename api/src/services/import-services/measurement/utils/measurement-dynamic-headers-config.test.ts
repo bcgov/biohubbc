@@ -11,12 +11,11 @@ import {
 import { getQualitativeMeasurementFromRowState } from '../../utils/row-state';
 import {
   getDynamicMeasurementCellValidator,
+  measurementDynamicHeaderDependencies as measurement,
   TSNMeasurementDictionary,
   validateQualitativeMeasurementCell,
   validateQuantitativeMeasurementCell
 } from './measurement-dynamic-headers-config';
-
-import * as measurement from './measurement-dynamic-headers-config';
 
 chai.use(sinonChai);
 

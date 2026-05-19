@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { addCritterToSurvey, getCrittersFromSurvey } from '.';
-import * as db from '../../../../../../database/db';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
+import { dbDependencies as db } from '../../../../../../database/db';
 import { CritterbaseService, ICritter } from '../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 
 describe('getCrittersFromSurvey', () => {
   afterEach(() => {

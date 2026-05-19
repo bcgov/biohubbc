@@ -6,7 +6,7 @@
 # Stage 1: Create the build
 #####################################################
 
-FROM node:20 AS stage_1
+FROM node:24.14.1-slim AS stage_1
 
 USER 0
 
@@ -38,7 +38,7 @@ RUN npm run build
 # Stage 2: Install production dependencies
 #####################################################
 
-FROM node:20 AS stage_2
+FROM node:24.14.1-slim AS stage_2
 
 USER 0
 
@@ -61,7 +61,7 @@ RUN npm ci --omit=dev
 # Stage 3: Create the final image
 #####################################################
 
-FROM node:20 as stage_3
+FROM node:24.14.1-slim as stage_3
 
 USER 0
 

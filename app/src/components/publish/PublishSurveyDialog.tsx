@@ -15,15 +15,18 @@ import { DialogContext } from 'contexts/dialogContext';
 import { SurveyContext } from 'contexts/surveyContext';
 import { Formik, FormikProps } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { useContext, useRef, useState } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import { useContext, useEffect, useMemo, useRef, useState } from 'react';
 import yup from 'utils/YupSchema';
-import PublishSurveyIdContent from './components/PublishSurveyContent';
+import PublishSurveyContent from './components/PublishSurveyContent';
+import { PublishFeatureType } from './publishFeatureTypes';
 
 export interface ISubmitSurvey {
   submissionComment: string;
   agreement1: boolean;
   agreement2: boolean;
   agreement3: boolean;
+  featureTypes: PublishFeatureType[];
 }
 
 interface IPublishSurveyIdDialogProps {
@@ -35,14 +38,16 @@ const surveySubmitFormInitialValues: ISubmitSurvey = {
   submissionComment: '',
   agreement1: false,
   agreement2: false,
-  agreement3: false
+  agreement3: false,
+  featureTypes: []
 };
 
 const surveySubmitFormYupSchema = yup.object().shape({
   submissionComment: yup.string(),
   agreement1: yup.boolean().oneOf([true], 'You must accept all agreements.'),
   agreement2: yup.boolean().oneOf([true], 'You must accept all agreements.'),
-  agreement3: yup.boolean().oneOf([true], 'You must accept all agreements.')
+  agreement3: yup.boolean().oneOf([true], 'You must accept all agreements.'),
+  featureTypes: yup.array(yup.string()).min(1, 'Select at least one feature type.')
 });
 
 /**
@@ -76,20 +81,30 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
   const formikRef = useRef<FormikProps<ISubmitSurvey>>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const publishFeaturesDataLoader = useDataLoader(biohubApi.publish.getSurveyPublishableFeatures);
+  const { refresh: refreshPublishFeatures, clearData: clearPublishFeaturesData } = publishFeaturesDataLoader;
 
-  const handleSubmit = async (values: ISubmitSurvey) => {
-    if (values === surveySubmitFormInitialValues) {
-      showErrorDialog({
-        dialogTitle: SubmitBiohubI18N.noInformationDialogTitle,
-        dialogText: SubmitBiohubI18N.noInformationDialogText
-      });
+  useEffect(() => {
+    if (!props.open) {
+      clearPublishFeaturesData();
       return;
     }
 
+    refreshPublishFeatures(surveyContext.projectId, surveyContext.surveyId);
+  }, [clearPublishFeaturesData, props.open, refreshPublishFeatures, surveyContext.projectId, surveyContext.surveyId]);
+
+  const initialValues = useMemo<ISubmitSurvey>(() => {
+    return {
+      ...surveySubmitFormInitialValues,
+      featureTypes: (publishFeaturesDataLoader.data?.featureTypes as PublishFeatureType[] | undefined) || []
+    };
+  }, [publishFeaturesDataLoader.data]);
+
+  const handleSubmit = async (values: ISubmitSurvey) => {
     setIsSubmitting(true);
 
     return biohubApi.publish
-      .publishSurveyData(surveyContext.surveyId, values)
+      .publishSurveyData(surveyContext.projectId, surveyContext.surveyId, values)
       .then(() => {
         setShowSuccessDialog(true);
       })
@@ -107,7 +122,7 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
       });
   };
 
-  if (!surveyWithDetails) {
+  if (!surveyWithDetails || (props.open && publishFeaturesDataLoader.isLoading && !publishFeaturesDataLoader.data)) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -131,7 +146,8 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
         scroll="body">
         <Formik<ISubmitSurvey>
           innerRef={formikRef}
-          initialValues={surveySubmitFormInitialValues}
+          initialValues={initialValues}
+          enableReinitialize={true}
           validationSchema={surveySubmitFormYupSchema}
           validateOnBlur={true}
           validateOnChange={false}
@@ -142,7 +158,9 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
                 {SubmitSurveyBiohubI18N.submitSurveyBiohubDialogTitle}
               </DialogTitle>
               <DialogContent>
-                <PublishSurveyIdContent />
+                <PublishSurveyContent
+                  availableFeatureTypes={(publishFeaturesDataLoader.data?.featureTypes as PublishFeatureType[]) || []}
+                />
               </DialogContent>
               <DialogActions>
                 <LoadingButton
@@ -153,7 +171,8 @@ const PublishSurveyDialog = (props: IPublishSurveyIdDialogProps) => {
                     !(
                       formikProps.values.agreement1 &&
                       formikProps.values.agreement2 &&
-                      formikProps.values.agreement3
+                      formikProps.values.agreement3 &&
+                      formikProps.values.featureTypes.length > 0
                     ) || isSubmitting
                   }
                   loading={isSubmitting}>

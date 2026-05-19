@@ -1,13 +1,13 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import {
   InsertSampleBlockRecord,
   SampleBlockRecord,
   SampleBlockRepository,
   UpdateSampleBlockRecord
 } from '../repositories/sample-blocks-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { SampleBlockService } from './sample-block-service';
 
 chai.use(sinonChai);

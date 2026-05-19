@@ -1,4 +1,6 @@
-import { castArray, compact } from 'lodash';
+import lodash from 'lodash';
+const { castArray, compact } = lodash;
+
 import { WorkSheet } from 'xlsx';
 import { IDBConnection } from '../../../database/db';
 import { CodeRepository } from '../../../repositories/code-repository';
@@ -30,9 +32,9 @@ import { SamplePeriodService } from '../../sample-period-service';
 import { SampleSiteService } from '../../sample-site-service';
 import { TechniqueService } from '../../technique-service';
 import { getSamplePeriodIdFromRowState, getTaxonArrayFromRowState } from '../utils/row-state';
-import { getTaxonMap, TaxonMap } from '../utils/taxon';
+import { taxonDependencies, TaxonMap } from '../utils/taxon';
 import { getHabitatFeatureTypeCellValidator } from './utils/habitat-feature-header-configs';
-import { getHabitatFeatureSamplingInformationRowValidator } from './utils/habitat-feature-sampling-row-validator';
+import { habitatFeatureSamplingRowValidatorDependencies } from './utils/habitat-feature-sampling-row-validator';
 
 const defaultLog = getLogger('services/import-services/import-habitat-features-service');
 
@@ -178,7 +180,7 @@ export class ImportHabitatFeaturesService extends DBService {
     const taxonIdentifiers = this.utils
       .getUniqueArrayCellValues('SPECIES', { delimiter: DELIMITER })
       .filter(Boolean) as string[];
-    const taxonMap = await getTaxonMap(taxonIdentifiers, platformService);
+    const taxonMap = await taxonDependencies.getTaxonMap(taxonIdentifiers, platformService);
 
     // Inject the dependencies and set the static headers, row validators, and dynamic headers
     await Promise.all([
@@ -246,7 +248,7 @@ export class ImportHabitatFeaturesService extends DBService {
 
     // Inject the row validators - handles taxon, sampling information and location validation
     this.utils.config.rowValidators = [
-      getHabitatFeatureSamplingInformationRowValidator({
+      habitatFeatureSamplingRowValidatorDependencies.getHabitatFeatureSamplingInformationRowValidator({
         samplePeriods: samplePeriods,
         sampleSites: sampleSites,
         methodTechniques: methodTechniques,

@@ -5,7 +5,7 @@ import { getDBConnection } from '../../../../../../../../../../database/db';
 import { fileSchema } from '../../../../../../../../../../openapi/schemas/file';
 import { authorizeRequestHandler } from '../../../../../../../../../../request-handlers/security/authorization';
 import { CritterAttachmentService } from '../../../../../../../../../../services/critter-attachment-service';
-import { deleteFileFromS3, generateS3FileKey, uploadFileToS3 } from '../../../../../../../../../../utils/file-utils';
+import { fileUtilsDependencies } from '../../../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../../../utils/logger';
 
 const defaultLog = getLogger(
@@ -164,13 +164,13 @@ export function uploadCaptureAttachments(): RequestHandler {
         // Delete the attachments from the database and get the S3 keys
         const s3Keys = await critterAttachmentService.deleteCritterCaptureAttachments(surveyId, deleteIds);
         // Delete the files from S3 individually (using individual deletes to avoid Content-MD5 requirement)
-        await Promise.all(s3Keys.map((key) => deleteFileFromS3(key)));
+        await Promise.all(s3Keys.map((key) => fileUtilsDependencies.deleteFileFromS3(key)));
       }
 
       // Upload each file to S3 and store the file details in the database
       const uploadPromises = rawMediaFiles.map(async (file) => {
         // Generate the S3 key for the file - used only on new inserts
-        const s3Key = generateS3FileKey({
+        const s3Key = fileUtilsDependencies.generateS3FileKey({
           projectId: projectId,
           surveyId: surveyId,
           critterId: critterId,
@@ -188,7 +188,7 @@ export function uploadCaptureAttachments(): RequestHandler {
           key: s3Key
         });
 
-        await uploadFileToS3(file, upsertResult.key);
+        await fileUtilsDependencies.uploadFileToS3(file, upsertResult.key);
 
         return upsertResult.critter_capture_attachment_id;
       });

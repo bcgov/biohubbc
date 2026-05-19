@@ -33,7 +33,7 @@ jobs:
 
       # Checkout the PR branch
       - name: Checkout Target Branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Wait for API response
         uses: nev7n/wait_for_response@v1.0.1

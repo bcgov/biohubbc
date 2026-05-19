@@ -3,7 +3,7 @@
  *
  * @return {*}  {(string | undefined)}
  */
-export const getFeatureFlagsString = (): string | undefined => {
+const getFeatureFlagsStringCore = (): string | undefined => {
   return process.env.FEATURE_FLAGS;
 };
 
@@ -12,7 +12,7 @@ export const getFeatureFlagsString = (): string | undefined => {
  *
  * @return {*}  {string[]}
  */
-export const getFeatureFlags = (): string[] => {
+const getFeatureFlagsCore = (): string[] => {
   const featureFlagsString = getFeatureFlagsString();
 
   if (!featureFlagsString) {
@@ -29,6 +29,24 @@ export const getFeatureFlags = (): string[] => {
  * @param {string[]} featureFlags
  * @return {*}  {boolean}
  */
-export const isFeatureFlagPresent = (featureFlags: string[]): boolean => {
+const isFeatureFlagPresentCore = (featureFlags: string[]): boolean => {
   return getFeatureFlags().some((flag) => featureFlags.includes(flag));
+};
+
+export const featureFlagDependencies = {
+  getFeatureFlagsString: getFeatureFlagsStringCore,
+  getFeatureFlags: getFeatureFlagsCore,
+  isFeatureFlagPresent: isFeatureFlagPresentCore
+};
+
+export const getFeatureFlagsString = (): string | undefined => {
+  return featureFlagDependencies.getFeatureFlagsString();
+};
+
+export const getFeatureFlags = (): string[] => {
+  return featureFlagDependencies.getFeatureFlags();
+};
+
+export const isFeatureFlagPresent = (featureFlags: string[]): boolean => {
+  return featureFlagDependencies.isFeatureFlagPresent(featureFlags);
 };

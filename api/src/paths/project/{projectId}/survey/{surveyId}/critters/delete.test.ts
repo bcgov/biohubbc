@@ -1,9 +1,9 @@
 import Ajv from 'ajv';
 import { expect } from 'chai';
 import sinon from 'sinon';
-import * as db from '../../../../../../database/db';
-import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
+import { dbDependencies as db } from '../../../../../../database/db';
+import { SurveyCritterService } from '../../../../../../services/survey-critter-service';
 import { POST, removeCrittersFromSurvey } from './delete';
 
 describe('critterId openapi schema', () => {

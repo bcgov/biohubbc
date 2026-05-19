@@ -1,9 +1,9 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../constants/administrative-activity';
 import { AdministrativeActivityRepository } from '../repositories/administrative-activity-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { AdministrativeActivityService } from './administrative-activity-service';
 import { GCNotifyService, IgcNotifyPostReturn } from './gcnotify-service';
 

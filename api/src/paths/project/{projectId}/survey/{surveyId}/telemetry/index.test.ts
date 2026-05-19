@@ -1,15 +1,15 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { getTelemetryInSurvey } from '.';
-import * as db from '../../../../../../database/db';
+import { dbDependencies as db } from '../../../../../../database/db';
 import {
   Telemetry,
   TelemetrySupplementary,
   TelemetryVendorEnum
 } from '../../../../../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 
-import { TelemetryVendorService } from '../../../../../../services/telemetry-services/telemetry-vendor-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
+import { TelemetryVendorService } from '../../../../../../services/telemetry-services/telemetry-vendor-service';
 
 describe('getTelemetryInSurvey', () => {
   afterEach(() => {

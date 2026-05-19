@@ -2,16 +2,16 @@ import { S3Client } from '@aws-sdk/client-s3';
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  _getClamAvScanner,
+  _getObjectStoreBucketName,
+  _getObjectStoreUrl,
+  _getS3Client,
   bulkDeleteFilesFromS3,
   deleteFileFromS3,
   generateS3FileKey,
   getS3HostUrl,
   getS3KeyPrefix,
-  getS3SignedURL,
-  _getClamAvScanner,
-  _getObjectStoreBucketName,
-  _getObjectStoreUrl,
-  _getS3Client
+  getS3SignedURL
 } from './file-utils';
 
 describe('deleteFileFromS3', () => {

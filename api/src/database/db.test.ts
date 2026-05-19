@@ -7,8 +7,8 @@ import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiExecuteSQLError } from '../errors/api-error';
 import { HTTPError } from '../errors/http-error';
 import { DatabaseUserInformation, IdirUserInformation, KeycloakUserInformation } from '../utils/keycloak-utils';
-import * as db from './db';
 import {
+  dbDependencies as db,
   getAPIUserDBConnection,
   getDBConnection,
   getDBPool,
@@ -21,7 +21,7 @@ import {
 describe('db', () => {
   beforeEach(() => {
     // reset singleton pg pool instance so that each test can control its existence as needed
-    global['DBPool'] = undefined;
+    (global as any).DBPool = undefined;
   });
 
   describe('getDBPool', () => {
@@ -362,7 +362,7 @@ describe('db', () => {
     it('returns a Knex instance', () => {
       const knex = getKnex();
 
-      expect(knex.client.config).to.eql({ client: db.DB_CLIENT });
+      expect(knex.client.config).to.eql({ client: 'pg' });
     });
   });
 });

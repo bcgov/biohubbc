@@ -1,4 +1,6 @@
-import { isString } from 'lodash';
+import lodash from 'lodash';
+
+const { isString } = lodash;
 
 /**
  * Safely apply `.toLowerCase()` to a value of unknown type.

@@ -230,6 +230,17 @@ export class AttachmentService extends DBService {
   }
 
   /**
+   * Get count of survey attachments publishable to BioHub.
+   *
+   * @param {number} surveyId
+   * @return {Promise<number>}
+   * @memberof AttachmentService
+   */
+  async getSurveyAttachmentsForBioHubSubmissionCount(surveyId: number): Promise<number> {
+    return this.attachmentRepository.getSurveyAttachmentsForBioHubSubmissionCount(surveyId);
+  }
+
+  /**
    * Finds all of the survey report attachments for the given survey ID.
    * @param {number} surveyId the ID of the survey
    * @return {Promise<ISurveyReportAttachment[]>} Promise resolving all survey report attachments.

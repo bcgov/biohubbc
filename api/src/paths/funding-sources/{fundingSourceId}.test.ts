@@ -2,7 +2,8 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as db from '../../database/db';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
+import { dbDependencies as db } from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import {
   FundingSource,
@@ -11,7 +12,6 @@ import {
   SurveyFundingSourceSupplementaryData
 } from '../../repositories/funding-source-repository';
 import { FundingSourceService } from '../../services/funding-source-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { deleteFundingSource, getFundingSource, putFundingSource } from './{fundingSourceId}';
 
 chai.use(sinonChai);

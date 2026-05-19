@@ -3,10 +3,10 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { ObservationSubcountRecord } from '../database-models/observation_subcount';
 import { SubcountCritterRecord } from '../database-models/subcount_critter';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { getMockDBConnection } from '../__mocks__/db';
 import { InsertObservationSubCount, SubCountRepository } from './subcount-repository';
 
 chai.use(sinonChai);

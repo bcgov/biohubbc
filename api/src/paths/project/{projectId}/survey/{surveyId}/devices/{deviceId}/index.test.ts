@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { deleteDevice, getDevice, updateDevice } from '.';
-import * as db from '../../../../../../../database/db';
-import { TelemetryDeviceService } from '../../../../../../../services/telemetry-services/telemetry-device-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
+import { dbDependencies as db } from '../../../../../../../database/db';
+import { TelemetryDeviceService } from '../../../../../../../services/telemetry-services/telemetry-device-service';
 
 describe('getDevice', () => {
   afterEach(() => {

@@ -2,9 +2,9 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { HTTPError } from '../../errors/http-error';
-import * as fileUtils from '../../utils/file-utils';
 import { getRequestHandlerMocks } from '../../__mocks__/db';
+import { HTTPError } from '../../errors/http-error';
+import { fileUtilsDependencies as fileUtils } from '../../utils/file-utils';
 import { listResources } from './list';
 
 chai.use(sinonChai);

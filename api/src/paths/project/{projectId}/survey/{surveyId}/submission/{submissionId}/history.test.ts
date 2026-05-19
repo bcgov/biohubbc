@@ -3,10 +3,10 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as db from '../../../../../../../database/db';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
+import { dbDependencies as db } from '../../../../../../../database/db';
 import { PlatformService } from '../../../../../../../services/platform-service';
 import { KeycloakUserInformation } from '../../../../../../../utils/keycloak-utils';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 import { GET, getSubmissionHistory } from './history';
 
 chai.use(sinonChai);

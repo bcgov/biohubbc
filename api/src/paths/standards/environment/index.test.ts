@@ -2,10 +2,10 @@ import chai, { expect } from 'chai';
 import { afterEach, describe, it } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as db from '../../../database/db';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
+import { dbDependencies as db } from '../../../database/db';
 import { HTTPError } from '../../../errors/http-error';
 import { StandardsService } from '../../../services/standards-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import { getEnvironmentStandards } from './index'; // Adjust the import path based on your file structure
 
 chai.use(sinonChai);

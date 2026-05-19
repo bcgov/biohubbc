@@ -3,9 +3,10 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
+import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
 import { AttachmentRepository } from '../repositories/attachment-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 
 chai.use(sinonChai);
 
@@ -547,6 +548,47 @@ describe('AttachmentRepository', () => {
           const response = await repository.getSurveyAttachmentsByIds(1, [1, 2]);
 
           expect(response).to.eql([{ id: 1 }, { id: 2 }]);
+        });
+      });
+
+      describe('getSurveyAttachmentsForBioHubSubmission', () => {
+        it('should filter to publishable attachment type', async () => {
+          let capturedSql: any;
+          const mockResponse = { rows: [{ id: 1 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
+          const dbConnection = getMockDBConnection({
+            sql: (statement: any) => {
+              capturedSql = statement;
+              return mockResponse;
+            }
+          });
+
+          const repository = new AttachmentRepository(dbConnection);
+
+          await repository.getSurveyAttachmentsForBioHubSubmission(1);
+
+          expect(capturedSql.text).to.include('file_type');
+          expect(capturedSql.values).to.include(ATTACHMENT_TYPE.OTHER);
+        });
+      });
+
+      describe('getSurveyAttachmentsForBioHubSubmissionCount', () => {
+        it('should filter to publishable attachment type', async () => {
+          let capturedSql: any;
+          const mockResponse = { rows: [{ count: 3 }], rowCount: 1 } as any as Promise<QueryResult<any>>;
+          const dbConnection = getMockDBConnection({
+            sql: (statement: any) => {
+              capturedSql = statement;
+              return mockResponse;
+            }
+          });
+
+          const repository = new AttachmentRepository(dbConnection);
+
+          const response = await repository.getSurveyAttachmentsForBioHubSubmissionCount(1);
+
+          expect(response).to.equal(3);
+          expect(capturedSql.text).to.include('file_type');
+          expect(capturedSql.values).to.include(ATTACHMENT_TYPE.OTHER);
         });
       });
 

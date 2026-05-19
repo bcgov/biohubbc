@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import * as db from '../../../../../../database/db';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
+import { dbDependencies as db } from '../../../../../../database/db';
 import { HTTP422CSVValidationError } from '../../../../../../errors/http-error';
 import { ImportDeviceService } from '../../../../../../services/import-services/devices/import-device-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import { importTelemetryDeviceCSV } from './import';
 
 describe('importTelemetryDeviceCSV', () => {

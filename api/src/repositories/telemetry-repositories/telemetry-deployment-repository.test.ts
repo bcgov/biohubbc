@@ -1,8 +1,8 @@
 import { expect } from 'chai';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
-import { ApiExecuteSQLError } from '../../errors/api-error';
 import { getMockDBConnection } from '../../__mocks__/db';
+import { ApiExecuteSQLError } from '../../errors/api-error';
 import { TelemetryDeploymentRepository } from './telemetry-deployment-repository';
 import { CreateDeployment, UpdateDeployment } from './telemetry-deployment-repository.interface';
 

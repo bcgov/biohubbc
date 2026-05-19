@@ -1,10 +1,10 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { SystemUserWithRoles } from '../models/system-user-view';
 import { IPermitModel, PermitRepository } from '../repositories/permit-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { PermitService } from './permit-service';
 import { UserService } from './user-service';
 

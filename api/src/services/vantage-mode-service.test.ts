@@ -2,9 +2,9 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { ApiGeneralError } from '../errors/api-error';
 import { VantageReferenceRecord, VantageRepository } from '../repositories/vantage-mode-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { VantageService } from './vantage-mode-service';
 
 chai.use(sinonChai);

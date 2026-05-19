@@ -25,6 +25,9 @@ vi.mock('../../../hooks/useBioHubApi');
 const mockBiohubApi = useBiohubApi as Mock;
 
 const mockUseApi = {
+  publish: {
+    getSurveyPublishableFeatures: vi.fn().mockResolvedValue({ featureTypes: [] })
+  },
   survey: {
     publishSurvey: vi.fn(),
     deleteSurvey: vi.fn()

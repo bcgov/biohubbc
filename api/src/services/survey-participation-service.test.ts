@@ -2,9 +2,9 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { SurveyParticipationRepository } from '../repositories/survey-participation-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { SurveyParticipationService } from './survey-participation-service';
 
 chai.use(sinonChai);

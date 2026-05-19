@@ -5,11 +5,12 @@ import { describe } from 'mocha';
 import { Readable } from 'node:stream';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { ApiError, ApiErrorType } from '../errors/api-error';
-import { ObservationRecordWithSamplingAndSubcountData } from '../repositories/observation-repository/observation-repository.interface';
-import * as envConfig from '../utils/env-config';
-import * as featureFlagUtils from '../utils/feature-flag-utils';
 import { getMockDBConnection } from '../__mocks__/db';
+import { ApiError, ApiErrorType } from '../errors/api-error';
+import { BiohubFeatureType } from '../models/biohub-create';
+import { ObservationRecordWithSamplingAndSubcountData } from '../repositories/observation-repository/observation-repository.interface';
+import { envConfigDependencies as envConfig } from '../utils/env-config';
+import { featureFlagDependencies as featureFlagUtils } from '../utils/feature-flag-utils';
 import { AttachmentService } from './attachment-service';
 import { CodeService } from './code-service';
 import { SurveyHabitatFeatureService } from './habitat-feature-services/survey-habitat-feature-service';
@@ -25,6 +26,7 @@ import { SurveyCritterService } from './survey-critter-service';
 import { SurveyService } from './survey-service';
 import { TelemetryDeploymentService } from './telemetry-services/telemetry-deployment-service';
 import { TelemetryDeviceService } from './telemetry-services/telemetry-device-service';
+import { TelemetryVendorService } from './telemetry-services/telemetry-vendor-service';
 
 chai.use(sinonChai);
 
@@ -162,7 +164,6 @@ describe('PlatformService', () => {
 
       sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
 
-      const fs = require('node:fs');
       sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
 
       const _initiateSubmissionUploadStub = sinon
@@ -173,9 +174,18 @@ describe('PlatformService', () => {
         await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
         expect.fail('Should have thrown an error');
       } catch (error) {
+        const noSurveyAttachments: unknown[] = [];
+        const noReportAttachments: unknown[] = [];
+
         expect((error as Error).message).to.include('Failed to initiate submission upload to BioHub');
         expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
-        expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], [], 'test');
+        expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(
+          1,
+          noSurveyAttachments,
+          noReportAttachments,
+          'test',
+          sinon.match((value) => value instanceof Set)
+        );
         expect(_initiateSubmissionUploadStub).to.have.been.calledOnce;
       }
     });
@@ -206,7 +216,6 @@ describe('PlatformService', () => {
 
       sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
 
-      const fs = require('node:fs');
       sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
       sinon.stub(fs, 'unlinkSync').callsFake(() => {});
 
@@ -239,8 +248,17 @@ describe('PlatformService', () => {
 
       const response = await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
 
+      const noSurveyAttachments: unknown[] = [];
+      const noReportAttachments: unknown[] = [];
+
       expect(getKeycloakServiceTokenStub).to.have.been.calledOnce;
-      expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(1, [], [], 'test');
+      expect(_generateSurveyDataPackageStub).to.have.been.calledOnceWith(
+        1,
+        noSurveyAttachments,
+        noReportAttachments,
+        'test',
+        sinon.match((value) => value instanceof Set)
+      );
       expect(_initiateSubmissionUploadStub).to.have.been.calledOnce;
       expect(_uploadTarFilePartsStub).to.have.been.calledOnce;
       expect(_completeSubmissionUploadStub).to.have.been.calledOnceWith(
@@ -280,7 +298,6 @@ describe('PlatformService', () => {
         .returns([{ id: 'test-dataset-id', type: 'dataset', properties: {}, content: [], parent: null }]);
       sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
 
-      const fs = require('node:fs');
       sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
       sinon.stub(fs, 'unlinkSync').callsFake(() => {});
 
@@ -318,6 +335,42 @@ describe('PlatformService', () => {
         submission_uuid: existingSubmissionUuid
       });
       expect(response).to.eql({ submission_uuid: existingSubmissionUuid });
+    });
+  });
+
+  describe('getSurveyPublishableFeatures', () => {
+    it('includes parent feature types when only child data exists', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(SampleSiteService.prototype, 'getSampleSitesCountBySurveyId').resolves(0);
+      sinon.stub(SamplePeriodService.prototype, 'getSamplePeriodsCountForSurvey').resolves(1);
+      sinon.stub(SampleTechniqueService.prototype, 'getSamplingTechniquesCountForSurvey').resolves(0);
+      sinon.stub(ObservationService.prototype, 'getSurveyObservationsCount').resolves(0);
+      sinon.stub(SurveyHabitatFeatureService.prototype, 'getSurveyHabitatFeaturesCount').resolves(0);
+      sinon.stub(TelemetryDeviceService.prototype, 'getDevicesCount').resolves(0);
+      sinon.stub(TelemetryDeploymentService.prototype, 'getDeploymentsCount').resolves(1);
+      sinon.stub(AttachmentService.prototype, 'getSurveyAttachmentsForBioHubSubmissionCount').resolves(0);
+      sinon.stub(SurveyService.prototype, 'getSurveyLocationsData').resolves([]);
+      sinon.stub(AttachmentService.prototype, 'getSurveyReportAttachments').resolves([]);
+      sinon.stub(SurveyCritterService.prototype, 'getCritterbaseSurveyCritters').resolves([]);
+      sinon.stub(SampleSiteService.prototype, 'getSampleSitesForSurveyId').resolves([]);
+      sinon.stub(SiteSelectionStrategyService.prototype, 'getSiteSelectionDataForBioHubSubmission').resolves({
+        stratums: [],
+        strategies: []
+      });
+      sinon
+        .stub(TelemetryVendorService.prototype, 'getTelemetryForSurvey')
+        .resolves([[], { count: 1, start_date: null, end_date: null }]);
+
+      const response = await platformService.getSurveyPublishableFeatures(1);
+
+      expect(response.featureTypes).to.include(BiohubFeatureType.SAMPLE_PERIOD);
+      expect(response.featureTypes).to.include(BiohubFeatureType.SAMPLE_SITE);
+      expect(response.featureTypes).to.include(BiohubFeatureType.TELEMETRY);
+      expect(response.featureTypes).to.include(BiohubFeatureType.TELEMETRY_DEPLOYMENT);
+      expect(response.featureTypes).to.include(BiohubFeatureType.TELEMETRY_DEVICE);
+      expect(response.featureTypes).to.include(BiohubFeatureType.TELEMETRY_FREQUENCY);
     });
   });
 
@@ -455,6 +508,41 @@ describe('PlatformService', () => {
       expect(response.content).to.have.property('type', 'dataset');
       expect(response.content.properties).to.have.property('survey_id', 1);
     });
+
+    it('loads animal records when telemetry deployments are selected without animal feature type', async () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      sinon.stub(SurveyService.prototype, 'getSurveyData').resolves({ id: 1, uuid: '1', survey_types: [] } as any);
+      sinon
+        .stub(SurveyService.prototype, 'getSurveyPurposeAndMethodology')
+        .resolves({ additional_details: 'a description of the purpose' } as any);
+      sinon.stub(SurveyService.prototype, 'getSurveyPartnershipsData').resolves({
+        indigenous_partnerships: [],
+        stakeholder_partnerships: []
+      });
+      sinon.stub(SurveyService.prototype, 'getSpeciesData').resolves({ focal_species: [] } as any);
+      sinon.stub(CodeService.prototype, 'getAllCodeSets').resolves({} as any);
+      sinon.stub(CodeService.prototype, 'getAllCodesetCategories').resolves([]);
+      sinon
+        .stub(SiteSelectionStrategyService.prototype, 'getSiteSelectionDataForBioHubSubmission')
+        .resolves({ strategies: [], stratums: [] });
+      sinon.stub(TelemetryDeploymentService.prototype, 'getDeploymentsForSurvey').resolves([]);
+
+      const getCritterbaseSurveyCrittersStub = sinon
+        .stub(SurveyCritterService.prototype, 'getCritterbaseSurveyCritters')
+        .resolves([]);
+
+      await platformService._generateSurveyDataPackage(
+        1,
+        [],
+        [],
+        'a comment about the submission',
+        new Set([BiohubFeatureType.TELEMETRY_DEPLOYMENT])
+      );
+
+      expect(getCritterbaseSurveyCrittersStub).to.have.been.calledOnceWith(1);
+    });
   });
 
   describe('_flattenToBlockModel', () => {
@@ -587,7 +675,6 @@ describe('PlatformService', () => {
         { id: 'obs-1', type: 'species_observation', properties: {}, content: [], parent: 'test-dataset-id' }
       ]);
 
-      const fs = require('node:fs');
       sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
       sinon.stub(fs, 'unlinkSync').callsFake(() => {});
 

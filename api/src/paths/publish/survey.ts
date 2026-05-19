@@ -2,8 +2,11 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
+import { HTTP400 } from '../../errors/http-error';
+import { BiohubFeatureType, PUBLISHABLE_FEATURE_TYPES } from '../../models/biohub-create';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { PlatformService } from '../../services/platform-service';
+import { SurveyService } from '../../services/survey-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('/api/publish/survey');
@@ -43,8 +46,12 @@ POST.apiDoc = {
         schema: {
           type: 'object',
           additionalProperties: false,
-          required: ['surveyId', 'data'],
+          required: ['projectId', 'surveyId', 'data'],
           properties: {
+            projectId: {
+              type: 'integer',
+              minimum: 1
+            },
             surveyId: {
               type: 'integer',
               minimum: 1
@@ -74,6 +81,14 @@ POST.apiDoc = {
                   type: 'boolean',
                   enum: [true],
                   description: 'Publishing agreement 3. Agreement must be accepted.'
+                },
+                featureTypes: {
+                  type: 'array',
+                  items: {
+                    type: 'string',
+                    enum: [...PUBLISHABLE_FEATURE_TYPES]
+                  },
+                  description: 'Selected survey feature types to include in the BioHub submission package.'
                 }
               }
             }
@@ -128,10 +143,21 @@ export function publishSurvey(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req.keycloak_token);
 
-    const { surveyId, data } = req.body;
+    const { projectId, surveyId, data } = req.body as {
+      projectId: number;
+      surveyId: number;
+      data: { submissionComment: string; featureTypes?: BiohubFeatureType[] };
+    };
 
     try {
       await connection.open();
+
+      const surveyService = new SurveyService(connection);
+      const surveyData = await surveyService.getSurveyData(surveyId);
+
+      if (surveyData.project_id !== projectId) {
+        throw new HTTP400('Invalid project or survey identifier.');
+      }
 
       const platformService = new PlatformService(connection);
       const response = await platformService.submitSurveyToBioHub(surveyId, data);

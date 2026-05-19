@@ -22,22 +22,22 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       - name: Checkout Target Branch
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           persist-credentials: false
 
       # Cache the repo
       - name: Cache repo
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-repo
         env:
           cache-name: cache-repo
         with:
           # Cache repo based on the commit sha that triggered the workflow
-          path: ${{ github.workspace }}/*
+          path: ${{ github.workspace }}
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
   test:
@@ -50,26 +50,26 @@ jobs:
       - name: Setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 24
 
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         id: cache-repo
         env:
           cache-name: cache-repo
         with:
-          path: ${{ github.workspace }}/*
+          path: ${{ github.workspace }}
           key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ github.event.pull_request.head.sha }}
 
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       # api
       - name: Cache api node modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: cache-api-node-modules
         with:
@@ -99,7 +99,7 @@ jobs:
 
       # app
       - name: Cache app node modules
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         env:
           cache-name: cache-app-node-modules
         with:

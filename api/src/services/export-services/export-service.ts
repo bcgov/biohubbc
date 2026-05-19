@@ -1,12 +1,12 @@
 import { PassThrough } from 'stream';
 import { IDBConnection } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';
-import { getS3SignedURLs, uploadStreamToS3 } from '../../utils/file-utils';
+import { fileUtilsDependencies } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { DBService } from '../db-service';
 import { ExportConfig } from './export-strategy';
 import {
-  getArchiveStream,
+  exportUtilsDependencies,
   getCsvTransformStream,
   getQueryStream,
   getStreamCsvTransformStream,
@@ -46,7 +46,7 @@ export class ExportService extends DBService {
     const dbClient = await this.connection.getClient();
 
     try {
-      const archiveStream = getArchiveStream();
+      const archiveStream = exportUtilsDependencies.getArchiveStream();
 
       registerStreamErrorHandler(archiveStream);
 
@@ -58,7 +58,11 @@ export class ExportService extends DBService {
       archiveStream.pipe(s3UploadStream);
 
       // Start the S3 upload
-      const uploadPromise = uploadStreamToS3(s3UploadStream, EXPORT_ARCHIVE_MIME_TYPE, exportConfig.s3Key);
+      const uploadPromise = fileUtilsDependencies.uploadStreamToS3(
+        s3UploadStream,
+        EXPORT_ARCHIVE_MIME_TYPE,
+        exportConfig.s3Key
+      );
 
       await Promise.all(
         exportConfig.exportStrategies.map(async (exportStrategy) => {
@@ -142,7 +146,7 @@ export class ExportService extends DBService {
   async _getAllSignedURLs(s3Keys: string[]): Promise<string[]> {
     defaultLog.debug({ label: '_getAllSignedURLs', message: 'Generating signed URLs for export file(s).' });
 
-    const signedURLs = await getS3SignedURLs(s3Keys);
+    const signedURLs = await Promise.all(s3Keys.map((key) => fileUtilsDependencies.getS3SignedURL(key)));
 
     if (signedURLs.some((item) => item === null)) {
       throw new ApiGeneralError('Failed to generate signed URLs for all export files.');

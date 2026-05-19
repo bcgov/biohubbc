@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import * as S3 from '../utils/file-utils';
 import { getMockDBConnection } from '../__mocks__/db';
+import { fileUtilsDependencies as S3 } from '../utils/file-utils';
 import { CritterAttachmentService } from './critter-attachment-service';
 
 describe('CritterCaptureAttachmentService', () => {

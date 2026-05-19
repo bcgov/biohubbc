@@ -65,7 +65,7 @@ export class CodeService extends DBService {
     const codeSets = {} as IAllCodeSets;
     for (let i = 0; i < keys.length; i++) {
       // Add the code set to the final object
-      codeSets[keys[i]] = codes[i];
+      (codeSets as Record<string, any>)[keys[i]] = codes[i];
     }
 
     return codeSets;
