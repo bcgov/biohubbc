@@ -8,6 +8,9 @@ on:
       - test
       - prod
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   addOpenshiftURLComment:
     name: Add OpenShift URL Comment

@@ -2,14 +2,14 @@ import chai, { expect } from 'chai';
 import { afterEach, describe, it } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { AlertSeverity } from '../../database-units/alert_severity';
-import * as db from '../../database/db';
+import { dbDependencies as db } from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { AlertRecordWithStatus } from '../../models/alert-view';
 import { AlertService } from '../../services/alert-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { createAlert, getAlerts } from '../alert';
 
 chai.use(sinonChai);

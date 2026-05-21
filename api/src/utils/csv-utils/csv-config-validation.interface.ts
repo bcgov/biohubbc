@@ -268,7 +268,7 @@ export const CSVRowState = Symbol('CSVRowStateSymbol');
  * The raw unvalidated CSV row
  *
  */
-export type CSVRow = Record<Uppercase<string>, any> & {
+export type CSVRow = Record<string, any> & {
   // The CSV row state symbol to store additional row metadata
   [CSVRowState]?: Record<string, any>;
 };
@@ -279,10 +279,11 @@ export type CSVRow = Record<Uppercase<string>, any> & {
  * Once validated, CSVRowState will be defined and possibly contain additional row metadata. ie: {} or {...metadata}
  *
  */
-export type CSVRowValidated<StaticHeaderType extends Uppercase<string>> = Record<StaticHeaderType, any> & {
-  // The CSV row state symbol to store additional row metadata
-  [CSVRowState]: Record<string, any>;
-};
+export type CSVRowValidated<StaticHeaderType extends Uppercase<string>> = Record<string, any> &
+  Record<StaticHeaderType, any> & {
+    // The CSV row state symbol to store additional row metadata
+    [CSVRowState]: Record<string, any>;
+  };
 
 export type CSVCell = string | number | undefined;
 

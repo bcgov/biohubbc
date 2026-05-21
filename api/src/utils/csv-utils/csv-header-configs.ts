@@ -488,3 +488,7 @@ export const getArrayCellValidator = (
     return csvCellValidator({ ...params, cell: cellValue });
   };
 };
+
+export const csvHeaderConfigDependencies = {
+  getDescriptionCellValidator
+};

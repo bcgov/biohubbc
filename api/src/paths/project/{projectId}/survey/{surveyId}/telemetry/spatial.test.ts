@@ -1,13 +1,13 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
-import * as db from '../../../../../../database/db';
+import { dbDependencies as db } from '../../../../../../database/db';
 import {
   TelemetrySpatial,
   TelemetrySupplementary
 } from '../../../../../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 
-import { TelemetryVendorService } from '../../../../../../services/telemetry-services/telemetry-vendor-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
+import { TelemetryVendorService } from '../../../../../../services/telemetry-services/telemetry-vendor-service';
 import { getTelemetrySpatialData } from './spatial';
 
 describe('getTelemetrySpatialData', () => {

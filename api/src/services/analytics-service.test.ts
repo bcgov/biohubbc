@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import {
   ObservationAnalyticsResponse,
   ObservationCountByGroup,
@@ -9,7 +10,6 @@ import {
   ObservationCountByGroupWithMeasurements
 } from '../models/observation-analytics';
 import { AnalyticsRepository } from '../repositories/analytics-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { AnalyticsService } from './analytics-service';
 import {
   CBQualitativeMeasurementTypeDefinition,

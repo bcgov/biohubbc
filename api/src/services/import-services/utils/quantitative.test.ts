@@ -19,7 +19,12 @@ describe('validateQuantitativeValue', () => {
     };
 
     const result = validateQuantitativeValue('2', quantitativeTypeDefinition);
-    expect(result[0]['error']).to.contain('a number');
+    expect(Array.isArray(result)).to.be.true;
+    if (!Array.isArray(result)) {
+      expect.fail('Expected validation errors array');
+    }
+
+    expect(result[0].error).to.contain('a number');
   });
 
   it('should return an error if the value is too large', () => {
@@ -29,7 +34,12 @@ describe('validateQuantitativeValue', () => {
     };
 
     const result = validateQuantitativeValue(11, quantitativeTypeDefinition);
-    expect(result[0]['error']).to.contain('too large');
+    expect(Array.isArray(result)).to.be.true;
+    if (!Array.isArray(result)) {
+      expect.fail('Expected validation errors array');
+    }
+
+    expect(result[0].error).to.contain('too large');
   });
 
   it('should return an error if the value is too small', () => {
@@ -39,6 +49,11 @@ describe('validateQuantitativeValue', () => {
     };
 
     const result = validateQuantitativeValue(-1, quantitativeTypeDefinition);
-    expect(result[0]['error']).to.contain('too small');
+    expect(Array.isArray(result)).to.be.true;
+    if (!Array.isArray(result)) {
+      expect.fail('Expected validation errors array');
+    }
+
+    expect(result[0].error).to.contain('too small');
   });
 });

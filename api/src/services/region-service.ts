@@ -1,6 +1,6 @@
 import { Feature } from 'geojson';
 import { IDBConnection } from '../database/db';
-import { IRegion, RegionRepository, REGION_FEATURE_CODE } from '../repositories/region-repository';
+import { IRegion, REGION_FEATURE_CODE, RegionRepository } from '../repositories/region-repository';
 import { BcgwLayerService, RegionDetails } from './bcgw-layer-service';
 import { DBService } from './db-service';
 

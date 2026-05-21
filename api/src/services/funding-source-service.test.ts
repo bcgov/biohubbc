@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import {
   FundingSource,
   FundingSourceRepository,
@@ -9,7 +10,6 @@ import {
   SurveyFundingSource,
   SurveyFundingSourceSupplementaryData
 } from '../repositories/funding-source-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { FundingSourceService, ICreateFundingSource } from './funding-source-service';
 
 chai.use(sinonChai);

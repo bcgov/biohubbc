@@ -2,16 +2,16 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { v4 } from 'uuid';
-import { CaseInsensitiveMap } from '../../../utils/case-insensitive-map';
-import * as validate from '../../../utils/csv-utils/csv-config-validation';
-import { CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
-import * as taxonRowValidator from '../../../utils/csv-utils/row-validators/taxon-row-validator';
 import { getMockDBConnection } from '../../../__mocks__/db';
+import { CaseInsensitiveMap } from '../../../utils/case-insensitive-map';
+import { csvValidationDependencies as validate } from '../../../utils/csv-utils/csv-config-validation';
+import { CSVRowState } from '../../../utils/csv-utils/csv-config-validation.interface';
+import { taxonRowValidatorDependencies as taxonRowValidator } from '../../../utils/csv-utils/row-validators/taxon-row-validator';
 import { ObservationService } from '../../observation-services/observation-service';
 import { IItisSearchResult, PlatformService } from '../../platform-service';
-import * as taxonMap from '../utils/taxon';
+import { taxonDependencies as taxonMap } from '../utils/taxon';
 import { ImportObservationsService } from './import-observations-service';
-import * as observationSamplingRowValidator from './utils/observation-sampling-row-validator';
+import { observationSamplingRowValidatorDependencies as observationSamplingRowValidator } from './utils/observation-sampling-row-validator';
 
 chai.use(sinonChai);
 

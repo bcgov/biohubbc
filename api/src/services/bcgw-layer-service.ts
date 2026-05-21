@@ -1,6 +1,8 @@
 import { XMLParser } from 'fast-xml-parser';
 import { Feature } from 'geojson';
-import { flatten } from 'lodash';
+import lodash from 'lodash';
+const { flatten } = lodash;
+
 import { z } from 'zod';
 import { IDBConnection } from '../database/db';
 import { getLogger } from '../utils/logger';
@@ -69,7 +71,7 @@ export const BcgwWildlifeManagementUnitsLayerGeometryField = 'GEOMETRY';
  *
  * Note: some ENV regions map to multiple NRM regions.
  */
-const envToNrmRegionsMapping = {
+const envToNrmRegionsMapping: Record<string, string> = {
   'Vancouver Island': 'West Coast Natural Resource Region',
   'Lower Mainland': 'South Coast Natural Resource Region',
   Thompson: 'Thompson-Okanagan Natural Resource Region',

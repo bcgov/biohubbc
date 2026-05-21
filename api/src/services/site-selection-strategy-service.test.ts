@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
+import { getMockDBConnection } from '../__mocks__/db';
 import {
   SiteSelectionStrategyRepository,
   SurveyStratum,
   SurveyStratumRecord
 } from '../repositories/site-selection-strategy-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { SampleStratumService } from './sample-stratum-service';
 import { SiteSelectionStrategyService } from './site-selection-strategy-service';
 

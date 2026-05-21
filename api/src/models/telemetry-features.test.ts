@@ -241,6 +241,54 @@ describe('Telemetry Features BioHub Integration', () => {
       expect(frequencyFeature.properties.frequency).to.equal(6);
       expect(frequencyFeature.properties.frequency_unit).to.equal('code::frequency_unit::99');
     });
+
+    it('skips telemetry and frequency children when include flags are false', () => {
+      const deploymentRecord = {
+        deployment_id: 459,
+        survey_id: 1,
+        critter_id: 792,
+        device_id: 125,
+        device_key: 'device-key-126',
+        frequency: 6,
+        frequency_unit_id: 99,
+        attachment_start_date: '2024-05-01',
+        attachment_start_time: '12:00:00',
+        attachment_start_timestamp: '2024-05-01T12:00:00Z',
+        attachment_end_date: null,
+        attachment_end_time: null,
+        attachment_end_timestamp: null,
+        critterbase_start_capture_id: null,
+        critterbase_end_capture_id: null,
+        critterbase_end_mortality_id: null,
+        serial: 'UNKNOWN-UNIT-002',
+        device_make_id: 3,
+        model: 'GPS-6000',
+        critterbase_critter_id: 'test-critter-uuid'
+      };
+
+      const deploymentObj = new PostTelemetryDeploymentToBiohubObject(deploymentRecord, {
+        telemetry: [
+          {
+            telemetry_id: 't-1',
+            deployment_id: 459,
+            critter_id: 1,
+            vendor: TelemetryVendorEnum.MANUAL,
+            serial: 'a',
+            acquisition_date: '2024-01-01',
+            latitude: 1,
+            longitude: 1,
+            elevation: null,
+            temperature: null,
+            dop: null
+          }
+        ],
+        codesetExportContext: minimalCodesetExportContext,
+        includeTelemetry: false,
+        includeTelemetryFrequency: false
+      });
+
+      expect(deploymentObj.child_features).to.deep.equal([]);
+    });
   });
 
   describe('PostSurveyToBiohubObject with telemetry features', () => {

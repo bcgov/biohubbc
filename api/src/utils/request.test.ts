@@ -1,7 +1,7 @@
 import { expect } from 'chai';
+import { getRequestHandlerMocks } from '../__mocks__/db';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { SystemUserWithRoles } from '../models/system-user-view';
-import { getRequestHandlerMocks } from '../__mocks__/db';
 import { KeycloakUserInformation } from './keycloak-utils';
 import { getFileFromRequest, getKeycloakTokenFromRequest, getSystemUserFromRequest } from './request';
 

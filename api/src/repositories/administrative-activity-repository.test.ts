@@ -3,9 +3,9 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { SQLStatement } from 'sql-template-strings';
+import { getMockDBConnection } from '../__mocks__/db';
 import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../constants/administrative-activity';
 import { ApiExecuteSQLError } from '../errors/api-error';
-import { getMockDBConnection } from '../__mocks__/db';
 import { AdministrativeActivityRepository } from './administrative-activity-repository';
 
 chai.use(sinonChai);

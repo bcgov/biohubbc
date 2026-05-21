@@ -1,13 +1,13 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import {
   InsertSampleStratumRecord,
   SampleStratumRecord,
   SampleStratumRepository,
   UpdateSampleStratumRecord
 } from '../repositories/sample-stratums-repository';
-import { getMockDBConnection } from '../__mocks__/db';
 import { SampleStratumService } from './sample-stratum-service';
 
 chai.use(sinonChai);

@@ -2,7 +2,10 @@ import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { CSVRowState } from '../../../../utils/csv-utils/csv-config-validation.interface';
-import * as environment from './environment-dynamic-headers-config';
+import {
+  environmentDynamicHeaderDependencies as environment,
+  getDynamicEnvironmentCellValidator
+} from './environment-dynamic-headers-config';
 
 chai.use(sinonChai);
 
@@ -14,7 +17,7 @@ describe('environment-dynamic-headers-config', () => {
   describe('getDynamicEnvironmentCellValidator', () => {
     it('should return an empty array when the cell is undefined', () => {
       const environmentMap = new Map();
-      const validator = environment.getDynamicEnvironmentCellValidator(environmentMap);
+      const validator = getDynamicEnvironmentCellValidator(environmentMap);
 
       const result = validator({ cell: undefined } as any);
       expect(result).to.be.deep.equal([]);
@@ -22,7 +25,7 @@ describe('environment-dynamic-headers-config', () => {
 
     it('should return an error when the column header does not exist', () => {
       const environmentMap = new Map();
-      const validator = environment.getDynamicEnvironmentCellValidator(environmentMap);
+      const validator = getDynamicEnvironmentCellValidator(environmentMap);
 
       const result = validator({ cell: 'test', header: 'bad' } as any);
       expect(result[0].error).to.contain("'bad' does not exist");
@@ -39,7 +42,7 @@ describe('environment-dynamic-headers-config', () => {
 
       const validateQualitativeStub = sinon.stub(environment, 'validateQualitativeEnvironmentCell').returns([]);
 
-      const validator = environment.getDynamicEnvironmentCellValidator(environmentMap);
+      const validator = getDynamicEnvironmentCellValidator(environmentMap);
 
       expect(validateQualitativeStub).to.not.have.been.calledOnce;
 
@@ -58,7 +61,7 @@ describe('environment-dynamic-headers-config', () => {
 
       const validateQuantitativeStub = sinon.stub(environment, 'validateQuantitativeEnvironmentCell').returns([]);
 
-      const validator = environment.getDynamicEnvironmentCellValidator(environmentMap);
+      const validator = getDynamicEnvironmentCellValidator(environmentMap);
 
       expect(validateQuantitativeStub).to.not.have.been.calledOnce;
 
@@ -74,7 +77,7 @@ describe('environment-dynamic-headers-config', () => {
 
       environmentMap.set('header', environmentData);
 
-      const validator = environment.getDynamicEnvironmentCellValidator(environmentMap);
+      const validator = getDynamicEnvironmentCellValidator(environmentMap);
 
       const result = validator({ cell: 'test', header: 'header' } as any);
       expect(result[0].error.toLowerCase()).to.contain('invalid environment type');

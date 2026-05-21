@@ -1,21 +1,19 @@
 {
   "compilerOptions": {
-    "module": "commonjs",
-    "lib": ["es2020"],
+    "module": "preserve",
+    "lib": ["es2023"],
     "outDir": "dist",
-    "target": "es2018",
+    "target": "es2023",
+    "noEmit": true,
     "sourceMap": true,
     "allowJs": false,
-    "moduleResolution": "node",
+    "moduleResolution": "bundler",
     "forceConsistentCasingInFileNames": true,
     "noImplicitThis": true,
     "noImplicitAny": true,
-    "suppressImplicitAnyIndexErrors": true,
     "allowSyntheticDefaultImports": true,
     "noUnusedLocals": true,
     "esModuleInterop": true,
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
     "skipLibCheck": true,
     "resolveJsonModule": true,
     "isolatedModules": true,
@@ -24,8 +22,5 @@
     "strict": true,
     "typeRoots": ["node_modules/@types", "src/types"]
   },
-  "include": ["src"],
-  "ts-node": {
-    "files": true
-  }
+  "include": ["src"]
 }

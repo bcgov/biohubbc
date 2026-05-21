@@ -7,6 +7,8 @@ import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
+import { applyFeatureToggle, CHILDREN, PARENTS } from '../featureDependencies';
+import { PUBLISH_FEATURE_TYPE_LABELS, PUBLISH_FEATURE_TYPES, PublishFeatureType } from '../publishFeatureTypes';
 import { ISubmitSurvey } from '../PublishSurveyDialog';
 
 /**
@@ -14,8 +16,77 @@ import { ISubmitSurvey } from '../PublishSurveyDialog';
  *
  * @return {*}
  */
-const PublishSurveyContent = () => {
+interface IPublishSurveyContentProps {
+  availableFeatureTypes: PublishFeatureType[];
+}
+
+const PublishSurveyContent = (props: IPublishSurveyContentProps) => {
   const { values, setFieldValue } = useFormikContext<ISubmitSurvey>();
+  const parentFeatureTypes = Object.values(PUBLISH_FEATURE_TYPES)
+    .filter((featureType) => !PARENTS[featureType]?.length)
+    .filter((featureType) => props.availableFeatureTypes.includes(featureType))
+    .sort((featureTypeA, featureTypeB) =>
+      PUBLISH_FEATURE_TYPE_LABELS[featureTypeA].localeCompare(PUBLISH_FEATURE_TYPE_LABELS[featureTypeB], undefined, {
+        sensitivity: 'base'
+      })
+    );
+  const renderFeatureRow = (featureType: PublishFeatureType, depth = 0) => {
+    const childFeatureTypes = (CHILDREN[featureType] || []).filter((childFeatureType) =>
+      props.availableFeatureTypes.includes(childFeatureType)
+    );
+
+    let nestedRowSpacingSx = {};
+    if (depth === 1) {
+      nestedRowSpacingSx = {
+        my: -0.1,
+        mt: -1.5,
+        '& .MuiTypography-root': { lineHeight: 1.3 },
+        '& .MuiCheckbox-root': { mr: 0.5, py: '4px' }
+      };
+    } else if (depth > 1) {
+      nestedRowSpacingSx = {
+        my: -0.15,
+        '& .MuiTypography-root': { lineHeight: 1.25 },
+        '& .MuiCheckbox-root': { mr: 0.5, py: '3px' }
+      };
+    }
+
+    return (
+      <Box key={featureType} sx={{ mb: depth === 0 && childFeatureTypes.length ? 0.35 : 0 }}>
+        <FormControlLabel
+          sx={{
+            ml: `${4 + depth * 32}px`,
+            '& .MuiCheckbox-root': { mr: 0.5 },
+            ...nestedRowSpacingSx
+          }}
+          label={PUBLISH_FEATURE_TYPE_LABELS[featureType]}
+          control={
+            <Checkbox
+              checked={values.featureTypes.includes(featureType)}
+              onClick={() => {
+                const isChecked = values.featureTypes.includes(featureType);
+                const nextSelection = applyFeatureToggle(featureType, !isChecked, values.featureTypes);
+                setFieldValue('featureTypes', nextSelection);
+              }}
+              name={`featureTypes.${featureType}`}
+            />
+          }
+        />
+
+        {childFeatureTypes.map((childFeatureType) => renderFeatureRow(childFeatureType, depth + 1))}
+      </Box>
+    );
+  };
+  const sectionLayoutSx = {
+    display: 'grid',
+    gridTemplateColumns: {
+      xs: '1fr',
+      md: 'minmax(240px, 300px) 1fr'
+    },
+    columnGap: 6,
+    rowGap: 2,
+    alignItems: 'start'
+  } as const;
 
   return (
     <Stack
@@ -42,24 +113,27 @@ const PublishSurveyContent = () => {
       </Box>
 
       <Stack gap={4}>
-        <Box component="fieldset">
-          <Typography component="legend">Additional Information</Typography>
-          <Typography variant="body1" color="textSecondary" sx={{ mt: -0.75, mb: 3 }}>
-            Information about this survey that data stewards should be aware of, including any reasons why this survey
-            should be secured.
-          </Typography>
-          <CustomTextField
-            name="submissionComment"
-            label=""
-            other={{
-              placeholder: 'Submission comment',
-              multiline: true,
-              rows: 3
-            }}
-          />
+        <Box component="section" sx={sectionLayoutSx}>
+          <Box>
+            <Typography component="h3" sx={{ fontWeight: 700 }}>
+              Data
+            </Typography>
+            <Typography variant="body1" color="textSecondary">
+              Survey data included in this publish request.
+            </Typography>
+          </Box>
+          <FormGroup>{parentFeatureTypes.map((parentFeatureType) => renderFeatureRow(parentFeatureType))}</FormGroup>
         </Box>
-        <Box component="fieldset">
-          <Typography component="legend">Agreements</Typography>
+
+        <Box component="section" sx={sectionLayoutSx}>
+          <Box>
+            <Typography component="h3" sx={{ fontWeight: 700 }}>
+              Agreements
+            </Typography>
+            <Typography variant="body1" color="textSecondary">
+              You must acknowledge your responsibilities as a data contributor.
+            </Typography>
+          </Box>
           <FormGroup>
             <FormControlLabel
               slotProps={{ typography: { variant: 'body1' } }}
@@ -139,6 +213,27 @@ const PublishSurveyContent = () => {
               }
             />
           </FormGroup>
+        </Box>
+
+        <Box component="section" sx={sectionLayoutSx}>
+          <Box>
+            <Typography component="h3" sx={{ fontWeight: 700 }}>
+              Additional Information
+            </Typography>
+            <Typography variant="body1" color="textSecondary">
+              Information about this survey that data stewards should be aware of, including any reasons why this survey
+              should be secured.
+            </Typography>
+          </Box>
+          <CustomTextField
+            name="submissionComment"
+            label=""
+            other={{
+              placeholder: 'Submission comment',
+              multiline: true,
+              rows: 3
+            }}
+          />
         </Box>
       </Stack>
     </Stack>

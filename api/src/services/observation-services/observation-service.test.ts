@@ -1,9 +1,9 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../../__mocks__/db';
 import { ObservationRepository } from '../../repositories/observation-repository/observation-repository';
 import { ObservationRecordWithSamplingAndSubcountData } from '../../repositories/observation-repository/observation-repository.interface';
-import { getMockDBConnection } from '../../__mocks__/db';
 import { ObservationEnvironmentService } from '../observation-environment-service';
 import { SamplePeriodService } from '../sample-period-service';
 import { SubCountService } from '../subcount-service';

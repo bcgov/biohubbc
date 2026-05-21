@@ -1,6 +1,7 @@
 import express, { NextFunction, Request, Response } from 'express';
 import { initialize } from 'express-openapi';
 import multer from 'multer';
+import { fileURLToPath } from 'node:url';
 import { OpenAPIV3 } from 'openapi-types';
 import path from 'path';
 import swaggerUIExperss from 'swagger-ui-express';
@@ -22,6 +23,8 @@ import { getLogger } from './utils/logger';
 loadEnvironmentVariables();
 
 const defaultLog = getLogger('app');
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const HOST = process.env.API_HOST;
 const PORT = process.env.API_PORT;
@@ -212,9 +215,13 @@ function getAdditionalMiddleware(): express.RequestHandler[] {
  * @param {NextFunction} next
  */
 function validateAllResponses(req: Request, res: Response, next: NextFunction) {
-  const isStrictValidation = !!req['apiDoc']['x-express-openapi-validation-strict'] || false;
+  const openApiReq = req as Request & { apiDoc?: Record<string, any> };
+  const openApiRes = res as Response & {
+    validateResponse?: (statusCode: number, body: unknown) => { message: any; errors: any[] } | undefined;
+  };
+  const isStrictValidation = !!openApiReq.apiDoc?.['x-express-openapi-validation-strict'] || false;
 
-  if (typeof res['validateResponse'] === 'function') {
+  if (typeof openApiRes.validateResponse === 'function') {
     const json = res.json;
 
     res.json = (...args) => {
@@ -226,7 +233,7 @@ function validateAllResponses(req: Request, res: Response, next: NextFunction) {
       const reqBody = args[0];
 
       // Run openapi response validation function
-      const validationResult: { message: any; errors: any[] } | undefined = res['validateResponse'](
+      const validationResult: { message: any; errors: any[] } | undefined = openApiRes.validateResponse!(
         res.statusCode,
         reqBody
       );

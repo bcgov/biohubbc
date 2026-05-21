@@ -1,8 +1,8 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { TelemetryDeviceRepository } from '../../repositories/telemetry-repositories/telemetry-device-repository';
 import { getMockDBConnection } from '../../__mocks__/db';
+import { TelemetryDeviceRepository } from '../../repositories/telemetry-repositories/telemetry-device-repository';
 import { TelemetryDeviceService } from './telemetry-device-service';
 
 chai.use(sinonChai);

@@ -22,7 +22,7 @@ import {
   getTimeCellValidator,
   validateZodCell
 } from '../../../utils/csv-utils/csv-header-configs';
-import { getTaxonRowValidator } from '../../../utils/csv-utils/row-validators/taxon-row-validator';
+import { taxonRowValidatorDependencies } from '../../../utils/csv-utils/row-validators/taxon-row-validator';
 import { getLogger } from '../../../utils/logger';
 import { CritterbaseService, getCritterbaseUserFromConnection } from '../../critterbase-service';
 import { DBService } from '../../db-service';
@@ -50,10 +50,10 @@ import {
   getSamplePeriodIdFromRowState,
   getTaxonFromRowState
 } from '../utils/row-state';
-import { getTaxonMap, getTsnsFromTaxonMap, TaxonMap } from '../utils/taxon';
+import { getTsnsFromTaxonMap, taxonDependencies, TaxonMap } from '../utils/taxon';
 import { getObservationDynamicHeaderCellValidator } from './utils/observation-dynamic-header-config';
 import { getObservationSignCellValidator } from './utils/observation-header-configs';
-import { getObservationSamplingInformationRowValidator } from './utils/observation-sampling-row-validator';
+import { observationSamplingRowValidatorDependencies } from './utils/observation-sampling-row-validator';
 
 const defaultLog = getLogger('services/import/import-observations-service');
 
@@ -185,7 +185,7 @@ export class ImportObservationsService extends DBService {
 
     // Generate shared dependencies
     const taxonIdentifiers = this.utils.getUniqueCellValues('SPECIES').filter(Boolean) as string[];
-    const taxonMap = await getTaxonMap(taxonIdentifiers, platformService);
+    const taxonMap = await taxonDependencies.getTaxonMap(taxonIdentifiers, platformService);
 
     // Inject the dependencies and set the static headers, row validators, and dynamic headers
     await Promise.all([
@@ -251,8 +251,8 @@ export class ImportObservationsService extends DBService {
 
     // Inject the row validators - handles taxon, sampling information and location validation
     this.utils.config.rowValidators = [
-      getTaxonRowValidator(taxonMap, this.utils, 'SPECIES'),
-      getObservationSamplingInformationRowValidator({
+      taxonRowValidatorDependencies.getTaxonRowValidator(taxonMap, this.utils, 'SPECIES'),
+      observationSamplingRowValidatorDependencies.getObservationSamplingInformationRowValidator({
         samplePeriods: samplePeriods,
         sampleSites: sampleSites,
         methodTechniques: methodTechniques,

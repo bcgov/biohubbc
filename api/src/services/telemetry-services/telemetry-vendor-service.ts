@@ -1,4 +1,6 @@
-import { chunk } from 'lodash';
+import lodash from 'lodash';
+const { chunk } = lodash;
+
 import { TelemetryManualRecord } from '../../database-models/telemetry_manual';
 import { IDBConnection } from '../../database/db';
 import { ApiGeneralError } from '../../errors/api-error';

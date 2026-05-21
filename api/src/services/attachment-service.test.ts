@@ -4,6 +4,7 @@ import { describe } from 'mocha';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { PostReportAttachmentMetadata, PutReportAttachmentMetadata } from '../models/project-survey-attachments';
 import {
@@ -16,8 +17,7 @@ import {
   ISurveyReportAttachmentAuthor
 } from '../repositories/attachment-repository';
 import { SurveyAttachmentPublish, SurveyReportPublish } from '../repositories/history-publish-repository';
-import { getMockDBConnection } from '../__mocks__/db';
-import * as fileUtils from './../utils/file-utils';
+import { fileUtilsDependencies as fileUtils } from './../utils/file-utils';
 import { AttachmentService } from './attachment-service';
 import { HistoryPublishService } from './history-publish-service';
 
@@ -707,6 +707,39 @@ describe('AttachmentService', () => {
 
           expect(repoStub).to.be.calledOnce;
           expect(response).to.eql(data);
+        });
+      });
+
+      describe('getSurveyAttachmentsForBioHubSubmission', () => {
+        it('should return publishable survey attachments', async () => {
+          const dbConnection = getMockDBConnection();
+          const service = new AttachmentService(dbConnection);
+
+          const data = [{ id: 1 } as unknown as ISurveyAttachment];
+          const repoStub = sinon
+            .stub(AttachmentRepository.prototype, 'getSurveyAttachmentsForBioHubSubmission')
+            .resolves(data);
+
+          const response = await service.getSurveyAttachmentsForBioHubSubmission(1);
+
+          expect(repoStub).to.have.been.calledOnceWith(1);
+          expect(response).to.eql(data);
+        });
+      });
+
+      describe('getSurveyAttachmentsForBioHubSubmissionCount', () => {
+        it('should return publishable survey attachment count', async () => {
+          const dbConnection = getMockDBConnection();
+          const service = new AttachmentService(dbConnection);
+
+          const repoStub = sinon
+            .stub(AttachmentRepository.prototype, 'getSurveyAttachmentsForBioHubSubmissionCount')
+            .resolves(2);
+
+          const response = await service.getSurveyAttachmentsForBioHubSubmissionCount(1);
+
+          expect(repoStub).to.have.been.calledOnceWith(1);
+          expect(response).to.equal(2);
         });
       });
 

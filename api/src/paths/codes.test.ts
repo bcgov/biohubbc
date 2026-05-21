@@ -1,11 +1,11 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as db from '../database/db';
+import { getMockDBConnection, getRequestHandlerMocks } from '../__mocks__/db';
+import { dbDependencies as db } from '../database/db';
 import { HTTPError } from '../errors/http-error';
 import { CodeService } from '../services/code-service';
 import { KeycloakUserInformation } from '../utils/keycloak-utils';
-import { getMockDBConnection, getRequestHandlerMocks } from '../__mocks__/db';
 import * as codes from './codes';
 
 chai.use(sinonChai);

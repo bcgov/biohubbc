@@ -2,8 +2,8 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { IRegion, RegionRepository, REGION_FEATURE_CODE } from '../repositories/region-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import { IRegion, REGION_FEATURE_CODE, RegionRepository } from '../repositories/region-repository';
 import { BcgwLayerService } from './bcgw-layer-service';
 import { RegionService } from './region-service';
 

@@ -76,10 +76,13 @@ export const getTelemetryDeviceKey = ({ vendor, serial }: IDeviceKey): string =>
  * @returns {Record<string, any>} - Object with lowercase keys
  */
 export const keysToLowerCase = <T>(obj: Record<string, any>): T => {
-  return Object.keys(obj).reduce((acc, key) => {
-    acc[key.toLowerCase()] = obj[key];
-    return acc;
-  }, {} as T);
+  return Object.keys(obj).reduce(
+    (acc, key) => {
+      acc[key.toLowerCase()] = obj[key];
+      return acc;
+    },
+    {} as Record<string, any>
+  ) as T;
 };
 
 /**

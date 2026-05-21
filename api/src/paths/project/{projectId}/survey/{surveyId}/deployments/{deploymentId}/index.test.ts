@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import sinon from 'sinon';
 import { deleteDeployment, getDeploymentById, updateDeployment } from '.';
-import * as db from '../../../../../../../database/db';
-import { TelemetryDeploymentService } from '../../../../../../../services/telemetry-services/telemetry-deployment-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
+import { dbDependencies as db } from '../../../../../../../database/db';
+import { TelemetryDeploymentService } from '../../../../../../../services/telemetry-services/telemetry-deployment-service';
 
 describe('getDeploymentById', () => {
   afterEach(() => {

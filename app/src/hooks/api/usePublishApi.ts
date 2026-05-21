@@ -18,15 +18,35 @@ const usePublishApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<{ submission_id: number }>}
    */
   const publishSurveyData = async (
+    projectId: number,
     surveyId: number,
     dataSubmission: ISubmitSurvey
-  ): Promise<{ submission_id: number }> => {
+  ): Promise<{ submission_uuid: string }> => {
     const sendData = {
+      projectId: projectId,
       surveyId: surveyId,
       data: dataSubmission
     };
 
     const { data } = await axios.post('/api/publish/survey', sendData);
+    return data;
+  };
+
+  /**
+   * Get survey publishable feature types.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<{ featureTypes: string[] }>}
+   */
+  const getSurveyPublishableFeatures = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<{ featureTypes: string[] }> => {
+    const { data } = await axios.get<{ featureTypes: string[] }>(
+      `/api/project/${projectId}/survey/${surveyId}/publish/features`
+    );
+
     return data;
   };
 
@@ -72,6 +92,7 @@ const usePublishApi = (axios: AxiosInstance) => {
 
   return {
     publishSurveyData,
+    getSurveyPublishableFeatures,
     publishProject,
     getSubmissionHistory,
     deleteSubmissionUpload

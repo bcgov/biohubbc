@@ -1,6 +1,7 @@
 import chai, { expect } from 'chai';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../../__mocks__/db';
 import { ExtendedDeploymentRecord } from '../../repositories/telemetry-repositories/telemetry-deployment-repository.interface';
 import { TelemetryManualRepository } from '../../repositories/telemetry-repositories/telemetry-manual-repository';
 import { TelemetryVendorRepository } from '../../repositories/telemetry-repositories/telemetry-vendor-repository';
@@ -10,7 +11,6 @@ import {
   TelemetryVendorEnum
 } from '../../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
-import { getMockDBConnection } from '../../__mocks__/db';
 import { TelemetryDeploymentService } from './telemetry-deployment-service';
 import { TelemetryVendorService } from './telemetry-vendor-service';
 

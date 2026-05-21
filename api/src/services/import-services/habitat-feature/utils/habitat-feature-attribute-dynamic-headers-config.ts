@@ -43,12 +43,18 @@ export const getDynamicHabitatFeatureAttributeCellValidator = (
 
     // Header type is qualitative
     if (isQualitativeHabitatFeatureTypeDefinition(habitatFeatureAttribute)) {
-      return validateQualitativeHabitatFeatureAttributeCell(params, habitatFeatureAttribute);
+      return habitatFeatureDynamicHeaderDependencies.validateQualitativeHabitatFeatureAttributeCell(
+        params,
+        habitatFeatureAttribute
+      );
     }
 
     // Header type is quantitative
     if (isQuantitativeHabitatFeatureTypeDefinition(habitatFeatureAttribute)) {
-      return validateQuantitativeHabitatFeatureAttributeCell(params, habitatFeatureAttribute);
+      return habitatFeatureDynamicHeaderDependencies.validateQuantitativeHabitatFeatureAttributeCell(
+        params,
+        habitatFeatureAttribute
+      );
     }
 
     // Can this path ever be reached?
@@ -142,4 +148,9 @@ export const validateQuantitativeHabitatFeatureAttributeCell = (
   });
 
   return [];
+};
+
+export const habitatFeatureDynamicHeaderDependencies = {
+  validateQualitativeHabitatFeatureAttributeCell,
+  validateQuantitativeHabitatFeatureAttributeCell
 };

@@ -8,7 +8,12 @@ import { URL } from 'url';
 import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
 import { formatAxiosError } from '../errors/axios-error';
-import { PostSurveySubmissionToBioHubObject } from '../models/biohub-create';
+import {
+  BiohubFeatureType,
+  PostSurveySubmissionToBioHubObject,
+  PUBLISHABLE_FEATURE_TYPE_PARENTS,
+  PUBLISHABLE_FEATURE_TYPES
+} from '../models/biohub-create';
 import { ISurveyAttachment, ISurveyReportAttachment } from '../repositories/attachment-repository';
 import { getEnvironmentVariable } from '../utils/env-config';
 import { isFeatureFlagPresent } from '../utils/feature-flag-utils';
@@ -62,6 +67,11 @@ export interface ITaxonomyWithEcologicalUnits extends ITaxonomy {
   ecological_units: IPostCollectionUnit[];
 }
 
+export type PublishSurveyData = {
+  submissionComment: string;
+  featureTypes?: BiohubFeatureType[];
+};
+
 interface IFlattenedBlock {
   id: string;
   type: string;
@@ -97,6 +107,246 @@ export class PlatformService extends DBService {
 
     this.historyPublishService = new HistoryPublishService(this.connection);
     this.attachmentService = new AttachmentService(connection);
+  }
+
+  /**
+   * Normalize selected feature types by expanding parent dependencies.
+   *
+   * @param {(BiohubFeatureType[] | undefined)} featureTypes
+   * @return {Set<BiohubFeatureType>}
+   * @memberof PlatformService
+   */
+  normalizePublishFeatureTypes(featureTypes?: BiohubFeatureType[]): Set<BiohubFeatureType> {
+    const seedFeatureTypes = featureTypes?.length ? featureTypes : [...PUBLISHABLE_FEATURE_TYPES];
+    const allowedFeatureTypes = new Set<BiohubFeatureType>(PUBLISHABLE_FEATURE_TYPES);
+    const normalizedFeatureTypes = new Set<BiohubFeatureType>(
+      seedFeatureTypes.filter((featureType): featureType is BiohubFeatureType => allowedFeatureTypes.has(featureType))
+    );
+
+    const addParents = (featureType: BiohubFeatureType) => {
+      const parentFeatureTypes = PUBLISHABLE_FEATURE_TYPE_PARENTS[featureType] || [];
+
+      parentFeatureTypes.forEach((parentFeatureType) => {
+        if (!normalizedFeatureTypes.has(parentFeatureType)) {
+          normalizedFeatureTypes.add(parentFeatureType);
+          addParents(parentFeatureType);
+        }
+      });
+    };
+
+    [...normalizedFeatureTypes].forEach((featureType) => addParents(featureType));
+
+    return normalizedFeatureTypes;
+  }
+
+  /**
+   * Get publishable survey feature types that exist for the survey.
+   *
+   * If a child feature exists, its parent feature type is automatically included.
+   *
+   * @param {number} surveyId
+   * @return {Promise<{ featureTypes: BiohubFeatureType[] }>}
+   * @memberof PlatformService
+   */
+  async getSurveyPublishableFeatures(surveyId: number): Promise<{ featureTypes: BiohubFeatureType[] }> {
+    const observationService = new ObservationService(this.connection);
+    const sampleSiteService = new SampleSiteService(this.connection);
+    const samplePeriodService = new SamplePeriodService(this.connection);
+    const sampleTechniqueService = new SampleTechniqueService(this.connection);
+    const surveyService = new SurveyService(this.connection);
+    const surveyCritterService = new SurveyCritterService(this.connection);
+    const habitatFeatureService = new SurveyHabitatFeatureService(this.connection);
+    const telemetryDeviceService = new TelemetryDeviceService(this.connection);
+    const telemetryDeploymentService = new TelemetryDeploymentService(this.connection);
+    const telemetryVendorService = new TelemetryVendorService(this.connection);
+
+    const [
+      sampleSiteCount,
+      samplePeriodCount,
+      sampleTechniqueCount,
+      observationCount,
+      habitatFeatureCount,
+      telemetryDeviceCount,
+      telemetryDeploymentCount,
+      surveyAttachmentCount,
+      surveyLocations,
+      surveyReportAttachments,
+      surveyAnimals,
+      sampleSitesForBlocks,
+      siteSelectionData
+    ] = await Promise.all([
+      sampleSiteService.getSampleSitesCountBySurveyId(surveyId),
+      samplePeriodService.getSamplePeriodsCountForSurvey(surveyId),
+      sampleTechniqueService.getSamplingTechniquesCountForSurvey(surveyId),
+      observationService.getSurveyObservationsCount(surveyId),
+      habitatFeatureService.getSurveyHabitatFeaturesCount(surveyId),
+      telemetryDeviceService.getDevicesCount(surveyId),
+      telemetryDeploymentService.getDeploymentsCount(surveyId),
+      this.attachmentService.getSurveyAttachmentsForBioHubSubmissionCount(surveyId),
+      surveyService.getSurveyLocationsData(surveyId),
+      this.attachmentService.getSurveyReportAttachments(surveyId),
+      surveyCritterService.getCritterbaseSurveyCritters(surveyId),
+      sampleSiteService.getSampleSitesForSurveyId(surveyId, {}),
+      surveyService.siteSelectionStrategyService.getSiteSelectionDataForBioHubSubmission(surveyId)
+    ]);
+
+    let telemetryCount = 0;
+    if (telemetryDeploymentCount > 0) {
+      const surveyTelemetry = await telemetryVendorService.getTelemetryForSurvey(surveyId, {
+        pagination: {
+          page: 1,
+          limit: 1
+        }
+      });
+
+      telemetryCount = surveyTelemetry[1].count;
+    }
+
+    const featureTypes = this._collectPublishableFeatureTypes({
+      sampleSiteCount,
+      samplePeriodCount,
+      sampleTechniqueCount,
+      observationCount,
+      habitatFeatureCount,
+      telemetryDeviceCount,
+      telemetryDeploymentCount,
+      telemetryCount,
+      surveyAttachmentCount,
+      surveyLocations,
+      surveyReportAttachments,
+      surveyAnimals,
+      sampleSitesForBlocks,
+      siteSelectionData
+    });
+
+    return { featureTypes: [...this.normalizePublishFeatureTypes([...featureTypes])] };
+  }
+
+  /**
+   * Collect publishable feature types from survey data presence signals.
+   *
+   * @param {{
+   *     sampleSiteCount: number;
+   *     samplePeriodCount: number;
+   *     sampleTechniqueCount: number;
+   *     observationCount: number;
+   *     habitatFeatureCount: number;
+   *     telemetryDeviceCount: number;
+   *     telemetryDeploymentCount: number;
+   *     telemetryCount: number;
+   *     surveyAttachmentCount: number;
+   *     surveyLocations: unknown[];
+   *     surveyReportAttachments: ISurveyReportAttachment[];
+   *     surveyAnimals: ICritterDetailed[];
+   *     sampleSitesForBlocks: { blocks?: unknown[] }[];
+   *     siteSelectionData: { stratums: { name: string; description: string }[] };
+   *   }} params
+   * @return {Set<BiohubFeatureType>}
+   * @memberof PlatformService
+   */
+  private _collectPublishableFeatureTypes(params: {
+    sampleSiteCount: number;
+    samplePeriodCount: number;
+    sampleTechniqueCount: number;
+    observationCount: number;
+    habitatFeatureCount: number;
+    telemetryDeviceCount: number;
+    telemetryDeploymentCount: number;
+    telemetryCount: number;
+    surveyAttachmentCount: number;
+    surveyLocations: unknown[];
+    surveyReportAttachments: ISurveyReportAttachment[];
+    surveyAnimals: ICritterDetailed[];
+    sampleSitesForBlocks: { blocks?: unknown[] }[];
+    siteSelectionData: { stratums: { name: string; description: string }[] };
+  }): Set<BiohubFeatureType> {
+    const {
+      sampleSiteCount,
+      samplePeriodCount,
+      sampleTechniqueCount,
+      observationCount,
+      habitatFeatureCount,
+      telemetryDeviceCount,
+      telemetryDeploymentCount,
+      telemetryCount,
+      surveyAttachmentCount,
+      surveyLocations,
+      surveyReportAttachments,
+      surveyAnimals,
+      sampleSitesForBlocks,
+      siteSelectionData
+    } = params;
+
+    const featureTypes = new Set<BiohubFeatureType>();
+
+    if (sampleSiteCount > 0) {
+      featureTypes.add(BiohubFeatureType.SAMPLE_SITE);
+    }
+
+    if (samplePeriodCount > 0) {
+      featureTypes.add(BiohubFeatureType.SAMPLE_PERIOD);
+    }
+
+    if (sampleTechniqueCount > 0) {
+      featureTypes.add(BiohubFeatureType.SAMPLE_TECHNIQUE);
+    }
+
+    if (observationCount > 0) {
+      featureTypes.add(BiohubFeatureType.OBSERVATION);
+    }
+
+    if (habitatFeatureCount > 0) {
+      featureTypes.add(BiohubFeatureType.HABITAT_FEATURE);
+    }
+
+    if (telemetryDeviceCount > 0) {
+      featureTypes.add(BiohubFeatureType.TELEMETRY_DEVICE);
+    }
+
+    if (telemetryDeploymentCount > 0) {
+      featureTypes.add(BiohubFeatureType.TELEMETRY_DEPLOYMENT);
+      featureTypes.add(BiohubFeatureType.TELEMETRY_FREQUENCY);
+    }
+
+    if (telemetryCount > 0) {
+      featureTypes.add(BiohubFeatureType.TELEMETRY);
+    }
+
+    if (surveyAttachmentCount > 0) {
+      featureTypes.add(BiohubFeatureType.FILE);
+    }
+
+    if (surveyLocations.length > 0) {
+      featureTypes.add(BiohubFeatureType.STUDY_AREA);
+    }
+
+    if (surveyReportAttachments.length > 0) {
+      featureTypes.add(BiohubFeatureType.REPORT);
+    }
+
+    if (siteSelectionData.stratums.length > 0) {
+      featureTypes.add(BiohubFeatureType.STRATUM);
+    }
+
+    if (
+      sampleSitesForBlocks.some(
+        (sampleSite: { blocks?: unknown[] }) => Array.isArray(sampleSite.blocks) && sampleSite.blocks.length > 0
+      )
+    ) {
+      featureTypes.add(BiohubFeatureType.BLOCK);
+    }
+
+    if (surveyAnimals.length > 0) {
+      featureTypes.add(BiohubFeatureType.ANIMAL);
+      featureTypes.add(BiohubFeatureType.CAPTURE);
+      featureTypes.add(BiohubFeatureType.MORTALITY);
+      featureTypes.add(BiohubFeatureType.ECOLOGICAL_UNIT);
+      featureTypes.add(BiohubFeatureType.MARKING);
+      featureTypes.add(BiohubFeatureType.MEASUREMENT);
+      featureTypes.add(BiohubFeatureType.RELEASE);
+    }
+
+    return featureTypes;
   }
 
   /**
@@ -198,10 +448,9 @@ export class PlatformService extends DBService {
    * @return {*}  {Promise<{ submission_uuid: string }>}
    * @memberof PlatformService
    */
-  async submitSurveyToBioHub(
-    surveyId: number,
-    data: { submissionComment: string }
-  ): Promise<{ submission_uuid: string }> {
+  async submitSurveyToBioHub(surveyId: number, data: PublishSurveyData): Promise<{ submission_uuid: string }> {
+    const includeFeatureTypes = this.normalizePublishFeatureTypes(data.featureTypes);
+
     defaultLog.debug({ label: 'submitSurveyToBioHub', message: 'params', surveyId });
 
     if (isFeatureFlagPresent(['API_FF_SUBMIT_BIOHUB'])) {
@@ -217,17 +466,22 @@ export class PlatformService extends DBService {
     const token = await keycloakService.getKeycloakServiceToken();
 
     // Get survey attachments
-    const surveyAttachments = await this.attachmentService.getSurveyAttachmentsForBioHubSubmission(surveyId);
+    const surveyAttachments = includeFeatureTypes.has(BiohubFeatureType.FILE)
+      ? await this.attachmentService.getSurveyAttachmentsForBioHubSubmission(surveyId)
+      : [];
 
     // Get survey report attachments
-    const surveyReportAttachments = await this.attachmentService.getSurveyReportAttachments(surveyId);
+    const surveyReportAttachments = includeFeatureTypes.has(BiohubFeatureType.REPORT)
+      ? await this.attachmentService.getSurveyReportAttachments(surveyId)
+      : [];
 
     // Generate survey data package
     const surveyDataPackage = await this._generateSurveyDataPackage(
       surveyId,
       surveyAttachments,
       surveyReportAttachments,
-      data.submissionComment
+      data.submissionComment,
+      includeFeatureTypes
     );
 
     // Flatten and save the survey data package grouped by type
@@ -344,7 +598,8 @@ export class PlatformService extends DBService {
     surveyId: number,
     surveyAttachments: ISurveyAttachment[],
     surveyReportAttachments: ISurveyReportAttachment[],
-    submissionComment: string
+    submissionComment: string,
+    includeFeatureTypes?: Set<BiohubFeatureType>
   ): Promise<PostSurveySubmissionToBioHubObject> {
     const observationService = new ObservationService(this.connection);
     const surveyService = new SurveyService(this.connection);
@@ -361,12 +616,24 @@ export class PlatformService extends DBService {
     // Get survey data
     const survey = await surveyService.getSurveyData(surveyId);
 
-    // Get all survey observations with environmental data
-    const observationData =
-      await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(surveyId);
+    const shouldIncludeObservations = includeFeatureTypes?.has(BiohubFeatureType.OBSERVATION) ?? true;
+    const observationData = shouldIncludeObservations
+      ? await observationService.getSurveyObservationsWithSupplementaryAndSamplingDataAndAttributeData(surveyId)
+      : {
+          surveyObservations: [],
+          supplementaryObservationData: {
+            qualitative_environments: [],
+            quantitative_environments: [],
+            qualitative_measurements: [],
+            quantitative_measurements: []
+          }
+        };
     const surveyObservations = observationData.surveyObservations;
     const purposeAndMethodology = await surveyService.getSurveyPurposeAndMethodology(surveyId);
-    const surveyLocation = await surveyService.getSurveyLocationsData(surveyId);
+    const surveyLocation =
+      (includeFeatureTypes?.has(BiohubFeatureType.STUDY_AREA) ?? true)
+        ? await surveyService.getSurveyLocationsData(surveyId)
+        : [];
 
     // Get partnerships and focal species data for BioHub submission
     const partnerships = await surveyService.getSurveyPartnershipsData(surveyId);
@@ -392,10 +659,22 @@ export class PlatformService extends DBService {
     };
 
     // Get sampling sites and periods data for survey
-    const surveySamplingSitesNonSpatial = await sampleSiteService.getSampleSitesForSurveyId(surveyId, {});
-    const surveySamplingSitesGeometry = await sampleSiteService.getSampleSitesGeometryBySurveyId(surveyId);
-    const surveySamplingPeriods = await samplePeriodService.getSamplePeriodsForSurvey(surveyId, {});
-    const surveySamplingTechniques = await sampleTechniqueService.getSamplingTechniquesForSurvey(surveyId);
+    const surveySamplingSitesNonSpatial =
+      (includeFeatureTypes?.has(BiohubFeatureType.SAMPLE_SITE) ?? true)
+        ? await sampleSiteService.getSampleSitesForSurveyId(surveyId, {})
+        : [];
+    const surveySamplingSitesGeometry =
+      (includeFeatureTypes?.has(BiohubFeatureType.SAMPLE_SITE) ?? true)
+        ? await sampleSiteService.getSampleSitesGeometryBySurveyId(surveyId)
+        : [];
+    const surveySamplingPeriods =
+      (includeFeatureTypes?.has(BiohubFeatureType.SAMPLE_PERIOD) ?? true)
+        ? await samplePeriodService.getSamplePeriodsForSurvey(surveyId, {})
+        : [];
+    const surveySamplingTechniques =
+      (includeFeatureTypes?.has(BiohubFeatureType.SAMPLE_TECHNIQUE) ?? true)
+        ? await sampleTechniqueService.getSamplingTechniquesForSurvey(surveyId)
+        : [];
 
     // Merge sampling sites with their geometry data
     const surveysamplingSites = surveySamplingSitesNonSpatial.map((site) => {
@@ -409,22 +688,36 @@ export class PlatformService extends DBService {
     });
 
     // Get habitat features data for survey
-    const surveyHabitatFeatures = await habitatFeatureService.getSurveyHabitatFeatures(surveyId);
+    const surveyHabitatFeatures =
+      (includeFeatureTypes?.has(BiohubFeatureType.HABITAT_FEATURE) ?? true)
+        ? await habitatFeatureService.getSurveyHabitatFeatures(surveyId)
+        : [];
 
     // Get telemetry data for survey
-    const surveyTelemetryDevices = await telemetryDeviceService.getDevicesForSurvey(surveyId);
-    const surveyTelemetryDeployments = await telemetryDeploymentService.getDeploymentsForSurvey(surveyId);
+    const surveyTelemetryDevices =
+      (includeFeatureTypes?.has(BiohubFeatureType.TELEMETRY_DEVICE) ?? true)
+        ? await telemetryDeviceService.getDevicesForSurvey(surveyId)
+        : [];
+    const surveyTelemetryDeployments =
+      (includeFeatureTypes?.has(BiohubFeatureType.TELEMETRY_DEPLOYMENT) ?? true)
+        ? await telemetryDeploymentService.getDeploymentsForSurvey(surveyId)
+        : [];
 
     // Get telemetry data points for deployments
     const deploymentIds = surveyTelemetryDeployments.map((deployment) => deployment.deployment_id);
     const surveyTelemetry =
-      deploymentIds.length > 0 ? await telemetryVendorService.getTelemetryForDeployments(surveyId, deploymentIds) : [];
+      (includeFeatureTypes?.has(BiohubFeatureType.TELEMETRY) ?? true) && deploymentIds.length > 0
+        ? await telemetryVendorService.getTelemetryForDeployments(surveyId, deploymentIds)
+        : [];
 
     // Get all codeset categories for BioHub submission
     const codesetCategories = await codeService.getAllCodesetCategories();
 
     // Get survey animals from Critterbase (via SIMS survey-critter associations)
-    const surveyAnimals = await surveyCritterService.getCritterbaseSurveyCritters(surveyId);
+    const shouldIncludeAnimals =
+      (includeFeatureTypes?.has(BiohubFeatureType.ANIMAL) ?? true) ||
+      includeFeatureTypes?.has(BiohubFeatureType.TELEMETRY_DEPLOYMENT) === true;
+    const surveyAnimals = shouldIncludeAnimals ? await surveyCritterService.getCritterbaseSurveyCritters(surveyId) : [];
 
     // Enrich mortality data with detailed information
     const enrichedSurveyAnimals: ICritterDetailed[] = await Promise.all(
@@ -486,9 +779,10 @@ export class PlatformService extends DBService {
         focalSpecies,
         surveyLocation,
         firstNations: allCodes.first_nations,
-        strata: siteSelectionData.stratums,
+        strata: (includeFeatureTypes?.has(BiohubFeatureType.STRATUM) ?? true) ? siteSelectionData.stratums : [],
         siteSelectionStrategies: siteSelectionData.strategies,
-        codesetCategories
+        codesetCategories,
+        includeFeatureTypes
       }
     );
 

@@ -1,5 +1,6 @@
 import { IDBConnection } from '../database/db';
 import { SurveyRepository } from '../repositories/survey-repository';
+import { TechniqueRepository } from '../repositories/technique-repository';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('services/sample-technique-service');
@@ -32,9 +33,11 @@ export interface SampleTechniqueRecord {
 
 export class SampleTechniqueService {
   connection: IDBConnection;
+  techniqueRepository: TechniqueRepository;
 
   constructor(connection: IDBConnection) {
     this.connection = connection;
+    this.techniqueRepository = new TechniqueRepository(connection);
   }
 
   /**
@@ -80,5 +83,16 @@ export class SampleTechniqueService {
         vantage_id: vantage.vantage_id || null
       }))
     }));
+  }
+
+  /**
+   * Get sampling techniques count for a survey.
+   *
+   * @param {number} surveyId
+   * @return {Promise<number>}
+   * @memberof SampleTechniqueService
+   */
+  async getSamplingTechniquesCountForSurvey(surveyId: number): Promise<number> {
+    return this.techniqueRepository.getTechniquesCountForSurveyId(surveyId);
   }
 }

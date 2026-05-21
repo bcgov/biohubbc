@@ -191,7 +191,7 @@ describe('getCritterCaptureRowValidator', () => {
 
     rowValidator({ row } as any);
 
-    expect(row[CSVRowState].critter_id).to.equal('critter_id');
-    expect(row[CSVRowState].capture_id).to.equal('capture_id');
+    expect((row as Record<PropertyKey, any>)[CSVRowState].critter_id).to.equal('critter_id');
+    expect((row as Record<PropertyKey, any>)[CSVRowState].capture_id).to.equal('capture_id');
   });
 });
