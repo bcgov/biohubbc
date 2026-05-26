@@ -20,10 +20,7 @@ const mockBiohubApi = useBiohubApi as Mock;
 const mockUseDataLoader = useDataLoader as Mock;
 const mockUseParams = useParams as Mock;
 
-const createMockDataLoader = (
-  refresh = vi.fn(),
-  data?: unknown
-): DataLoader<[number, number], unknown, unknown> => ({
+const createMockDataLoader = (refresh = vi.fn(), data?: unknown): DataLoader<[number, number], unknown, unknown> => ({
   data,
   error: undefined,
   isLoading: false,
@@ -137,7 +134,9 @@ describe('SurveyContextProvider', () => {
           <SurveyContext.Consumer>{() => <></>}</SurveyContext.Consumer>
         </SurveyContextProvider>
       )
-    ).toThrow("The project ID found in SurveyContextProvider was invalid. Does your current React route provide an 'id' parameter?");
+    ).toThrow(
+      "The project ID found in SurveyContextProvider was invalid. Does your current React route provide an 'id' parameter?"
+    );
   });
 
   it('throws when survey id route param is missing', () => {
