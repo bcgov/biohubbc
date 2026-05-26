@@ -96,6 +96,7 @@ export const SurveyContextProvider = (props: PropsWithChildren<Record<never, any
     ) {
       surveyDataLoader.refresh(projectId, surveyId);
       artifactDataLoader.refresh(projectId, surveyId);
+      critterDataLoader.refresh(projectId, surveyId);
     }
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
