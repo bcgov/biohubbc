@@ -632,7 +632,7 @@ export class PostSurveyReportAttachmentsToBiohubObject implements BioHubSubmissi
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.REPORT;
     this.properties = {
-      artifact_key: reportAttachmentRecord.key,
+      artifact_key: 'files/' + reportAttachmentRecord.file_name,
       filename: reportAttachmentRecord.file_name,
       file_type: ATTACHMENT_TYPE.REPORT,
       file_size: reportAttachmentRecord.file_size,
