@@ -1331,8 +1331,9 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
     const focalSpeciesArray = buildFocalSpeciesArray(focalSpecies);
 
     // Create collected data array from survey types
-    const collectedDataArray =
-      surveyData.survey_types.map((survey_type_id) => ({ survey_type_id: String(survey_type_id) })) || [];
+    const collectedDataArray = surveyData.survey_types.map((survey_type_id) => ({
+      survey_type: buildCodesetReference('type', survey_type_id, codesetExportContext)
+    }));
 
     // Create stratum features
     const stratumFeatures = mapOrEmpty(strata, (stratum) => new PostStratumToBiohubObject(stratum));
