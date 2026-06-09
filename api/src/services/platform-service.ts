@@ -821,8 +821,11 @@ export class PlatformService extends DBService {
         for (const childBlock of block.child_features) {
           // Recursively process child block
           processBlock(childBlock, blockId);
-          // Add child ID to current block's content
-          flatBlock.content.push(childBlock.id);
+          // Codeset is a reference/lookup table written to codes/codeset.json,
+          // not a content feature, so exclude it from the parent's content array.
+          if (childBlock.type !== BiohubFeatureType.CODESET) {
+            flatBlock.content.push(childBlock.id);
+          }
         }
       }
 
