@@ -622,6 +622,46 @@ describe('PlatformService', () => {
       expect(result).to.have.length(1);
       expect(result[0].type).to.equal('unknown');
     });
+
+    it('should exclude codeset child IDs from parent content', () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const nestedData = {
+        content: {
+          id: 'dataset-id',
+          type: 'dataset',
+          properties: { name: 'Test Dataset' },
+          child_features: [
+            {
+              id: 'observation-id',
+              type: 'species_observation',
+              properties: { count: 1 },
+              child_features: []
+            },
+            {
+              id: 'codeset-id',
+              type: BiohubFeatureType.CODESET,
+              properties: { categories: {} },
+              child_features: []
+            }
+          ]
+        }
+      };
+
+      const result = platformService._flattenToBlockModel(nestedData);
+
+      expect(result).to.have.length(3);
+
+      const datasetBlock = result.find((b) => b.id === 'dataset-id');
+      expect(datasetBlock?.content).to.deep.equal(['observation-id']);
+      expect(result.find((b) => b.id === 'codeset-id')).to.deep.include({
+        id: 'codeset-id',
+        type: BiohubFeatureType.CODESET,
+        parent: 'dataset-id',
+        content: []
+      });
+    });
   });
 
   describe('submitSurveyToBioHub - flattening and TAR creation', () => {
