@@ -1017,7 +1017,7 @@ describe('PostSurveyToBiohubObject', () => {
         end_date: 'end_date',
         collected_data: [
           {
-            survey_type_id: '9'
+            survey_type: 'code::type::9'
           }
         ],
         objectives: 'Test survey objectives'
