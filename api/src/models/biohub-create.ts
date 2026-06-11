@@ -755,9 +755,9 @@ export class PostSampleTechniqueToBiohubObject implements BioHubSubmissionFeatur
     this.type = BiohubFeatureType.SAMPLE_TECHNIQUE;
 
     // Use attractant IDs array from the database and convert to code format
-    const attractantsArray = (samplingTechniqueRecord.attractant_ids || []).map((attractant) => ({
-      attractant_name: buildCodesetReference('attractant_lookup', attractant.attractant_lookup_id, codesetExportContext)
-    }));
+    const attractantsArray = (samplingTechniqueRecord.attractant_ids || []).map((attractant) =>
+      buildCodesetReference('attractant_lookup', attractant.attractant_lookup_id, codesetExportContext)
+    );
 
     let method_attribute: string | null = null;
     let method_value: string | null = null;
@@ -1331,9 +1331,9 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
     const focalSpeciesArray = buildFocalSpeciesArray(focalSpecies);
 
     // Create collected data array from survey types
-    const collectedDataArray = surveyData.survey_types.map((survey_type_id) => ({
-      survey_type: buildCodesetReference('type', survey_type_id, codesetExportContext)
-    }));
+    const collectedDataArray = surveyData.survey_types.map((survey_type_id) =>
+      buildCodesetReference('type', survey_type_id, codesetExportContext)
+    );
 
     // Create stratum features
     const stratumFeatures = mapOrEmpty(strata, (stratum) => new PostStratumToBiohubObject(stratum));
@@ -1512,20 +1512,18 @@ function buildPartnershipsValue(
   };
 }
 
-function buildFocalSpeciesArray(focalSpecies?: { focal_species: ITaxonomyWithEcologicalUnits[] }): {
-  taxon_id: number;
-}[] {
-  return focalSpecies?.focal_species?.map((species) => ({ taxon_id: species.tsn })) ?? [];
+function buildFocalSpeciesArray(focalSpecies?: { focal_species: ITaxonomyWithEcologicalUnits[] }): number[] {
+  return focalSpecies?.focal_species?.map((species) => species.tsn) ?? [];
 }
 
 function buildSiteSelectionStrategiesArray(
   siteSelectionStrategies: number[] | undefined,
   options: { codesetExportContext: CodesetExportContext }
-): { strategy: string }[] {
+): string[] {
   const { codesetExportContext } = options;
-  return (siteSelectionStrategies ?? []).map((site_strategy_id) => ({
-    strategy: buildCodesetReference('site_strategy', site_strategy_id, codesetExportContext)
-  }));
+  return (siteSelectionStrategies ?? []).map((site_strategy_id) =>
+    buildCodesetReference('site_strategy', site_strategy_id, codesetExportContext)
+  );
 }
 
 function buildOptionalArrayProperty<T>(items: T[], key: string): Record<string, T[]> {
