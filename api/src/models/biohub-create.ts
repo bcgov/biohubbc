@@ -605,7 +605,7 @@ export class PostSurveyAttachmentsToBiohubObject implements BioHubSubmissionFeat
       artifact_key: attachmentRecord.key,
       filename: attachmentRecord.file_name,
       file_type: attachmentRecord.file_type,
-      file_size: attachmentRecord.file_size,
+      file_size: Number(attachmentRecord.file_size),
       ...(attachmentRecord.title ? { title: attachmentRecord.title } : {}),
       ...(attachmentRecord.description ? { description: attachmentRecord.description } : {})
     };
@@ -635,7 +635,7 @@ export class PostSurveyReportAttachmentsToBiohubObject implements BioHubSubmissi
       artifact_key: 'files/' + reportAttachmentRecord.file_name,
       filename: reportAttachmentRecord.file_name,
       file_type: ATTACHMENT_TYPE.REPORT,
-      file_size: reportAttachmentRecord.file_size,
+      file_size: Number(reportAttachmentRecord.file_size),
       name: reportAttachmentRecord.title,
       description: reportAttachmentRecord.description,
       year: reportAttachmentRecord.year_published
@@ -707,8 +707,12 @@ export class PostSurveySamplingPeriodToBiohubObject implements BioHubSubmissionF
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(samplingPeriodRecord: SurveySamplePeriodDetails) {
+  constructor(
+    samplingPeriodRecord: SurveySamplePeriodDetails,
+    options: { codesetExportContext: CodesetExportContext }
+  ) {
     defaultLog.debug({ label: 'PostSurveySamplingPeriodToBiohubObject', message: 'params', samplingPeriodRecord });
+    const { codesetExportContext } = options;
 
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.SAMPLE_PERIOD;
@@ -728,8 +732,14 @@ export class PostSurveySamplingPeriodToBiohubObject implements BioHubSubmissionF
           }
         : {}),
       site_identifier: samplingPeriodRecord.survey_sample_site?.name || null,
-      method_technique_id: samplingPeriodRecord.method_technique?.method_technique_id
-        ? String(samplingPeriodRecord.method_technique.method_technique_id)
+      // BioHub validates `method_technique` as a code property, so emit a code reference
+      // (code::method_technique::<id>) rather than the raw numeric id.
+      method_technique: samplingPeriodRecord.method_technique?.method_technique_id
+        ? buildCodesetReference(
+            'method_technique',
+            samplingPeriodRecord.method_technique.method_technique_id,
+            codesetExportContext
+          )
         : null
     };
     this.child_features = [];
@@ -845,11 +855,12 @@ export class PostSurveyHabitatFeatureToBiohubObject implements BioHubSubmissionF
       timestamp = `${habitatFeatureRecord.observed_date}T00:00:00.000Z`;
     }
 
-    // Create associated species array from focal species
+    // Create associated species array from focal species.
+    // BioHub validates `associated_species` as a taxon property (allow_multiple), so each element
+    // must be a bare TSN number, not an object.
     const associatedSpeciesArray =
-      habitatFeatureRecord.survey_habitat_feature_taxons?.map((species: { itis_tsn: number }) => ({
-        taxon_id: species.itis_tsn
-      })) || [];
+      habitatFeatureRecord.survey_habitat_feature_taxons?.map((species: { itis_tsn: number }) => species.itis_tsn) ||
+      [];
 
     this.id = crypto.randomUUID();
     this.type = BiohubFeatureType.HABITAT_FEATURE;
@@ -1247,7 +1258,14 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
       return includeFeatureTypes ? includeFeatureTypes.has(featureType) : true;
     };
 
-    const codesetExportContext = buildCodesetExportContext(codesetCategories ?? []);
+    // Append a survey-scoped `method_technique` codeset category so that the `method_technique`
+    // code references emitted on sampling periods can be resolved by BioHub on ingestion.
+    const methodTechniqueCategory = buildMethodTechniqueCodesetCategory(samplingTechniques);
+    const allCodesetCategories = methodTechniqueCategory
+      ? [...(codesetCategories ?? []), methodTechniqueCategory]
+      : (codesetCategories ?? []);
+
+    const codesetExportContext = buildCodesetExportContext(allCodesetCategories);
 
     const observationFeatures = observationRecords.map(
       (observation) =>
@@ -1290,7 +1308,7 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
 
     const samplingPeriodFeatures = mapOrEmpty(
       samplingPeriods,
-      (samplingPeriod) => new PostSurveySamplingPeriodToBiohubObject(samplingPeriod)
+      (samplingPeriod) => new PostSurveySamplingPeriodToBiohubObject(samplingPeriod, { codesetExportContext })
     );
 
     const samplingTechniqueFeatures = mapOrEmpty(
@@ -1344,8 +1362,8 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
     });
 
     // Create codeset feature if codeset categories are available
-    const codesetFeature = codesetCategories?.length
-      ? [new PostCodesetToBiohubObject(codesetCategories, codesetExportContext)]
+    const codesetFeature = allCodesetCategories.length
+      ? [new PostCodesetToBiohubObject(allCodesetCategories, codesetExportContext)]
       : [];
 
     this.id = crypto.randomUUID();
@@ -1487,20 +1505,20 @@ function buildPartnershipsValue(
   _firstNations: { id: number; name: string }[] | undefined,
   options: { codesetExportContext: CodesetExportContext }
 ): {
-  indigenous_partnerships: { name: string }[];
-  stakeholder_partnerships: { name: string }[];
+  indigenous_partnerships: string[];
+  stakeholder_partnerships: string[];
 } | null {
   if (!partnerships) {
     return null;
   }
 
+  // BioHub validates `indigenous_partnerships` and `stakeholder_partnerships` as string properties
+  // (allow_multiple), so each element must be a plain string, not a `{ name }` object.
   const { codesetExportContext } = options;
-  const indigenousPartnerships = (partnerships.indigenous_partnerships || []).map((id) => ({
-    name: buildCodesetReference('first_nations', id, codesetExportContext)
-  }));
-  const stakeholderPartnerships = (partnerships.stakeholder_partnerships || []).map((name) => ({
-    name: name
-  }));
+  const indigenousPartnerships = (partnerships.indigenous_partnerships || []).map((id) =>
+    buildCodesetReference('first_nations', id, codesetExportContext)
+  );
+  const stakeholderPartnerships = (partnerships.stakeholder_partnerships || []).map((name) => name);
 
   if (indigenousPartnerships.length === 0 && stakeholderPartnerships.length === 0) {
     return null;
@@ -1542,6 +1560,35 @@ function buildSurveyDateProperties(surveyData: GetSurveyData): Record<string, st
   }
 
   return props;
+}
+
+/**
+ * Builds a survey-scoped `method_technique` codeset category from the survey's sampling techniques.
+ *
+ * Sampling periods reference their technique via a `code::method_technique::<method_technique_id>`
+ * reference. Method techniques are survey-specific (not a global codeset), so they are published as a
+ * dedicated codeset category keyed by `method_technique_id` to allow BioHub to resolve those references
+ * on ingestion.
+ *
+ * @param {SampleTechniqueRecord[]} [samplingTechniques] - The survey's sampling techniques.
+ * @return {*}  {(CodesetCategory | null)} The codeset category, or null when there are no techniques.
+ */
+function buildMethodTechniqueCodesetCategory(samplingTechniques?: SampleTechniqueRecord[]): CodesetCategory | null {
+  if (!samplingTechniques || samplingTechniques.length === 0) {
+    return null;
+  }
+
+  return {
+    key: 'method_technique',
+    label: 'Method Technique',
+    description: 'Sampling method techniques defined for this survey.',
+    codes: samplingTechniques.map((technique) => ({
+      key: String(technique.method_technique_id),
+      label: technique.method_name,
+      description: technique.description,
+      external_id: null
+    }))
+  };
 }
 
 /**
