@@ -1,0 +1,62 @@
+name: Update Codecov Baseline
+
+# Keeps the Codecov coverage baseline on dev current without re-running the
+# test suite on every merge (the push trigger for tests was intentionally
+# removed in SIMSBIOHUB-930).
+#
+# Coverage is only generated on pull_request events (see test.yml). Because
+# PRs are squash-merged, the code on dev is identical to the PR head, so the
+# PR's coverage reports are simply re-uploaded against the new dev commit.
+on:
+  push:
+    branches:
+      - dev
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+
+jobs:
+  uploadBaseline:
+    name: Upload coverage baseline to Codecov
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout dev
+        uses: actions/checkout@v6
+        with:
+          persist-credentials: false
+
+      - name: Download coverage reports from the merged PR
+        id: download
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # Find the PR that was squash-merged to create this commit
+          HEAD_SHA=$(gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" --jq 'first(.[].head.sha)')
+
+          if [ -z "$HEAD_SHA" ]; then
+            echo "::notice::No associated pull request found (direct push to dev); skipping baseline upload."
+            exit 0
+          fi
+
+          RUN_ID=$(gh run list --workflow 'Test Checks' --commit "$HEAD_SHA" --status success --json databaseId --jq 'first(.[].databaseId)')
+
+          if [ -z "$RUN_ID" ]; then
+            echo "::notice::No successful test run found for PR head $HEAD_SHA; skipping baseline upload."
+            exit 0
+          fi
+
+          # Restores api/coverage/lcov.info and app/coverage/lcov.info
+          gh run download "$RUN_ID" --name coverage-reports
+          echo "found=true" >> "$GITHUB_OUTPUT"
+
+      - name: Upload coverage to Codecov
+        if: steps.download.outputs.found == 'true'
+        uses: codecov/codecov-action@v5
+        with:
+          token: ${{secrets.CODECOV_TOKEN}}
+          # Fail loudly: a silently broken baseline upload defeats the purpose
+          # of this workflow, and a red run on dev is non-blocking
+          fail_ci_if_error: true
