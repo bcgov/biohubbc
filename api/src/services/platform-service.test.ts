@@ -5,12 +5,12 @@ import { describe } from 'mocha';
 import { Readable } from 'node:stream';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { getMockDBConnection } from '../__mocks__/db';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { BiohubFeatureType } from '../models/biohub-create';
 import { ObservationRecordWithSamplingAndSubcountData } from '../repositories/observation-repository/observation-repository.interface';
 import { envConfigDependencies as envConfig } from '../utils/env-config';
 import { featureFlagDependencies as featureFlagUtils } from '../utils/feature-flag-utils';
+import { getMockDBConnection } from '../__mocks__/db';
 import { AttachmentService } from './attachment-service';
 import { CodeService } from './code-service';
 import { SurveyHabitatFeatureService } from './habitat-feature-services/survey-habitat-feature-service';
@@ -160,7 +160,9 @@ describe('PlatformService', () => {
 
       sinon
         .stub(PlatformService.prototype, '_flattenToBlockModel')
-        .returns([{ id: 'test-dataset-id', type: 'dataset', properties: {}, content: [], parent: null }]);
+        .returns([
+          { id: 'test-survey-root-id', type: BiohubFeatureType.SURVEY, properties: {}, content: [], parent: null }
+        ]);
 
       sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
 
@@ -212,7 +214,9 @@ describe('PlatformService', () => {
 
       sinon
         .stub(PlatformService.prototype, '_flattenToBlockModel')
-        .returns([{ id: 'test-dataset-id', type: 'dataset', properties: {}, content: [], parent: null }]);
+        .returns([
+          { id: 'test-survey-root-id', type: BiohubFeatureType.SURVEY, properties: {}, content: [], parent: null }
+        ]);
 
       sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
 
@@ -295,7 +299,9 @@ describe('PlatformService', () => {
         .resolves({ id: '123-456-789', name: 'Test', description: 'Test Description' } as unknown as any);
       sinon
         .stub(PlatformService.prototype, '_flattenToBlockModel')
-        .returns([{ id: 'test-dataset-id', type: 'dataset', properties: {}, content: [], parent: null }]);
+        .returns([
+          { id: 'test-survey-root-id', type: BiohubFeatureType.SURVEY, properties: {}, content: [], parent: null }
+        ]);
       sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
 
       sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
@@ -505,7 +511,7 @@ describe('PlatformService', () => {
       expect(response).to.have.property('id');
       expect(response).to.have.property('description', 'a description of the purpose');
       expect(response).to.have.property('comment', 'a comment about the submission');
-      expect(response.content).to.have.property('type', 'dataset');
+      expect(response.content).to.have.property('type', BiohubFeatureType.SURVEY);
       expect(response.content.properties).to.have.property('survey_id', 1);
     });
 
@@ -557,8 +563,8 @@ describe('PlatformService', () => {
       const nestedData = {
         content: {
           id: 'root-id',
-          type: 'dataset',
-          properties: { name: 'Test Dataset' },
+          type: BiohubFeatureType.SURVEY,
+          properties: { name: 'Test Survey' },
           child_features: [
             {
               id: 'child-1',
@@ -583,7 +589,7 @@ describe('PlatformService', () => {
       expect(result).to.have.length(2);
       expect(result.find((b) => b.id === 'root-id')).to.deep.include({
         id: 'root-id',
-        type: 'dataset',
+        type: BiohubFeatureType.SURVEY,
         parent: null,
         content: ['child-1']
       });
@@ -629,9 +635,9 @@ describe('PlatformService', () => {
 
       const nestedData = {
         content: {
-          id: 'dataset-id',
-          type: 'dataset',
-          properties: { name: 'Test Dataset' },
+          id: 'survey-root-id',
+          type: BiohubFeatureType.SURVEY,
+          properties: { name: 'Test Survey' },
           child_features: [
             {
               id: 'observation-id',
@@ -653,12 +659,12 @@ describe('PlatformService', () => {
 
       expect(result).to.have.length(3);
 
-      const datasetBlock = result.find((b) => b.id === 'dataset-id');
-      expect(datasetBlock?.content).to.deep.equal(['observation-id']);
+      const surveyBlock = result.find((b) => b.id === 'survey-root-id');
+      expect(surveyBlock?.content).to.deep.equal(['observation-id']);
       expect(result.find((b) => b.id === 'codeset-id')).to.deep.include({
         id: 'codeset-id',
         type: BiohubFeatureType.CODESET,
-        parent: 'dataset-id',
+        parent: 'survey-root-id',
         content: []
       });
     });
@@ -681,12 +687,12 @@ describe('PlatformService', () => {
       sinon.stub(AttachmentService.prototype, 'getSurveyReportAttachments').resolves([]);
 
       const mockSurveyDataPackage = {
-        id: 'test-dataset-id',
+        id: 'test-survey-root-id',
         name: 'Test Survey',
         description: 'Test Description',
         content: {
-          id: 'test-dataset-id',
-          type: 'dataset',
+          id: 'test-survey-root-id',
+          type: BiohubFeatureType.SURVEY,
           properties: { survey_id: 1 },
           child_features: [
             {
@@ -711,8 +717,8 @@ describe('PlatformService', () => {
       // Stub fs methods that are called but we can't stub directly
       // We'll verify through the _createTarArchive stub instead
       const flattenToBlockModelStub = sinon.stub(PlatformService.prototype, '_flattenToBlockModel').returns([
-        { id: 'test-dataset-id', type: 'dataset', properties: {}, content: [], parent: null },
-        { id: 'obs-1', type: 'species_observation', properties: {}, content: [], parent: 'test-dataset-id' }
+        { id: 'test-survey-root-id', type: BiohubFeatureType.SURVEY, properties: {}, content: [], parent: null },
+        { id: 'obs-1', type: 'species_observation', properties: {}, content: [], parent: 'test-survey-root-id' }
       ]);
 
       sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
@@ -754,10 +760,10 @@ describe('PlatformService', () => {
       sinon.stub(AttachmentService.prototype, 'getSurveyReportAttachments').resolves([]);
 
       const mockSurveyDataPackage = {
-        id: 'test-dataset-id',
+        id: 'test-survey-root-id',
         name: 'Test Survey',
         description: 'Test Description',
-        content: { id: 'test-id', type: 'dataset' }
+        content: { id: 'test-id', type: BiohubFeatureType.SURVEY }
       };
 
       sinon
@@ -791,12 +797,12 @@ describe('PlatformService', () => {
       sinon.stub(AttachmentService.prototype, 'getSurveyReportAttachments').resolves([]);
 
       const mockSurveyDataPackage = {
-        id: 'test-dataset-id',
+        id: 'test-survey-root-id',
         name: 'Test Survey',
         description: 'Test Description',
         content: {
-          id: 'test-dataset-id',
-          type: 'dataset',
+          id: 'test-survey-root-id',
+          type: BiohubFeatureType.SURVEY,
           properties: { survey_id: 1 }
         }
       };
@@ -807,7 +813,9 @@ describe('PlatformService', () => {
 
       sinon
         .stub(PlatformService.prototype, '_flattenToBlockModel')
-        .returns([{ id: 'test-dataset-id', type: 'dataset', properties: {}, content: [], parent: null }]);
+        .returns([
+          { id: 'test-survey-root-id', type: BiohubFeatureType.SURVEY, properties: {}, content: [], parent: null }
+        ]);
 
       sinon.stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord').resolves();
 
@@ -843,9 +851,9 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(mockDBConnection);
 
       const pack: any = {};
-      const datasetId = 'test-dataset-id';
+      const archiveRootId = 'test-survey-root-id';
       const blocksByType = new Map<string, any[]>([
-        ['dataset', [{ id: 'd1' }]],
+        [BiohubFeatureType.SURVEY, [{ id: 'd1' }]],
         ['codeset', [{ id: 'c1' }]],
         ['habitat_feature', [{ id: 'h1' }]]
       ]);
@@ -854,12 +862,34 @@ describe('PlatformService', () => {
         .stub(platformService as any, '_addFileToArchive')
         .callsFake(() => Promise.resolve());
 
-      await platformService._addJsonFilesToArchive(pack, datasetId, blocksByType as any);
+      await platformService._addJsonFilesToArchive(pack, archiveRootId, blocksByType as any);
 
       const writtenPaths = addFileToArchiveStub.getCalls().map((call) => call.args[2]);
-      expect(writtenPaths).to.include('features/dataset.json');
+      expect(writtenPaths).to.include('features/survey.json');
       expect(writtenPaths).to.include('codes/codeset.json');
       expect(writtenPaths).to.include('features/habitat_feature.json');
+    });
+
+    it('should write survey metadata marker to the archive root', () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const pack: any = {
+        entry: sinon.stub().callsFake((_header: unknown, _content: unknown, callback: () => void) => callback()),
+        destroy: sinon.stub()
+      };
+      const blocksByType = new Map<string, any[]>();
+      const addJsonFilesStub = sinon.stub(platformService as any, '_addJsonFiles').resolves();
+
+      platformService._addMetadataFile(pack, 'test-survey-root-id', blocksByType as any);
+
+      expect(pack.entry).to.have.been.calledOnce;
+      expect(pack.entry.firstCall.args[0]).to.deep.include({
+        name: 'test-survey-root-id/.survey-id',
+        size: 'test-survey-root-id'.length
+      });
+      expect(pack.entry.firstCall.args[1].toString()).to.equal('test-survey-root-id');
+      expect(addJsonFilesStub).to.have.been.calledOnceWith(pack, 'test-survey-root-id', blocksByType);
     });
 
     it('should write codeset block properties as codes/codeset.json content when first block has properties', async () => {
@@ -867,7 +897,7 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(mockDBConnection);
 
       const pack: any = {};
-      const datasetId = 'test-dataset-id';
+      const archiveRootId = 'test-survey-root-id';
       const codesetProperties = { life_stage: { id: 'life_stage', label: 'Life Stage', codes: {} } };
       const blocksByType = new Map<string, any[]>([
         ['codeset', [{ id: 'c1', type: 'codeset', properties: codesetProperties, content: [], parent: null }]]
@@ -877,7 +907,7 @@ describe('PlatformService', () => {
         .stub(platformService as any, '_addFileToArchive')
         .callsFake(() => Promise.resolve());
 
-      await platformService._addJsonFilesToArchive(pack, datasetId, blocksByType as any);
+      await platformService._addJsonFilesToArchive(pack, archiveRootId, blocksByType as any);
 
       const codesetCall = addFileToArchiveStub.getCalls().find((call) => call.args[2] === 'codes/codeset.json');
       expect(codesetCall).to.exist;

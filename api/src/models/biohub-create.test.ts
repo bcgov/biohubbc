@@ -1005,7 +1005,7 @@ describe('PostSurveyToBiohubObject', () => {
     });
 
     it('sets type', () => {
-      expect(data.type).to.equal('dataset');
+      expect(data.type).to.equal(BiohubFeatureType.SURVEY);
     });
 
     it('sets properties', () => {
