@@ -11,8 +11,8 @@ import { formatAxiosError } from '../errors/axios-error';
 import {
   BiohubFeatureType,
   PostSurveySubmissionToBioHubObject,
-  PUBLISHABLE_FEATURE_TYPES,
-  PUBLISHABLE_FEATURE_TYPE_PARENTS
+  PUBLISHABLE_FEATURE_TYPE_PARENTS,
+  PUBLISHABLE_FEATURE_TYPES
 } from '../models/biohub-create';
 import { ISurveyAttachment, ISurveyReportAttachment } from '../repositories/attachment-repository';
 import { getEnvironmentVariable } from '../utils/env-config';

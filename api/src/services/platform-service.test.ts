@@ -1,16 +1,16 @@
 import axios from 'axios';
 import chai, { expect } from 'chai';
-import fs from 'fs';
+import fs, { Stats } from 'fs';
 import { describe } from 'mocha';
 import { Readable } from 'node:stream';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { getMockDBConnection } from '../__mocks__/db';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { BiohubFeatureType } from '../models/biohub-create';
 import { ObservationRecordWithSamplingAndSubcountData } from '../repositories/observation-repository/observation-repository.interface';
 import { envConfigDependencies as envConfig } from '../utils/env-config';
 import { featureFlagDependencies as featureFlagUtils } from '../utils/feature-flag-utils';
-import { getMockDBConnection } from '../__mocks__/db';
 import { AttachmentService } from './attachment-service';
 import { CodeService } from './code-service';
 import { SurveyHabitatFeatureService } from './habitat-feature-services/survey-habitat-feature-service';
@@ -95,7 +95,7 @@ describe('PlatformService', () => {
       expect(axiosStub.getCall(0).args[1]?.headers?.authorization).to.equal('Bearer token');
       expect(axiosStub.getCall(0).args[1]?.params.terms).to.deep.equal(['Alces', 'alces']);
 
-      expect(taxon).to.equal(null);
+      expect(taxon).to.be.null;
     });
 
     it('should return a null error thrown', async () => {
@@ -115,7 +115,7 @@ describe('PlatformService', () => {
       expect(axiosStub.getCall(0).args[1]?.headers?.authorization).to.equal('Bearer token');
       expect(axiosStub.getCall(0).args[1]?.params.terms).to.deep.equal(['Alces', 'alces']);
 
-      expect(taxon).to.equal(null);
+      expect(taxon).to.be.null;
     });
   });
 
@@ -166,7 +166,7 @@ describe('PlatformService', () => {
 
       sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
 
-      sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
+      sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }) as unknown as Stats);
 
       const _initiateSubmissionUploadStub = sinon
         .stub(PlatformService.prototype, '_initiateSubmissionUpload')
@@ -220,7 +220,7 @@ describe('PlatformService', () => {
 
       sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
 
-      sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
+      sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }) as unknown as Stats);
       sinon.stub(fs, 'unlinkSync').callsFake(() => {});
 
       const submissionIdFromApi = '550e8400-e29b-41d4-a716-446655440001';
@@ -304,7 +304,7 @@ describe('PlatformService', () => {
         ]);
       sinon.stub(PlatformService.prototype, '_createTarArchive').resolves();
 
-      sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
+      sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }) as unknown as Stats);
       sinon.stub(fs, 'unlinkSync').callsFake(() => {});
 
       const mockUploadResponse = {
@@ -721,7 +721,7 @@ describe('PlatformService', () => {
         { id: 'obs-1', type: 'species_observation', properties: {}, content: [], parent: 'test-survey-root-id' }
       ]);
 
-      sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
+      sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }) as unknown as Stats);
       sinon.stub(fs, 'unlinkSync').callsFake(() => {});
 
       const mockUploadResponse = {
@@ -1528,7 +1528,7 @@ describe('PlatformService', () => {
 
       const result = await platformService.getSubmissionHistoryForSurvey(surveyId, submissionId);
 
-      expect(result).to.not.equal(null);
+      expect(result).to.not.be.null;
       expect(result).to.have.length(1);
       expect(result?.[0].submissionId).to.equal(bioHubId);
       expect(result?.[0].submissionUploadId).to.equal('upload-uuid-1');
@@ -1563,7 +1563,7 @@ describe('PlatformService', () => {
 
       const result = await platformService.getSubmissionHistoryForSurvey(42, '550e8400-e29b-41d4-a716-446655440000');
 
-      expect(result).to.equal(null);
+      expect(result).to.be.null;
       expect(axiosStub).to.not.have.been.called;
     });
   });
