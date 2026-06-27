@@ -487,15 +487,15 @@ export class PlatformService extends DBService {
     // Flatten and save the survey data package grouped by type
     const flattenedData = this._flattenToBlockModel(surveyDataPackage);
 
-    // Find the dataset ID (root block with type "dataset")
-    const datasetBlock = flattenedData.find((block) => block.type === 'dataset' && block.parent === null);
-    if (!datasetBlock?.id) {
+    // Find the survey ID (root block with type "survey")
+    const surveyBlock = flattenedData.find((block) => block.type === BiohubFeatureType.SURVEY && block.parent === null);
+    if (!surveyBlock?.id) {
       throw new ApiError(
         ApiErrorType.UNKNOWN,
-        'Failed to find dataset ID in survey data package. The dataset block is missing or invalid.'
+        'Failed to find survey ID in survey data package. The survey block is missing or invalid.'
       );
     }
-    const datasetId = datasetBlock.id;
+    const archiveRootId = surveyBlock.id;
 
     // Group blocks by type
     const blocksByType = new Map<string, IFlattenedBlock[]>();
@@ -510,8 +510,8 @@ export class PlatformService extends DBService {
     // Create TAR archive with PAX format and extended attributes using tar-stream
     const submissionsBaseDir = path.join(process.cwd(), 'data', 'submissions');
     fs.mkdirSync(submissionsBaseDir, { recursive: true });
-    const tarFilePath = path.join(submissionsBaseDir, `${datasetId}.tar`);
-    await this._createTarArchive(datasetId, blocksByType, tarFilePath);
+    const tarFilePath = path.join(submissionsBaseDir, `${archiveRootId}.tar`);
+    await this._createTarArchive(archiveRootId, blocksByType, tarFilePath);
 
     defaultLog.info({
       label: 'submitSurveyToBioHub',
@@ -846,14 +846,14 @@ export class PlatformService extends DBService {
   /**
    * Creates a TAR archive with PAX format containing flattened JSON files.
    *
-   * @param {string} datasetId - The dataset ID
+   * @param {string} archiveRootId - The archive root ID
    * @param {Map<string, IFlattenedBlock[]>} blocksByType - Map of block types to their flattened blocks
    * @param {string} tarFilePath - Full path where the TAR file should be created
    * @return {*}  {Promise<void>}
    * @memberof PlatformService
    */
   async _createTarArchive(
-    datasetId: string,
+    archiveRootId: string,
     blocksByType: Map<string, IFlattenedBlock[]>,
     tarFilePath: string
   ): Promise<void> {
@@ -869,10 +869,10 @@ export class PlatformService extends DBService {
       outputStream.on('error', reject);
     });
 
-    // Add the dataset directory entry
+    // Add the archive root directory entry
     pack.entry(
       {
-        name: `${datasetId}/`,
+        name: `${archiveRootId}/`,
         type: 'directory'
       },
       undefined,
@@ -881,7 +881,7 @@ export class PlatformService extends DBService {
           pack.destroy();
           throw dirErr;
         }
-        this._addMetadataFile(pack, datasetId, blocksByType);
+        this._addMetadataFile(pack, archiveRootId, blocksByType);
       }
     );
 
@@ -892,18 +892,18 @@ export class PlatformService extends DBService {
    * Adds metadata file and JSON files to the TAR archive.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
-   * @param {string} datasetId - The dataset ID
+   * @param {string} archiveRootId - The archive root ID
    * @param {Map<string, IFlattenedBlock[]>} blocksByType - Map of block types to their flattened blocks
    * @memberof PlatformService
    */
-  _addMetadataFile(pack: tarStream.Pack, datasetId: string, blocksByType: Map<string, IFlattenedBlock[]>): void {
-    // Add a metadata file with the dataset ID
+  _addMetadataFile(pack: tarStream.Pack, archiveRootId: string, blocksByType: Map<string, IFlattenedBlock[]>): void {
+    // Add a metadata file with the archive root ID
     // Note: tar-stream doesn't easily support PAX extended attributes,
-    // so we store the dataset ID in a metadata file instead
-    const metadataContent = Buffer.from(datasetId);
+    // so we store the archive root ID in a metadata file instead
+    const metadataContent = Buffer.from(archiveRootId);
     pack.entry(
       {
-        name: `${datasetId}/.dataset-id`,
+        name: `${archiveRootId}/.survey-id`,
         size: metadataContent.length
       },
       metadataContent,
@@ -913,7 +913,7 @@ export class PlatformService extends DBService {
           throw metadataErr;
         }
         // Start adding JSON files and file blocks (async operation)
-        this._addJsonFiles(pack, datasetId, blocksByType).catch((error) => {
+        this._addJsonFiles(pack, archiveRootId, blocksByType).catch((error) => {
           defaultLog.error({
             label: '_addMetadataFile',
             message: 'Failed to add JSON files and file blocks',
@@ -932,14 +932,14 @@ export class PlatformService extends DBService {
    * blocks are written under `features/`.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
-   * @param {string} datasetId - The dataset ID
+   * @param {string} archiveRootId - The archive root ID
    * @param {Map<string, IFlattenedBlock[]>} blocksByType - Map of block types to their flattened blocks
    * @return {*}  {Promise<void>}
    * @memberof PlatformService
    */
   async _addJsonFiles(
     pack: tarStream.Pack,
-    datasetId: string,
+    archiveRootId: string,
     blocksByType: Map<string, IFlattenedBlock[]>
   ): Promise<void> {
     if (blocksByType.size === 0) {
@@ -950,8 +950,8 @@ export class PlatformService extends DBService {
     const fileBlocks = blocksByType.get('file') || [];
 
     await Promise.all([
-      this._addJsonFilesToArchive(pack, datasetId, blocksByType),
-      this._addFileBlocksToArchive(pack, datasetId, fileBlocks)
+      this._addJsonFilesToArchive(pack, archiveRootId, blocksByType),
+      this._addFileBlocksToArchive(pack, archiveRootId, fileBlocks)
     ]);
     pack.finalize();
   }
@@ -961,20 +961,20 @@ export class PlatformService extends DBService {
    * or _addCodesetToArchive.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
-   * @param {string} datasetId - The dataset ID
+   * @param {string} archiveRootId - The archive root ID
    * @param {Map<string, IFlattenedBlock[]>} blocksByType - Map of block types to their flattened blocks
    * @return {Promise<void>} Resolves when all JSON files have been added to the archive
    * @memberof PlatformService
    */
   _addJsonFilesToArchive(
     pack: tarStream.Pack,
-    datasetId: string,
+    archiveRootId: string,
     blocksByType: Map<string, IFlattenedBlock[]>
   ): Promise<void> {
     const promises = Array.from(blocksByType.entries()).map(([type, blocks]) =>
       type === TARBALL_FILE_ROLE.CODESET
-        ? this._addCodesetToArchive(pack, datasetId, blocks)
-        : this._addFeatureToArchive(pack, datasetId, type, blocks)
+        ? this._addCodesetToArchive(pack, archiveRootId, blocks)
+        : this._addFeatureToArchive(pack, archiveRootId, type, blocks)
     );
     return Promise.all(promises).then(() => undefined);
   }
@@ -983,7 +983,7 @@ export class PlatformService extends DBService {
    * Adds a feature JSON file for a specific block type to the TAR archive.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
-   * @param {string} datasetId - The dataset ID
+   * @param {string} archiveRootId - The archive root ID
    * @param {string} type - The block type (feature name)
    * @param {IFlattenedBlock[]} blocks - Flattened blocks of this type
    * @return {Promise<void>} Resolves when the file has been added to the archive
@@ -991,50 +991,54 @@ export class PlatformService extends DBService {
    */
   _addFeatureToArchive(
     pack: tarStream.Pack,
-    datasetId: string,
+    archiveRootId: string,
     type: string,
     blocks: IFlattenedBlock[]
   ): Promise<void> {
     const fileName = `features/${type}.json`;
     const fileContent = Buffer.from(JSON.stringify(blocks, null, 2));
-    return this._addFileToArchive(pack, datasetId, fileName, fileContent);
+    return this._addFileToArchive(pack, archiveRootId, fileName, fileContent);
   }
 
   /**
    * Adds the consolidated codeset JSON file to the TAR archive.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
-   * @param {string} datasetId - The dataset ID
+   * @param {string} archiveRootId - The archive root ID
    * @param {IFlattenedBlock[]} codesetBlocks - Flattened codeset blocks (expected to contain a single codeset feature)
    * @return {Promise<void>} Resolves when the file has been added to the archive
    * @memberof PlatformService
    */
-  _addCodesetToArchive(pack: tarStream.Pack, datasetId: string, codesetBlocks: IFlattenedBlock[]): Promise<void> {
+  _addCodesetToArchive(pack: tarStream.Pack, archiveRootId: string, codesetBlocks: IFlattenedBlock[]): Promise<void> {
     const fileName = 'codes/codeset.json';
     const payload =
       codesetBlocks.length > 0 && codesetBlocks[0].properties !== undefined
         ? codesetBlocks[0].properties
         : codesetBlocks;
     const fileContent = Buffer.from(JSON.stringify(payload, null, 2));
-    return this._addFileToArchive(pack, datasetId, fileName, fileContent);
+    return this._addFileToArchive(pack, archiveRootId, fileName, fileContent);
   }
 
   /**
    * Adds actual file content for file type blocks to the TAR archive.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
-   * @param {string} datasetId - The dataset ID
+   * @param {string} archiveRootId - The archive root ID
    * @param {IFlattenedBlock[]} fileBlocks - Array of file blocks to process
    * @return {Promise<void>} Resolves when all file blocks have been added to the archive
    * @memberof PlatformService
    */
-  async _addFileBlocksToArchive(pack: tarStream.Pack, datasetId: string, fileBlocks: IFlattenedBlock[]): Promise<void> {
+  async _addFileBlocksToArchive(
+    pack: tarStream.Pack,
+    archiveRootId: string,
+    fileBlocks: IFlattenedBlock[]
+  ): Promise<void> {
     if (fileBlocks.length === 0) {
       return;
     }
 
     for (const fileBlock of fileBlocks) {
-      await this._processFileBlock(pack, datasetId, fileBlock);
+      await this._processFileBlock(pack, archiveRootId, fileBlock);
     }
   }
 
@@ -1042,12 +1046,12 @@ export class PlatformService extends DBService {
    * Processes a single file block by downloading from S3 and adding to archive.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
-   * @param {string} datasetId - The dataset ID
+   * @param {string} archiveRootId - The archive root ID
    * @param {IFlattenedBlock} fileBlock - The file block to process
    * @return {Promise<void>} Resolves when the file block has been processed (added or skipped)
    * @memberof PlatformService
    */
-  async _processFileBlock(pack: tarStream.Pack, datasetId: string, fileBlock: IFlattenedBlock): Promise<void> {
+  async _processFileBlock(pack: tarStream.Pack, archiveRootId: string, fileBlock: IFlattenedBlock): Promise<void> {
     try {
       const artifactKey = fileBlock.properties?.artifact_key as string | undefined;
       const filename = (fileBlock.properties?.filename as string | undefined) || fileBlock.id;
@@ -1063,7 +1067,7 @@ export class PlatformService extends DBService {
       }
 
       const archivePath = `files/${filename}`;
-      await this._addFileToArchive(pack, datasetId, archivePath, fileContent);
+      await this._addFileToArchive(pack, archiveRootId, archivePath, fileContent);
     } catch (error) {
       this._logFileBlockError('Failed to add file block to archive', fileBlock.id, error);
     }
@@ -1133,17 +1137,17 @@ export class PlatformService extends DBService {
    * Adds a single file to the TAR archive from memory.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
-   * @param {string} datasetId - The dataset ID
+   * @param {string} archiveRootId - The archive root ID
    * @param {string} fileName - Filename to add
    * @param {Buffer} fileContent - File content as a Buffer
    * @return {Promise<void>} Resolves when the file entry has been written to the pack
    * @memberof PlatformService
    */
-  _addFileToArchive(pack: tarStream.Pack, datasetId: string, fileName: string, fileContent: Buffer): Promise<void> {
+  _addFileToArchive(pack: tarStream.Pack, archiveRootId: string, fileName: string, fileContent: Buffer): Promise<void> {
     return new Promise((resolve, reject) => {
       pack.entry(
         {
-          name: `${datasetId}/${fileName}`,
+          name: `${archiveRootId}/${fileName}`,
           size: fileContent.length
         },
         fileContent,

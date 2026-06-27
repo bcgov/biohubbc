@@ -14,7 +14,7 @@ export enum SYSTEM_IDENTITY_SOURCE {
 }
 
 /**
- * The source system for a dataset submission.
+ * The source system for a survey submission.
  *
  * Typically an external system that is participating in BioHub by submitting data to the BioHub Platform Backbone.
  *

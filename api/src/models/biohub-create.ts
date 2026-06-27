@@ -1367,7 +1367,7 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
       : [];
 
     this.id = crypto.randomUUID();
-    this.type = BiohubFeatureType.DATASET;
+    this.type = BiohubFeatureType.SURVEY;
     this.properties = {
       survey_id: surveyData.id,
       project_id: surveyData.project_id,
@@ -1737,7 +1737,6 @@ export enum BiohubFeatureType {
   BLOCK = 'block',
   CAPTURE = 'capture',
   CODESET = 'codeset',
-  DATASET = 'dataset',
   ECOLOGICAL_UNIT = 'ecological_unit',
   FILE = 'file',
   HABITAT_FEATURE = 'habitat_feature',
@@ -1751,6 +1750,7 @@ export enum BiohubFeatureType {
   SAMPLE_SITE = 'sample_site',
   SAMPLE_TECHNIQUE = 'sample_technique',
   STRATUM = 'stratum',
+  SURVEY = 'survey',
   STUDY_AREA = 'study_area',
   TELEMETRY = 'telemetry',
   TELEMETRY_DEPLOYMENT = 'telemetry_deployment',
