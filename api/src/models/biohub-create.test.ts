@@ -1005,7 +1005,7 @@ describe('PostSurveyToBiohubObject', () => {
     });
 
     it('sets type', () => {
-      expect(data.type).to.equal('dataset');
+      expect(data.type).to.equal(BiohubFeatureType.SURVEY);
     });
 
     it('sets properties', () => {
@@ -1015,11 +1015,7 @@ describe('PostSurveyToBiohubObject', () => {
         name: 'survey_name',
         start_date: 'start_date',
         end_date: 'end_date',
-        collected_data: [
-          {
-            survey_type_id: '9'
-          }
-        ],
+        collected_data: ['code::type::9'],
         objectives: 'Test survey objectives'
       });
     });
@@ -1137,8 +1133,8 @@ describe('PostSurveyToBiohubObject', () => {
       );
     });
 
-    it('sets focal_species as array of taxon objects', () => {
-      expect(data.properties.focal_species).to.eql([{ taxon_id: 1234 }, { taxon_id: 5678 }, { taxon_id: 90123 }]);
+    it('sets focal_species as array of scalar taxon IDs', () => {
+      expect(data.properties.focal_species).to.eql([1234, 5678, 90123]);
     });
 
     it('does not include taxon_id property', () => {
@@ -1532,7 +1528,7 @@ describe('PostCodesetToBiohubObject and alias mapping', () => {
     expect(siteStrategyCategory.key).to.equal('site_strategy');
 
     const siteSelectionStrategies = (data.properties as any).site_select_strategy;
-    expect(siteSelectionStrategies).to.eql([{ strategy: 'code::site_strategy::5' }]);
+    expect(siteSelectionStrategies).to.eql(['code::site_strategy::5']);
   });
 
   it('returns canonical code reference when context has no matching category', () => {
@@ -1620,7 +1616,7 @@ describe('PostCodesetToBiohubObject and alias mapping', () => {
     );
 
     const siteSelectionStrategies = (data.properties as any).site_select_strategy;
-    expect(siteSelectionStrategies).to.eql([{ strategy: 'code::site_strategy::999' }]);
+    expect(siteSelectionStrategies).to.eql(['code::site_strategy::999']);
   });
 });
 

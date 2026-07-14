@@ -1,4 +1,11 @@
 comment: false
-threshold: 5%
 github_checks:
   annotations: false
+coverage:
+  status:
+    project:
+      default:
+        threshold: 5%
+    patch:
+      default:
+        threshold: 5%
