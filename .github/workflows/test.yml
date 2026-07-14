@@ -20,7 +20,7 @@ jobs:
       # Install Node - for `node` and `npm` commands
       # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
 
@@ -48,7 +48,7 @@ jobs:
       - checkoutRepo
     steps:
       - name: Setup node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: 24
 
@@ -92,7 +92,7 @@ jobs:
         run: CI=true npm run coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           fail_ci_if_error: false
@@ -122,7 +122,17 @@ jobs:
         run: CI=true npm run coverage
 
       - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           fail_ci_if_error: false
+
+      # Save coverage reports so updateCodecovBaseline.yml can re-upload them
+      # against the dev commit when this PR is squash-merged
+      - name: Save coverage reports artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: coverage-reports
+          path: |
+            api/coverage/lcov.info
+            app/coverage/lcov.info

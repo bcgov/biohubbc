@@ -626,8 +626,8 @@ describe('Telemetry Features BioHub Integration', () => {
       expect(technique1.properties.description).to.equal('Motion-activated camera monitoring');
       expect(technique1.properties.method_name).to.equal('code::method_lookup::1');
       expect(technique1.properties.attractant).to.deep.equal([
-        { attractant_name: 'code::attractant_lookup::1' },
-        { attractant_name: 'code::attractant_lookup::2' }
+        'code::attractant_lookup::1',
+        'code::attractant_lookup::2'
       ]);
 
       // Test second sampling technique

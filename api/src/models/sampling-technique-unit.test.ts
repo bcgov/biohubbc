@@ -47,8 +47,8 @@ describe('PostSampleTechniqueToBiohubObject Unit Test', () => {
     expect(techniqueObj.properties.method_name).to.equal('code::method_lookup::5');
     expect(techniqueObj.properties.response_metric).to.equal('code::method_response_metric::1');
     expect(techniqueObj.properties.attractant).to.deep.equal([
-      { attractant_name: 'code::attractant_lookup::3' },
-      { attractant_name: 'code::attractant_lookup::7' }
+      'code::attractant_lookup::3',
+      'code::attractant_lookup::7'
     ]);
     expect(techniqueObj.properties.method_attribute).to.equal(
       'code::technique_attribute_qualitative::e0479006-f5ee-40cf-a33b-c1ffce393bf4'

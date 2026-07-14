@@ -118,7 +118,7 @@ describe('Complete BioHub Integration', () => {
       expect(habitatFeature?.properties.name).to.equal('code::habitat_feature_type::1');
       expect(habitatFeature?.properties.count).to.equal(2);
       expect(habitatFeature?.properties.timestamp).to.equal('2024-06-15T14:30:00Z');
-      expect(habitatFeature?.properties.associated_species).to.deep.equal([{ taxon_id: 180543 }]);
+      expect(habitatFeature?.properties.associated_species).to.deep.equal([180543]);
 
       // Verify telemetry device
       const deviceFeature = surveyObj.child_features.find((f) => f.type === 'telemetry_device');

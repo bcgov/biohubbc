@@ -1,6 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  minimalCodesetExportContext,
   PostSurveySamplingPeriodToBiohubObject,
   PostSurveySamplingSiteToBiohubObject,
   PostSurveySubmissionToBioHubObject,
@@ -86,7 +87,9 @@ describe('Sampling Features BioHub Integration', () => {
         method_technique: null
       };
 
-      const periodFeature = new PostSurveySamplingPeriodToBiohubObject(samplePeriod);
+      const periodFeature = new PostSurveySamplingPeriodToBiohubObject(samplePeriod, {
+        codesetExportContext: minimalCodesetExportContext
+      });
 
       expect(periodFeature.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
       expect(periodFeature.type).to.equal('sample_period');
