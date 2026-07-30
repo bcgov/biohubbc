@@ -91,7 +91,7 @@ biohubbc-db:
 
   # Volume for persistent data
   persistence:
-    size: 500Mi  # Smaller for PR environments
+    size: 750Mi  # Smaller for PR environments
 
 # Values passed to biohubbc-db-setup subchart
 biohubbc-db-setup:
