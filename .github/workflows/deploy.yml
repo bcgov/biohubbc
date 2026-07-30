@@ -69,9 +69,9 @@ jobs:
       # Install Node - for `node` and `npm` commands
       # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
-          node-version: 20
+          node-version: 24
 
   # Build the web frontend app image
   buildAndPushApp:
@@ -100,26 +100,15 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v6
 
-      # Install oc (see .github/actions/setup-openshift-cli). Fork PRs have no secrets — oc commands will fail.
-      - uses: ./.github/actions/setup-openshift-cli
-        env:
-          OPENSHIFT_TOKEN: ${{ secrets.TOOLS_SA_TOKEN }}
-        with:
-          oc-version: ${{ env.OC_VERSION }}
-          cache-dir: ${{ env.OC_CACHE_DIR }}
-          login: "true"
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
-
-      # Authenticate Docker with OpenShift registry
+      # Authenticate Docker with OpenShift registry.
+      # The registry route intermittently times out from some runner egress IPs (same source-IP drop as the
+      # oc login timeouts). In-step retries can't recover — the egress IP is fixed for the job's lifetime —
+      # so retryFailedJobs.yml re-runs the job on a fresh runner instead. The egress IP is logged here so
+      # failed and successful runs can be correlated with source IPs.
       - name: Authenticate Docker with OpenShift registry
         run: |
+          echo "Runner egress IP: $(curl -s --max-time 10 https://api.ipify.org || echo UNKNOWN)"
           echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
-
-      # Scale down any existing OpenShift pods for this PR deployment
-      # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
-      # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
-      - name: Scale down app pods
-        run: oc get Deployment --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
 
       # Build and push the app image
       - name: Build and Push App Image
@@ -172,26 +161,15 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v6
 
-      # Install oc (see .github/actions/setup-openshift-cli). Fork PRs have no secrets — oc commands will fail.
-      - uses: ./.github/actions/setup-openshift-cli
-        env:
-          OPENSHIFT_TOKEN: ${{ secrets.TOOLS_SA_TOKEN }}
-        with:
-          oc-version: ${{ env.OC_VERSION }}
-          cache-dir: ${{ env.OC_CACHE_DIR }}
-          login: "true"
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
-
-      # Authenticate Docker with OpenShift registry
+      # Authenticate Docker with OpenShift registry.
+      # The registry route intermittently times out from some runner egress IPs (same source-IP drop as the
+      # oc login timeouts). In-step retries can't recover — the egress IP is fixed for the job's lifetime —
+      # so retryFailedJobs.yml re-runs the job on a fresh runner instead. The egress IP is logged here so
+      # failed and successful runs can be correlated with source IPs.
       - name: Authenticate Docker with OpenShift registry
         run: |
+          echo "Runner egress IP: $(curl -s --max-time 10 https://api.ipify.org || echo UNKNOWN)"
           echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
-
-      # Scale down any existing OpenShift pods for this PR deployment
-      # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
-      # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
-      - name: Scale down database pods
-        run: oc get Deployment --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
 
       # Build and push the database image using Docker
       - name: Build and Push Database Image
@@ -244,19 +222,14 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v6
 
-      # Install oc (see .github/actions/setup-openshift-cli). Fork PRs have no secrets — oc commands will fail.
-      - uses: ./.github/actions/setup-openshift-cli
-        env:
-          OPENSHIFT_TOKEN: ${{ secrets.TOOLS_SA_TOKEN }}
-        with:
-          oc-version: ${{ env.OC_VERSION }}
-          cache-dir: ${{ env.OC_CACHE_DIR }}
-          login: "true"
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
-
-      # Authenticate Docker with OpenShift registry
+      # Authenticate Docker with OpenShift registry.
+      # The registry route intermittently times out from some runner egress IPs (same source-IP drop as the
+      # oc login timeouts). In-step retries can't recover — the egress IP is fixed for the job's lifetime —
+      # so retryFailedJobs.yml re-runs the job on a fresh runner instead. The egress IP is logged here so
+      # failed and successful runs can be correlated with source IPs.
       - name: Authenticate Docker with OpenShift registry
         run: |
+          echo "Runner egress IP: $(curl -s --max-time 10 https://api.ipify.org || echo UNKNOWN)"
           echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
 
       # Build and push the database setup image using Docker
@@ -310,26 +283,15 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v6
 
-      # Install oc (see .github/actions/setup-openshift-cli). Fork PRs have no secrets — oc commands will fail.
-      - uses: ./.github/actions/setup-openshift-cli
-        env:
-          OPENSHIFT_TOKEN: ${{ secrets.TOOLS_SA_TOKEN }}
-        with:
-          oc-version: ${{ env.OC_VERSION }}
-          cache-dir: ${{ env.OC_CACHE_DIR }}
-          login: "true"
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
-
-      # Authenticate Docker with OpenShift registry
+      # Authenticate Docker with OpenShift registry.
+      # The registry route intermittently times out from some runner egress IPs (same source-IP drop as the
+      # oc login timeouts). In-step retries can't recover — the egress IP is fixed for the job's lifetime —
+      # so retryFailedJobs.yml re-runs the job on a fresh runner instead. The egress IP is logged here so
+      # failed and successful runs can be correlated with source IPs.
       - name: Authenticate Docker with OpenShift registry
         run: |
+          echo "Runner egress IP: $(curl -s --max-time 10 https://api.ipify.org || echo UNKNOWN)"
           echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
-
-      # Scale down any existing OpenShift pods for this PR deployment
-      # Why? The new pods will be deployed before the existing pods are terminated, and twice the resources will be needed
-      # in that moment. If not enough resources are available to spin up the new pods, then they may fail to deploy.
-      - name: Scale down API pods
-        run: oc get Deployment --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev --selector env-id=$PR_NUMBER,app-name=$APP_NAME -o name | awk '{print "oc scale --replicas=0 " $1}' | bash
 
       # Build and push the API image
       - name: Build and Push API Image
@@ -401,6 +363,12 @@ jobs:
           login: "true"
           namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
 
+      # Scale down this PR's existing pods before deploying.
+      # Why? Helm creates the new pods before the old ones terminate, and twice the resources would be needed in that
+      # moment. Scaling to zero first avoids deploy failures when the namespace is near its resource quota.
+      - name: Scale down PR pods
+        run: oc get deployment --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev --selector env-id=$PR_NUMBER -o name | xargs -r -n1 oc scale --replicas=0
+
       # Deploy the Helm chart
       - name: Deploy Helm Chart
         run: |
@@ -459,12 +427,12 @@ jobs:
       - buildAndPushAPI
     steps:
       - name: Download all Trivy scan results
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v6
         with:
           path: trivy-results
 
       - name: Check for vulnerabilities and comment on PR
-        uses: actions/github-script@v7
+        uses: actions/github-script@v8
         with:
           script: |
             const fs = require('fs');
