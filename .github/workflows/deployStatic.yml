@@ -96,19 +96,14 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v6
 
-      # Install oc (see .github/actions/setup-openshift-cli). Fork PRs have no secrets — oc commands will fail.
-      - uses: ./.github/actions/setup-openshift-cli
-        env:
-          OPENSHIFT_TOKEN: ${{ secrets.TOOLS_SA_TOKEN }}
-        with:
-          oc-version: ${{ env.OC_VERSION }}
-          cache-dir: ${{ env.OC_CACHE_DIR }}
-          login: "true"
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-${{ env.BRANCH }}
-
-      # Authenticate Docker with OpenShift registry
+      # Authenticate Docker with OpenShift registry.
+      # The registry route intermittently times out from some runner egress IPs (same source-IP drop as the
+      # oc login timeouts). In-step retries can't recover — the egress IP is fixed for the job's lifetime —
+      # so retryFailedJobs.yml re-runs the job on a fresh runner instead. The egress IP is logged here so
+      # failed and successful runs can be correlated with source IPs.
       - name: Authenticate Docker with OpenShift registry
         run: |
+          echo "Runner egress IP: $(curl -s --max-time 10 https://api.ipify.org || echo UNKNOWN)"
           echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
 
       # Build and push the app image
@@ -146,19 +141,14 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v6
 
-      # Install oc (see .github/actions/setup-openshift-cli). Fork PRs have no secrets — oc commands will fail.
-      - uses: ./.github/actions/setup-openshift-cli
-        env:
-          OPENSHIFT_TOKEN: ${{ secrets.TOOLS_SA_TOKEN }}
-        with:
-          oc-version: ${{ env.OC_VERSION }}
-          cache-dir: ${{ env.OC_CACHE_DIR }}
-          login: "true"
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-${{ env.BRANCH }}
-
-      # Authenticate Docker with OpenShift registry
+      # Authenticate Docker with OpenShift registry.
+      # The registry route intermittently times out from some runner egress IPs (same source-IP drop as the
+      # oc login timeouts). In-step retries can't recover — the egress IP is fixed for the job's lifetime —
+      # so retryFailedJobs.yml re-runs the job on a fresh runner instead. The egress IP is logged here so
+      # failed and successful runs can be correlated with source IPs.
       - name: Authenticate Docker with OpenShift registry
         run: |
+          echo "Runner egress IP: $(curl -s --max-time 10 https://api.ipify.org || echo UNKNOWN)"
           echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
 
       # Build and push the database setup image using Docker
@@ -196,19 +186,14 @@ jobs:
         if: steps.cache-repo.outputs.cache-hit != 'true'
         uses: actions/checkout@v6
 
-      # Install oc (see .github/actions/setup-openshift-cli). Fork PRs have no secrets — oc commands will fail.
-      - uses: ./.github/actions/setup-openshift-cli
-        env:
-          OPENSHIFT_TOKEN: ${{ secrets.TOOLS_SA_TOKEN }}
-        with:
-          oc-version: ${{ env.OC_VERSION }}
-          cache-dir: ${{ env.OC_CACHE_DIR }}
-          login: "true"
-          namespace: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-${{ env.BRANCH }}
-
-      # Authenticate Docker with OpenShift registry
+      # Authenticate Docker with OpenShift registry.
+      # The registry route intermittently times out from some runner egress IPs (same source-IP drop as the
+      # oc login timeouts). In-step retries can't recover — the egress IP is fixed for the job's lifetime —
+      # so retryFailedJobs.yml re-runs the job on a fresh runner instead. The egress IP is logged here so
+      # failed and successful runs can be correlated with source IPs.
       - name: Authenticate Docker with OpenShift registry
         run: |
+          echo "Runner egress IP: $(curl -s --max-time 10 https://api.ipify.org || echo UNKNOWN)"
           echo ${{ secrets.TOOLS_SA_TOKEN }} | docker login -u unused --password-stdin ${{ vars.OPENSHIFT_REGISTRY }}
 
       # Build and push the API image using Docker

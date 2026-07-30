@@ -18,7 +18,7 @@ jobs:
     timeout-minutes: 20
     steps:
       - name: Add Comment
-        uses: peter-evans/create-or-update-comment@v4
+        uses: peter-evans/create-or-update-comment@v5
         with:
           issue-number: ${{ github.event.number }}
           body: |
