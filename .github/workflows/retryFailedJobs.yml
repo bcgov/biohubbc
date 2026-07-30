@@ -18,6 +18,7 @@ on:
       - "Static Deploy on OpenShift"
       - "Clean PR Artifacts"
       - "Draft Scale Down"
+      - "Sweep Stale PR Environments"
     types: [completed]
 
 permissions:

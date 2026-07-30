@@ -37,11 +37,33 @@ jobs:
 
       # Clean all PR artifacts for the PR using Helm
       - name: Clean PR Artifacts
+        env:
+          DEV_NAMESPACE: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
         run: |
           echo "Cleaning PR artifacts for PR $PR_NUMBER"
-          
-          echo "Uninstalling Helm release from ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev namespace..."
-          helm uninstall "pr-$PR_NUMBER" --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev || echo "No Helm release found in dev namespace for PR $PR_NUMBER"
+
+          # An absent release is a no-op, but a failed uninstall must fail the job: it leaves
+          # the PR's PVCs (and their storage quota) behind. Swallowing the error here would
+          # report success and also hide the run from retryFailedJobs, which only sees failures.
+          if helm status "pr-$PR_NUMBER" --namespace "$DEV_NAMESPACE" >/dev/null 2>&1; then
+            echo "Uninstalling Helm release pr-$PR_NUMBER from $DEV_NAMESPACE..."
+            helm uninstall "pr-$PR_NUMBER" --namespace "$DEV_NAMESPACE" --wait --timeout 10m
+          else
+            echo "No Helm release found in $DEV_NAMESPACE for PR $PR_NUMBER; nothing to uninstall."
+          fi
+
+          # PR PVCs carry no "helm.sh/resource-policy: keep" (that is set only for environment.id
+          # "deploy"), so a clean uninstall removes them. Verify, and sweep any that outlived the
+          # release — e.g. left by an interrupted uninstall or created outside the release.
+          LEFTOVER=$(oc -n "$DEV_NAMESPACE" get pvc -o name 2>/dev/null | grep -E -- "-dev-${PR_NUMBER}\$" || true)
+          if [ -n "$LEFTOVER" ]; then
+            echo "PVCs still present for PR $PR_NUMBER after uninstall; deleting:"
+            echo "$LEFTOVER"
+            # shellcheck disable=SC2086
+            oc -n "$DEV_NAMESPACE" delete $LEFTOVER
+          else
+            echo "No PVCs remain for PR $PR_NUMBER in $DEV_NAMESPACE."
+          fi
 
           echo "Removing App image tag from ${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools namespace..."
           oc tag -d biohubbc-app:${{ env.IMAGE_TAG }} --namespace ${{ vars.OPENSHIFT_LICENSE_PLATE }}-tools || echo "No image found for PR $PR_NUMBER"
