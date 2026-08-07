@@ -4,6 +4,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
+import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import { dbDependencies as db } from '../../database/db';
 import { HTTPError } from '../../errors/http-error';
 import { PlatformService } from '../../services/platform-service';
@@ -22,6 +23,12 @@ describe('survey', () => {
   });
 
   describe('publishSurvey', () => {
+    const systemUser = {
+      user_guid: '11111111-1111-1111-1111-111111111111',
+      user_identifier: 'JSMITH',
+      identity_source: SYSTEM_IDENTITY_SOURCE.IDIR
+    };
+
     afterEach(() => {
       sinon.restore();
     });
@@ -38,6 +45,7 @@ describe('survey', () => {
 
       const sampleReq = {
         keycloak_token: {},
+        system_user: systemUser,
         body: {
           projectId: 1,
           surveyId: 1,
@@ -66,6 +74,19 @@ describe('survey', () => {
       await requestHandler(sampleReq, sampleRes as unknown as any, mockNext);
 
       expect(actualResult).to.eql({ submission_uuid: '550e8400-e29b-41d4-a716-446655440000' });
+      expect(PlatformService.prototype.submitSurveyToBioHub).to.have.been.calledOnceWith(
+        1,
+        {
+          submissionComment: 'test'
+        },
+        [
+          {
+            guid: systemUser.user_guid,
+            identifier: systemUser.user_identifier,
+            identitySource: systemUser.identity_source
+          }
+        ]
+      );
     });
 
     it('catches error, calls rollback, and re-throws error', async () => {
@@ -77,6 +98,7 @@ describe('survey', () => {
       sinon.stub(PlatformService.prototype, 'submitSurveyToBioHub').rejects(new Error('a test error'));
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+      mockReq.system_user = systemUser as any;
       mockReq.body = {
         projectId: 1,
         surveyId: 1,
@@ -107,6 +129,7 @@ describe('survey', () => {
 
       const sampleReq = {
         keycloak_token: {},
+        system_user: systemUser,
         body: {
           projectId: 1,
           surveyId: 1,
