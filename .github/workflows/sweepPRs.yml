@@ -1,0 +1,127 @@
+# Reconcile PR environments against GitHub PR state.
+#
+# Why this exists: cleanPR.yml is event-driven, and a PR is closed exactly once. If that run
+# fails for every attempt (the OpenShift connection timeout retried by retryFailedJobs.yml is
+# the usual cause), nothing ever tries again and the PR's Helm release and PVCs sit in -dev
+# consuming the namespace storage quota indefinitely. This job re-derives the desired state
+# daily instead of relying on a single event, so a leak survives at most one day.
+#
+# Scope is deliberately narrow: only "pr-<number>" Helm releases and only PVCs whose name ends
+# in "-dev-<number>", both in the -dev namespace. Static environments ("-dev-deploy"), the
+# Crunchy pgdata volumes and clamav are never matched. A PR whose state cannot be resolved is
+# skipped rather than deleted, so a GitHub API hiccup can never destroy a live environment.
+name: Sweep Stale PR Environments
+
+on:
+  schedule:
+    # 12:15 UTC daily (~05:15 Pacific) — outside working hours, after nightly backups.
+    - cron: "15 12 * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "List what would be removed without deleting anything"
+        type: boolean
+        required: false
+        default: true
+
+permissions:
+  contents: read
+  pull-requests: read
+
+env:
+  OC_VERSION: "4.16.60"
+  OC_CACHE_DIR: ~/.cache/oc
+
+jobs:
+  sweep:
+    name: Remove PR environments whose pull request is closed or merged
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Checkout Target Branch
+        uses: actions/checkout@v6
+
+      # Install oc (see .github/actions/setup-openshift-cli).
+      - uses: ./.github/actions/setup-openshift-cli
+        env:
+          OPENSHIFT_TOKEN: ${{ secrets.TOOLS_SA_TOKEN }}
+        with:
+          oc-version: ${{ env.OC_VERSION }}
+          cache-dir: ${{ env.OC_CACHE_DIR }}
+          login: "true"
+
+      - name: Sweep stale PR environments
+        env:
+          DEV_NAMESPACE: ${{ vars.OPENSHIFT_LICENSE_PLATE }}-dev
+          # Scheduled runs always delete; manual runs honour the dry_run input (default true).
+          DRY_RUN: ${{ github.event_name == 'workflow_dispatch' && inputs.dry_run || 'false' }}
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          echo "Sweeping PR environments in ${DEV_NAMESPACE} (dry_run=${DRY_RUN})"
+          removed=0; kept=0; skipped=0
+
+          # Resolve a PR's state, echoing "open", "closed", or "" when it cannot be determined.
+          # GitHub reports merged PRs as "closed"; both mean the environment should be gone.
+          pr_state() {
+            gh api "repos/${REPO}/pulls/$1" --jq '.state' 2>/dev/null || true
+          }
+
+          echo "--- Helm releases ---"
+          for release in $(helm list --namespace "${DEV_NAMESPACE}" --short --filter '^pr-[0-9]+$' || true); do
+            pr="${release#pr-}"
+            state="$(pr_state "${pr}")"
+
+            if [ -z "${state}" ]; then
+              echo "  ${release}: cannot resolve PR #${pr}; skipping"
+              skipped=$((skipped + 1))
+            elif [ "${state}" = "open" ]; then
+              echo "  ${release}: PR #${pr} is open; keeping"
+              kept=$((kept + 1))
+            else
+              echo "  ${release}: PR #${pr} is ${state}; uninstalling"
+              if [ "${DRY_RUN}" != "true" ]; then
+                helm uninstall "${release}" --namespace "${DEV_NAMESPACE}" --wait --timeout 10m
+              fi
+              removed=$((removed + 1))
+            fi
+          done
+
+          # PVCs that outlived their release: an interrupted uninstall, or a resource created
+          # outside the release that Helm therefore never owned and can never remove.
+          echo "--- Orphaned PVCs ---"
+          orphans=0
+          for pvc in $(oc -n "${DEV_NAMESPACE}" get pvc -o name 2>/dev/null | grep -E -- '-dev-[0-9]+$' || true); do
+            pr="$(printf '%s' "${pvc}" | sed -E 's/.*-dev-([0-9]+)$/\1/')"
+
+            # Still owned by a release: handled above, or the PR is open. Leave it alone.
+            if helm status "pr-${pr}" --namespace "${DEV_NAMESPACE}" >/dev/null 2>&1; then
+              continue
+            fi
+
+            state="$(pr_state "${pr}")"
+            if [ -z "${state}" ] || [ "${state}" = "open" ]; then
+              echo "  ${pvc}: PR #${pr} is ${state:-unresolvable}; keeping"
+              continue
+            fi
+
+            echo "  ${pvc}: orphaned, PR #${pr} is ${state}; deleting"
+            if [ "${DRY_RUN}" != "true" ]; then
+              oc -n "${DEV_NAMESPACE}" delete "${pvc}"
+            fi
+            orphans=$((orphans + 1))
+          done
+
+          [ "${orphans}" -eq 0 ] && echo "  none found"
+
+          {
+            echo "### PR environment sweep (${DEV_NAMESPACE})"
+            echo ""
+            echo "- dry run: \`${DRY_RUN}\`"
+            echo "- releases removed: ${removed}"
+            echo "- releases kept (PR open): ${kept}"
+            echo "- releases skipped (PR state unresolvable): ${skipped}"
+            echo "- orphaned PVCs deleted: ${orphans}"
+          } >> "${GITHUB_STEP_SUMMARY}"

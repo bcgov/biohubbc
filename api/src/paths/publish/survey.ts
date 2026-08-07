@@ -5,7 +5,7 @@ import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/http-error';
 import { BiohubFeatureType, PUBLISHABLE_FEATURE_TYPES } from '../../models/biohub-create';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
-import { PlatformService } from '../../services/platform-service';
+import { BioHubSubmitter, PlatformService } from '../../services/platform-service';
 import { SurveyService } from '../../services/survey-service';
 import { getLogger } from '../../utils/logger';
 
@@ -160,7 +160,14 @@ export function publishSurvey(): RequestHandler {
       }
 
       const platformService = new PlatformService(connection);
-      const response = await platformService.submitSurveyToBioHub(surveyId, data);
+      const submitters: BioHubSubmitter[] = [
+        {
+          guid: req.system_user!.user_guid as string,
+          identifier: req.system_user!.user_identifier,
+          identitySource: req.system_user!.identity_source as BioHubSubmitter['identitySource']
+        }
+      ];
+      const response = await platformService.submitSurveyToBioHub(surveyId, data, submitters);
 
       await connection.commit();
 

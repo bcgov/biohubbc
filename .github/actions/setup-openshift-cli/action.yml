@@ -64,6 +64,27 @@ runs:
         sudo install -m 0755 "${OC_CACHE_DIR}/${OC_VERSION}/${{ runner.arch }}/oc" /usr/local/bin/oc
         oc version --client
 
+    - name: Probe OpenShift API reachability
+      if: inputs.login == 'true'
+      shell: bash
+      env:
+        OPENSHIFT_SERVER_URL: ${{ inputs.openshift-server-url }}
+      run: |
+        host="api.silver.devops.gov.bc.ca"; port=6443
+        echo "Runner egress IP: $(curl -s --max-time 10 https://api.ipify.org || echo UNKNOWN)"
+        echo "DNS: $(getent hosts "${host}" || echo 'resolve failed')"
+        echo "--- raw TCP connect test ---"
+        timeout 15 bash -c "cat < /dev/null > /dev/tcp/${host}/${port}" \
+          && echo "TCP connect: OK" || echo "TCP connect: FAILED"
+        echo "--- path to host (best effort) ---"
+        if command -v tracepath &>/dev/null; then
+          tracepath -m20 "${host}" 2>&1 | tail -20 || true
+        elif command -v traceroute &>/dev/null; then
+          traceroute -T -p "${port}" -w2 -q1 -m20 "${host}" 2>&1 | tail -20 || true
+        else
+          echo "No tracepath/traceroute available; skipping path trace."
+        fi
+
     - name: Log in to OpenShift
       if: inputs.login == 'true'
       shell: bash

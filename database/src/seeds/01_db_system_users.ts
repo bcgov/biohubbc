@@ -70,14 +70,14 @@ const systemUsers: SystemUserSeed[] = [
     email: 'annika.meijer@gov.bc.ca'
   },
   {
-    identifier: 'dylrogow',
+    identifier: 'drogowsk',
     type: SYSTEM_IDENTITY_SOURCE.IDIR,
     role_name: SYSTEM_USER_ROLE_NAME.SYSTEM_ADMINISTRATOR,
-    user_guid: '473C7CDAC46D402AA79AE980DDDB85C3',
-    display_name: 'Rogowsky, Dylan AG:EX',
+    user_guid: '2B9B0C48587E41D68A184E8D772EEA11',
+    display_name: 'Rogowsky, Dylan WLRS:IN',
     given_name: 'Dylan',
     family_name: 'Rogowsky',
-    email: 'dylan.rogowsky@gov.bc.ca'
+    email: 'drogowsk@gov.bc.ca'
   }
 ];
 

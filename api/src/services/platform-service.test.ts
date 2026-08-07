@@ -6,6 +6,7 @@ import { Readable } from 'node:stream';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getMockDBConnection } from '../__mocks__/db';
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiError, ApiErrorType } from '../errors/api-error';
 import { BiohubFeatureType } from '../models/biohub-create';
 import { ObservationRecordWithSamplingAndSubcountData } from '../repositories/observation-repository/observation-repository.interface';
@@ -131,7 +132,7 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(mockDBConnection);
 
       try {
-        await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
+        await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' }, []);
         expect.fail();
       } catch (error) {
         expect((error as Error).message).to.equal('Publishing to BioHub is not currently enabled.');
@@ -173,7 +174,7 @@ describe('PlatformService', () => {
         .rejects(new ApiError(ApiErrorType.UNKNOWN, 'Failed to initiate submission upload to BioHub'));
 
       try {
-        await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
+        await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' }, []);
         expect.fail('Should have thrown an error');
       } catch (error) {
         const noSurveyAttachments: unknown[] = [];
@@ -197,6 +198,13 @@ describe('PlatformService', () => {
 
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
+      const submitters = [
+        {
+          guid: '11111111-1111-1111-1111-111111111111',
+          identifier: 'JSMITH',
+          identitySource: SYSTEM_IDENTITY_SOURCE.IDIR
+        }
+      ];
 
       sinon.stub(HistoryPublishService.prototype, 'getSurveyMetadataPublishRecord').resolves(null);
 
@@ -250,7 +258,7 @@ describe('PlatformService', () => {
         .stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord')
         .resolves();
 
-      const response = await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
+      const response = await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' }, submitters);
 
       const noSurveyAttachments: unknown[] = [];
       const noReportAttachments: unknown[] = [];
@@ -263,7 +271,14 @@ describe('PlatformService', () => {
         'test',
         sinon.match((value) => value instanceof Set)
       );
-      expect(_initiateSubmissionUploadStub).to.have.been.calledOnce;
+      expect(_initiateSubmissionUploadStub).to.have.been.calledOnceWith(
+        'token',
+        1024,
+        { id: '123-456-789', name: 'Test', description: 'Test Description' },
+        'test',
+        null,
+        submitters
+      );
       expect(_uploadTarFilePartsStub).to.have.been.calledOnce;
       expect(_completeSubmissionUploadStub).to.have.been.calledOnceWith(
         'token',
@@ -327,14 +342,15 @@ describe('PlatformService', () => {
         .stub(HistoryPublishService.prototype, 'insertSurveyMetadataPublishRecord')
         .resolves();
 
-      const response = await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
+      const response = await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' }, []);
 
       expect(_initiateSubmissionUploadStub).to.have.been.calledOnceWith(
         'token',
         1024,
         { id: '123-456-789', name: 'Test', description: 'Test Description' },
         'test',
-        existingSubmissionUuid
+        existingSubmissionUuid,
+        []
       );
       expect(insertSurveyMetadataPublishRecordStub).to.have.been.calledOnceWith({
         survey_id: 1,
@@ -738,7 +754,7 @@ describe('PlatformService', () => {
       sinon.stub(PlatformService.prototype, '_uploadTarFileParts').resolves([{ PartNumber: 1, ETag: 'etag-123' }]);
       sinon.stub(PlatformService.prototype, '_completeSubmissionUpload').resolves();
 
-      await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
+      await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' }, []);
 
       // Verify flattening was called
       expect(flattenToBlockModelStub).to.have.been.calledOnce;
@@ -777,7 +793,7 @@ describe('PlatformService', () => {
 
       // Should throw error since flattening is required for the upload flow
       try {
-        await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
+        await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' }, []);
         expect.fail('Should have thrown an error');
       } catch (error) {
         expect((error as Error).message).to.include('File system error');
@@ -824,7 +840,7 @@ describe('PlatformService', () => {
 
       // Should throw error since TAR creation is required for the upload flow
       try {
-        await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' });
+        await platformService.submitSurveyToBioHub(1, { submissionComment: 'test' }, []);
         expect.fail('Should have thrown an error');
       } catch (error) {
         expect((error as Error).message).to.include('TAR creation error');
@@ -1270,7 +1286,8 @@ describe('PlatformService', () => {
         bytes: 1024,
         name: 'Test Survey',
         description: 'Test Description',
-        comment: 'comment'
+        comment: 'comment',
+        submitters: []
       });
       expect(axiosPostStub.getCall(0).args[2]?.headers?.authorization).to.equal('Bearer token');
 
@@ -1333,8 +1350,52 @@ describe('PlatformService', () => {
         bytes: 1024,
         name: 'Test Survey',
         description: 'Test Description',
-        comment: 'comment'
+        comment: 'comment',
+        submitters: []
       });
+    });
+
+    it('sends submitters in the JSON request body', async () => {
+      process.env.BACKBONE_INTERNAL_API_HOST = 'http://backbone-host.dev/';
+      process.env.BACKBONE_SUBMISSION_UPLOAD_PATH = '/api/submission';
+
+      const platformService = new PlatformService(getMockDBConnection());
+      const axiosPostStub = sinon.stub(axios, 'post').resolves({
+        data: {
+          submissionId: 'submission-id',
+          submissionUploadId: 'submission-upload-id',
+          uploadId: 'upload-id',
+          s3UploadId: 's3-upload-id',
+          key: 's3-key',
+          partCount: 1,
+          presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/url1', partSizeBytes: 1024 }]
+        }
+      });
+      const submitters = [
+        {
+          guid: '11111111-1111-1111-1111-111111111111',
+          identifier: 'JSMITH',
+          identitySource: SYSTEM_IDENTITY_SOURCE.IDIR
+        }
+      ];
+
+      await platformService._initiateSubmissionUpload(
+        'token',
+        1024,
+        { name: 'Test Survey', description: 'Test Description' } as any,
+        'comment',
+        null,
+        submitters
+      );
+
+      expect(axiosPostStub.getCall(0).args[1]).to.deep.equal({
+        bytes: 1024,
+        name: 'Test Survey',
+        description: 'Test Description',
+        comment: 'comment',
+        submitters
+      });
+      expect(axiosPostStub.getCall(0).args[1]).not.to.have.property('submitter');
     });
 
     it('should return initiate response ids without additional uuid validation', async () => {

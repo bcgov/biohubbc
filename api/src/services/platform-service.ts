@@ -5,6 +5,7 @@ import path from 'node:path';
 import qs from 'qs';
 import * as tarStream from 'tar-stream';
 import { URL } from 'url';
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
 import { formatAxiosError } from '../errors/axios-error';
@@ -70,6 +71,15 @@ export interface ITaxonomyWithEcologicalUnits extends ITaxonomy {
 export type PublishSurveyData = {
   submissionComment: string;
   featureTypes?: BiohubFeatureType[];
+};
+
+export type BioHubSubmitter = {
+  guid: string;
+  identifier: string;
+  identitySource:
+    | SYSTEM_IDENTITY_SOURCE.IDIR
+    | SYSTEM_IDENTITY_SOURCE.BCEID_BASIC
+    | SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS;
 };
 
 interface IFlattenedBlock {
@@ -445,10 +455,15 @@ export class PlatformService extends DBService {
    *
    * @param {number} surveyId
    * @param {{ submissionComment: string }} data
+   * @param {BioHubSubmitter[]} submitters
    * @return {*}  {Promise<{ submission_uuid: string }>}
    * @memberof PlatformService
    */
-  async submitSurveyToBioHub(surveyId: number, data: PublishSurveyData): Promise<{ submission_uuid: string }> {
+  async submitSurveyToBioHub(
+    surveyId: number,
+    data: PublishSurveyData,
+    submitters: BioHubSubmitter[]
+  ): Promise<{ submission_uuid: string }> {
     const includeFeatureTypes = this.normalizePublishFeatureTypes(data.featureTypes);
 
     defaultLog.debug({ label: 'submitSurveyToBioHub', message: 'params', surveyId });
@@ -531,7 +546,8 @@ export class PlatformService extends DBService {
         tarFileSize,
         surveyDataPackage,
         data.submissionComment,
-        existingSubmissionUuid
+        existingSubmissionUuid,
+        submitters
       );
 
     defaultLog.info({
@@ -1172,6 +1188,7 @@ export class PlatformService extends DBService {
    * @param {PostSurveySubmissionToBioHubObject} surveyDataPackage - Survey data package
    * @param {string} submissionComment - Comment for the submission
    * @param {string | null} existingSubmissionUuid - When set, initiate upload for this existing submission (re-publish)
+   * @param {BioHubSubmitter[]} submitters - Users who should receive access
    * @return {*}  {Promise<SubmissionUploadInitiateResult>}
    * @memberof PlatformService
    */
@@ -1180,7 +1197,8 @@ export class PlatformService extends DBService {
     tarFileSize: number,
     surveyDataPackage: PostSurveySubmissionToBioHubObject,
     submissionComment: string,
-    existingSubmissionUuid: string | null
+    existingSubmissionUuid: string | null,
+    submitters: BioHubSubmitter[] = []
   ): Promise<SubmissionUploadInitiateResult> {
     defaultLog.debug({
       label: '_initiateSubmissionUpload',
@@ -1211,7 +1229,8 @@ export class PlatformService extends DBService {
       bytes: tarFileSize,
       name: surveyDataPackage.name,
       description: surveyDataPackage.description,
-      comment: submissionComment
+      comment: submissionComment,
+      submitters
     };
 
     try {
