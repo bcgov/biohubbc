@@ -1,11 +1,13 @@
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import dayjs from 'dayjs';
 import duration, { DurationUnitType } from 'dayjs/plugin/duration';
+import utc from 'dayjs/plugin/utc';
 import { pluralize } from './Utils';
 
 const TIMESTAMP_FORMAT = 'YYYY-MM-DDTHH:mm:ss';
 
 dayjs.extend(duration);
+dayjs.extend(utc);
 
 /**
  * Combine date and time and return ISO string.
@@ -20,6 +22,45 @@ export const combineDateTime = (date: string, time?: string | null) => {
   }
 
   return dayjs(`${date}`).format(TIMESTAMP_FORMAT);
+};
+
+/**
+ * Combine date and time and return an ISO 8601 string, treating the incoming values as UTC.
+ *
+ * The wall-clock value provided is the value returned (no conversion from the browser's local timezone).
+ *
+ * @example combineDateTimeUtc('2024-01-01', '22:30:00') // '2024-01-01T22:30:00.000Z'
+ *
+ * @param {string} date - String date ie: '2024-01-01'
+ * @param {string} time - String time ie: '22:30:00'
+ * @returns {string} ISO 8601 UTC date string
+ */
+export const combineDateTimeUtc = (date: string, time: string): string => {
+  return dayjs.utc(`${date}T${time}`).toISOString();
+};
+
+/**
+ * Format a timestamp in UTC.
+ *
+ * The incoming timestamp may include a timezone offset (ie. postgres timestamptz output: '2024-01-01 14:30:00-08');
+ * the output renders the equivalent UTC wall-clock value (no conversion to the browser's local timezone).
+ *
+ * @param {string | null} [timestamp] - Timestamp string, with or without a timezone offset
+ * @param {string} format - Dayjs format string ie: 'HH:mm:ss'
+ * @returns {string} The timestamp formatted in UTC, or an empty string if the timestamp is falsy or invalid
+ */
+export const formatTimestampUtc = (timestamp: string | null | undefined, format: string): string => {
+  if (!timestamp) {
+    return '';
+  }
+
+  const date = dayjs(timestamp);
+
+  if (!date.isValid()) {
+    return '';
+  }
+
+  return date.utc().format(format);
 };
 
 /**

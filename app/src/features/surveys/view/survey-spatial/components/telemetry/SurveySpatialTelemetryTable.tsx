@@ -4,10 +4,12 @@ import { StyledDataGrid } from 'components/data-grid/StyledDataGrid';
 import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useSurveyContext } from 'hooks/useContext';
 import useDataLoader from 'hooks/useDataLoader';
 import { useEffect, useState } from 'react';
+import { formatTimestampUtc } from 'utils/datetime';
 
 // Set height so the skeleton loader will match table rows
 const rowHeight = 52;
@@ -115,8 +117,9 @@ export const SurveySpatialTelemetryTable = () => {
     },
     {
       field: 'acquisition_date',
-      headerName: 'Date',
-      flex: 1
+      headerName: 'Date (UTC)',
+      flex: 1,
+      valueFormatter: (params) => formatTimestampUtc(params.value, DATE_FORMAT.MediumDateTimeFormat)
     },
     {
       field: 'latitude',
