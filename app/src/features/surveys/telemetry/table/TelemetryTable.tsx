@@ -75,7 +75,12 @@ export const TelemetryTable = (props: IManualTelemetryTableProps) => {
       // TODO: Show animal nickname as a column
       DeviceColDef(),
       GenericDateColDef({ field: 'date', headerName: 'Date', hasError: telemetryTableContext.hasError }),
-      GenericTimeColDef({ field: 'time', headerName: 'Time', hasError: telemetryTableContext.hasError }),
+      GenericTimeColDef({
+        field: 'time',
+        headerName: 'Time (UTC)',
+        description: 'Times are entered and displayed in UTC',
+        hasError: telemetryTableContext.hasError
+      }),
       GenericLatitudeColDef({ field: 'latitude', headerName: 'Latitude', hasError: telemetryTableContext.hasError }),
       GenericLongitudeColDef({ field: 'longitude', headerName: 'Longitude', hasError: telemetryTableContext.hasError }),
       TelemetryTypeColDef()

@@ -10,7 +10,6 @@ import { LoadingGuard } from 'components/loading/LoadingGuard';
 import { SkeletonTable } from 'components/loading/SkeletonLoaders';
 import { NoDataOverlay } from 'components/overlay/NoDataOverlay';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import dayjs from 'dayjs';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
@@ -18,6 +17,7 @@ import { useSearchParams } from 'hooks/useSearchParams';
 import { IFindTelementryObj } from 'interfaces/useTelemetryApi.interface';
 import { useState } from 'react';
 import { ApiPaginationRequestOptions, StringValues } from 'types/misc';
+import { formatTimestampUtc } from 'utils/datetime';
 import { firstOrNull } from 'utils/Utils';
 import {
   IAllTelemetryAdvancedFilters,
@@ -143,12 +143,12 @@ const TelemetryListContainer = (props: IAllTelemetryListContainerProps) => {
     },
     {
       field: 'acquisition_date',
-      headerName: 'Date',
+      headerName: 'Date (UTC)',
       flex: 1,
       sortable: false,
       renderCell: (params) => (
         <Typography variant="body2">
-          {dayjs(params.row.acquisition_date).format(DATE_FORMAT.MediumDateTimeFormat)}
+          {formatTimestampUtc(params.row.acquisition_date, DATE_FORMAT.MediumDateTimeFormat)}
         </Typography>
       )
     },
