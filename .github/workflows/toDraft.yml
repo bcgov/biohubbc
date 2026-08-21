@@ -6,6 +6,9 @@ on:
   pull_request:
     types: [converted_to_draft]
 
+permissions:
+  contents: read
+
 env:
   OC_VERSION: "4.16.60"
   OC_CACHE_DIR: ~/.cache/oc

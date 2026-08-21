@@ -2,6 +2,9 @@ name: e2e
 
 on: workflow_dispatch
 
+permissions:
+  contents: read
+
 jobs:
   cypress-run:
     runs-on: ubuntu-latest

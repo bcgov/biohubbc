@@ -5,6 +5,9 @@ name: Cypress Test for PR-Based Deploy
 
 on: workflow_dispatch
 
+permissions:
+  contents: read
+
 jobs:
   cypress-run:
     runs-on: ubuntu-latest
