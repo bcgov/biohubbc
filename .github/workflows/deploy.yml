@@ -13,6 +13,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.event.number }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   IMAGE_TAG: build-1.0.0-${{ github.event.number }}
   OC_VERSION: "4.16.60"
@@ -417,6 +420,11 @@ jobs:
   commentTrivyResults:
     name: Comment Trivy Results
     runs-on: ubuntu-latest
+    # Job-level permissions replace the workflow-level set rather than adding to it, so
+    # contents: read is restated alongside the PR write this job needs to post its comment.
+    permissions:
+      contents: read
+      pull-requests: write
     timeout-minutes: 20
     if: ${{ github.event.pull_request.merged == false &&
       github.event.pull_request.draft == false }}

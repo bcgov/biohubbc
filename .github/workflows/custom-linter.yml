@@ -7,6 +7,9 @@ on:
     branches:
       - dev
 
+permissions:
+  contents: read
+
 jobs:
   # OpenAPI request bodies should contain the property `required` and be set to true
   #
