@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/http-error';
+import { HTTP403 } from '../../errors/http-error';
 import { BiohubFeatureType, PUBLISHABLE_FEATURE_TYPES } from '../../models/biohub-create';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { BioHubSubmitter, PlatformService } from '../../services/platform-service';
@@ -156,7 +156,7 @@ export function publishSurvey(): RequestHandler {
       const surveyData = await surveyService.getSurveyData(surveyId);
 
       if (surveyData.project_id !== projectId) {
-        throw new HTTP400('Invalid project or survey identifier.');
+        throw new HTTP403('Invalid project or survey identifier.');
       }
 
       const platformService = new PlatformService(connection);
