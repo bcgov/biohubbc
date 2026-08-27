@@ -1,3 +1,5 @@
+import type { BioHubIdentitySource } from '../constants/database';
+
 export interface IBioHubSubmissionHistoryRow {
   submissionUploadId: string;
   status: string;
@@ -16,6 +18,30 @@ export interface ISubmissionHistoryRow {
   submissionId?: number;
 }
 
+export interface SubmissionSubmitter {
+  guid: string;
+  identifier: string;
+  identitySource: BioHubIdentitySource;
+}
+
+export interface CreateSubmissionRequest {
+  bytes: number;
+  name: string;
+  description: string;
+  comment: string;
+  submitters?: SubmissionSubmitter[];
+  blueprint_id?: number;
+}
+
+export interface CreateExistingSubmissionUploadRequest {
+  bytes: number;
+  name?: string;
+  description?: string;
+  comment?: string;
+  submitters?: SubmissionSubmitter[];
+  blueprint_id?: number;
+}
+
 export interface UploadPart {
   partNumber: number;
   url: string;
@@ -27,28 +53,22 @@ export interface UploadPartByteRange extends UploadPart {
   end: number;
 }
 
-export interface SubmissionUploadInitiateResult {
+export interface SubmissionUploadInitiateResponse {
+  submissionUuid: string;
+  submissionUploadId: string;
   uploadId: string;
   s3UploadId: string;
+  uploadArchiveId: string;
   key: string;
-  presignedUrls: UploadPart[];
   partCount: number;
-  submissionId: string;
-  submissionUploadId: string;
+  presignedUrls: UploadPart[];
 }
 
-export interface SubmissionUploadInitiateResponse extends SubmissionUploadInitiateResult {
-  uploadArchiveId: string;
+export interface UploadResult {
+  PartNumber: number;
+  ETag: string;
 }
 
 export interface UploadTarFilePartsOptions {
   concurrencyLimit?: number;
-}
-
-/**
- * Interface for multipart upload result
- */
-export interface UploadResult {
-  PartNumber: number;
-  ETag: string;
 }
