@@ -138,8 +138,8 @@ const xmlParserOptions = {
  * @param {ReadonlyArray<string>} substrings
  * @returns {*}
  */
-const findVectronicExpectedTags = (str: string, substrings: ReadonlyArray<string>) => {
-  return substrings.filter((substring) => str.includes(substring));
+const hasVectronicExpectedTags = (str: string, substrings: ReadonlyArray<string>) => {
+  return substrings.every((substring) => str.includes(substring));
 };
 
 /**
@@ -184,8 +184,7 @@ export const validateCfgFormat = (content: string): string | null => {
     }
 
     const idLine = lines[0];
-    const keyLine = lines[1];
-    const IridiumIMEILine = lines[2];
+    const directiveLines = lines.slice(1);
 
     // Validate id, should be inside square brackets and be a number
     const idMatch = idLine.match(/^\[(\d+)\]$/);
@@ -193,25 +192,21 @@ export const validateCfgFormat = (content: string): string | null => {
       return `Invalid ID in key ${index + 1}. Valid format: [number].`;
     }
 
-    // Validate 'Key' and 'Iridium IMEI' in any order
-    const keyMatch = [keyLine, IridiumIMEILine].find((line) => line.startsWith('Key='));
-    const IridiumIMEIMatch = [keyLine, IridiumIMEILine].find((line) => line.startsWith('Iridium IMEI='));
+    // The satellite identifier label is vendor-defined and has changed between
+    // generations (for example, "Iridium IMEI" and "Globalstar ESN"). Treat it
+    // as opaque rather than coupling CFG parsing to a particular convention.
+    const keyMatch = directiveLines.find((line) => line.startsWith('Key='));
+    const hasSatelliteId = directiveLines.some((line) => line !== keyMatch && /^[^=]+=.*/.test(line));
 
-    if (!keyMatch || !IridiumIMEIMatch) {
-      return `Key ${index + 1} is missing either 'Key' or 'Iridium IMEI' directive.`;
+    if (!keyMatch || !hasSatelliteId) {
+      return `Key ${index + 1} is missing either the 'Key' or satellite identifier directive.`;
     }
 
-    const key = keyMatch.split('=')[1];
-    const IridiumIMEI = IridiumIMEIMatch.split('=')[1];
+    const key = keyMatch.slice(keyMatch.indexOf('=') + 1);
 
     // Validate 'Key' length
     if (key.length !== 64) {
       return `Invalid 'Key' in key ${index + 1}. Expected 64 characters.`;
-    }
-
-    // validate Iridium IMEI length
-    if (IridiumIMEI.length !== 15) {
-      return `Invalid 'Iridium IMEI' length in key ${index + 1}. Expected a 15-digit number.`;
     }
 
     // Validate the key can contain special characters (optional validation, adjust as needed)
@@ -231,19 +226,21 @@ export const validateCfgFormat = (content: string): string | null => {
  * @returns {ICfgData[]}
  */
 const convertLotekCredentialFileToJson = (input: string): ICfgData[] => {
-  const regex = /\[(\d+)\]\s*((?:Key=[^\n]+(?:\s+Iridium IMEI=\d+)?\s*)+)/g;
-  return [...input.matchAll(regex)].map(([, id, block]) => {
-    // Extracting Key and Iridium IMEI directives in any order
-    const keyMatch = block.match(/Key=([^\s]+)/);
-    const imeiMatch = block.match(/Iridium IMEI=(\d+)/);
-
-    const key = keyMatch ? keyMatch[1] : '';
-    const imei = imeiMatch ? parseInt(imeiMatch[1], 10) : 0;
+  return input.split(/(?=\[\d+\])/).map((block) => {
+    const lines = block
+      .trim()
+      .split('\n')
+      .map((line) => line.trim())
+      .filter(Boolean);
+    const id = lines[0].slice(1, -1);
+    const directiveLines = lines.slice(1);
+    const keyLine = directiveLines.find((line) => line.startsWith('Key='))!;
+    const satelliteIdLine = directiveLines.find((line) => line !== keyLine)!;
 
     return {
       id: parseInt(id, 10),
-      key: key,
-      'Iridium IMEI': imei
+      key: keyLine.slice(keyLine.indexOf('=') + 1),
+      satelliteId: satelliteIdLine.slice(satelliteIdLine.indexOf('=') + 1)
     };
   });
 };
@@ -317,8 +314,8 @@ export const checkFileForKeyx = async (
 
     // Quick Check XML file for existence of expected tags and attributes
     // Note : not using an xml parser at this point to make validation more efficient
-    const expectedXmlTags = findVectronicExpectedTags(xmlString, TELEMETRY_CREDENTIAL_ATTACHMENT_VECTRONIC_XMLTAGS);
-    if (expectedXmlTags.length !== TELEMETRY_CREDENTIAL_ATTACHMENT_VECTRONIC_XMLTAGS.length) {
+    const hasExpectedXmlTags = hasVectronicExpectedTags(xmlString, TELEMETRY_CREDENTIAL_ATTACHMENT_VECTRONIC_XMLTAGS);
+    if (!hasExpectedXmlTags) {
       return {
         type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.KEYX,
         error: `${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.INVALID_XML_FILE}: ${TELEMETRY_CREDENTIAL_ATTACHMENT_ERROR_STRING.MISSING_XML_TAGS}`
@@ -451,11 +448,11 @@ const processKeyxFilesArray = async (
     }
 
     // Validate tags before parsing and break iterator if error
-    const expectedXmlTags = findVectronicExpectedTags(
+    const hasExpectedXmlTags = hasVectronicExpectedTags(
       keyxFileString,
       TELEMETRY_CREDENTIAL_ATTACHMENT_VECTRONIC_XMLTAGS
     );
-    if (expectedXmlTags.length !== TELEMETRY_CREDENTIAL_ATTACHMENT_VECTRONIC_XMLTAGS.length) {
+    if (!hasExpectedXmlTags) {
       resultJSON.length = 0;
       resultJSON.push({
         fileName: keyxData.fileName,

@@ -233,7 +233,7 @@ describe('checkFileForZip', () => {
     });
   });
 
-  it('should return error if the zip file contains only .cfg files with invalid IMEI format', async () => {
+  it('should accept a vendor-defined satellite identifier in a .cfg file', async () => {
     const service = new TelemetryVectronicService(getMockDBConnection());
     const zipFile = {
       originalname: 'test.zip',
@@ -245,14 +245,25 @@ describe('checkFileForZip', () => {
     invalidZipFile.addFile(
       'test.cfg',
       Buffer.from(
-        '[888888]\nKey=d`qwertydisosososososohehuuuuuuuuuuuuuuuuc~[]hhhhhhhhhhhh^gg@frE\nIridium IMEI=abc',
+        '[153159]\nKey=sPeo|QCWZmww?oXgRPMHwwMSrRHNT^VKTwNm]P?sFDnK`rgXTOehcEaoKBXRcyfX\nGlobalstar ESN=0-3103501',
         'utf-8'
       )
     );
     const multerFile = { ...zipFile, buffer: invalidZipFile.toBuffer() };
     expect(await telemetry_utils.checkFileForZip(multerFile, service)).to.eql({
       type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG,
-      error: "Invalid key file in ZIP: test.cfg, Invalid 'Iridium IMEI' length in key 1. Expected a 15-digit number."
+      keyData: [
+        {
+          fileName: 'test.cfg',
+          keysData: [
+            {
+              id: 153159,
+              key: 'sPeo|QCWZmww?oXgRPMHwwMSrRHNT^VKTwNm]P?sFDnK`rgXTOehcEaoKBXRcyfX',
+              satelliteId: '0-3103501'
+            }
+          ]
+        }
+      ]
     });
   });
 
@@ -328,7 +339,7 @@ describe('checkFileForZip', () => {
             {
               id: 888888,
               key: 'd`qwertydisosososososohehuuuuuuuuuuuuuuuuc~[]hhhhhhhhhhhh^gg@frE',
-              'Iridium IMEI': 111111111111111
+              satelliteId: '111111111111111'
             }
           ]
         },
@@ -338,7 +349,7 @@ describe('checkFileForZip', () => {
             {
               id: 222222,
               key: 'abBBBBBBBddddddddddddddddddddiiiiiiiidddddddjkhjhvhjgvhvg^nn@feE',
-              'Iridium IMEI': 222222222222222
+              satelliteId: '222222222222222'
             }
           ]
         }
@@ -411,6 +422,28 @@ describe('checkFileForKeyx', () => {
 });
 
 describe('checkFileForCfg', () => {
+  it('should preserve every printable non-whitespace ASCII character in a key', () => {
+    for (let characterCode = 0x21; characterCode <= 0x7e; characterCode++) {
+      const character = String.fromCharCode(characterCode);
+      const key = character.repeat(64);
+      const cfgFile = {
+        originalname: 'test.cfg',
+        mimetype: 'application/octet-stream',
+        buffer: Buffer.from(`[153159]\nKey=${key}\nGlobalstar ESN=0-3103501`, 'utf-8')
+      } as unknown as Express.Multer.File;
+
+      expect(telemetry_utils.checkFileForCfg(cfgFile), `character ${JSON.stringify(character)}`).to.eql({
+        type: TELEMETRY_CREDENTIAL_ATTACHMENT_TYPE.CFG,
+        keyData: [
+          {
+            fileName: 'test.cfg',
+            keysData: [{ id: 153159, key, satelliteId: '0-3103501' }]
+          }
+        ]
+      });
+    }
+  });
+
   it('should return file type CFG and keyData JSON from the key', () => {
     const validCfgFile = {
       originalname: 'test.cfg',
@@ -430,7 +463,7 @@ describe('checkFileForCfg', () => {
             {
               id: 888888,
               key: 'd`qwertydisosososososohehuuuuuuuuuuuuuuuuc~[]hhhhhhhhhhhh^gg@frE',
-              'Iridium IMEI': 111111111111111
+              satelliteId: '111111111111111'
             }
           ]
         }
