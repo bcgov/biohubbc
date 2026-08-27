@@ -38,5 +38,5 @@ export type LotekPayload = z.infer<typeof LotekPayload>;
 export interface ICfgData {
   id: number;
   key: string;
-  'Iridium IMEI': number;
+  satelliteId: string;
 }

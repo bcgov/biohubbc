@@ -72,7 +72,7 @@ export class TelemetryLotekRepository extends BaseRepository {
           key
         ) VALUES (
           ${key.id},
-          ${key['Iridium IMEI']},
+          ${key.satelliteId},
           ${key.key}
         )
         ON CONFLICT (device_key)
