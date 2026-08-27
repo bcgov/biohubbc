@@ -5,7 +5,6 @@ import path from 'node:path';
 import qs from 'qs';
 import * as tarStream from 'tar-stream';
 import { URL } from 'url';
-import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { IDBConnection } from '../database/db';
 import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
 import { formatAxiosError } from '../errors/axios-error';
@@ -29,11 +28,13 @@ import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
 import { ObservationService } from './observation-services/observation-service';
 import {
+  CreateExistingSubmissionUploadRequest,
+  CreateSubmissionRequest,
   IBioHubSubmissionHistoryRow,
   IBioHubWrappedSubmissionHistoryResponse,
   ISubmissionHistoryRow,
+  SubmissionSubmitter,
   SubmissionUploadInitiateResponse,
-  SubmissionUploadInitiateResult,
   UploadPart,
   UploadPartByteRange,
   UploadResult,
@@ -71,15 +72,6 @@ export interface ITaxonomyWithEcologicalUnits extends ITaxonomy {
 export type PublishSurveyData = {
   submissionComment: string;
   featureTypes?: BiohubFeatureType[];
-};
-
-export type BioHubSubmitter = {
-  guid: string;
-  identifier: string;
-  identitySource:
-    | SYSTEM_IDENTITY_SOURCE.IDIR
-    | SYSTEM_IDENTITY_SOURCE.BCEID_BASIC
-    | SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS;
 };
 
 interface IFlattenedBlock {
@@ -455,14 +447,14 @@ export class PlatformService extends DBService {
    *
    * @param {number} surveyId
    * @param {{ submissionComment: string }} data
-   * @param {BioHubSubmitter[]} submitters
+   * @param {SubmissionSubmitter[]} submitters
    * @return {*}  {Promise<{ submission_uuid: string }>}
    * @memberof PlatformService
    */
   async submitSurveyToBioHub(
     surveyId: number,
     data: PublishSurveyData,
-    submitters: BioHubSubmitter[]
+    submitters: SubmissionSubmitter[]
   ): Promise<{ submission_uuid: string }> {
     const includeFeatureTypes = this.normalizePublishFeatureTypes(data.featureTypes);
 
@@ -540,7 +532,7 @@ export class PlatformService extends DBService {
     const tarFileSize = fs.statSync(tarFilePath).size;
 
     // Step 1: Initiate upload and get presigned URLs
-    const { uploadId, s3UploadId, key, presignedUrls, partCount, submissionId, submissionUploadId } =
+    const { uploadId, s3UploadId, key, presignedUrls, partCount, submissionUuid, submissionUploadId } =
       await this._initiateSubmissionUpload(
         token,
         tarFileSize,
@@ -554,7 +546,7 @@ export class PlatformService extends DBService {
       label: 'submitSurveyToBioHub',
       message: 'Initiated multipart upload',
       uploadId,
-      submissionId,
+      submissionUuid,
       submissionUploadId,
       partCount
     });
@@ -570,7 +562,7 @@ export class PlatformService extends DBService {
         label: 'submitSurveyToBioHub',
         message: 'Successfully completed multipart upload',
         uploadId,
-        submissionId
+        submissionUuid
       });
     } finally {
       // Clean up TAR file
@@ -594,10 +586,10 @@ export class PlatformService extends DBService {
     // Insert or update publish history record using the UUID returned by BioHub.
     await this.historyPublishService.insertSurveyMetadataPublishRecord({
       survey_id: surveyId,
-      submission_uuid: submissionId
+      submission_uuid: submissionUuid
     });
 
-    return { submission_uuid: submissionId };
+    return { submission_uuid: submissionUuid };
   }
 
   /**
@@ -1181,15 +1173,15 @@ export class PlatformService extends DBService {
 
   /**
    * Initiates a multipart upload to BioHub and gets presigned URLs for S3.
-   * When existingSubmissionUuid is set, uses /submission/:submissionId/upload for re-publish.
+   * When existingSubmissionUuid is set, uses /submission/:submissionUuid/upload for re-publish.
    *
    * @param {string} token - Keycloak service token
    * @param {number} tarFileSize - Size of the TAR file in bytes
    * @param {PostSurveySubmissionToBioHubObject} surveyDataPackage - Survey data package
    * @param {string} submissionComment - Comment for the submission
    * @param {string | null} existingSubmissionUuid - When set, initiate upload for this existing submission (re-publish)
-   * @param {BioHubSubmitter[]} submitters - Users who should receive access
-   * @return {*}  {Promise<SubmissionUploadInitiateResult>}
+   * @param {SubmissionSubmitter[]} submitters - Users who should receive access
+   * @return {*}  {Promise<SubmissionUploadInitiateResponse>}
    * @memberof PlatformService
    */
   async _initiateSubmissionUpload(
@@ -1198,8 +1190,8 @@ export class PlatformService extends DBService {
     surveyDataPackage: PostSurveySubmissionToBioHubObject,
     submissionComment: string,
     existingSubmissionUuid: string | null,
-    submitters: BioHubSubmitter[] = []
-  ): Promise<SubmissionUploadInitiateResult> {
+    submitters: SubmissionSubmitter[] = []
+  ): Promise<SubmissionUploadInitiateResponse> {
     defaultLog.debug({
       label: '_initiateSubmissionUpload',
       tarFileSize,
@@ -1225,13 +1217,18 @@ export class PlatformService extends DBService {
     const backboneSubmissionUploadUrl = new URL(initiatePath, getBackboneInternalApiHost()).href;
 
     // Prepare request body
-    const requestBody = {
-      bytes: tarFileSize,
-      name: surveyDataPackage.name,
-      description: surveyDataPackage.description,
-      comment: submissionComment,
-      submitters
-    };
+    const requestBody: CreateSubmissionRequest | CreateExistingSubmissionUploadRequest = existingSubmissionUuid
+      ? {
+          bytes: tarFileSize,
+          submitters
+        }
+      : {
+          bytes: tarFileSize,
+          name: surveyDataPackage.name,
+          description: surveyDataPackage.description,
+          comment: submissionComment,
+          submitters
+        };
 
     try {
       const response = await axios.post<SubmissionUploadInitiateResponse>(backboneSubmissionUploadUrl, requestBody, {
@@ -1244,7 +1241,7 @@ export class PlatformService extends DBService {
       defaultLog.info({
         label: '_initiateSubmissionUpload',
         message: 'Received presigned URLs',
-        submissionId: response.data.submissionId,
+        submissionUuid: response.data.submissionUuid,
         submissionUploadId: response.data.submissionUploadId,
         uploadId: response.data.uploadId,
         partCount: response.data.partCount
@@ -1254,20 +1251,12 @@ export class PlatformService extends DBService {
         label: '_initiateSubmissionUpload',
         message: 'BioHub initiate response (full)',
         uploadId: response.data.uploadId,
-        submissionId: response.data.submissionId,
+        submissionUuid: response.data.submissionUuid,
         submissionUploadId: response.data.submissionUploadId,
         fullResponse: response.data
       });
 
-      return {
-        uploadId: response.data.uploadId,
-        s3UploadId: response.data.s3UploadId,
-        key: response.data.key,
-        presignedUrls: response.data.presignedUrls,
-        partCount: response.data.partCount,
-        submissionId: response.data.submissionId,
-        submissionUploadId: response.data.submissionUploadId
-      };
+      return response.data;
     } catch (error) {
       defaultLog.error({
         label: '_initiateSubmissionUpload',
