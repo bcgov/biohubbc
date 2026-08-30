@@ -3,10 +3,10 @@ import { Operation } from 'express-openapi';
 import { PROJECT_PERMISSION, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { ObservationEnvironmentService } from '../../../../../../../services/observation-environment-service';
+import { ObservationSubCountMeasurementService } from '../../../../../../../services/observation-subcount-measurement-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observations/environments');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observations/measurements/delete');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -24,11 +24,11 @@ export const POST: Operation = [
       ]
     };
   }),
-  deleteObservationEnvironments()
+  deleteObservationMeasurements()
 ];
 
 POST.apiDoc = {
-  description: 'Delete survey observation environments.',
+  description: 'Delete survey observation measurements.',
   tags: ['observation'],
   security: [
     {
@@ -56,7 +56,7 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Survey observation environment delete request body.',
+    description: 'Survey observation measurement delete request body.',
     required: true,
     content: {
       'application/json': {
@@ -64,17 +64,10 @@ POST.apiDoc = {
           type: 'object',
           additionalProperties: false,
           properties: {
-            environment_qualitative_ids: {
-              description: 'An array of qualitative environment ids to delete',
+            measurement_ids: {
+              description: 'An array of measurement ids (critterbase taxon measurement ids) to delete',
               type: 'array',
-              items: {
-                type: 'string',
-                format: 'uuid'
-              }
-            },
-            environment_quantitative_ids: {
-              description: 'An array of quantitative environment ids to delete',
-              type: 'array',
+              minItems: 1,
               items: {
                 type: 'string',
                 format: 'uuid'
@@ -108,35 +101,31 @@ POST.apiDoc = {
 };
 
 /**
- * Deletes survey observation environment records, for all observation records, for the given survey and set of
- * environment ids.
+ * Deletes survey observation measurement records, for all observation records, for the given survey and set of
+ * measurement ids.
  *
  * @export
  * @return {*}  {RequestHandler}
  */
-export function deleteObservationEnvironments(): RequestHandler {
+export function deleteObservationMeasurements(): RequestHandler {
   return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
+
+    defaultLog.debug({ label: 'deleteObservationMeasurements', surveyId });
+
     const connection = getDBConnection(req.keycloak_token);
 
     try {
-      const surveyId = Number(req.params.surveyId);
-
-      const environmentIds = {
-        environment_qualitative_ids: req.body.environment_qualitative_ids,
-        environment_quantitative_ids: req.body.environment_quantitative_ids
-      };
-
-      defaultLog.debug({ label: 'deleteObservationEnvironments', surveyId });
       await connection.open();
 
-      const service = new ObservationEnvironmentService(connection);
-      await service.deleteEnvironmentsForEnvironmentIds(surveyId, environmentIds);
+      const service = new ObservationSubCountMeasurementService(connection);
+      await service.deleteMeasurementsForTaxonMeasurementIds(surveyId, req.body.measurement_ids);
 
       await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'deleteObservationEnvironments', message: 'error', error });
+      defaultLog.error({ label: 'deleteObservationMeasurements', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
