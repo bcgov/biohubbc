@@ -40,7 +40,8 @@ const CreateSamplingPeriodYupSchema = yup.object({
           .required('End Date is required')
           .isEndDateSameOrAfterStartDate('start_date'),
         start_time: yup.string().nullable().default(null),
-        end_time: yup.string().nullable().default(null).isEndDateSameOrAfterStartDate('end_time')
+        end_time: yup.string().nullable().default(null).isEndDateSameOrAfterStartDate('end_time'),
+        comment: yup.string().nullable().default(null)
       })
     )
     .test('checkAtLeastOnePeriod', 'At least one period is required', function (value) {
@@ -112,7 +113,8 @@ export const CreateSamplePeriodPage = () => {
           start_date: period.start_date as string,
           start_time: period.start_time || null,
           end_date: period.end_date as string,
-          end_time: period.end_time || null
+          end_time: period.end_time || null,
+          comment: period.comment || null
         });
       }
 

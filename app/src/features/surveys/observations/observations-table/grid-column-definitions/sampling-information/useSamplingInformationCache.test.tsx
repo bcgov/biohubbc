@@ -14,6 +14,7 @@ const mockBasicPeriods: GetSamplingPeriod[] = [
     start_time: '08:00:00',
     end_date: '2022-01-01',
     end_time: '12:00:00',
+    comment: 'Sample period comment',
     survey_sample_site: {
       survey_sample_site_id: 11,
       name: 'Site 1'
@@ -35,6 +36,7 @@ const mockBasicPeriods: GetSamplingPeriod[] = [
     start_time: '08:00:00',
     end_date: '2022-01-01',
     end_time: '12:00:00',
+    comment: 'Sample period comment',
     survey_sample_site: {
       survey_sample_site_id: 11,
       name: 'Site 1'
@@ -51,6 +53,7 @@ const mockBasicPeriods: GetSamplingPeriod[] = [
     start_time: '08:00:00',
     end_date: '2022-01-01',
     end_time: '12:00:00',
+    comment: 'Sample period comment',
     survey_sample_site: null,
     method_technique: {
       method_technique_id: 21,
@@ -69,6 +72,7 @@ const mockBasicPeriods: GetSamplingPeriod[] = [
     start_time: null,
     end_date: null,
     end_time: null,
+    comment: 'Sample period comment',
     survey_sample_site: null,
     method_technique: {
       method_technique_id: 21,
@@ -87,6 +91,7 @@ const mockBasicPeriods: GetSamplingPeriod[] = [
     start_time: null,
     end_date: null,
     end_time: null,
+    comment: 'Sample period comment',
     survey_sample_site: null,
     method_technique: {
       method_technique_id: 21,
@@ -105,6 +110,7 @@ const mockBasicPeriods: GetSamplingPeriod[] = [
     start_time: '08:00:00',
     end_date: '2022-01-01',
     end_time: '12:00:00',
+    comment: 'Sample period comment',
     survey_sample_site: {
       survey_sample_site_id: 11,
       name: 'Site 1'
@@ -121,6 +127,7 @@ const mockBasicPeriods: GetSamplingPeriod[] = [
     start_time: '08:00:00',
     end_date: '2022-01-01',
     end_time: '12:00:00',
+    comment: 'Sample period comment',
     survey_sample_site: null,
     method_technique: null
   }

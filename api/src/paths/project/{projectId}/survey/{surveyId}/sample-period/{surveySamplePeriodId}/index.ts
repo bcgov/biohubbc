@@ -227,6 +227,11 @@ PUT.apiDoc = {
               type: 'string',
               description: 'End time of the period',
               nullable: true
+            },
+            comment: {
+              type: 'string',
+              description: 'Sample period comment',
+              nullable: true
             }
           }
         }

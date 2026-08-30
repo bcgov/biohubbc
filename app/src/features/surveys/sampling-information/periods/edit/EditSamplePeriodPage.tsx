@@ -136,7 +136,8 @@ export const EditSamplePeriodPage = () => {
         start_date: samplePeriod.start_date as string,
         start_time: samplePeriod?.start_time || null,
         end_date: samplePeriod.end_date as string,
-        end_time: samplePeriod?.end_time || null
+        end_time: samplePeriod?.end_time || null,
+        comment: samplePeriod.comment || null
       };
 
       await biohubApi.samplingPeriod.updateSamplingPeriod(
@@ -176,7 +177,8 @@ export const EditSamplePeriodPage = () => {
               start_date: period.start_date,
               start_time: period.start_time,
               end_date: period.end_date,
-              end_time: period.end_time
+              end_time: period.end_time,
+              comment: period.comment || null
             }
           ]
         }}
