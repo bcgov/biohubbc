@@ -92,6 +92,7 @@ const getSubcountFormData = (
     observation_subcount_id: subcountRecord.observation_subcount_id,
     subcount: subcountRecord.subcount,
     comment: subcountRecord.comment,
+    critterbase_critter_id: subcountRecord.critterbase_critter_id,
     measurements: subcountMeasurements,
     markings: []
   };

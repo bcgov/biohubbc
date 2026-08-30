@@ -5,6 +5,7 @@ export type ObservationSubcountRecord = {
   survey_observation_id: number;
   comment: string;
   subcount: number | null;
+  critterbase_critter_id: string | null;
   create_date: string;
   create_user: number;
   update_date: string | null;
@@ -16,6 +17,7 @@ export type ObservationSubcountObject = {
   observation_subcount_id: ObservationSubcountRecord['observation_subcount_id'];
   comment: ObservationSubcountRecord['comment'];
   subcount: ObservationSubcountRecord['subcount'];
+  critterbase_critter_id: ObservationSubcountRecord['critterbase_critter_id'];
   qualitative_measurements: ObservationSubcountQualitativeMeasurementObject[];
   quantitative_measurements: ObservationSubcountQuantitativeMeasurementObject[];
 };
@@ -24,6 +26,7 @@ export type SubcountObservationColumns = {
   observation_subcount_id: number | null;
   comment: string | null;
   subcount: number | null;
+  critterbase_critter_id: string | null;
   qualitative_measurements: {
     critterbase_taxon_measurement_id: string;
     critterbase_measurement_qualitative_option_id: string;

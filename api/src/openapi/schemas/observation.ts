@@ -63,6 +63,12 @@ const ObservationSubcountSchema: OpenAPIV3.SchemaObject = {
       type: 'number',
       minimum: 0
     },
+    critterbase_critter_id: {
+      type: 'string',
+      format: 'uuid',
+      nullable: true,
+      description: 'The critterbase critter ID for linking the subcount to a specific individual animal'
+    },
     qualitative_measurements: {
       type: 'array',
       items: {
@@ -218,6 +224,12 @@ export const insertObservationSchema: OpenAPIV3.SchemaObject = {
             type: 'string',
             nullable: true,
             description: 'A comment or note about the subcount'
+          },
+          critterbase_critter_id: {
+            type: 'string',
+            format: 'uuid',
+            nullable: true,
+            description: 'The critterbase critter ID for linking the subcount to a specific individual animal'
           },
           qualitative_measurements: {
             type: 'array',
@@ -382,6 +394,12 @@ export const updateObservationSchema: OpenAPIV3.SchemaObject = {
             type: 'string',
             nullable: true,
             description: 'A comment or note about the subcount'
+          },
+          critterbase_critter_id: {
+            type: 'string',
+            format: 'uuid',
+            nullable: true,
+            description: 'The critterbase critter ID for linking the subcount to a specific individual animal'
           },
           qualitative_measurements: {
             type: 'array',

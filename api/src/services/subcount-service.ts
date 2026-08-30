@@ -6,7 +6,6 @@ import { CritterbaseService } from './critterbase-service';
 import { DBService } from './db-service';
 import { ObservationService } from './observation-services/observation-service';
 import { ObservationSubCountMeasurementService } from './observation-subcount-measurement-service';
-import { SubcountCritterService } from './subcount-critter-service';
 
 export class SubCountService extends DBService {
   subCountRepository: SubCountRepository;
@@ -54,13 +53,10 @@ export class SubCountService extends DBService {
    * @memberof ObservationRepository
    */
   async deleteObservationSubcountRecords(surveyId: number, observationSubcountIds: number[]): Promise<void> {
-    const subCountCritterService = new SubcountCritterService(this.connection);
     const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
 
     // Delete child records
     await Promise.all([
-      // Delete child subcount_critter records, if any
-      subCountCritterService.deleteSubcountCrittersByObservationSubcountId(surveyId, observationSubcountIds),
       // Delete child observation measurements, if any
       observationSubCountMeasurementService.deleteMeasurementsByObservationSubCountId(surveyId, observationSubcountIds)
     ]);
@@ -102,12 +98,8 @@ export class SubCountService extends DBService {
   ): Promise<void> {
     const observationSubCountMeasurementService = new ObservationSubCountMeasurementService(this.connection);
 
-    await Promise.all([
-      // Delete child subcount_critter records, if any
-      this.subCountRepository.deleteSubCountCritterRecordsForObservationId(surveyId, surveyObservationIds),
-      // Delete child observation measurements, if any
-      observationSubCountMeasurementService.deleteObservationMeasurements(surveyId, surveyObservationIds)
-    ]);
+    // Delete child observation measurements, if any
+    await observationSubCountMeasurementService.deleteObservationMeasurements(surveyId, surveyObservationIds);
 
     // Delete observation_subcount records, if any
     return this.subCountRepository.deleteObservationSubCountRecordsByObservationId(surveyId, surveyObservationIds);

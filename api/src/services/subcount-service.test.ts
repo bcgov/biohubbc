@@ -25,6 +25,7 @@ describe('SubCountService', () => {
         survey_observation_id: 2,
         subcount: 3,
         comment: 'comment',
+        critterbase_critter_id: null,
         create_user: 1,
         create_date: '2021-01-01',
         update_user: null,
@@ -35,7 +36,8 @@ describe('SubCountService', () => {
       const mockInsertObservationSubCount: InsertObservationSubCount = {
         survey_observation_id: 2,
         subcount: 3,
-        comment: 'comment'
+        comment: 'comment',
+        critterbase_critter_id: null
       };
 
       const insertObservationSubCountStub = sinon
@@ -57,10 +59,6 @@ describe('SubCountService', () => {
       const mockSurveyId = 1;
       const mockSurveyObservationIds = [1, 2, 3, 4];
 
-      const deleteSubCountCritterRecordsForObservationIdStub = sinon
-        .stub(SubCountRepository.prototype, 'deleteSubCountCritterRecordsForObservationId')
-        .resolves();
-
       const deleteObservationMeasurementsStub = sinon
         .stub(ObservationSubCountMeasurementRepository.prototype, 'deleteObservationMeasurements')
         .resolves();
@@ -70,10 +68,6 @@ describe('SubCountService', () => {
 
       await subCountService.deleteObservationSubCountRecordsByObservationId(mockSurveyId, mockSurveyObservationIds);
 
-      expect(deleteSubCountCritterRecordsForObservationIdStub).to.be.calledOnceWith(
-        mockSurveyId,
-        mockSurveyObservationIds
-      );
       expect(deleteObservationMeasurementsStub).to.be.calledOnceWith(mockSurveyId, mockSurveyObservationIds);
       expect(deleteObservationSubCountRecordsStub).to.be.calledOnceWith(mockSurveyId, mockSurveyObservationIds);
     });
