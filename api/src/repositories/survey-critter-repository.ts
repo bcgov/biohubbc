@@ -77,14 +77,14 @@ export class SurveyCritterRepository extends BaseRepository {
 
     if (!isUserAdmin) {
       query
-        .leftJoin('survey', 'survey.survey_id', 'critter.survey_id')
-        .leftJoin('project', 'project.project_id', 'survey.project_id')
-        .leftJoin('project_participation', 'project_participation.project_id', 'project.project_id')
+        .innerJoin('survey', 'survey.survey_id', 'critter.survey_id')
+        .innerJoin('project', 'project.project_id', 'survey.project_id')
+        .innerJoin('project_participation', 'project_participation.project_id', 'project.project_id')
         .where('project_participation.system_user_id', systemUserId);
     }
 
     if (filterFields?.system_user_id) {
-      query.whereIn('p.project_id', (subQueryBuilder) => {
+      query.whereIn('project.project_id', (subQueryBuilder) => {
         subQueryBuilder
           .select('project_id')
           .from('project_participation')
