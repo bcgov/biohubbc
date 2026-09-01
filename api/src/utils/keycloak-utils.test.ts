@@ -12,11 +12,24 @@ import {
   IdirUserInformation,
   isBceidBasicUserInformation,
   isBceidBusinessUserInformation,
+  isBioHubIdentitySource,
   isDatabaseUserInformation,
   isIdirUserInformation
 } from './keycloak-utils';
 
 describe('keycloakUtils', () => {
+  describe('isBioHubIdentitySource', () => {
+    it('accepts BioHub-supported identity sources', () => {
+      expect(isBioHubIdentitySource(SYSTEM_IDENTITY_SOURCE.IDIR)).to.be.true;
+      expect(isBioHubIdentitySource(SYSTEM_IDENTITY_SOURCE.BCEID_BASIC)).to.be.true;
+      expect(isBioHubIdentitySource(SYSTEM_IDENTITY_SOURCE.BCEID_BUSINESS)).to.be.true;
+    });
+
+    it('rejects identity sources that BioHub does not support', () => {
+      expect(isBioHubIdentitySource(SYSTEM_IDENTITY_SOURCE.SYSTEM)).to.be.false;
+    });
+  });
+
   describe('getUserGuid', () => {
     it('returns idir guid', () => {
       const keycloakUserInformation: IdirUserInformation = {

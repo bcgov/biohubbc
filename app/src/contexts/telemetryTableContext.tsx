@@ -24,6 +24,7 @@ import { usePersistentState } from 'hooks/usePersistentState';
 import { GetSurveyTelemetryResponse } from 'interfaces/useTelemetryApi.interface';
 import { createContext, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { ApiPaginationRequestOptions } from 'types/misc';
+import { combineDateTimeUtc, formatTimestampUtc } from 'utils/datetime';
 import { firstOrNull } from 'utils/Utils';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -664,7 +665,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
           deployment_id: row.deployment_id,
           latitude: Number(row.latitude),
           longitude: Number(row.longitude),
-          acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString(),
+          acquisition_date: combineDateTimeUtc(row.date, row.time),
           transmission_date: null
         }));
 
@@ -674,7 +675,7 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
           deployment_id: row.deployment_id,
           latitude: Number(row.latitude),
           longitude: Number(row.longitude),
-          acquisition_date: dayjs(`${row.date}T${row.time}`).toISOString(),
+          acquisition_date: combineDateTimeUtc(row.date, row.time),
           transmission_date: null
         }));
 
@@ -786,8 +787,8 @@ export const TelemetryTableContextProvider = (props: IAllTelemetryTableContextPr
         serial: item.serial,
         latitude: item.latitude,
         longitude: item.longitude,
-        date: dayjs(item.acquisition_date).format('YYYY-MM-DD'),
-        time: dayjs(item.acquisition_date).format('HH:mm:ss'),
+        date: formatTimestampUtc(item.acquisition_date, 'YYYY-MM-DD'),
+        time: formatTimestampUtc(item.acquisition_date, 'HH:mm:ss'),
         telemetry_type: item.vendor
       };
     });
