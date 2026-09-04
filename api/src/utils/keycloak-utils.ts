@@ -1,5 +1,15 @@
 import type { JwtPayload } from 'jsonwebtoken';
-import { SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
+import type { BioHubIdentitySource } from '../constants/database';
+import { BIOHUB_IDENTITY_SOURCES, SOURCE_SYSTEM, SYSTEM_IDENTITY_SOURCE } from '../constants/database';
+
+/**
+ * Checks whether an identity source is supported by the BioHub submission API.
+ *
+ * @param {string} identitySource - Identity source to validate.
+ * @return {boolean} True when the identity source is supported by BioHub.
+ */
+export const isBioHubIdentitySource = (identitySource: string): identitySource is BioHubIdentitySource =>
+  BIOHUB_IDENTITY_SOURCES.has(identitySource);
 
 /**
  * User information from a verified IDIR Keycloak token.

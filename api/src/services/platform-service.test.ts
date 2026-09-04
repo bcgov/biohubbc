@@ -231,15 +231,16 @@ describe('PlatformService', () => {
       sinon.stub(fs, 'statSync').callsFake(() => ({ size: 1024 }));
       sinon.stub(fs, 'unlinkSync').callsFake(() => {});
 
-      const submissionIdFromApi = '550e8400-e29b-41d4-a716-446655440001';
+      const submissionUuidFromApi = '550e8400-e29b-41d4-a716-446655440001';
       const mockUploadResponse = {
+        submissionUuid: submissionUuidFromApi,
+        submissionUploadId: '660e8400-e29b-41d4-a716-446655440001',
         uploadId: 'upload-123-456-789',
         s3UploadId: 's3-upload-id',
+        uploadArchiveId: 'archive-id',
         key: 's3-key',
         presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url', partSizeBytes: 55 }],
-        partCount: 1,
-        submissionId: submissionIdFromApi,
-        submissionUploadId: '660e8400-e29b-41d4-a716-446655440001'
+        partCount: 1
       };
 
       const _initiateSubmissionUploadStub = sinon
@@ -289,9 +290,9 @@ describe('PlatformService', () => {
       );
       expect(insertSurveyMetadataPublishRecordStub).to.have.been.calledOnceWith({
         survey_id: 1,
-        submission_uuid: submissionIdFromApi
+        submission_uuid: submissionUuidFromApi
       });
-      expect(response).to.eql({ submission_uuid: submissionIdFromApi });
+      expect(response).to.eql({ submission_uuid: submissionUuidFromApi });
     });
 
     it('should use re-publish endpoint and existing submission_uuid when survey was previously published', async () => {
@@ -323,13 +324,14 @@ describe('PlatformService', () => {
       sinon.stub(fs, 'unlinkSync').callsFake(() => {});
 
       const mockUploadResponse = {
+        submissionUuid: existingSubmissionUuid,
+        submissionUploadId: '660e8400-e29b-41d4-a716-446655440002',
         uploadId: 'multipart-session-upload-id',
         s3UploadId: 's3-upload-id',
+        uploadArchiveId: 'archive-id',
         key: 's3-key',
         presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url', partSizeBytes: 55 }],
-        partCount: 1,
-        submissionId: existingSubmissionUuid,
-        submissionUploadId: '660e8400-e29b-41d4-a716-446655440002'
+        partCount: 1
       };
 
       const _initiateSubmissionUploadStub = sinon
@@ -741,13 +743,14 @@ describe('PlatformService', () => {
       sinon.stub(fs, 'unlinkSync').callsFake(() => {});
 
       const mockUploadResponse = {
+        submissionUuid: '550e8400-e29b-41d4-a716-446655440001',
+        submissionUploadId: '660e8400-e29b-41d4-a716-446655440003',
         uploadId: 'upload-123-456-789',
         s3UploadId: 's3-upload-id',
+        uploadArchiveId: 'archive-id',
         key: 's3-key',
         presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/presigned-url', partSizeBytes: 55 }],
-        partCount: 1,
-        submissionId: '550e8400-e29b-41d4-a716-446655440001',
-        submissionUploadId: '660e8400-e29b-41d4-a716-446655440003'
+        partCount: 1
       };
 
       sinon.stub(PlatformService.prototype, '_initiateSubmissionUpload').resolves(mockUploadResponse);
@@ -1257,13 +1260,12 @@ describe('PlatformService', () => {
 
       const mockResponse = {
         data: {
-          submissionId: '550e8400-e29b-41d4-a716-446655440001',
+          submissionUuid: '550e8400-e29b-41d4-a716-446655440001',
           submissionUploadId: '660e8400-e29b-41d4-a716-446655440004',
           uploadId: 'upload-123',
           s3UploadId: 's3-upload-id',
           uploadArchiveId: 'archive-id',
           key: 's3-key',
-          partSizeBytes: 5242880,
           partCount: 2,
           presignedUrls: [
             { partNumber: 1, url: 'https://s3.amazonaws.com/url1', partSizeBytes: 512 },
@@ -1291,15 +1293,7 @@ describe('PlatformService', () => {
       });
       expect(axiosPostStub.getCall(0).args[2]?.headers?.authorization).to.equal('Bearer token');
 
-      expect(result).to.deep.equal({
-        uploadId: 'upload-123',
-        s3UploadId: 's3-upload-id',
-        key: 's3-key',
-        presignedUrls: mockResponse.data.presignedUrls,
-        partCount: 2,
-        submissionId: '550e8400-e29b-41d4-a716-446655440001',
-        submissionUploadId: '660e8400-e29b-41d4-a716-446655440004'
-      });
+      expect(result).to.deep.equal(mockResponse.data);
     });
 
     it('should use re-publish URL when existingSubmissionUuid is set', async () => {
@@ -1312,13 +1306,12 @@ describe('PlatformService', () => {
 
       const mockResponse = {
         data: {
-          submissionId: existingSubmissionUuid,
+          submissionUuid: existingSubmissionUuid,
           submissionUploadId: '660e8400-e29b-41d4-a716-446655440005',
           uploadId: 'upload-123',
           s3UploadId: 's3-upload-id',
           uploadArchiveId: 'archive-id',
           key: 's3-key',
-          partSizeBytes: 5242880,
           partCount: 2,
           presignedUrls: [
             { partNumber: 1, url: 'https://s3.amazonaws.com/url1', partSizeBytes: 512 },
@@ -1348,9 +1341,6 @@ describe('PlatformService', () => {
       );
       expect(axiosPostStub.getCall(0).args[1]).to.deep.equal({
         bytes: 1024,
-        name: 'Test Survey',
-        description: 'Test Description',
-        comment: 'comment',
         submitters: []
       });
     });
@@ -1362,10 +1352,11 @@ describe('PlatformService', () => {
       const platformService = new PlatformService(getMockDBConnection());
       const axiosPostStub = sinon.stub(axios, 'post').resolves({
         data: {
-          submissionId: 'submission-id',
+          submissionUuid: 'submission-id',
           submissionUploadId: 'submission-upload-id',
           uploadId: 'upload-id',
           s3UploadId: 's3-upload-id',
+          uploadArchiveId: 'archive-id',
           key: 's3-key',
           partCount: 1,
           presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/url1', partSizeBytes: 1024 }]
@@ -1407,13 +1398,12 @@ describe('PlatformService', () => {
 
       const mockResponse = {
         data: {
-          submissionId: 'not-a-uuid',
+          submissionUuid: 'not-a-uuid',
           submissionUploadId: 'also-not-a-uuid',
           uploadId: 'upload-123',
           s3UploadId: 's3-upload-id',
           uploadArchiveId: 'archive-id',
           key: 's3-key',
-          partSizeBytes: 5242880,
           partCount: 2,
           presignedUrls: [{ partNumber: 1, url: 'https://s3.amazonaws.com/url1', partSizeBytes: 1024 }]
         }
@@ -1428,7 +1418,7 @@ describe('PlatformService', () => {
 
       const result = await platformService._initiateSubmissionUpload('token', 1024, surveyDataPackage, 'comment', null);
 
-      expect(result.submissionId).to.equal('not-a-uuid');
+      expect(result.submissionUuid).to.equal('not-a-uuid');
       expect(result.submissionUploadId).to.equal('also-not-a-uuid');
     });
 

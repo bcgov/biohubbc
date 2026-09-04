@@ -1018,7 +1018,7 @@ export class AttachmentService extends DBService {
         );
 
         // the data is for lotek cfg
-        if ('Iridium IMEI' in key) {
+        if ('satelliteId' in key) {
           responseJSON.telemetry_credential_lotek_id?.push(
             await this.telemetryLotekRepository.insertTelemetryCredentialLotek(key)
           );

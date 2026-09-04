@@ -120,7 +120,7 @@ describe('survey', () => {
       }
     });
 
-    it('throws bad request when survey does not belong to project', async () => {
+    it('throws forbidden when survey does not belong to project', async () => {
       const dbConnectionObj = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -148,8 +148,42 @@ describe('survey', () => {
         expect.fail();
       } catch (actualError) {
         expect((actualError as HTTPError).message).to.equal('Invalid project or survey identifier.');
+        expect((actualError as HTTPError).status).to.equal(403);
         expect(dbConnectionObj.rollback).to.have.been.called;
         expect(dbConnectionObj.release).to.have.been.called;
+        expect(submitSurveyToBioHubStub).to.not.have.been.called;
+      }
+    });
+
+    it('throws bad request when the authenticated user identity is not supported by BioHub', async () => {
+      const dbConnectionObj = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
+
+      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+      sinon.stub(SurveyService.prototype, 'getSurveyData').resolves({ project_id: 1 } as any);
+      const submitSurveyToBioHubStub = sinon.stub(PlatformService.prototype, 'submitSurveyToBioHub');
+
+      const sampleReq = {
+        keycloak_token: {},
+        system_user: {
+          ...systemUser,
+          identity_source: SYSTEM_IDENTITY_SOURCE.SYSTEM
+        },
+        body: {
+          projectId: 1,
+          surveyId: 1,
+          data: { submissionComment: 'test' }
+        }
+      } as any;
+
+      const { mockRes, mockNext } = getRequestHandlerMocks();
+
+      try {
+        await publishSurvey()(sampleReq, mockRes, mockNext);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as HTTPError).message).to.equal(
+          'Authenticated user does not have a BioHub-compatible identity.'
+        );
         expect(submitSurveyToBioHubStub).to.not.have.been.called;
       }
     });
