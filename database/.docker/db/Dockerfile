@@ -2,7 +2,7 @@
 # This DockerFile is used for local development (via compose.yml) only.
 # ########################################################################################################
 
-ARG POSTGRES_VERSION=17-bullseye
+ARG POSTGRES_VERSION=17-bookworm
 
 FROM postgres:$POSTGRES_VERSION
 
