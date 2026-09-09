@@ -10,24 +10,11 @@ global:
     changeId: "" # Change id (PR number)
     ts: "" # Timestamp of the deployment
 
-# Component enablement flags
-app:
-  enabled: true
-
-database:
-  enabled: true
-
-database-setup:
-  enabled: true
-
-clamav:
-  enabled: true
-
-api:
-  enabled: true
-
-# Component-specific configurations
-# These will be passed through to the individual charts
+# Component configuration, passed through to the individual charts. Each key also carries the
+# `enabled` flag its Chart.yaml dependency condition reads.
+#
+# NOTE: one block per component. A second `app:`/`database:`/... block would silently win over the
+# first, because YAML keeps only the last occurrence of a duplicated key.
 app:
   enabled: true
   environment:
@@ -38,8 +25,11 @@ app:
     ts: ""
   # Add any app-specific overrides here
 
+# Off by default: the biohubbc-db image is built only by deploy.yml, for PR previews. Static
+# environments run the separate Crunchy Postgres release (infrastructure/crunchy-db), so an
+# environment that inherited `true` here would render a Deployment for an image nobody builds.
 database:
-  enabled: true
+  enabled: false
   environment:
     licensePlate: "af2668"
     name: ""
