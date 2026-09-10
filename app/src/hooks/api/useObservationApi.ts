@@ -346,8 +346,31 @@ const useObservationApi = (axios: AxiosInstance) => {
     const { data } = await axios.post<void>(
       `/api/project/${projectId}/survey/${surveyId}/observations/environments/delete`,
       {
-        environment_qualitative_id: environmentIds.qualitative_environments,
-        environment_quantitative_id: environmentIds.quantitative_environments
+        environment_qualitative_ids: environmentIds.qualitative_environments,
+        environment_quantitative_ids: environmentIds.quantitative_environments
+      }
+    );
+
+    return data;
+  };
+
+  /**
+   * Deletes all of the observation measurements, from all observation records, having the given measurement_id.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {string[]} measurementIds The measurement ids to delete.
+   * @return {*}  {Promise<void>}
+   */
+  const deleteObservationMeasurements = async (
+    projectId: number,
+    surveyId: number,
+    measurementIds: string[]
+  ): Promise<void> => {
+    const { data } = await axios.post<void>(
+      `/api/project/${projectId}/survey/${surveyId}/observations/measurements/delete`,
+      {
+        measurement_ids: measurementIds
       }
     );
 
@@ -367,6 +390,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     deleteObservationRecords,
     deleteObservationSubcounts,
     deleteObservationEnvironments,
+    deleteObservationMeasurements,
     importObservationCSV,
     createObservation,
     updateObservation

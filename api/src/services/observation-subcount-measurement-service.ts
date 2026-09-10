@@ -119,4 +119,19 @@ export class ObservationSubCountMeasurementService extends DBService {
       observationSubCountIds
     );
   }
+
+  /**
+   * Delete all measurement records, for all observation records, for a given survey and set of measurement ids.
+   *
+   * @param {number} surveyId
+   * @param {string[]} measurementIds Critterbase taxon measurement ids to delete
+   * @return {*}  {Promise<void>}
+   * @memberof ObservationSubCountMeasurementService
+   */
+  async deleteMeasurementsForTaxonMeasurementIds(surveyId: number, measurementIds: string[]): Promise<void> {
+    return this.observationSubCountMeasurementRepository.deleteMeasurementsForTaxonMeasurementIds(
+      surveyId,
+      measurementIds
+    );
+  }
 }

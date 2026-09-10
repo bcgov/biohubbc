@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { getKnex } from '../database/db';
+import { ApiExecuteSQLError } from '../errors/api-error';
 import { BaseRepository } from './base-repository';
 
 export const ObservationSubCountQualitativeMeasurementRecord = z.object({
@@ -198,6 +199,93 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
     return response.rowCount ?? 0;
   }
 
+  /**
+   * Delete all measurement records, for all observation records, for a given survey and set of measurement ids.
+   *
+   * @param {number} surveyId
+   * @param {string[]} measurementIds Critterbase taxon measurement ids to delete
+   * @return {*}  {Promise<void>}
+   * @memberof ObservationSubCountMeasurementRepository
+   */
+  async deleteMeasurementsForTaxonMeasurementIds(surveyId: number, measurementIds: string[]): Promise<void> {
+    await this.deleteQualitativeMeasurementForTaxonMeasurementIds(surveyId, measurementIds);
+    await this.deleteQuantitativeMeasurementForTaxonMeasurementIds(surveyId, measurementIds);
+  }
+
+  /**
+   * Delete all qualitative measurement records, for all observation records, for a given survey and set of measurement
+   * ids.
+   *
+   * @param {number} surveyId
+   * @param {string[]} measurementIds Critterbase taxon measurement ids to delete.
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationSubCountMeasurementRepository
+   */
+  async deleteQualitativeMeasurementForTaxonMeasurementIds(
+    surveyId: number,
+    measurementIds: string[]
+  ): Promise<number> {
+    const qb = getKnex()
+      .queryBuilder()
+      .delete()
+      .from('observation_subcount_qualitative_measurement')
+      .using(['observation_subcount', 'survey_observation'])
+      .whereRaw(
+        'observation_subcount_qualitative_measurement.observation_subcount_id = observation_subcount.observation_subcount_id'
+      )
+      .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
+      .andWhere(`survey_observation.survey_id`, surveyId)
+      .whereIn('observation_subcount_qualitative_measurement.critterbase_taxon_measurement_id', measurementIds);
+
+    const response = await this.connection.knex(qb);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete qualitative measurements for taxon measurement Ids', [
+        'ObservationSubcountMeasurementRepository->deleteQualitativeMeasurementForTaxonMeasurementIds',
+        'rowCount was null or undefined, expected rowCount != null'
+      ]);
+    }
+
+    return response.rowCount;
+  }
+
+  /**
+   * Delete all quantitative measurement records, for all observation records, for a given survey and set of measurement
+   * ids.
+   *
+   * @param {number} surveyId
+   * @param {string[]} measurementIds Critterbase taxon measurement ids to delete.
+   * @return {*}  {Promise<number>}
+   * @memberof ObservationSubCountMeasurementRepository
+   */
+  async deleteQuantitativeMeasurementForTaxonMeasurementIds(
+    surveyId: number,
+    measurementIds: string[]
+  ): Promise<number> {
+    const qb = getKnex()
+      .queryBuilder()
+      .delete()
+      .from('observation_subcount_quantitative_measurement')
+      .using(['observation_subcount', 'survey_observation'])
+      .whereRaw(
+        'observation_subcount_quantitative_measurement.observation_subcount_id = observation_subcount.observation_subcount_id'
+      )
+      .whereRaw('observation_subcount.survey_observation_id = survey_observation.survey_observation_id')
+      .andWhere(`survey_observation.survey_id`, surveyId)
+      .whereIn('observation_subcount_quantitative_measurement.critterbase_taxon_measurement_id', measurementIds);
+
+    const response = await this.connection.knex(qb);
+
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete quantitative measurements for taxon measurement Ids', [
+        'ObservationSubcountMeasurementRepository->deleteQuantitativeMeasurementForTaxonMeasurementIds',
+        'rowCount was null or undefined, expected rowCount != null'
+      ]);
+    }
+
+    return response.rowCount;
+  }
+
   async deleteObservationQuantitativeMeasurementRecordsForSurveyObservationIds(
     surveyObservationId: number[],
     surveyId: number
@@ -216,7 +304,14 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
 
     const response = await this.connection.knex(qb);
 
-    return response.rowCount ?? 0;
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete quantitative measurements for survey observation Ids', [
+        'ObservationSubcountMeasurementRepository->deleteObservationQuantitativeMeasurementRecordsForSurveyObservationIds',
+        'rowCount was null or undefined, expected rowCount != null'
+      ]);
+    }
+
+    return response.rowCount;
   }
 
   /**
@@ -261,7 +356,14 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
 
     const response = await this.connection.knex(qb);
 
-    return response.rowCount ?? 0;
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete qualitative measurements for survey subcountIds', [
+        'ObservationSubcountMeasurementRepository->deleteQualitativeMeasurementsByObservationSubcountIds',
+        'rowCount was null or undefined, expected rowCount != null'
+      ]);
+    }
+
+    return response.rowCount;
   }
 
   /**
@@ -291,6 +393,13 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
 
     const response = await this.connection.knex(qb);
 
-    return response.rowCount ?? 0;
+    if (!response.rowCount) {
+      throw new ApiExecuteSQLError('Failed to delete quantitative measurements for survey subcountIds', [
+        'ObservationSubcountMeasurementRepository->deleteQuantitativeMeasurementsByObservationSubcountIds',
+        'rowCount was null or undefined, expected rowCount != null'
+      ]);
+    }
+
+    return response.rowCount;
   }
 }
