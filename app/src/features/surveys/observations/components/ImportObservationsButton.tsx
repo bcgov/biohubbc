@@ -1,6 +1,7 @@
 import Button, { ButtonProps } from '@mui/material/Button';
 import axios, { AxiosProgressEvent } from 'axios';
 import { CSVSingleImportDialog } from 'components/csv/CSVSingleImportDialog';
+import { TransformDataHelp } from 'components/dialog/video-help/TransformDataHelp';
 import { SurveyContext } from 'contexts/surveyContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useContext, useState } from 'react';
@@ -118,6 +119,7 @@ export const ImportObservationsButton = (props: IImportObservationsButtonProps) 
         onClose={() => setOpen(false)}
         onImport={handleImportObservations}
         onDownloadTemplate={() => downloadFile(getObservationCSVTemplate(), 'SIMS-observations-template.csv')}
+        VideoHelp={TransformDataHelp}
       />
     </>
   );

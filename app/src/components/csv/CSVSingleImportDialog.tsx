@@ -16,6 +16,11 @@ interface CSVSingleImportDialogProps {
   onClose: () => void;
   onImport: (file: File, onProgress: (progressEvent: AxiosProgressEvent) => void) => Promise<void>;
   onDownloadTemplate: () => void;
+  /**
+   * Optional component to display help instructions for the import process
+   * If provided, a help section will be displayed below the CSV upload section
+   */
+  VideoHelp?: React.ComponentType;
 }
 
 /**
@@ -118,6 +123,8 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
     return null;
   }
 
+  const { VideoHelp } = props;
+
   return (
     <Dialog open={props.open} maxWidth={'xl'} fullScreen={fullScreen}>
       <DialogContent sx={{ mt: 2 }}>
@@ -138,6 +145,9 @@ export const CSVSingleImportDialog = (props: CSVSingleImportDialogProps) => {
             />
           </CSVDropzoneSection>
         </Box>
+
+        {/* Display video help component if provided */}
+        {VideoHelp && <VideoHelp />}
       </DialogContent>
       <Divider />
 
