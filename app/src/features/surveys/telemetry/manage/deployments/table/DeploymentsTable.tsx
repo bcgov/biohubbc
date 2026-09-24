@@ -38,7 +38,7 @@ export interface IDeploymentRowData {
   attachment_start_time: string | null;
   attachment_end_date: string | null;
   attachment_end_time: string | null;
-  critterbase_start_capture_id: string;
+  critterbase_start_capture_id: string | null;
   critterbase_end_capture_id: string | null;
   critterbase_end_mortality_id: string | null;
 }

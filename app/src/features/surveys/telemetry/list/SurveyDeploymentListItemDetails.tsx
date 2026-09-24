@@ -33,7 +33,9 @@ export const SurveyDeploymentListItemDetails = (props: ISurveyDeploymentListItem
   );
 
   useEffect(() => {
-    startCaptureDataLoader.load(deployment.critterbase_start_capture_id);
+    if (deployment.critterbase_start_capture_id) {
+      startCaptureDataLoader.load(deployment.critterbase_start_capture_id);
+    }
     if (deployment.critterbase_end_capture_id) {
       endCaptureDataLoader.load(deployment.critterbase_end_capture_id);
     }
@@ -48,6 +50,60 @@ export const SurveyDeploymentListItemDetails = (props: ISurveyDeploymentListItem
   const endDate = endCapture?.capture_date || endMortality?.mortality_timestamp || deployment.attachment_end_date;
 
   const endDateFormatted = endDate ? dayjs(endDate).format(DATE_FORMAT.MediumDateFormat) : null;
+
+  // If there's no start capture ID, we can't load capture data, so show deployment data instead
+  if (!deployment.critterbase_start_capture_id) {
+    const startDate = dayjs(deployment.attachment_start_date).format(DATE_FORMAT.MediumDateFormat);
+    const startTime = deployment.attachment_start_time;
+
+    const endTime =
+      endCapture?.capture_time ||
+      (endMortality?.mortality_timestamp &&
+        dayjs(endMortality?.mortality_timestamp).format(TIME_FORMAT.LongTimeFormat24Hour)) ||
+      deployment.attachment_end_time;
+
+    return (
+      <Box>
+        <Box display="flex" justifyContent="space-between" gap={1}>
+          <Box>
+            <Typography variant="subtitle2" color="textSecondary">
+              {'Start'}
+            </Typography>
+            <Typography variant="body2" fontWeight="bold">
+              {startDate}
+            </Typography>
+            {startTime && (
+              <Typography variant="body2" color="textSecondary">
+                {dayjs(`1970-01-01 ${startTime}`).format(TIME_FORMAT.LongTimeFormat24Hour)}
+              </Typography>
+            )}
+          </Box>
+
+          <Box textAlign="right">
+            <Typography variant="subtitle2" color="textSecondary">
+              {'End'}
+            </Typography>
+            {endDateFormatted ? (
+              <>
+                <Typography variant="body2" fontWeight="bold">
+                  {endDateFormatted}
+                </Typography>
+                {endTime && (
+                  <Typography variant="body2" color="textSecondary">
+                    {endTime}
+                  </Typography>
+                )}
+              </>
+            ) : (
+              <Typography variant="body2" fontWeight="bold" color="textSecondary">
+                {'Ongoing'}
+              </Typography>
+            )}
+          </Box>
+        </Box>
+      </Box>
+    );
+  }
 
   if (startCaptureDataLoader.isLoading || !startCaptureDataLoader.isReady) {
     return <Skeleton width="100%" height="55px" />;
