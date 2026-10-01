@@ -25,6 +25,7 @@ export interface SubmissionSubmitter {
 }
 
 export interface CreateSubmissionRequest {
+  client_id: string;
   bytes: number;
   name: string;
   description: string;
