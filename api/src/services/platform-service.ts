@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { Feature, FeatureCollection } from 'geojson';
+import chunk from 'lodash/chunk.js';
 import fs from 'node:fs';
 import path from 'node:path';
 import qs from 'qs';
@@ -1041,13 +1042,11 @@ export class PlatformService extends DBService {
     archiveRootId: string,
     fileBlocks: IFlattenedBlock[]
   ): Promise<void> {
-    if (fileBlocks.length === 0) {
-      return;
-    }
-
-    for (const fileBlock of fileBlocks) {
+    // Serialize downloads and archive writes to avoid buffering every attachment at once.
+    await fileBlocks.reduce(async (previous, fileBlock) => {
+      await previous;
       await this._processFileBlock(pack, archiveRootId, fileBlock);
-    }
+    }, Promise.resolve());
   }
 
   /**
@@ -1216,13 +1215,14 @@ export class PlatformService extends DBService {
       : `${basePath}/upload/archive`;
     const backboneSubmissionUploadUrl = new URL(initiatePath, getBackboneInternalApiHost()).href;
 
-    // Prepare request body
+    // Use the SIMS sign-in client for creation. Re-publishing uses the stored owner.
     const requestBody: CreateSubmissionRequest | CreateExistingSubmissionUploadRequest = existingSubmissionUuid
       ? {
           bytes: tarFileSize,
           submitters
         }
       : {
+          client_id: getEnvironmentVariable('KEYCLOAK_CLIENT_ID'),
           bytes: tarFileSize,
           name: surveyDataPackage.name,
           description: surveyDataPackage.description,
@@ -1407,9 +1407,9 @@ export class PlatformService extends DBService {
     const partRanges = this._buildPartByteRanges(fileSize, orderedPresignedUrls);
     const results: UploadResult[] = [];
 
-    for (let i = 0; i < partRanges.length; i += concurrencyLimit) {
-      const partBatch = partRanges.slice(i, i + concurrencyLimit);
-
+    // Start each batch only after the previous batch succeeds, keeping open streams bounded.
+    await chunk(partRanges, concurrencyLimit).reduce(async (previous, partBatch) => {
+      await previous;
       const batchResults = await Promise.all(
         partBatch.map((part) =>
           this._uploadChunkToS3(
@@ -1420,9 +1420,8 @@ export class PlatformService extends DBService {
           )
         )
       );
-
       results.push(...batchResults);
-    }
+    }, Promise.resolve());
 
     const parts = results.sort((a, b) => a.PartNumber - b.PartNumber);
 

@@ -856,6 +856,21 @@ describe('PlatformService', () => {
       sinon.restore();
     });
 
+    it('finishes each file block before starting the next archive write', async () => {
+      const platformService = new PlatformService(getMockDBConnection());
+      const events: string[] = [];
+      const fileBlocks = [{ id: 'first' }, { id: 'second' }] as any;
+      sinon.stub(platformService, '_processFileBlock').callsFake(async (_pack, _root, block) => {
+        events.push(`start:${block.id}`);
+        await new Promise<void>((resolve) => setImmediate(resolve));
+        events.push(`end:${block.id}`);
+      });
+
+      await platformService._addFileBlocksToArchive({} as any, 'root', fileBlocks);
+
+      expect(events).to.deep.equal(['start:first', 'end:first', 'start:second', 'end:second']);
+    });
+
     it('should call helper methods correctly', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
@@ -1192,9 +1207,13 @@ describe('PlatformService', () => {
         { partNumber: 5, url: 'https://s3.amazonaws.com/url5', partSizeBytes: 2 }
       ];
 
+      const events: string[] = [];
       const uploadChunkStub = sinon
         .stub(platformService, '_uploadChunkToS3')
         .callsFake(async (_url, _chunk, partNumber, _partSizeBytes) => {
+          events.push(`start:${partNumber}`);
+          await new Promise<void>((resolve) => setImmediate(resolve));
+          events.push(`end:${partNumber}`);
           return { PartNumber: partNumber, ETag: `etag${partNumber}` };
         });
 
@@ -1208,6 +1227,18 @@ describe('PlatformService', () => {
       );
 
       expect(uploadChunkStub.callCount).to.equal(5);
+      expect(events).to.deep.equal([
+        'start:1',
+        'start:2',
+        'end:1',
+        'end:2',
+        'start:3',
+        'start:4',
+        'end:3',
+        'end:4',
+        'start:5',
+        'end:5'
+      ]);
       expect(result).to.deep.equal([
         { PartNumber: 1, ETag: 'etag1' },
         { PartNumber: 2, ETag: 'etag2' },
@@ -1215,6 +1246,28 @@ describe('PlatformService', () => {
         { PartNumber: 4, ETag: 'etag4' },
         { PartNumber: 5, ETag: 'etag5' }
       ]);
+    });
+
+    it('does not start later batches after an upload fails', async () => {
+      const platformService = new PlatformService(getMockDBConnection());
+      sinon.stub(fs, 'statSync').returns({ size: 4 } as fs.Stats);
+      const createReadStreamStub = sinon.stub(fs, 'createReadStream').returns({} as fs.ReadStream);
+      const failure = new Error('Upload failed');
+      const uploadChunkStub = sinon.stub(platformService, '_uploadChunkToS3').rejects(failure);
+      const parts = [
+        { partNumber: 1, url: 'https://s3.amazonaws.com/url1', partSizeBytes: 2 },
+        { partNumber: 2, url: 'https://s3.amazonaws.com/url2', partSizeBytes: 2 }
+      ];
+
+      try {
+        await platformService._uploadTarFileParts('/path/to/file.tar', parts, 2, { concurrencyLimit: 1 });
+        expect.fail('Expected upload failure');
+      } catch (error) {
+        expect(error).to.equal(failure);
+      }
+
+      expect(uploadChunkStub).to.have.been.calledOnce;
+      expect(createReadStreamStub).to.have.been.calledOnce;
     });
 
     it('should throw when presigned URL count does not match expected part count', async () => {
@@ -1247,8 +1300,20 @@ describe('PlatformService', () => {
   });
 
   describe('_initiateSubmissionUpload', () => {
+    let originalKeycloakClientId: string | undefined;
+
+    beforeEach(() => {
+      originalKeycloakClientId = process.env.KEYCLOAK_CLIENT_ID;
+      process.env.KEYCLOAK_CLIENT_ID = 'sims-sign-in-client';
+    });
+
     afterEach(() => {
       sinon.restore();
+      if (originalKeycloakClientId === undefined) {
+        delete process.env.KEYCLOAK_CLIENT_ID;
+      } else {
+        process.env.KEYCLOAK_CLIENT_ID = originalKeycloakClientId;
+      }
     });
 
     it('should initiate upload and return presigned URLs', async () => {
@@ -1286,6 +1351,7 @@ describe('PlatformService', () => {
       expect(axiosPostStub).to.have.been.calledOnce;
       expect(axiosPostStub.getCall(0).args[1]).to.deep.equal({
         bytes: 1024,
+        client_id: 'sims-sign-in-client',
         name: 'Test Survey',
         description: 'Test Description',
         comment: 'comment',
@@ -1381,6 +1447,7 @@ describe('PlatformService', () => {
 
       expect(axiosPostStub.getCall(0).args[1]).to.deep.equal({
         bytes: 1024,
+        client_id: 'sims-sign-in-client',
         name: 'Test Survey',
         description: 'Test Description',
         comment: 'comment',

@@ -27,6 +27,7 @@ export const EnvSchema = z.object({
   // Keycloak
   KEYCLOAK_HOST: ZodEnvString,
   KEYCLOAK_REALM: ZodEnvString,
+  KEYCLOAK_CLIENT_ID: ZodEnvString,
   KEYCLOAK_ADMIN_USERNAME: ZodEnvString,
   KEYCLOAK_ADMIN_PASSWORD: ZodEnvString,
   KEYCLOAK_API_TOKEN_URL: ZodEnvString,
