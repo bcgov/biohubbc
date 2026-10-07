@@ -3,6 +3,7 @@ import { Feature, FeatureCollection } from 'geojson';
 import chunk from 'lodash/chunk.js';
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import qs from 'qs';
 import * as tarStream from 'tar-stream';
 import { URL } from 'url';
@@ -34,6 +35,7 @@ import {
   IBioHubSubmissionHistoryRow,
   IBioHubWrappedSubmissionHistoryResponse,
   ISubmissionHistoryRow,
+  SubmissionArchiveFormat,
   SubmissionSubmitter,
   SubmissionUploadInitiateResponse,
   UploadPart,
@@ -94,6 +96,10 @@ export enum TARBALL_FILE_ROLE {
   CODESET = 'codeset',
   FEATURE = 'feature'
 }
+
+// Submission archives are gzip-compressed. BioHub signs the upload URLs for the matching content type.
+const SUBMISSION_ARCHIVE_FORMAT: SubmissionArchiveFormat = 'tar.gz';
+const SUBMISSION_ARCHIVE_CONTENT_TYPE = 'application/gzip';
 
 const getBackboneInternalApiHost = () => getEnvironmentVariable('BACKBONE_INTERNAL_API_HOST');
 const getBackboneTaxonTsnPath = () => getEnvironmentVariable('BIOHUB_TAXON_TSN_PATH');
@@ -515,21 +521,21 @@ export class PlatformService extends DBService {
       blocksByType.get(blockType)!.push(block);
     });
 
-    // Create TAR archive with PAX format and extended attributes using tar-stream
+    // Create gzip-compressed TAR archive using tar-stream
     const submissionsBaseDir = path.join(process.cwd(), 'data', 'submissions');
     fs.mkdirSync(submissionsBaseDir, { recursive: true });
-    const tarFilePath = path.join(submissionsBaseDir, `${archiveRootId}.tar`);
+    const tarFilePath = path.join(submissionsBaseDir, `${archiveRootId}.${SUBMISSION_ARCHIVE_FORMAT}`);
     await this._createTarArchive(archiveRootId, blocksByType, tarFilePath);
 
     defaultLog.info({
       label: 'submitSurveyToBioHub',
-      message: 'Flattened survey data package saved by type and compressed to TAR',
+      message: 'Flattened survey data package saved by type and compressed to TAR.GZ',
       totalBlocks: flattenedData.length,
       totalTypes: blocksByType.size,
       tarFilePath
     });
 
-    // Get TAR file size for multipart upload
+    // Get compressed TAR file size for multipart upload
     const tarFileSize = fs.statSync(tarFilePath).size;
 
     // Step 1: Initiate upload and get presigned URLs
@@ -853,7 +859,7 @@ export class PlatformService extends DBService {
   }
 
   /**
-   * Creates a TAR archive with PAX format containing flattened JSON files.
+   * Creates a gzip-compressed TAR archive containing flattened JSON files.
    *
    * @param {string} archiveRootId - The archive root ID
    * @param {Map<string, IFlattenedBlock[]>} blocksByType - Map of block types to their flattened blocks
@@ -867,14 +873,16 @@ export class PlatformService extends DBService {
     tarFilePath: string
   ): Promise<void> {
     const pack = tarStream.pack();
+    const gzip = zlib.createGzip();
     const outputStream = fs.createWriteStream(tarFilePath);
 
-    pack.pipe(outputStream);
+    pack.pipe(gzip).pipe(outputStream);
 
     // Wait for the stream to finish
     const streamPromise = new Promise<void>((resolve, reject) => {
       outputStream.on('close', resolve);
       pack.on('error', reject);
+      gzip.on('error', reject);
       outputStream.on('error', reject);
     });
 
@@ -1005,7 +1013,7 @@ export class PlatformService extends DBService {
     blocks: IFlattenedBlock[]
   ): Promise<void> {
     const fileName = `features/${type}.json`;
-    const fileContent = Buffer.from(JSON.stringify(blocks, null, 2));
+    const fileContent = Buffer.from(JSON.stringify(blocks));
     return this._addFileToArchive(pack, archiveRootId, fileName, fileContent);
   }
 
@@ -1024,7 +1032,7 @@ export class PlatformService extends DBService {
       codesetBlocks.length > 0 && codesetBlocks[0].properties !== undefined
         ? codesetBlocks[0].properties
         : codesetBlocks;
-    const fileContent = Buffer.from(JSON.stringify(payload, null, 2));
+    const fileContent = Buffer.from(JSON.stringify(payload));
     return this._addFileToArchive(pack, archiveRootId, fileName, fileContent);
   }
 
@@ -1175,7 +1183,7 @@ export class PlatformService extends DBService {
    * When existingSubmissionUuid is set, uses /submission/:submissionUuid/upload for re-publish.
    *
    * @param {string} token - Keycloak service token
-   * @param {number} tarFileSize - Size of the TAR file in bytes
+   * @param {number} tarFileSize - Size of the compressed TAR file in bytes
    * @param {PostSurveySubmissionToBioHubObject} surveyDataPackage - Survey data package
    * @param {string} submissionComment - Comment for the submission
    * @param {string | null} existingSubmissionUuid - When set, initiate upload for this existing submission (re-publish)
@@ -1219,11 +1227,13 @@ export class PlatformService extends DBService {
     const requestBody: CreateSubmissionRequest | CreateExistingSubmissionUploadRequest = existingSubmissionUuid
       ? {
           bytes: tarFileSize,
+          archiveFormat: SUBMISSION_ARCHIVE_FORMAT,
           submitters
         }
       : {
           client_id: getEnvironmentVariable('KEYCLOAK_CLIENT_ID'),
           bytes: tarFileSize,
+          archiveFormat: SUBMISSION_ARCHIVE_FORMAT,
           name: surveyDataPackage.name,
           description: surveyDataPackage.description,
           comment: submissionComment,
@@ -1324,7 +1334,7 @@ export class PlatformService extends DBService {
     try {
       const response = await axios.put(presignedUrl, chunk, {
         headers: {
-          'Content-Type': 'application/x-tar',
+          'Content-Type': SUBMISSION_ARCHIVE_CONTENT_TYPE,
           ...(partSizeBytes ? { 'Content-Length': String(partSizeBytes) } : {})
         },
         maxBodyLength: Infinity,

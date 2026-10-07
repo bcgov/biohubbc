@@ -981,7 +981,8 @@ export class PostTelemetryDeploymentToBiohubObject implements BioHubSubmissionFe
         })
         .map((telemetryRecord) => new PostTelemetryToBiohubObject(telemetryRecord));
 
-      this.child_features.push(...telemetryFeatures);
+      // Avoid spreading into push(): a deployment with many telemetry records exceeds the call stack size
+      this.child_features = this.child_features.concat(telemetryFeatures);
     }
 
     // Add frequency child feature if frequency data exists
