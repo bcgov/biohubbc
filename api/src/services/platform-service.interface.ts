@@ -24,9 +24,12 @@ export interface SubmissionSubmitter {
   identitySource: BioHubIdentitySource;
 }
 
+export type SubmissionArchiveFormat = 'tar' | 'tar.gz';
+
 export interface CreateSubmissionRequest {
   client_id: string;
   bytes: number;
+  archiveFormat?: SubmissionArchiveFormat;
   name: string;
   description: string;
   comment: string;
@@ -36,6 +39,7 @@ export interface CreateSubmissionRequest {
 
 export interface CreateExistingSubmissionUploadRequest {
   bytes: number;
+  archiveFormat?: SubmissionArchiveFormat;
   name?: string;
   description?: string;
   comment?: string;

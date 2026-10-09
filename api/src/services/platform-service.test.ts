@@ -2,9 +2,14 @@ import axios from 'axios';
 import chai, { expect } from 'chai';
 import fs from 'fs';
 import { describe } from 'mocha';
+import os from 'node:os';
+import path from 'node:path';
 import { Readable } from 'node:stream';
+import { pipeline } from 'node:stream/promises';
+import zlib from 'node:zlib';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import * as tarStream from 'tar-stream';
 import { getMockDBConnection } from '../__mocks__/db';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiError, ApiErrorType } from '../errors/api-error';
@@ -871,6 +876,34 @@ describe('PlatformService', () => {
       expect(events).to.deep.equal(['start:first', 'end:first', 'start:second', 'end:second']);
     });
 
+    it('should write a gzip-compressed TAR archive with compact JSON files', async () => {
+      const platformService = new PlatformService(getMockDBConnection());
+      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'platform-service-'));
+      const tarFilePath = path.join(tempDir, 'root.tar.gz');
+      const blocks = [{ id: 't1', type: 'telemetry', properties: { dop: 1 }, content: [], parent: 'root' }];
+
+      try {
+        await platformService._createTarArchive('root', new Map([['telemetry', blocks]]), tarFilePath);
+
+        const entries = new Map<string, string>();
+        const extract = tarStream.extract();
+        extract.on('entry', (header, stream, next) => {
+          const chunks: Buffer[] = [];
+          stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+          stream.on('end', () => {
+            entries.set(header.name, Buffer.concat(chunks).toString());
+            next();
+          });
+        });
+        await pipeline(fs.createReadStream(tarFilePath), zlib.createGunzip(), extract);
+
+        expect(entries.get('root/.survey-id')).to.equal('root');
+        expect(entries.get('root/features/telemetry.json')).to.equal(JSON.stringify(blocks));
+      } finally {
+        fs.rmSync(tempDir, { recursive: true, force: true });
+      }
+    });
+
     it('should call helper methods correctly', () => {
       const mockDBConnection = getMockDBConnection();
       const platformService = new PlatformService(mockDBConnection);
@@ -1047,7 +1080,7 @@ describe('PlatformService', () => {
       expect(axiosPutStub).to.have.been.calledOnce;
       expect(axiosPutStub.getCall(0).args[0]).to.equal('https://s3.amazonaws.com/presigned-url');
       expect(axiosPutStub.getCall(0).args[1]).to.equal(chunkStream);
-      expect(axiosPutStub.getCall(0).args[2]?.headers?.['Content-Type']).to.equal('application/x-tar');
+      expect(axiosPutStub.getCall(0).args[2]?.headers?.['Content-Type']).to.equal('application/gzip');
 
       expect(result).to.deep.equal({
         PartNumber: 1,
@@ -1351,6 +1384,7 @@ describe('PlatformService', () => {
       expect(axiosPostStub).to.have.been.calledOnce;
       expect(axiosPostStub.getCall(0).args[1]).to.deep.equal({
         bytes: 1024,
+        archiveFormat: 'tar.gz',
         client_id: 'sims-sign-in-client',
         name: 'Test Survey',
         description: 'Test Description',
@@ -1407,6 +1441,7 @@ describe('PlatformService', () => {
       );
       expect(axiosPostStub.getCall(0).args[1]).to.deep.equal({
         bytes: 1024,
+        archiveFormat: 'tar.gz',
         submitters: []
       });
     });
@@ -1447,6 +1482,7 @@ describe('PlatformService', () => {
 
       expect(axiosPostStub.getCall(0).args[1]).to.deep.equal({
         bytes: 1024,
+        archiveFormat: 'tar.gz',
         client_id: 'sims-sign-in-client',
         name: 'Test Survey',
         description: 'Test Description',
