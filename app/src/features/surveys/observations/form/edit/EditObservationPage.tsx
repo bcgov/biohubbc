@@ -220,6 +220,7 @@ const EditObservationPage = () => {
           observation_subcount_id: subcountProps.observation_subcount_id ?? undefined,
           subcount: subcountProps.subcount,
           comment: subcountProps.comment,
+          critterbase_critter_id: subcountProps.critterbase_critter_id,
           quantitative_measurements,
           qualitative_measurements
         };

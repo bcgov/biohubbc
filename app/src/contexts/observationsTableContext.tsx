@@ -22,16 +22,18 @@ import {
   useObservationsPageContext,
   useTaxonomyContext
 } from 'hooks/useContext';
-import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
+import { useCritterbaseApi } from 'hooks/useCritterbaseApi';
+import { CBMeasurementType, ICritterSimpleResponse } from 'interfaces/useCritterApi.interface';
 import { IGetSurveyFlattenedObservationsResponse, ObservationRecord } from 'interfaces/useObservationApi.interface';
 import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
-import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
+import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef, useState } from 'react';
 import { firstOrNull } from 'utils/Utils';
 import { SIMS_OBSERVATIONS_HIDDEN_COLUMNS } from '../constants/session-storage';
 import { SurveyContext } from './surveyContext';
 
 export interface IObservationTableRow extends Partial<ObservationRecord> {
   id: GridRowId;
+  critter_alias?: string | null;
 }
 
 /**
@@ -164,9 +166,14 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
   const { setYesNoDialog, setSnackbar, setErrorDialog } = useDialogContext();
 
   const biohubApi = useBiohubApi();
+  const critterbaseApi = useCritterbaseApi();
 
   // Existing rows
   const [rows, setRows] = useState<IObservationTableRow[]>([]);
+
+  // Stores critter data for animal aliases
+  const [critterData, setCritterData] = useState<Map<string, ICritterSimpleResponse>>(new Map());
+  const fetchedCritterIds = useRef<Set<string>>(new Set());
 
   // Stores the currently selected row ids
   const [rowSelectionModel, setRowSelectionModel] = useState<GridRowSelectionModel>([]);
@@ -388,6 +395,11 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       const rowsToDisplay: IObservationTableRow[] = observationsData.surveyObservations.flatMap((observationRow) => {
         const { subcount, qualitative_environments, quantitative_environments, ...restObservation } = observationRow;
         const { qualitative_measurements, quantitative_measurements, ...restSubcount } = subcount;
+
+        // Get critter alias if available
+        const critterId = restSubcount.critterbase_critter_id;
+        const critter = critterId ? critterData.get(critterId) : null;
+
         return {
           // Set the required datagrid row id
           id: String(restSubcount.observation_subcount_id),
@@ -413,6 +425,9 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
           // Spread the standard subcount data into the row
           ...restSubcount,
 
+          // Add critter alias
+          critter_alias: critter?.animal_id || null,
+
           // Reduce the array of subcount qualitative measurements into an object and spread into the row
           ...qualitative_measurements.reduce((acc, cur) => {
             return {
@@ -433,7 +448,7 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
 
       return rowsToDisplay;
     },
-    []
+    [critterData]
   );
 
   /**
@@ -444,6 +459,59 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
     // Should not re-run this effect on `refreshRows` changes
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paginationModel, sortModel]);
+
+  /**
+   * Fetch critter data when observations are loaded
+   */
+  useEffect(() => {
+    const fetchCritterData = async () => {
+      if (!observationsData?.surveyObservations) {
+        return;
+      }
+
+      // Extract unique critter IDs that we haven't fetched yet
+      const critterIds = Array.from(
+        new Set(
+          observationsData.surveyObservations
+            .map((item) => item.subcount.critterbase_critter_id)
+            .filter((id): id is string => Boolean(id))
+            .filter((id) => !fetchedCritterIds.current.has(id))
+        )
+      );
+
+      if (critterIds.length === 0) {
+        return;
+      }
+
+      try {
+        // Mark these IDs as being fetched to prevent duplicate requests
+        critterIds.forEach((id) => fetchedCritterIds.current.add(id));
+
+        // Fetch critter data for all unique IDs
+        const critterResponses = await Promise.all(
+          critterIds.map((id) => critterbaseApi.critters.getCritterSimple(id))
+        );
+
+        // Update the critter data map
+        setCritterData((prevData) => {
+          const newCritterData = new Map(prevData);
+          critterResponses.forEach((critter) => {
+            // The observation data uses critterbase_critter_id (string) but API returns critter_id (string UUID)
+            // These should be the same value, so use critter_id as the key
+            const critterId = String(critter.critter_id);
+            newCritterData.set(critterId, critter);
+          });
+          return newCritterData;
+        });
+      } catch (error) {
+        console.error('Failed to fetch critter data:', error);
+        // Remove the IDs from the fetched set if the request failed so they can be retried
+        critterIds.forEach((id) => fetchedCritterIds.current.delete(id));
+      }
+    };
+
+    fetchCritterData();
+  }, [observationsData, critterbaseApi.critters]);
 
   /**
    * Runs when the observations data is loaded or refreshed.

@@ -163,6 +163,7 @@ const CreateObservationPage = () => {
         return {
           subcount: subcountProps.subcount,
           comment: subcountProps.comment,
+          critterbase_critter_id: subcountProps.critterbase_critter_id,
           quantitative_measurements,
           qualitative_measurements
         };

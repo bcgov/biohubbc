@@ -27,6 +27,7 @@ export const initialSubcountFormData: SubcountFormData = {
   observation_subcount_id: null,
   subcount: null,
   comment: null,
+  critterbase_critter_id: null,
   measurements: []
 };
 

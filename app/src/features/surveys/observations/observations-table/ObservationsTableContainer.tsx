@@ -20,6 +20,7 @@ import {
 import { IObservationTableRow } from 'contexts/observationsTableContext';
 import { BulkActionsButton } from 'features/surveys/observations/observations-table/bulk-actions/BulkActionsButton';
 import {
+  AnimalIDColDef,
   MethodTechniqueColDef,
   ObservationIDColDef,
   ObservationSignColDef,
@@ -114,6 +115,7 @@ const ObservationsTableContainer = () => {
         }),
         ObservationSignColDef({ observationSignOptions }),
         ObservationSubcountColDef(),
+        AnimalIDColDef(),
         GenericDateColDef({
           field: 'observation_date',
           headerName: 'Date',
