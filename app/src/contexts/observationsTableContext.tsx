@@ -24,7 +24,7 @@ import {
 } from 'hooks/useContext';
 import { CBMeasurementType } from 'interfaces/useCritterApi.interface';
 import { IGetSurveyFlattenedObservationsResponse, ObservationRecord } from 'interfaces/useObservationApi.interface';
-import { EnvironmentType } from 'interfaces/useReferenceApi.interface';
+import { EnvironmentType, EnvironmentTypeIds } from 'interfaces/useReferenceApi.interface';
 import { createContext, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { firstOrNull } from 'utils/Utils';
 import { SIMS_OBSERVATIONS_HIDDEN_COLUMNS } from '../constants/session-storage';
@@ -65,6 +65,24 @@ export type IObservationsTableContext = {
    * Deletes all of the given records and removes them from the Observation table.
    */
   deleteRows: (observationRecords: IObservationTableRow[]) => void;
+  /**
+   * Deletes all of the given measurement columns, for all observation records, and removes them from the Observation
+   * table.
+   *
+   * @param {string[]} measurementIds The critterbase taxon measurement ids to delete.
+   * @param {() => void} [onSuccess] Optional callback that fires after the user confirms the deletion, and the deletion
+   * is successful.
+   */
+  deleteObservationMeasurementColumns: (measurementIds: string[], onSuccess?: () => void) => void;
+  /**
+   * Deletes all of the given environment columns, for all observation records, and removes them from the Observation
+   * table.
+   *
+   * @param {EnvironmentTypeIds} environmentIds The environment ids to delete.
+   * @param {() => void} [onSuccess] Optional callback that fires after the user confirms the deletion, and the deletion
+   * is successful.
+   */
+  deleteObservationEnvironmentColumns: (environmentIds: EnvironmentTypeIds, onSuccess?: () => void) => void;
   /**
    * Refreshes the Observation Table with already existing records
    */
@@ -601,6 +619,190 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
     taxonomyCacheStatus.isInitializing
   ]);
 
+  /**
+   * Deletes the given records from observations in the database and removes them from the table.
+   *
+   * @param {string[]} measurementIds The critterbase taxon measurement ids to delete.
+   * @return {*}  {Promise<void>}
+   */
+  const _deleteMeasurementColumns = useCallback(
+    async (measurementIds: string[]): Promise<void> => {
+      if (!measurementIds.length) {
+        return;
+      }
+
+      try {
+        // Delete measurement columns from the database
+        await biohubApi.observation.deleteObservationMeasurements(projectId, surveyId, measurementIds);
+
+        setYesNoDialog({ open: false });
+        setSnackbar({
+          snackbarMessage: (
+            <Typography variant="body2" component="div">
+              {measurementIds.length === 1
+                ? ObservationsTableI18N.deleteSingleMeasurementColumnSuccessSnackbarMessage
+                : ObservationsTableI18N.deleteMultipleMeasurementColumnSuccessSnackbarMessage(measurementIds.length)}
+            </Typography>
+          ),
+          open: true
+        });
+      } catch {
+        setYesNoDialog({ open: false });
+        setErrorDialog({
+          onOk: () => setErrorDialog({ open: false }),
+          onClose: () => setErrorDialog({ open: false }),
+          dialogTitle: ObservationsTableI18N.removeMeasurementColumnsErrorDialogTitle,
+          dialogText: ObservationsTableI18N.removeMeasurementColumnsErrorDialogText,
+          open: true
+        });
+      }
+    },
+    [setYesNoDialog, setSnackbar, biohubApi.observation, projectId, surveyId, setErrorDialog]
+  );
+
+  /**
+   * Deletes the given records from the server and removes them from the table.
+   *
+   * @param {EnvironmentTypeIds} environmentIds The critterbase taxon environment ids to delete.
+   * @return {*}  {Promise<void>}
+   */
+  const _deleteEnvironmentColumns = useCallback(
+    async (environmentIds: EnvironmentTypeIds): Promise<void> => {
+      const environmentIdsLength =
+        environmentIds.qualitative_environments.length + environmentIds.quantitative_environments.length;
+
+      if (!environmentIdsLength) {
+        return;
+      }
+
+      try {
+        // Delete environment columns from the database
+        await biohubApi.observation.deleteObservationEnvironments(projectId, surveyId, environmentIds);
+
+        // Close yes-no dialog
+        setYesNoDialog({ open: false });
+
+        // Show snackbar for successful deletion
+        setSnackbar({
+          snackbarMessage: (
+            <Typography variant="body2" component="div">
+              {environmentIdsLength === 1
+                ? ObservationsTableI18N.deleteSingleEnvironmentColumnSuccessSnackbarMessage
+                : ObservationsTableI18N.deleteMultipleEnvironmentColumnSuccessSnackbarMessage(environmentIdsLength)}
+            </Typography>
+          ),
+          open: true
+        });
+      } catch {
+        // Close yes-no dialog
+        setYesNoDialog({ open: false });
+
+        // Show error dialog
+        setErrorDialog({
+          onOk: () => setErrorDialog({ open: false }),
+          onClose: () => setErrorDialog({ open: false }),
+          dialogTitle: ObservationsTableI18N.removeEnvironmentColumnsErrorDialogTitle,
+          dialogText: ObservationsTableI18N.removeEnvironmentColumnsErrorDialogText,
+          open: true
+        });
+      }
+    },
+    [setYesNoDialog, setSnackbar, biohubApi.observation, projectId, surveyId, setErrorDialog]
+  );
+
+  /**
+   * Renders a dialog that prompts the user to delete the given measurement columns (from all observation records).
+   *
+   * @param {string[]} measurementIds The critterbase taxon measurement ids to delete.
+   * @param {() => void} [onSuccess] Optional callback that fires after the user confirms the deletion, and the deletion
+   * is successful.
+   * @return {*}
+   */
+  const deleteObservationMeasurementColumns = useCallback(
+    (measurementIds: string[], onSuccess?: () => void) => {
+      if (!measurementIds.length) {
+        return;
+      }
+
+      setYesNoDialog({
+        dialogTitle:
+          measurementIds.length === 1
+            ? ObservationsTableI18N.removeSingleMeasurementColumnDialogTitle
+            : ObservationsTableI18N.removeMultipleMeasurementColumnsDialogTitle(measurementIds.length),
+        dialogText:
+          measurementIds.length === 1
+            ? ObservationsTableI18N.removeSingleMeasurementColumnDialogText
+            : ObservationsTableI18N.removeMultipleMeasurementColumnsDialogText,
+        yesButtonProps: {
+          color: 'error',
+          loading: false
+        },
+        yesButtonLabel:
+          measurementIds.length === 1
+            ? ObservationsTableI18N.removeSingleMeasurementColumnButtonText
+            : ObservationsTableI18N.removeMultipleMeasurementColumnsButtonText,
+        noButtonProps: { color: 'primary', variant: 'outlined', disabled: false },
+        noButtonLabel: 'Cancel',
+        open: true,
+        onYes: async () => {
+          await _deleteMeasurementColumns(measurementIds);
+          onSuccess?.();
+        },
+        onClose: () => setYesNoDialog({ open: false }),
+        onNo: () => setYesNoDialog({ open: false })
+      });
+    },
+    [_deleteMeasurementColumns, setYesNoDialog]
+  );
+
+  /**
+   * Renders a dialog that prompts the user to delete the given environment columns (from all observation records).
+   *
+   * @param {EnvironmentTypeIds} environmentIds The critterbase taxon environment ids to delete.
+   * @param {() => void} [onSuccess] Optional callback that fires after the user confirms the deletion, and the deletion
+   * is successful.
+   * @return {*}
+   */
+  const deleteObservationEnvironmentColumns = useCallback(
+    (environmentIds: EnvironmentTypeIds, onSuccess?: () => void) => {
+      const environmentIdsLength =
+        environmentIds.qualitative_environments.length + environmentIds.quantitative_environments.length;
+
+      if (!environmentIdsLength) {
+        return;
+      }
+
+      setYesNoDialog({
+        dialogTitle:
+          environmentIdsLength === 1
+            ? ObservationsTableI18N.removeSingleEnvironmentColumnDialogTitle
+            : ObservationsTableI18N.removeMultipleEnvironmentColumnsDialogTitle(environmentIdsLength),
+        dialogText:
+          environmentIdsLength === 1
+            ? ObservationsTableI18N.removeSingleEnvironmentColumnDialogText
+            : ObservationsTableI18N.removeMultipleEnvironmentColumnsDialogText,
+        yesButtonProps: {
+          color: 'error',
+          loading: false
+        },
+        yesButtonLabel:
+          environmentIdsLength === 1
+            ? ObservationsTableI18N.removeSingleEnvironmentColumnButtonText
+            : ObservationsTableI18N.removeMultipleEnvironmentColumnsButtonText,
+        noButtonProps: { color: 'primary', variant: 'outlined', disabled: false },
+        noButtonLabel: 'Cancel',
+        open: true,
+        onYes: async () => {
+          await _deleteEnvironmentColumns(environmentIds);
+          onSuccess?.();
+        },
+        onClose: () => setYesNoDialog({ open: false }),
+        onNo: () => setYesNoDialog({ open: false })
+      });
+    },
+    [_deleteEnvironmentColumns, setYesNoDialog]
+  );
+
   const observationsTableContext: IObservationsTableContext = useMemo(
     () => ({
       _muiDataGridApiRef,
@@ -609,6 +811,8 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       columnVisibilityModel,
       onColumnVisibilityModelChange,
       deleteRows,
+      deleteObservationMeasurementColumns,
+      deleteObservationEnvironmentColumns,
       refreshRows,
       getSelectedRows,
       rowSelectionModel,
@@ -634,6 +838,8 @@ export const ObservationsTableContextProvider = (props: IObservationsTableContex
       columnVisibilityModel,
       onColumnVisibilityModelChange,
       deleteRows,
+      deleteObservationEnvironmentColumns,
+      deleteObservationMeasurementColumns,
       refreshRows,
       getSelectedRows,
       rowSelectionModel,

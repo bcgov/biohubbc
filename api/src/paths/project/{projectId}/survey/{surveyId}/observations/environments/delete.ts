@@ -64,7 +64,7 @@ POST.apiDoc = {
           type: 'object',
           additionalProperties: false,
           properties: {
-            environment_qualitative_id: {
+            environment_qualitative_ids: {
               description: 'An array of qualitative environment ids to delete',
               type: 'array',
               items: {
@@ -72,7 +72,7 @@ POST.apiDoc = {
                 format: 'uuid'
               }
             },
-            environment_quantitative_id: {
+            environment_quantitative_ids: {
               description: 'An array of quantitative environment ids to delete',
               type: 'array',
               items: {
@@ -122,8 +122,8 @@ export function deleteObservationEnvironments(): RequestHandler {
       const surveyId = Number(req.params.surveyId);
 
       const environmentIds = {
-        environment_qualitative_id: req.body.environment_qualitative_id,
-        environment_quantitative_id: req.body.environment_quantitative_id
+        environment_qualitative_ids: req.body.environment_qualitative_ids,
+        environment_quantitative_ids: req.body.environment_quantitative_ids
       };
 
       defaultLog.debug({ label: 'deleteObservationEnvironments', surveyId });
