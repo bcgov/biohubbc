@@ -40,7 +40,7 @@ describe('PostSampleTechniqueToBiohubObject Unit Test', () => {
       codesetExportContext: minimalCodesetExportContext
     });
 
-    expect(techniqueObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+    expect(techniqueObj.id).to.equal('method_technique:123');
     expect(techniqueObj.type).to.equal('sample_technique');
     expect(techniqueObj.properties.name).to.equal('Camera Trapping');
     expect(techniqueObj.properties.description).to.equal('Wildlife camera deployed for monitoring');

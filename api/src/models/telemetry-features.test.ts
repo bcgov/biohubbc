@@ -30,7 +30,7 @@ describe('Telemetry Features BioHub Integration', () => {
 
       const telemetryObj = new PostTelemetryToBiohubObject(telemetryRecord);
 
-      expect(telemetryObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(telemetryObj.id).to.equal('telemetry_vectronic:telem-123');
       expect(telemetryObj.type).to.equal('telemetry');
       expect(telemetryObj.properties.geometry).to.deep.equal({
         type: 'FeatureCollection',
@@ -66,7 +66,7 @@ describe('Telemetry Features BioHub Integration', () => {
 
       const telemetryObj = new PostTelemetryToBiohubObject(telemetryRecord);
 
-      expect(telemetryObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(telemetryObj.id).to.equal('telemetry_lotek:telem-456');
       expect(telemetryObj.type).to.equal('telemetry');
       expect(telemetryObj.properties.geometry).to.be.null;
       expect(telemetryObj.properties.timestamp).to.equal('2024-06-02T15:45:00Z');
@@ -90,7 +90,7 @@ describe('Telemetry Features BioHub Integration', () => {
         codesetExportContext: minimalCodesetExportContext
       });
 
-      expect(deviceObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(deviceObj.id).to.equal('device:123');
       expect(deviceObj.type).to.equal('telemetry_device');
       expect(deviceObj.properties.device_manufacturer).to.equal('code::device_make::1');
       expect(deviceObj.properties.device_model).to.equal('GPS-4400M');
@@ -150,7 +150,7 @@ describe('Telemetry Features BioHub Integration', () => {
         codesetExportContext: minimalCodesetExportContext
       });
 
-      expect(deploymentObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(deploymentObj.id).to.equal('deployment:456');
       expect(deploymentObj.type).to.equal('telemetry_deployment');
       expect(deploymentObj.properties.animal_identifier).to.equal(null);
       expect(deploymentObj.properties.device_key).to.equal('device-key-123');
@@ -621,7 +621,7 @@ describe('Telemetry Features BioHub Integration', () => {
 
       // Test first sampling technique
       const technique1 = samplingTechniqueFeatures[0];
-      expect(technique1.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(technique1.id).to.equal('method_technique:101');
       expect(technique1.properties.name).to.equal('Camera Trapping');
       expect(technique1.properties.description).to.equal('Motion-activated camera monitoring');
       expect(technique1.properties.method_name).to.equal('code::method_lookup::1');
@@ -632,7 +632,7 @@ describe('Telemetry Features BioHub Integration', () => {
 
       // Test second sampling technique
       const technique2 = samplingTechniqueFeatures[1];
-      expect(technique2.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(technique2.id).to.equal('method_technique:102');
       expect(technique2.properties.name).to.equal('Acoustic Monitoring');
       expect(technique2.properties.description).to.be.null;
       expect(technique2.properties.method_name).to.equal('code::method_lookup::2');

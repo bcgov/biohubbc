@@ -41,7 +41,7 @@ describe('Sampling Technique Features BioHub Integration', () => {
         codesetExportContext: minimalCodesetExportContext
       });
 
-      expect(techniqueObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(techniqueObj.id).to.equal('method_technique:123');
       expect(techniqueObj.type).to.equal('sample_technique');
       expect(techniqueObj.properties.name).to.equal('Camera Trapping');
       expect(techniqueObj.properties.description).to.equal('Wildlife camera deployed for monitoring');
@@ -79,7 +79,7 @@ describe('Sampling Technique Features BioHub Integration', () => {
         codesetExportContext: minimalCodesetExportContext
       });
 
-      expect(techniqueObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(techniqueObj.id).to.equal('method_technique:456');
       expect(techniqueObj.type).to.equal('sample_technique');
       expect(techniqueObj.properties.name).to.equal('Visual Survey');
       expect(techniqueObj.properties.description).to.be.null;
@@ -122,7 +122,7 @@ describe('Sampling Technique Features BioHub Integration', () => {
         codesetExportContext: minimalCodesetExportContext
       });
 
-      expect(techniqueObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(techniqueObj.id).to.equal('method_technique:789');
       expect(techniqueObj.type).to.equal('sample_technique');
       expect(techniqueObj.properties.name).to.equal('Acoustic Monitoring');
       expect(techniqueObj.properties.description).to.equal('Passive acoustic monitoring for species identification');
