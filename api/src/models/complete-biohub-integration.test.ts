@@ -114,7 +114,7 @@ describe('Complete BioHub Integration', () => {
       // Verify habitat feature
       const habitatFeature = surveyObj.child_features.find((f) => f.type === 'habitat_feature');
       expect(habitatFeature).to.exist;
-      expect(habitatFeature?.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+      expect(habitatFeature?.id).to.equal('survey_habitat_feature:301');
       expect(habitatFeature?.properties.name).to.equal('code::habitat_feature_type::1');
       expect(habitatFeature?.properties.count).to.equal(2);
       expect(habitatFeature?.properties.timestamp).to.equal('2024-06-15T14:30:00Z');
@@ -123,7 +123,7 @@ describe('Complete BioHub Integration', () => {
       // Verify telemetry device
       const deviceFeature = surveyObj.child_features.find((f) => f.type === 'telemetry_device');
       expect(deviceFeature).to.exist;
-      expect(deviceFeature?.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+      expect(deviceFeature?.id).to.equal('device:601');
       expect(deviceFeature?.properties.device_manufacturer).to.equal('code::device_make::1');
       expect(deviceFeature?.properties.device_model).to.equal('GPS-Tracker-Pro');
       expect(deviceFeature?.properties.serial_number).to.equal('GPS-DEV-001');
@@ -132,7 +132,7 @@ describe('Complete BioHub Integration', () => {
       // Verify telemetry deployment
       const deploymentFeature = surveyObj.child_features.find((f) => f.type === 'telemetry_deployment');
       expect(deploymentFeature).to.exist;
-      expect(deploymentFeature?.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+      expect(deploymentFeature?.id).to.equal('deployment:701');
       expect(deploymentFeature?.properties.animal_identifier).to.equal(null);
       expect(deploymentFeature?.properties.start_date).to.equal('2024-03-01');
       expect(deploymentFeature?.properties.end_date).to.equal('2024-08-31');

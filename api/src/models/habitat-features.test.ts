@@ -41,7 +41,7 @@ describe('Habitat Features BioHub Integration', () => {
         codesetExportContext: minimalCodesetExportContext
       });
 
-      expect(habitatFeatureObj.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(habitatFeatureObj.id).to.equal('survey_habitat_feature:123');
       expect(habitatFeatureObj.type).to.equal('habitat_feature');
       expect(habitatFeatureObj.properties.name).to.equal('code::habitat_feature_type::456');
       expect(habitatFeatureObj.properties.count).to.equal(5);
