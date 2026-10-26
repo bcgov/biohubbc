@@ -85,8 +85,8 @@ export interface ICaptureDetailed {
   capture_comment?: string | null;
   release_comment?: string | null;
   markings: IMarking[];
-  quantitative_measurements: IQualMeasurement[];
-  qualitative_measurements: IQuantMeasurement[];
+  quantitative_measurements: IQuantMeasurement[];
+  qualitative_measurements: IQualMeasurement[];
   capture_location: {
     latitude: number;
     longitude: number;

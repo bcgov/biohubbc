@@ -3,6 +3,7 @@ import crypto from 'node:crypto';
 import { ATTACHMENT_TYPE } from '../constants/attachments';
 import { DeviceRecord } from '../database-models/device';
 import { SurveyObservationRecord } from '../database-models/survey_observation';
+import { ApiGeneralError } from '../errors/api-error';
 import { ISurveyAttachment, ISurveyReportAttachment } from '../repositories/attachment-repository';
 import { SurveyHabitatFeatureWithTaxonsAndSampling } from '../repositories/habitat-feature-repository/survey-habitat-feature-repository.interface';
 import {
@@ -26,14 +27,22 @@ import { GetSurveyData, GetSurveyPurposeAndMethodologyData } from './survey-view
 
 // Extended interface for sampling sites with geometry data
 interface SampleSiteRecordWithGeojson {
+  survey_sample_site_id: number;
   name: string;
   description: string | null;
-  blocks?: { name: string; description: string }[];
+  blocks?: { survey_block_id: number; name: string; description: string }[];
   geojson: Feature | null;
+}
+
+interface StratumRecord {
+  survey_stratum_id: number | null;
+  name: string;
+  description: string;
 }
 
 // Measurement record types
 interface MeasurementRecord {
+  measurement_quantitative_id?: string;
   comment?: string | null;
   measurement_comment?: string | null;
   measurement_name?: string | null;
@@ -52,6 +61,7 @@ interface ProximateCauseOfDeath {
 }
 
 interface MortalityRecord {
+  mortality_id?: string;
   mortality_comment?: string | null;
   mortality_timestamp: string;
   location?: MortalityLocation | null;
@@ -90,6 +100,26 @@ export const minimalCodesetExportContext: CodesetExportContext = {
 
 const defaultLog = getLogger('models/biohub-create');
 
+/**
+ * Builds a feature `id` (BioHub's `source_id`) from the persisted keys of the record the feature is exported from.
+ *
+ * BioHub matches features across uploads to the same submission on this id, so it must be the same every time a
+ * record is exported (never generated at export time), and unique across all feature types in one upload. Keys are
+ * namespaced by their source table, eg: `survey_observation:123`.
+ *
+ * Note: Changing the format of an existing id makes BioHub treat every published feature of that type as new.
+ *
+ * @param {...(string | number | null | undefined)[]} segments - Table names and keys, joined with `:`
+ * @return {*}  {string}
+ */
+export function buildFeatureSourceId(...segments: (string | number | null | undefined)[]): string {
+  if (segments.some((segment) => segment === null || segment === undefined || segment === '')) {
+    throw new ApiGeneralError('Failed to build BioHub feature id, the source record is missing a key.', [{ segments }]);
+  }
+
+  return segments.join(':');
+}
+
 interface BioHubSubmission {
   id: string;
   name: string;
@@ -125,7 +155,7 @@ interface PostSurveyToBiohubOptions {
   focalSpecies?: { focal_species: ITaxonomyWithEcologicalUnits[] };
   surveyLocation?: SurveyLocationRecord[];
   firstNations?: { id: number; name: string }[];
-  strata?: { name: string; description: string }[];
+  strata?: StratumRecord[];
   siteSelectionStrategies?: number[];
   codesetCategories?: CodesetCategory[];
   includeFeatureTypes?: Set<BiohubFeatureType>;
@@ -197,7 +227,7 @@ export class PostSurveyObservationToBiohubObject implements BioHubSubmissionFeat
       ? `${observationRecord.observation_date}T${observationRecord.observation_time}`
       : observationRecord.observation_date;
 
-    this.id = crypto.randomUUID();
+    this.id = buildFeatureSourceId('survey_observation', observationRecord.survey_observation_id);
     this.type = BiohubFeatureType.OBSERVATION;
     let environmental_condition: string | null = null;
     let environmental_condition_value: string | null = null;
@@ -292,7 +322,7 @@ export class PostSurveyCaptureToBiohubObject implements BioHubSubmissionFeature 
       ? `${captureRecord.capture_date}T${captureRecord.capture_time}`
       : captureRecord.capture_date;
 
-    this.id = crypto.randomUUID();
+    this.id = buildFeatureSourceId('capture', captureRecord.capture_id);
     this.type = BiohubFeatureType.CAPTURE;
     this.properties = {
       ...(captureRecord.capture_comment ? { comment: captureRecord.capture_comment } : {}),
@@ -363,7 +393,8 @@ export class PostSurveyReleaseToBiohubObject implements BioHubSubmissionFeature 
       ? `${captureRecord.release_date}T${captureRecord.release_time}`
       : captureRecord.release_date;
 
-    this.id = crypto.randomUUID();
+    // A release is stored on its capture record, so it is keyed by the capture
+    this.id = buildFeatureSourceId('capture', captureRecord.capture_id, 'release');
     this.type = BiohubFeatureType.RELEASE;
     this.properties = {
       ...(captureRecord.release_comment ? { comment: captureRecord.release_comment } : {}),
@@ -406,7 +437,7 @@ export class PostSurveyMarkingToBiohubObject implements BioHubSubmissionFeature 
   ) {
     defaultLog.debug({ label: 'PostSurveyMarkingToBiohubObject', message: 'params', markingRecord });
 
-    this.id = crypto.randomUUID();
+    this.id = buildFeatureSourceId('marking', markingRecord.marking_id);
     this.type = BiohubFeatureType.MARKING;
     this.properties = {
       marking_type: markingRecord.marking_type,
@@ -436,7 +467,7 @@ export class PostSurveyMeasurementToBiohubObject implements BioHubSubmissionFeat
   constructor(measurementRecord: MeasurementRecord) {
     defaultLog.debug({ label: 'PostSurveyMeasurementToBiohubObject', message: 'params', measurementRecord });
 
-    this.id = crypto.randomUUID();
+    this.id = buildFeatureSourceId('measurement_quantitative', measurementRecord.measurement_quantitative_id);
     this.type = BiohubFeatureType.MEASUREMENT;
 
     const description = measurementRecord.comment || measurementRecord.measurement_comment || null;
@@ -466,7 +497,7 @@ export class PostSurveyMortalityToBiohubObject implements BioHubSubmissionFeatur
   constructor(mortalityRecord: MortalityRecord) {
     defaultLog.debug({ label: 'PostSurveyMortalityToBiohubObject', message: 'params', mortalityRecord });
 
-    this.id = crypto.randomUUID();
+    this.id = buildFeatureSourceId('mortality', mortalityRecord.mortality_id);
     this.type = BiohubFeatureType.MORTALITY;
     this.properties = {
       comment: mortalityRecord.mortality_comment || null,
@@ -562,7 +593,7 @@ export class PostSurveyAnimalToBiohubObject implements BioHubSubmissionFeature {
       if (matchingSpecies?.ecological_units && matchingSpecies.ecological_units.length > 0) {
         const ecologicalUnitFeatures = matchingSpecies.ecological_units.map(
           (ecologicalUnit) =>
-            new PostEcologicalUnitToBiohubObject({
+            new PostEcologicalUnitToBiohubObject(animalRecord.critter_id, {
               ecological_unit_type: ecologicalUnit.critterbase_collection_category_id,
               ecological_unit_value: ecologicalUnit.critterbase_collection_unit_id
             })
@@ -571,7 +602,7 @@ export class PostSurveyAnimalToBiohubObject implements BioHubSubmissionFeature {
       }
     }
 
-    this.id = crypto.randomUUID();
+    this.id = buildFeatureSourceId('critter', animalRecord.critter_id);
     this.type = BiohubFeatureType.ANIMAL;
     this.properties = {
       taxon_id: animalRecord.itis_tsn,
@@ -599,7 +630,7 @@ export class PostSurveyAttachmentsToBiohubObject implements BioHubSubmissionFeat
   constructor(attachmentRecord: ISurveyAttachment) {
     defaultLog.debug({ label: 'PostSurveyAttachmentsToBiohubObject', message: 'params', attachmentRecord });
 
-    this.id = crypto.randomUUID();
+    this.id = buildFeatureSourceId('survey_attachment', attachmentRecord.survey_attachment_id);
     this.type = BiohubFeatureType.FILE;
     this.properties = {
       artifact_key: attachmentRecord.key,
@@ -629,7 +660,7 @@ export class PostSurveyReportAttachmentsToBiohubObject implements BioHubSubmissi
   constructor(reportAttachmentRecord: ISurveyReportAttachment) {
     defaultLog.debug({ label: 'PostSurveyReportAttachmentsToBiohubObject', message: 'params', reportAttachmentRecord });
 
-    this.id = crypto.randomUUID();
+    this.id = buildFeatureSourceId('survey_report_attachment', reportAttachmentRecord.survey_report_attachment_id);
     this.type = BiohubFeatureType.REPORT;
     this.properties = {
       artifact_key: 'files/' + reportAttachmentRecord.file_name,
@@ -659,13 +690,13 @@ export class PostSurveySamplingSiteToBiohubObject implements BioHubSubmissionFea
 
   constructor(
     sampleSiteRecord: SampleSiteRecordWithGeojson,
-    strata?: { name: string; description: string }[],
+    strata?: StratumRecord[],
     options: PostSurveySamplingSiteToBiohubOptions = {}
   ) {
     defaultLog.debug({ label: 'PostSurveySamplingSiteToBiohubObject', message: 'params', sampleSiteRecord });
     const { includeBlock = true, includeStratum = true } = options;
 
-    this.id = crypto.randomUUID();
+    this.id = buildFeatureSourceId('survey_sample_site', sampleSiteRecord.survey_sample_site_id);
     this.type = BiohubFeatureType.SAMPLE_SITE;
     this.properties = {
       name: sampleSiteRecord.name,
@@ -680,13 +711,15 @@ export class PostSurveySamplingSiteToBiohubObject implements BioHubSubmissionFea
 
     // Create stratum child features if strata data is available
     const stratumChildFeatures =
-      strata && includeStratum ? strata.map((stratum) => new PostStratumToBiohubObject(stratum)) : [];
+      strata && includeStratum
+        ? strata.map((stratum) => new PostStratumToBiohubObject(stratum, sampleSiteRecord.survey_sample_site_id))
+        : [];
 
     // Create block child features if blocks data is available in the sample site record
     const blockChildFeatures =
       includeBlock && sampleSiteRecord.blocks
         ? sampleSiteRecord.blocks.map(
-            (block: { name: string; description: string }) => new PostBlockToBiohubObject(block)
+            (block) => new PostBlockToBiohubObject(block, sampleSiteRecord.survey_sample_site_id)
           )
         : [];
 
@@ -714,7 +747,7 @@ export class PostSurveySamplingPeriodToBiohubObject implements BioHubSubmissionF
     defaultLog.debug({ label: 'PostSurveySamplingPeriodToBiohubObject', message: 'params', samplingPeriodRecord });
     const { codesetExportContext } = options;
 
-    this.id = crypto.randomUUID();
+    this.id = buildFeatureSourceId('survey_sample_period', samplingPeriodRecord.survey_sample_period_id);
     this.type = BiohubFeatureType.SAMPLE_PERIOD;
     this.properties = {
       ...(samplingPeriodRecord.start_date
@@ -761,7 +794,7 @@ export class PostSampleTechniqueToBiohubObject implements BioHubSubmissionFeatur
 
   constructor(samplingTechniqueRecord: SampleTechniqueRecord, options: { codesetExportContext: CodesetExportContext }) {
     const { codesetExportContext } = options;
-    this.id = crypto.randomUUID();
+    this.id = buildFeatureSourceId('method_technique', samplingTechniqueRecord.method_technique_id);
     this.type = BiohubFeatureType.SAMPLE_TECHNIQUE;
 
     // Use attractant IDs array from the database and convert to code format
@@ -862,7 +895,7 @@ export class PostSurveyHabitatFeatureToBiohubObject implements BioHubSubmissionF
       habitatFeatureRecord.survey_habitat_feature_taxons?.map((species: { itis_tsn: number }) => species.itis_tsn) ||
       [];
 
-    this.id = crypto.randomUUID();
+    this.id = buildFeatureSourceId('survey_habitat_feature', habitatFeatureRecord.survey_habitat_feature_id);
     this.type = BiohubFeatureType.HABITAT_FEATURE;
     this.properties = {
       name: buildCodesetReference(
@@ -911,7 +944,7 @@ export class PostTelemetryDeviceToBiohubObject implements BioHubSubmissionFeatur
     defaultLog.debug({ label: 'PostTelemetryDeviceToBiohubObject', message: 'params', deviceRecord });
     const { codesetExportContext } = options;
 
-    this.id = crypto.randomUUID();
+    this.id = buildFeatureSourceId('device', deviceRecord.device_id);
     this.type = BiohubFeatureType.TELEMETRY_DEVICE;
     this.properties = {
       device_manufacturer: buildCodesetReference('device_make', deviceRecord.device_make_id, codesetExportContext),
@@ -960,7 +993,7 @@ export class PostTelemetryDeploymentToBiohubObject implements BioHubSubmissionFe
       (animal) => animal.critter_id === deploymentRecord.critterbase_critter_id
     );
 
-    this.id = crypto.randomUUID();
+    this.id = buildFeatureSourceId('deployment', deploymentRecord.deployment_id);
     this.type = BiohubFeatureType.TELEMETRY_DEPLOYMENT;
     this.properties = {
       animal_identifier: matchingAnimal?.animal_id || null,
@@ -991,9 +1024,12 @@ export class PostTelemetryDeploymentToBiohubObject implements BioHubSubmissionFe
       (deploymentRecord.frequency != null || deploymentRecord.frequency_unit_id != null)
     ) {
       this.child_features.push(
-        new PostTelemetryFrequencyToBiohubObject(deploymentRecord.frequency, deploymentRecord.frequency_unit_id, {
-          codesetExportContext
-        })
+        new PostTelemetryFrequencyToBiohubObject(
+          deploymentRecord.deployment_id,
+          deploymentRecord.frequency,
+          deploymentRecord.frequency_unit_id,
+          { codesetExportContext }
+        )
       );
     }
   }
@@ -1013,12 +1049,14 @@ export class PostTelemetryFrequencyToBiohubObject implements BioHubSubmissionFea
   child_features: BioHubSubmissionFeature[];
 
   constructor(
+    deploymentId: number,
     frequency: number | null,
     frequencyUnitId: number | null,
     options: { codesetExportContext: CodesetExportContext }
   ) {
     const { codesetExportContext } = options;
-    this.id = crypto.randomUUID();
+    // A frequency is stored on its deployment record, so it is keyed by the deployment
+    this.id = buildFeatureSourceId('deployment', deploymentId, 'frequency');
     this.type = BiohubFeatureType.TELEMETRY_FREQUENCY;
 
     // Only include properties if they are not null, using code format
@@ -1048,7 +1086,8 @@ export class PostTelemetryToBiohubObject implements BioHubSubmissionFeature {
   child_features: BioHubSubmissionFeature[];
 
   constructor(telemetryRecord: Telemetry) {
-    this.id = crypto.randomUUID();
+    // Each vendor stores its telemetry in its own table, eg: `telemetry_lotek`
+    this.id = buildFeatureSourceId(`telemetry_${telemetryRecord.vendor}`, telemetryRecord.telemetry_id);
     this.type = BiohubFeatureType.TELEMETRY;
     this.properties = {
       timestamp: telemetryRecord.acquisition_date,
@@ -1088,8 +1127,9 @@ export class PostStudyAreaToBiohubObject implements BioHubSubmissionFeature {
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(surveyLocation: SurveyLocationRecord[], surveyName: string) {
-    this.id = crypto.randomUUID();
+  constructor(surveyId: number, surveyLocation: SurveyLocationRecord[], surveyName: string) {
+    // A survey has one study area, built from all of its survey locations
+    this.id = buildFeatureSourceId('survey', surveyId, 'study_area');
     this.type = BiohubFeatureType.STUDY_AREA;
 
     // Extract geometry from survey locations
@@ -1120,10 +1160,12 @@ export class PostEcologicalUnitToBiohubObject implements BioHubSubmissionFeature
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(ecologicalUnitData: { ecological_unit_type: string; ecological_unit_value: string }) {
+  constructor(critterId: string, ecologicalUnitData: { ecological_unit_type: string; ecological_unit_value: string }) {
     defaultLog.debug({ label: 'PostEcologicalUnitToBiohubObject', message: 'params', ecologicalUnitData });
 
-    this.id = crypto.randomUUID();
+    // Keyed by the Critterbase collection unit, not the `study_species_unit` row, as survey updates delete and
+    // re-insert the focal species ecological units.
+    this.id = buildFeatureSourceId('critter', critterId, 'collection_unit', ecologicalUnitData.ecological_unit_value);
     this.type = BiohubFeatureType.ECOLOGICAL_UNIT;
     this.properties = {
       ecological_unit_type: ecologicalUnitData.ecological_unit_type,
@@ -1146,10 +1188,23 @@ export class PostStratumToBiohubObject implements BioHubSubmissionFeature {
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(stratumData: { name: string; description: string }) {
+  /**
+   * @param {StratumRecord} stratumData
+   * @param {number} [surveySampleSiteId] - The sample site the stratum is exported under, if any. Each sample site
+   * exports its own copy of the survey's strata, so the copies are keyed by their sample site.
+   */
+  constructor(stratumData: StratumRecord, surveySampleSiteId?: number) {
     defaultLog.debug({ label: 'PostStratumToBiohubObject', message: 'params', stratumData });
 
-    this.id = crypto.randomUUID();
+    this.id =
+      surveySampleSiteId === undefined
+        ? buildFeatureSourceId('survey_stratum', stratumData.survey_stratum_id)
+        : buildFeatureSourceId(
+            'survey_sample_site',
+            surveySampleSiteId,
+            'survey_stratum',
+            stratumData.survey_stratum_id
+          );
     this.type = BiohubFeatureType.STRATUM;
     this.properties = {
       name: stratumData.name,
@@ -1169,10 +1224,10 @@ export class PostBlockToBiohubObject implements BioHubSubmissionFeature {
   properties: Record<string, unknown>;
   child_features: BioHubSubmissionFeature[];
 
-  constructor(blockData: { name: string; description: string }) {
+  constructor(blockData: { survey_block_id: number; name: string; description: string }, surveySampleSiteId: number) {
     defaultLog.debug({ label: 'PostBlockToBiohubObject', message: 'params', blockData });
 
-    this.id = crypto.randomUUID();
+    this.id = buildFeatureSourceId('survey_sample_site', surveySampleSiteId, 'survey_block', blockData.survey_block_id);
     this.type = BiohubFeatureType.BLOCK;
     this.properties = {
       name: blockData.name,
@@ -1202,7 +1257,8 @@ export class PostCodesetToBiohubObject implements BioHubSubmissionFeature {
       categoryCount: codesetCategories.length
     });
 
-    this.id = crypto.randomUUID();
+    // The codeset is written to `codes/codeset.json`, not sent as a feature, so its id is never used by BioHub
+    this.id = BiohubFeatureType.CODESET;
     this.type = BiohubFeatureType.CODESET;
 
     this.properties = buildCodesetProperties(codesetCategories, exportContext);
@@ -1342,7 +1398,7 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
     );
 
     // Create study area feature if survey location data is available
-    const studyAreaFeature = createStudyAreaFeature(surveyLocation, surveyData.survey_name);
+    const studyAreaFeature = createStudyAreaFeature(surveyData.id, surveyLocation, surveyData.survey_name);
 
     const partnershipsValue = buildPartnershipsValue(partnerships, firstNations, { codesetExportContext });
 
@@ -1367,7 +1423,8 @@ export class PostSurveyToBiohubObject implements BioHubSubmissionFeature {
       ? [new PostCodesetToBiohubObject(allCodesetCategories, codesetExportContext)]
       : [];
 
-    this.id = crypto.randomUUID();
+    // The survey's persisted UUID. The survey id also names the archive root directory, so it is not prefixed.
+    this.id = buildFeatureSourceId(surveyData.uuid);
     this.type = BiohubFeatureType.SURVEY;
     this.properties = {
       survey_id: surveyData.id,
@@ -1491,6 +1548,7 @@ function mapOrEmpty<T, R>(items: T[] | undefined, mapper: (item: T) => R): R[] {
 }
 
 function createStudyAreaFeature(
+  surveyId: number,
   surveyLocation: SurveyLocationRecord[] | undefined,
   surveyName: string
 ): BioHubSubmissionFeature[] {
@@ -1498,7 +1556,7 @@ function createStudyAreaFeature(
     return [];
   }
 
-  return [new PostStudyAreaToBiohubObject(surveyLocation, surveyName)];
+  return [new PostStudyAreaToBiohubObject(surveyId, surveyLocation, surveyName)];
 }
 
 function buildPartnershipsValue(
