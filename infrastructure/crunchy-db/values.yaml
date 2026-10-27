@@ -6,7 +6,7 @@
 fullnameOverride: biohubbc-db
 
 # PostGIS-enabled image for PostgreSQL 17
-crunchyImage: artifacts.developer.gov.bc.ca/bcgov-docker-local/crunchy-postgres-gis:ubi9-17.7-3.5-2547
+crunchyImage: artifacts.developer.gov.bc.ca/bcgov-docker-local/crunchy-postgres-gis:ubi9-17.7-3.5-20260910
 postgresVersion: 17
 postGISVersion: '3.5'
 imagePullPolicy: IfNotPresent
