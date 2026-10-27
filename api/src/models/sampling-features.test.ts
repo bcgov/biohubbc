@@ -40,7 +40,7 @@ describe('Sampling Features BioHub Integration', () => {
 
       const siteFeature = new PostSurveySamplingSiteToBiohubObject(sampleSite);
 
-      expect(siteFeature.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(siteFeature.id).to.equal('survey_sample_site:123');
       expect(siteFeature.type).to.equal('sample_site');
       expect(siteFeature.properties.name).to.equal('Test Sampling Site');
       expect(siteFeature.properties.description).to.equal('A test site for sampling');
@@ -91,7 +91,7 @@ describe('Sampling Features BioHub Integration', () => {
         codesetExportContext: minimalCodesetExportContext
       });
 
-      expect(periodFeature.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(periodFeature.id).to.equal('survey_sample_period:456');
       expect(periodFeature.type).to.equal('sample_period');
       expect(periodFeature.properties.start_date).to.equal('2024-01-01T00:00:00.000Z');
       expect(periodFeature.properties.end_date).to.equal('2024-01-31T23:59:59.000Z');

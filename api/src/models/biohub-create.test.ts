@@ -3,10 +3,12 @@ import { FeatureCollection } from 'geojson';
 import { describe } from 'mocha';
 
 import { SurveyObservationRecord } from '../database-models/survey_observation';
+import { ApiGeneralError } from '../errors/api-error';
 import { ICritterDetailed } from '../services/critterbase-service';
 import {
   BiohubFeatureType,
   buildCodesetExportContext,
+  buildFeatureSourceId,
   CodesetCategory,
   minimalCodesetExportContext,
   PostCodesetToBiohubObject,
@@ -20,6 +22,22 @@ import {
   PostSurveyToBiohubObject
 } from './biohub-create';
 import { GetSurveyData, GetSurveyPurposeAndMethodologyData } from './survey-view';
+
+describe('buildFeatureSourceId', () => {
+  it('joins the table names and keys', () => {
+    expect(buildFeatureSourceId('survey_sample_site', 1, 'survey_stratum', 2)).to.equal(
+      'survey_sample_site:1:survey_stratum:2'
+    );
+  });
+
+  it('throws when a key is missing', () => {
+    const message = 'Failed to build BioHub feature id, the source record is missing a key.';
+
+    expect(() => buildFeatureSourceId('marking', undefined)).to.throw(ApiGeneralError, message);
+    expect(() => buildFeatureSourceId('survey_stratum', null)).to.throw(ApiGeneralError, message);
+    expect(() => buildFeatureSourceId('')).to.throw(ApiGeneralError, message);
+  });
+});
 
 describe('PostSurveyObservationToBiohubObject', () => {
   describe('All values provided', () => {
@@ -46,7 +64,7 @@ describe('PostSurveyObservationToBiohubObject', () => {
     });
 
     it('sets id', () => {
-      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(data.id).to.equal('survey_observation:1');
     });
 
     it('sets type', () => {
@@ -339,7 +357,7 @@ describe('PostSurveyAnimalToBiohubObject', () => {
     });
 
     it('sets id', () => {
-      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(data.id).to.equal('critter:animal-uuid-123');
     });
 
     it('sets type', () => {
@@ -398,7 +416,7 @@ describe('PostSurveyAnimalToBiohubObject', () => {
     });
 
     it('sets id', () => {
-      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(data.id).to.equal('critter:animal-uuid-456');
     });
 
     it('sets type', () => {
@@ -680,7 +698,7 @@ describe('PostSurveyMortalityToBiohubObject', () => {
     });
 
     it('sets id', () => {
-      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(data.id).to.equal('mortality:mortality-test-1');
     });
 
     it('sets type', () => {
@@ -777,7 +795,7 @@ describe('PostSurveyMarkingToBiohubObject', () => {
     });
 
     it('sets id', () => {
-      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(data.id).to.equal('marking:marking-test-1');
     });
 
     it('sets type', () => {
@@ -813,7 +831,7 @@ describe('PostSurveyMeasurementToBiohubObject', () => {
     });
 
     it('sets id', () => {
-      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(data.id).to.equal('measurement_quantitative:measurement-test-1');
     });
 
     it('sets type', () => {
@@ -844,7 +862,7 @@ describe('PostSurveyMeasurementToBiohubObject', () => {
     });
 
     it('sets id', () => {
-      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(data.id).to.equal('measurement_quantitative:measurement-test-2');
     });
 
     it('sets type', () => {
@@ -886,7 +904,7 @@ describe('PostSurveyReleaseToBiohubObject', () => {
     });
 
     it('sets id', () => {
-      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(data.id).to.equal('capture:capture-uuid-3:release');
     });
 
     it('sets type', () => {
@@ -1000,8 +1018,8 @@ describe('PostSurveyToBiohubObject', () => {
       );
     });
 
-    it('sets id as UUID', () => {
-      expect(data.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+    it('sets id to the survey UUID', () => {
+      expect(data.id).to.equal('1');
     });
 
     it('sets type', () => {
@@ -1205,8 +1223,8 @@ describe('PostSurveyToBiohubObject', () => {
     } as GetSurveyPurposeAndMethodologyData;
 
     const strata = [
-      { name: 'Forest Stratum', description: 'Mixed coniferous and deciduous forest' },
-      { name: 'Alpine Stratum', description: 'High elevation alpine meadows and rock' }
+      { survey_stratum_id: 1, name: 'Forest Stratum', description: 'Mixed coniferous and deciduous forest' },
+      { survey_stratum_id: 2, name: 'Alpine Stratum', description: 'High elevation alpine meadows and rock' }
     ];
 
     before(() => {
@@ -1244,8 +1262,8 @@ describe('PostSurveyToBiohubObject', () => {
     it('sets correct id for stratum features', () => {
       const stratumFeatures = data.child_features.filter((feature) => feature.type === 'stratum');
 
-      expect(stratumFeatures[0].id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
-      expect(stratumFeatures[1].id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/);
+      expect(stratumFeatures[0].id).to.equal('survey_stratum:1');
+      expect(stratumFeatures[1].id).to.equal('survey_stratum:2');
     });
   });
 
@@ -1325,7 +1343,7 @@ describe('PostSurveyToBiohubObject', () => {
       ) as PostSurveyAnimalToBiohubObject;
 
       expect(animalFeature).to.not.be.undefined;
-      expect(animalFeature.id).to.match(/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i);
+      expect(animalFeature.id).to.equal('critter:animal-uuid-123');
       expect(animalFeature.properties).to.eql({
         taxon_id: 180543,
         animal_identifier: 'ANIMAL-456',
@@ -1734,7 +1752,7 @@ describe('Selective publish feature filtering', () => {
           } as any
         ],
         surveyLocation: [{ geojson: [] }] as any,
-        strata: [{ name: 'Stratum A', description: 'Description' }],
+        strata: [{ survey_stratum_id: 1, name: 'Stratum A', description: 'Description' }],
         includeFeatureTypes: new Set([BiohubFeatureType.OBSERVATION])
       }
     );
@@ -1772,6 +1790,7 @@ describe('Selective publish feature filtering', () => {
       sex: null,
       captures: [
         {
+          capture_id: 'capture-1',
           capture_date: '2024-01-01',
           capture_time: null,
           capture_location: null,
@@ -1782,6 +1801,7 @@ describe('Selective publish feature filtering', () => {
       ],
       mortality: [
         {
+          mortality_id: 'mortality-1',
           mortality_comment: 'deceased',
           mortality_timestamp: '2024-01-02',
           location: null,

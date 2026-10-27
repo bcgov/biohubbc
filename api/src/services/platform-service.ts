@@ -819,6 +819,13 @@ export class PlatformService extends DBService {
     const processBlock = (block: INestedBlock, parentId: string | null = null): string => {
       const blockId = block.id;
 
+      // BioHub matches features on their id, so ids must be unique across all feature types
+      if (blocks.has(blockId)) {
+        throw new ApiGeneralError('Failed to flatten survey data package, found a duplicate feature id.', [
+          { id: blockId, type: block.type }
+        ]);
+      }
+
       // Create the flattened block
       const flatBlock: IFlattenedBlock = {
         id: blockId,

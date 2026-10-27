@@ -12,13 +12,22 @@ import sinonChai from 'sinon-chai';
 import * as tarStream from 'tar-stream';
 import { getMockDBConnection } from '../__mocks__/db';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
+import { SurveyObservationRecord } from '../database-models/survey_observation';
 import { ApiError, ApiErrorType } from '../errors/api-error';
-import { BiohubFeatureType } from '../models/biohub-create';
+import {
+  BiohubFeatureType,
+  PostSurveySubmissionToBioHubObject,
+  PUBLISHABLE_FEATURE_TYPES
+} from '../models/biohub-create';
+import { GetSurveyData } from '../models/survey-view';
+import { ISurveyAttachment, ISurveyReportAttachment } from '../repositories/attachment-repository';
 import { ObservationRecordWithSamplingAndSubcountData } from '../repositories/observation-repository/observation-repository.interface';
+import { TelemetryVendorEnum } from '../repositories/telemetry-repositories/telemetry-vendor-repository.interface';
 import { envConfigDependencies as envConfig } from '../utils/env-config';
 import { featureFlagDependencies as featureFlagUtils } from '../utils/feature-flag-utils';
 import { AttachmentService } from './attachment-service';
 import { CodeService } from './code-service';
+import { ICritterDetailed } from './critterbase-service';
 import { SurveyHabitatFeatureService } from './habitat-feature-services/survey-habitat-feature-service';
 import { HistoryPublishService } from './history-publish-service';
 import { KeycloakService } from './keycloak-service';
@@ -690,6 +699,225 @@ describe('PlatformService', () => {
         parent: 'survey-root-id',
         content: []
       });
+    });
+
+    it('should throw when two features share an id', () => {
+      const mockDBConnection = getMockDBConnection();
+      const platformService = new PlatformService(mockDBConnection);
+
+      const nestedData = {
+        content: {
+          id: 'survey-root-id',
+          type: BiohubFeatureType.SURVEY,
+          properties: {},
+          child_features: [
+            { id: 'duplicate-id', type: BiohubFeatureType.OBSERVATION, properties: {}, child_features: [] },
+            { id: 'duplicate-id', type: BiohubFeatureType.SAMPLE_SITE, properties: {}, child_features: [] }
+          ]
+        }
+      };
+
+      expect(() => platformService._flattenToBlockModel(nestedData)).to.throw(
+        'Failed to flatten survey data package, found a duplicate feature id.'
+      );
+    });
+  });
+
+  describe('feature ids', () => {
+    // A survey with at least one feature of every publishable type
+    const buildSurveyDataPackage = () =>
+      new PostSurveySubmissionToBioHubObject(
+        {
+          id: 1,
+          uuid: '8f9e0c4a-6d5b-4c1e-9a7f-2b3c4d5e6f70',
+          project_id: 1,
+          survey_name: 'Survey',
+          start_date: '2024-01-01',
+          end_date: null,
+          progress_id: 1,
+          survey_types: [],
+          revision_count: 0
+        } as unknown as GetSurveyData,
+        { intended_outcome_ids: [], additional_details: 'Details', revision_count: 0 },
+        [
+          {
+            survey_observation_id: 11,
+            survey_id: 1,
+            survey_sample_period_id: 41,
+            latitude: 49,
+            longitude: -123,
+            count: 1,
+            itis_tsn: 180543,
+            itis_scientific_name: 'Ursus americanus',
+            observation_time: null,
+            observation_date: '2024-06-01',
+            observation_sign_id: null
+          } as unknown as SurveyObservationRecord
+        ],
+        {
+          surveyGeometry: { type: 'FeatureCollection', features: [] },
+          surveyAttachments: [
+            { survey_attachment_id: 21, key: 'key', file_name: 'file.txt', file_type: 'Other', file_size: '1' }
+          ] as unknown as ISurveyAttachment[],
+          surveyReports: [
+            { survey_report_attachment_id: 21, file_name: 'report.pdf', file_size: '1', title: 'Report' }
+          ] as unknown as ISurveyReportAttachment[],
+          submissionComment: 'Comment'
+        },
+        {
+          animalRecords: [
+            {
+              critter_id: 'critter-uuid-1',
+              animal_id: 'Bear',
+              itis_tsn: 180543,
+              critter_comment: null,
+              sex: null,
+              captures: [
+                {
+                  capture_id: 'capture-uuid-1',
+                  capture_date: '2024-05-01',
+                  release_date: '2024-05-02',
+                  markings: [{ marking_id: 'marking-uuid-1', marking_type: 'Ear Tag', body_location: 'Left ear' }],
+                  quantitative_measurements: [
+                    { measurement_quantitative_id: 'measurement-uuid-1', measurement_name: 'Weight', value: 90 }
+                  ],
+                  qualitative_measurements: []
+                }
+              ],
+              mortality: { mortality_id: 'mortality-uuid-1', mortality_timestamp: '2024-07-01' }
+            }
+          ] as unknown as ICritterDetailed[],
+          focalSpecies: {
+            focal_species: [
+              {
+                tsn: 180543,
+                scientificName: 'Ursus americanus',
+                rank: 'Species',
+                kingdom: 'Animalia',
+                ecological_units: [
+                  {
+                    critterbase_collection_category_id: 'category-uuid-1',
+                    critterbase_collection_unit_id: 'unit-uuid-1'
+                  }
+                ]
+              }
+            ]
+          } as any,
+          samplingSites: [
+            {
+              survey_sample_site_id: 31,
+              name: 'Site',
+              description: null,
+              geojson: null,
+              blocks: [{ survey_block_id: 51, name: 'Block', description: 'Block' }]
+            }
+          ],
+          strata: [{ survey_stratum_id: 61, name: 'Stratum', description: 'Stratum' }],
+          samplingPeriods: [{ survey_sample_period_id: 41, start_date: '2024-06-01', end_date: '2024-06-02' }] as any,
+          samplingTechniques: [
+            { method_technique_id: 71, method_name: 'Technique', description: null, method_lookup_id: 1 }
+          ] as any,
+          habitatFeatures: [
+            { survey_habitat_feature_id: 81, habitat_feature_type_id: 1, count: 1, observed_date: '2024-06-01' }
+          ] as any,
+          telemetryDevices: [{ device_id: 91, device_make_id: 1, serial: '123' }] as any,
+          telemetryDeployments: [
+            { deployment_id: 101, critterbase_critter_id: 'critter-uuid-1', frequency: 150, frequency_unit_id: 1 }
+          ] as any,
+          telemetry: [
+            {
+              telemetry_id: 'telemetry-uuid-1',
+              deployment_id: 101,
+              vendor: TelemetryVendorEnum.LOTEK,
+              acquisition_date: '2024-06-01',
+              latitude: 49,
+              longitude: -123
+            }
+          ] as any,
+          surveyLocation: [{ geojson: [] }] as any,
+          codesetCategories: []
+        }
+      );
+
+    it('exports a feature of every publishable type', () => {
+      const platformService = new PlatformService(getMockDBConnection());
+
+      const types = new Set(platformService._flattenToBlockModel(buildSurveyDataPackage()).map((block) => block.type));
+
+      expect([...types]).to.include.members([BiohubFeatureType.SURVEY, ...PUBLISHABLE_FEATURE_TYPES]);
+    });
+
+    it('exports the same id, parent and content for every feature each time an unchanged survey is exported', () => {
+      const platformService = new PlatformService(getMockDBConnection());
+
+      const toIdentity = (block: { id: string; parent: string | null; content: string[] }) => ({
+        id: block.id,
+        parent: block.parent,
+        content: block.content
+      });
+
+      const firstExport = platformService._flattenToBlockModel(buildSurveyDataPackage()).map(toIdentity);
+      const secondExport = platformService._flattenToBlockModel(buildSurveyDataPackage()).map(toIdentity);
+
+      expect(secondExport).to.eql(firstExport);
+    });
+
+    it('exports ids derived from the source records', () => {
+      const platformService = new PlatformService(getMockDBConnection());
+
+      const ids = platformService._flattenToBlockModel(buildSurveyDataPackage()).map((block) => block.id);
+
+      expect(ids).to.have.members([
+        '8f9e0c4a-6d5b-4c1e-9a7f-2b3c4d5e6f70',
+        'survey_observation:11',
+        'survey_report_attachment:21',
+        'survey_attachment:21',
+        'critter:critter-uuid-1',
+        'capture:capture-uuid-1',
+        'marking:marking-uuid-1',
+        'measurement_quantitative:measurement-uuid-1',
+        'capture:capture-uuid-1:release',
+        'mortality:mortality-uuid-1',
+        'critter:critter-uuid-1:collection_unit:unit-uuid-1',
+        'survey_sample_site:31',
+        'survey_sample_site:31:survey_stratum:61',
+        'survey_sample_site:31:survey_block:51',
+        'survey_sample_period:41',
+        'method_technique:71',
+        'survey_habitat_feature:81',
+        'device:91',
+        'deployment:101',
+        'telemetry_lotek:telemetry-uuid-1',
+        'deployment:101:frequency',
+        'survey:1:study_area',
+        'survey_stratum:61',
+        'codeset'
+      ]);
+    });
+
+    it('exports ids that are unique across all feature types', () => {
+      const platformService = new PlatformService(getMockDBConnection());
+
+      const ids = platformService._flattenToBlockModel(buildSurveyDataPackage()).map((block) => block.id);
+
+      expect(new Set(ids).size).to.equal(ids.length);
+    });
+
+    it('exports parent and content references that resolve to features in the same export', () => {
+      const platformService = new PlatformService(getMockDBConnection());
+
+      const blocks = platformService._flattenToBlockModel(buildSurveyDataPackage());
+      const ids = new Set(blocks.map((block) => block.id));
+
+      for (const block of blocks) {
+        if (block.parent !== null) {
+          expect(ids, `parent of ${block.id}`).to.include(block.parent);
+        }
+
+        for (const childId of block.content) {
+          expect(ids, `content of ${block.id}`).to.include(childId);
+        }
+      }
     });
   });
 
