@@ -57,6 +57,10 @@ export class TelemetryVendorRepository extends BaseRepository {
    *
    * Note: Joins the `deployment` table.
    *
+   * Note: The range is `[start, end)`, matching the `deployment` table's no-overlap constraint. Back-to-back deployments
+   * of a device can share a timestamp (eg: one ends and the next starts at midnight), and an inclusive end would return
+   * a record at that timestamp once for each deployment.
+   *
    * @param {Knex.QueryBuilder} queryBuilder
    * @param {string} startDate
    * @param {string} endDate
@@ -69,7 +73,7 @@ export class TelemetryVendorRepository extends BaseRepository {
       .andWhereRaw('telemetry_lotek.recdatetime >= deployment.attachment_start_timestamp')
       .andWhere((qb) =>
         qb
-          .orWhereRaw('telemetry_lotek.recdatetime <= deployment.attachment_end_timestamp')
+          .orWhereRaw('telemetry_lotek.recdatetime < deployment.attachment_end_timestamp')
           .orWhereRaw('deployment.attachment_end_timestamp IS NULL')
       );
   }
@@ -87,20 +91,23 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Add join to filter Lotek telemetry data that has a valid credential key
+   * Add where clause to filter Lotek telemetry data that has a valid credential key
+   *
+   * Note: Uses `WHERE EXISTS` rather than a join, as a survey can have multiple credential records for the same device
+   * key (eg: the same device appears in more than one uploaded credential file), which would duplicate telemetry rows.
    *
    * @param {Knex.QueryBuilder} queryBuilder
    * @param {number} surveyId
    * @returns {Knex.QueryBuilder}
    */
   getLotekTelemetryByCredentialClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
-    return queryBuilder
-      .join(
-        'survey_telemetry_vendor_credential',
-        'telemetry_lotek.device_key',
-        'survey_telemetry_vendor_credential.device_key'
-      )
-      .andWhere('survey_telemetry_vendor_credential.survey_id', surveyId);
+    return queryBuilder.whereExists((subQueryBuilder) =>
+      subQueryBuilder
+        .select(getKnex().raw('1'))
+        .from('survey_telemetry_vendor_credential')
+        .whereRaw('survey_telemetry_vendor_credential.device_key = telemetry_lotek.device_key')
+        .andWhere('survey_telemetry_vendor_credential.survey_id', surveyId)
+    );
   }
 
   /**
@@ -128,7 +135,10 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Filter results by vendor credentials
+   * Filter results to telemetry whose device has a vendor credential in the telemetry's survey.
+   *
+   * Note: Expects the `survey` table to be joined.
+   *
    * The method is static to allow it to be accessed without requiring an instance of TelemetryVendorRepository
    * This is needed because the query is built inside .modify() method
    *
@@ -136,11 +146,18 @@ export class TelemetryVendorRepository extends BaseRepository {
    * @param {Knex.QueryBuilder} queryBuilder
    * @returns {Knex.QueryBuilder}
    */
-  static getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder: Knex.QueryBuilder): Knex.QueryBuilder {
-    return queryBuilder.join(
-      'survey_telemetry_vendor_credential',
-      'survey.survey_id',
-      'survey_telemetry_vendor_credential.survey_id'
+  static getLotekOrVectronicTelemetryByCredentialsClause(
+    queryBuilder: Knex.QueryBuilder,
+    telemetryTable: 'telemetry_lotek' | 'telemetry_vectronic'
+  ): Knex.QueryBuilder {
+    // Use `WHERE EXISTS` rather than a join, so each telemetry record is returned once regardless of how many
+    // credential records match it.
+    return queryBuilder.whereExists((subQueryBuilder) =>
+      subQueryBuilder
+        .select(getKnex().raw('1'))
+        .from('survey_telemetry_vendor_credential')
+        .whereRaw('survey_telemetry_vendor_credential.survey_id = survey.survey_id')
+        .andWhereRaw(`survey_telemetry_vendor_credential.device_key = ${telemetryTable}.device_key`)
     );
   }
 
@@ -187,7 +204,7 @@ export class TelemetryVendorRepository extends BaseRepository {
 
     if (!isUserAdmin) {
       // If the user is not an admin, filter results by vendor credentials
-      TelemetryVendorRepository.getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder);
+      TelemetryVendorRepository.getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder, 'telemetry_lotek');
       // If the user is not an admin, filter results by the projects/surveys they have access to
       TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
@@ -255,6 +272,10 @@ export class TelemetryVendorRepository extends BaseRepository {
    *
    * Note: Joins the `deployment` table.
    *
+   * Note: The range is `[start, end)`, matching the `deployment` table's no-overlap constraint. Back-to-back deployments
+   * of a device can share a timestamp (eg: one ends and the next starts at midnight), and an inclusive end would return
+   * a record at that timestamp once for each deployment.
+   *
    * @param {Knex.QueryBuilder} queryBuilder
    * @param {string} startDate
    * @param {string} endDate
@@ -267,7 +288,7 @@ export class TelemetryVendorRepository extends BaseRepository {
       .andWhereRaw('telemetry_vectronic.acquisitiontime >= deployment.attachment_start_timestamp')
       .andWhere((qb) =>
         qb
-          .orWhereRaw('telemetry_vectronic.acquisitiontime <= deployment.attachment_end_timestamp')
+          .orWhereRaw('telemetry_vectronic.acquisitiontime < deployment.attachment_end_timestamp')
           .orWhereRaw('deployment.attachment_end_timestamp IS NULL')
       );
   }
@@ -285,20 +306,23 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Add join to filter Vectronic telemetry data that has a valid credential key
+   * Add where clause to filter Vectronic telemetry data that has a valid credential key
+   *
+   * Note: Uses `WHERE EXISTS` rather than a join, as a survey can have multiple credential records for the same device
+   * key (eg: the same device appears in more than one uploaded credential file), which would duplicate telemetry rows.
    *
    * @param {Knex.QueryBuilder} queryBuilder
    * @param {number} surveyId
    * @returns {Knex.QueryBuilder}
    */
   getVectronicTelemetryByCredentialClause(queryBuilder: Knex.QueryBuilder, surveyId: number): Knex.QueryBuilder {
-    return queryBuilder
-      .join(
-        'survey_telemetry_vendor_credential',
-        'telemetry_vectronic.device_key',
-        'survey_telemetry_vendor_credential.device_key'
-      )
-      .andWhere('survey_telemetry_vendor_credential.survey_id', surveyId);
+    return queryBuilder.whereExists((subQueryBuilder) =>
+      subQueryBuilder
+        .select(getKnex().raw('1'))
+        .from('survey_telemetry_vendor_credential')
+        .whereRaw('survey_telemetry_vendor_credential.device_key = telemetry_vectronic.device_key')
+        .andWhere('survey_telemetry_vendor_credential.survey_id', surveyId)
+    );
   }
 
   /**
@@ -352,7 +376,7 @@ export class TelemetryVendorRepository extends BaseRepository {
 
     if (!isUserAdmin) {
       // If the user is not an admin, filter results by vendor credentials
-      TelemetryVendorRepository.getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder);
+      TelemetryVendorRepository.getLotekOrVectronicTelemetryByCredentialsClause(queryBuilder, 'telemetry_vectronic');
       // If the user is not an admin, filter results by the projects/surveys they have access to
       TelemetryVendorRepository.getTelemetryByProjectsSurveysUserAccessClause(queryBuilder, systemUserId);
     }
@@ -420,6 +444,10 @@ export class TelemetryVendorRepository extends BaseRepository {
    *
    * Note: Joins the `deployment` table.
    *
+   * Note: The range is `[start, end)`, matching the `deployment` table's no-overlap constraint. Back-to-back deployments
+   * of a device can share a timestamp (eg: one ends and the next starts at midnight), and an inclusive end would return
+   * a record at that timestamp once for each deployment.
+   *
    * @param {Knex.QueryBuilder} queryBuilder
    * @param {string} startDate
    * @param {string} endDate
@@ -432,7 +460,7 @@ export class TelemetryVendorRepository extends BaseRepository {
       .andWhereRaw('telemetry_ats.date >= deployment.attachment_start_timestamp')
       .andWhere((qb) =>
         qb
-          .orWhereRaw('telemetry_ats.date <= deployment.attachment_end_timestamp')
+          .orWhereRaw('telemetry_ats.date < deployment.attachment_end_timestamp')
           .orWhereRaw('deployment.attachment_end_timestamp IS NULL')
       );
   }
@@ -1115,7 +1143,7 @@ export class TelemetryVendorRepository extends BaseRepository {
   }
 
   /**
-   * Insert vendor device key data
+   * Insert vendor device key data, if the survey does not already have a credential record for the device key.
    *
    * @async
    * @param {number} survey_id
@@ -1128,18 +1156,34 @@ export class TelemetryVendorRepository extends BaseRepository {
     deviceKey: string,
     survey_telemetry_credential_attachment_id: number
   ): Promise<number> {
+    // A device can appear in more than one credential file uploaded to a survey. Only one credential record is kept
+    // per survey device, so return the existing record if there is one.
+    // Note: The final SELECT does not see the row inserted by the CTE, so exactly one row is returned.
     const sqlStatement = SQL`
-      INSERT INTO survey_telemetry_vendor_credential (
-        survey_id,
-        survey_telemetry_credential_attachment_id,
-        device_key
-      ) VALUES (
-        ${survey_id},
-        ${survey_telemetry_credential_attachment_id},
-        ${deviceKey}
+      WITH inserted AS (
+        INSERT INTO survey_telemetry_vendor_credential (
+          survey_id,
+          survey_telemetry_credential_attachment_id,
+          device_key
+        ) VALUES (
+          ${survey_id},
+          ${survey_telemetry_credential_attachment_id},
+          ${deviceKey}
+        )
+        ON CONFLICT (survey_id, device_key) DO NOTHING
+        RETURNING
+          survey_telemetry_vendor_credential_id
       )
-      RETURNING
-        survey_telemetry_vendor_credential_id;
+      SELECT survey_telemetry_vendor_credential_id FROM inserted
+      UNION ALL
+      SELECT
+        survey_telemetry_vendor_credential_id
+      FROM
+        survey_telemetry_vendor_credential
+      WHERE
+        survey_id = ${survey_id}
+      AND
+        device_key = ${deviceKey};
       `;
 
     const responseVendor = await this.connection.sql(
