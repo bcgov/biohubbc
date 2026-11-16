@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import { getMockDBConnection } from '../../__mocks__/db';
+import { getKnex } from '../../database/db';
 import { ApiExecuteSQLError } from '../../errors/api-error';
 import { IAllTelemetryAdvancedFilters } from '../../models/telemetry-view';
 import { ApiPaginationOptions } from '../../zod-schema/pagination';
@@ -226,6 +227,18 @@ describe('TelemetryVendorRepository', () => {
       expect(mockDbConnection.sql).to.have.been.calledOnce;
     });
 
+    it('should not insert a duplicate credential record for a survey device', async () => {
+      const mockDbConnection = getMockDBConnection({
+        sql: sinon.stub().resolves({ rowCount: 1, rows: [{ survey_telemetry_vendor_credential_id: 1 }] })
+      });
+      const telemetryVendorRepository = new TelemetryVendorRepository(mockDbConnection);
+
+      await telemetryVendorRepository.insertTelemetryCredentialAttachmentVendor(1, 'lotek:11111', 1);
+
+      const sqlText = (mockDbConnection.sql as sinon.SinonStub).getCall(0).args[0].text;
+      expect(sqlText).to.contain('ON CONFLICT (survey_id, device_key) DO NOTHING');
+    });
+
     it('should throw an error if the insert operation fails', async () => {
       const mockQueryResponse = {
         rowCount: 0,
@@ -287,6 +300,52 @@ describe('TelemetryVendorRepository', () => {
 
       expect(response).to.be.an('array').with.lengthOf(1);
       expect(response).to.eql([mockTelemetry]);
+    });
+  });
+
+  describe('telemetry query clauses', () => {
+    const getSql = (modify: (queryBuilder: any) => void): string => {
+      const queryBuilder = getKnex().queryBuilder().select('*').from('telemetry_lotek');
+      modify(queryBuilder);
+      return queryBuilder.toString();
+    };
+
+    it('should filter Lotek and Vectronic telemetry by credential without joining the credential table', () => {
+      const telemetryVendorRepository = new TelemetryVendorRepository(getMockDBConnection());
+
+      const lotekSql = getSql((qb) => telemetryVendorRepository.getLotekTelemetryByCredentialClause(qb, 1));
+      const vectronicSql = getSql((qb) => telemetryVendorRepository.getVectronicTelemetryByCredentialClause(qb, 1));
+
+      for (const sql of [lotekSql, vectronicSql]) {
+        expect(sql).not.to.contain('join "survey_telemetry_vendor_credential"');
+        expect(sql).to.contain('exists (select 1 from "survey_telemetry_vendor_credential"');
+      }
+      expect(lotekSql).to.contain('survey_telemetry_vendor_credential.device_key = telemetry_lotek.device_key');
+      expect(vectronicSql).to.contain('survey_telemetry_vendor_credential.device_key = telemetry_vectronic.device_key');
+    });
+
+    it('should filter found telemetry by a credential for the same device and survey', () => {
+      const sql = getSql((qb) =>
+        TelemetryVendorRepository.getLotekOrVectronicTelemetryByCredentialsClause(qb, 'telemetry_lotek')
+      );
+
+      expect(sql).not.to.contain('join "survey_telemetry_vendor_credential"');
+      expect(sql).to.contain('survey_telemetry_vendor_credential.survey_id = survey.survey_id');
+      expect(sql).to.contain('survey_telemetry_vendor_credential.device_key = telemetry_lotek.device_key');
+    });
+
+    it('should exclude the deployment end timestamp from the attachment date range', () => {
+      const telemetryVendorRepository = new TelemetryVendorRepository(getMockDBConnection());
+
+      expect(getSql((qb) => telemetryVendorRepository.getLotekTelemetryByAttachmentDateRangeClause(qb))).to.contain(
+        'telemetry_lotek.recdatetime < deployment.attachment_end_timestamp'
+      );
+      expect(getSql((qb) => telemetryVendorRepository.getVectronicTelemetryByAttachmentDateRangeClause(qb))).to.contain(
+        'telemetry_vectronic.acquisitiontime < deployment.attachment_end_timestamp'
+      );
+      expect(getSql((qb) => telemetryVendorRepository.getATSTelemetryByAttachmentDateRangeClause(qb))).to.contain(
+        'telemetry_ats.date < deployment.attachment_end_timestamp'
+      );
     });
   });
 });
