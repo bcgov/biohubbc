@@ -98,7 +98,8 @@ export class ObservationService extends DBService {
         const observationSubCountRecord = await subCountService.insertObservationSubCount({
           survey_observation_id: surveyObservationId,
           subcount: subcount.subcount,
-          comment: subcount.comment
+          comment: subcount.comment,
+          critterbase_critter_id: subcount.critterbase_critter_id ?? null
         });
 
         // -- Subcount Measurement Data --------------------------------------------------------------
@@ -187,7 +188,8 @@ export class ObservationService extends DBService {
       const observationSubCountRecord = await subCountService.insertObservationSubCount({
         survey_observation_id: surveyObservationId,
         subcount: subcount.subcount,
-        comment: subcount.comment
+        comment: subcount.comment,
+        critterbase_critter_id: subcount.critterbase_critter_id ?? null
       });
 
       // -- Subcount Measurement Data --------------------------------------------------------------
@@ -605,7 +607,7 @@ export class ObservationService extends DBService {
    * @memberof ObservationRepository
    */
   async deleteObservationsByIds(surveyId: number, observationIds: number[]): Promise<number> {
-    // Remove any existing child subcount records (observation_subcount, subcount_critter) before
+    // Remove any existing child subcount records (observation_subcount) before
     // deleting survey_observation records
     const service = new SubCountService(this.connection);
     await service.deleteObservationSubCountRecordsByObservationId(surveyId, observationIds);

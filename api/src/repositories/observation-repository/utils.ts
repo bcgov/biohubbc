@@ -376,6 +376,7 @@ function _getFlattenedSubcountsQuery(authorizedSurveyIdsQuery: Knex.QueryBuilder
           'observation_subcount_id', observation_subcount.observation_subcount_id,
           'comment', observation_subcount.comment,
           'subcount', subcount,
+          'critterbase_critter_id', observation_subcount.critterbase_critter_id,
           'qualitative_measurements', COALESCE(w_qualitative_measurements.qualitative_measurements, '[]'::json),
           'quantitative_measurements', COALESCE(w_quantitative_measurements.quantitative_measurements, '[]'::json)
         ) as subcount

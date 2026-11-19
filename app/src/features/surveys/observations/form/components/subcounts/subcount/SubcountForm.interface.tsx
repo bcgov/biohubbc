@@ -22,6 +22,12 @@ export type SubcountFormData = {
    */
   comment: string | null;
   /**
+   * The critterbase critter id for the subcount record.
+   *
+   * This is used to link the subcount to a specific individual animal in CritterBase.
+   */
+  critterbase_critter_id: string | null;
+  /**
    * The markings for the subcount record.
    *
    * // TODO - future enhancement

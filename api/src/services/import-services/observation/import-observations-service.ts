@@ -303,7 +303,8 @@ export class ImportObservationsService extends DBService {
       subcount: row.COUNT ?? null,
       comment: row.COMMENT ?? null,
       qualitative_measurements: [],
-      quantitative_measurements: []
+      quantitative_measurements: [],
+      critterbase_critter_id: null
     };
 
     // Loop through the dynamic headers to extract measurements and environments

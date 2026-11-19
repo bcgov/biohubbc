@@ -10,6 +10,7 @@ export const ObservationSubcountModel = z.object({
   survey_observation_id: z.number(),
   subcount: z.number(),
   comment: z.string().nullable(),
+  critterbase_critter_id: z.string().uuid().nullable(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),

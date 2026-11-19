@@ -277,3 +277,18 @@ export const ObservationQualitativeEnvironmentColDef = (props: {
     }
   };
 };
+
+export const AnimalIDColDef = (): GridColDef<IObservationTableRow> => {
+  return {
+    field: 'critter_alias',
+    headerName: 'Observed Animal',
+    description: 'The identifier or alias of the individual animal observed',
+    editable: false,
+    hideable: true,
+    flex: 1,
+    minWidth: 200,
+    disableColumnMenu: true,
+    headerAlign: 'left',
+    renderCell: (params) => <Typography variant="body2">{params.row.critter_alias || ''}</Typography>
+  };
+};
