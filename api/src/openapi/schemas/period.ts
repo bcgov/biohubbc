@@ -43,6 +43,11 @@ export const CreatePeriodRequestSchema: OpenAPIV3.SchemaObject = {
       type: 'string',
       description: 'End time of the period',
       nullable: true
+    },
+    comment: {
+      type: 'string',
+      description: 'Sample period comment',
+      nullable: true
     }
   }
 };
@@ -65,6 +70,7 @@ export const GetPeriodResponseSchema: OpenAPIV3.SchemaObject = {
     'start_time',
     'end_date',
     'end_time',
+    'comment',
     'method_technique',
     'survey_sample_site'
   ],
@@ -102,6 +108,11 @@ export const GetPeriodResponseSchema: OpenAPIV3.SchemaObject = {
     },
     end_time: {
       type: 'string',
+      nullable: true
+    },
+    comment: {
+      type: 'string',
+      description: 'Sample period comment',
       nullable: true
     },
     survey_sample_site: {

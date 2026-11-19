@@ -3,6 +3,7 @@ import Icon from '@mdi/react';
 import Box from '@mui/material/Box';
 import IconButton from '@mui/material/IconButton';
 import Stack from '@mui/material/Stack';
+import TextField from '@mui/material/TextField';
 import { DateTimeFields } from 'components/fields/DateTimeFields';
 import { useFormikContext } from 'formik';
 import { v4 } from 'uuid';
@@ -16,6 +17,7 @@ export interface ISurveySamplePeriodPeriodFormData {
   start_time: string | null;
   end_date: string | null;
   end_time: string | null;
+  comment: string | null;
 }
 
 export const InitialSurveySamplePeriodPeriodFormData: ISurveySamplePeriodPeriodFormData = {
@@ -24,7 +26,8 @@ export const InitialSurveySamplePeriodPeriodFormData: ISurveySamplePeriodPeriodF
   start_date: '',
   end_date: '',
   start_time: '',
-  end_time: ''
+  end_time: '',
+  comment: ''
 };
 
 interface ISamplePeriodPeriodFormProps {
@@ -86,6 +89,10 @@ export const SamplePeriodPeriodForm = (props: ISamplePeriodPeriodFormProps) => {
             }}
             formikProps={formikProps}
           />
+        </Stack>
+        {/* Comment Field */}
+        <Stack>
+          <TextField fullWidth label="Comment" {...formikProps.getFieldProps(`sample_periods[${index}].comment`)} />
         </Stack>
       </Box>
 

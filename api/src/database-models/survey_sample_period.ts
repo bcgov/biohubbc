@@ -14,6 +14,7 @@ export const SurveySamplePeriodModel = z.object({
   end_date: z.string().nullable(),
   start_time: z.string().nullable(),
   end_time: z.string().nullable(),
+  comment: z.string().nullable(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),

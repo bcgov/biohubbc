@@ -6,6 +6,7 @@ import { validateCSVWorksheet } from '../../../utils/csv-utils/csv-config-valida
 import { CSVConfig, CSVError } from '../../../utils/csv-utils/csv-config-validation.interface';
 import {
   getDateCellValidator,
+  getDescriptionCellValidator,
   getTimeCellSetter,
   getTimeCellValidator
 } from '../../../utils/csv-utils/csv-header-configs';
@@ -26,7 +27,8 @@ export type SamplePeriodCSVStaticHeader =
   | 'START_DATE'
   | 'START_TIME'
   | 'END_DATE'
-  | 'END_TIME';
+  | 'END_TIME'
+  | 'COMMENT';
 
 /**
  * ImportSamplePeriodsService - A service for importing Sample Periods into SIMS.
@@ -56,7 +58,8 @@ export class ImportSamplePeriodsService extends DBService {
         START_DATE: { aliases: ['START DATE'] },
         START_TIME: { aliases: ['START TIME'], optional: true },
         END_DATE: { aliases: ['END DATE'] },
-        END_TIME: { aliases: ['END TIME'], optional: true }
+        END_TIME: { aliases: ['END TIME'], optional: true },
+        COMMENT: { aliases: ['COMMENTS', 'NOTES'], optional: true }
       },
       ignoreDynamicHeaders: false
     };
@@ -93,7 +96,8 @@ export class ImportSamplePeriodsService extends DBService {
         start_date: row.START_DATE,
         start_time: row.START_TIME,
         end_date: row.END_DATE,
-        end_time: row.END_TIME
+        end_time: row.END_TIME,
+        comment: row.COMMENT
       };
     });
 
@@ -125,7 +129,8 @@ export class ImportSamplePeriodsService extends DBService {
       START_DATE: { validateCell: getDateCellValidator() },
       START_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
       END_DATE: { validateCell: getDateCellValidator() },
-      END_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() }
+      END_TIME: { validateCell: getTimeCellValidator(), setCellValue: getTimeCellSetter() },
+      COMMENT: { validateCell: getDescriptionCellValidator() }
     });
 
     // Set the start date is before end date row validator

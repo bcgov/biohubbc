@@ -9,6 +9,7 @@ export type CreateSamplingPeriod =
       start_time: string | null;
       end_date: string | null;
       end_time: string | null;
+      comment: string | null;
     }
   | {
       // At least method technique is not null
@@ -18,6 +19,7 @@ export type CreateSamplingPeriod =
       start_time: string | null;
       end_date: string | null;
       end_time: string | null;
+      comment: string | null;
     }
   | {
       // At least start/end date are not null
@@ -27,6 +29,7 @@ export type CreateSamplingPeriod =
       start_time: string | null;
       end_date: string;
       end_time: string | null;
+      comment: string | null;
     };
 
 export type GetSamplingPeriod = {
@@ -41,6 +44,7 @@ export type GetSamplingPeriod = {
       start_time: string | null;
       end_date: string | null;
       end_time: string | null;
+      comment: string | null;
       survey_sample_site: {
         survey_sample_site_id: number;
         name: string;
@@ -60,6 +64,7 @@ export type GetSamplingPeriod = {
       start_time: string | null;
       end_date: string | null;
       end_time: string | null;
+      comment: string | null;
       survey_sample_site: {
         survey_sample_site_id: number;
         name: string;
@@ -79,6 +84,7 @@ export type GetSamplingPeriod = {
       start_time: string | null;
       end_date: string;
       end_time: string | null;
+      comment: string | null;
       survey_sample_site: {
         survey_sample_site_id: number;
         name: string;
@@ -112,4 +118,5 @@ export type UpdateSamplingPeriod = {
   start_time: string | null;
   end_date: string;
   end_time: string | null;
+  comment: string | null;
 };
