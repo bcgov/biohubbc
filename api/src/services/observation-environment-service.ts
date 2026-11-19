@@ -168,8 +168,8 @@ export class ObservationEnvironmentService extends DBService {
   async deleteEnvironmentsForEnvironmentIds(
     surveyId: number,
     environmentIds: {
-      environment_qualitative_id: string[];
-      environment_quantitative_id: string[];
+      environment_qualitative_ids: string[];
+      environment_quantitative_ids: string[];
     }
   ): Promise<void> {
     return this.observationEnvironmentRepository.deleteEnvironmentsForEnvironmentIds(surveyId, environmentIds);

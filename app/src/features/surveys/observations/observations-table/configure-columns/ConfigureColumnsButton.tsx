@@ -7,6 +7,8 @@ import { useConfigureGeneralColumns } from 'features/surveys/observations/observ
 import { useCodesContext, useObservationsTableContext } from 'hooks/useContext';
 import { useEffect, useMemo, useState } from 'react';
 import { ConfigureColumnsDialog } from './components/ConfigureColumnsDialog';
+import { useConfigureEnvironmentColumns } from './components/environment/useConfigureEnvironmentColumns';
+import { useConfigureMeasurementColumns } from './components/measurements/useConfigureMeasurementColumns';
 
 export interface IConfigureColumnsButtonProps {
   /**
@@ -101,6 +103,14 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
 
   const { onToggleShowHideAll, onToggleColumnVisibility } = useConfigureGeneralColumns({ hideableColumns });
 
+  const { onAddMeasurementColumns, onRemoveMeasurementColumns } = useConfigureMeasurementColumns();
+
+  const { onAddEnvironmentColumns, onRemoveEnvironmentColumns } = useConfigureEnvironmentColumns();
+
+  const measurementColumns = observationsTableContext.measurementColumns;
+
+  const environmentColumns = observationsTableContext.environmentColumns;
+
   return (
     <>
       <Button
@@ -121,6 +131,12 @@ export const ConfigureColumnsButton = (props: IConfigureColumnsButtonProps) => {
         hideableColumns={hideableColumns}
         onToggleShowHideAll={onToggleShowHideAll}
         onToggleColumnVisibility={onToggleColumnVisibility}
+        measurementColumns={measurementColumns}
+        onAddMeasurementColumns={onAddMeasurementColumns}
+        onRemoveMeasurementColumns={onRemoveMeasurementColumns}
+        environmentColumns={environmentColumns}
+        onAddEnvironmentColumns={onAddEnvironmentColumns}
+        onRemoveEnvironmentColumns={onRemoveEnvironmentColumns}
       />
     </>
   );

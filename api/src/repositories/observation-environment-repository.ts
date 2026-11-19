@@ -468,14 +468,25 @@ export class ObservationEnvironmentRepository extends BaseRepository {
   async deleteEnvironmentsForEnvironmentIds(
     surveyId: number,
     environmentIds: {
-      environment_qualitative_id: string[];
-      environment_quantitative_id: string[];
+      environment_qualitative_ids: string[];
+      environment_quantitative_ids: string[];
     }
   ): Promise<void> {
-    await Promise.all([
-      this.deleteQualitativeEnvironmentForEnvironmentIds(surveyId, environmentIds.environment_qualitative_id),
-      this.deleteQuantitativeEnvironmentForEnvironmentIds(surveyId, environmentIds.environment_quantitative_id)
-    ]);
+    const promises = [];
+
+    if (environmentIds.environment_qualitative_ids.length > 0) {
+      promises.push(
+        this.deleteQualitativeEnvironmentForEnvironmentIds(surveyId, environmentIds.environment_qualitative_ids)
+      );
+    }
+
+    if (environmentIds.environment_quantitative_ids.length > 0) {
+      promises.push(
+        this.deleteQuantitativeEnvironmentForEnvironmentIds(surveyId, environmentIds.environment_quantitative_ids)
+      );
+    }
+
+    await Promise.all(promises);
   }
 
   /**
@@ -483,7 +494,7 @@ export class ObservationEnvironmentRepository extends BaseRepository {
    * qualitative ids.
    *
    * @param {number} surveyId
-   * @param {string[]} environment_qualitative_id
+   * @param {string[]} environment_qualitative_ids
    * @return {*}  {Promise<number>}
    * @memberof ObservationEnvironmentRepository
    */
@@ -496,9 +507,9 @@ export class ObservationEnvironmentRepository extends BaseRepository {
       .delete()
       .from('observation_environment_qualitative')
       .using(['survey_observation'])
-      .andWhere('observation_environment_qualitative.survey_observation_id = survey_observation.survey_observation_id')
-      .andWhere('survey_observation.survey_id', surveyId)
-      .whereIn('observation_environment_qualitative.environment_qualitative_id', environment_qualitative_ids);
+      .whereIn('observation_environment_qualitative.environment_qualitative_id', environment_qualitative_ids)
+      .whereRaw('observation_environment_qualitative.survey_observation_id = survey_observation.survey_observation_id')
+      .where('survey_observation.survey_id', surveyId);
 
     const response = await this.connection.knex(qb);
 
@@ -510,7 +521,7 @@ export class ObservationEnvironmentRepository extends BaseRepository {
    * quantitative ids.
    *
    * @param {number} surveyId
-   * @param {string[]} environment_quantitative_id
+   * @param {string[]} environment_quantitative_ids
    * @return {*}  {Promise<number>}
    * @memberof ObservationEnvironmentRepository
    */
@@ -523,8 +534,8 @@ export class ObservationEnvironmentRepository extends BaseRepository {
       .delete()
       .from('observation_environment_quantitative')
       .using(['survey_observation'])
-      .andWhere('observation_environment_quantitative.survey_observation_id = survey_observation.survey_observation_id')
-      .andWhere('survey_observation.survey_id', surveyId)
+      .whereRaw('observation_environment_quantitative.survey_observation_id = survey_observation.survey_observation_id')
+      .where('survey_observation.survey_id', surveyId)
       .whereIn('observation_environment_quantitative.environment_quantitative_id', environment_quantitative_ids);
 
     const response = await this.connection.knex(qb);

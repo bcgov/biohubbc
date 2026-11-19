@@ -2,6 +2,7 @@ import { AuthenticatedRouteGuard, SystemRoleRouteGuard } from 'components/securi
 import { SYSTEM_ROLE } from 'constants/roles';
 import { CodesContextProvider } from 'contexts/codesContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { TaxonomyContextProvider } from 'contexts/taxonomyContext';
 import AdminRouter from 'features/admin/AdminRouter';
 import FundingSourcesRouter from 'features/funding-sources/FundingSourcesRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
@@ -73,7 +74,9 @@ const AppRouter: React.FC = () => {
         <BaseLayout>
           <AuthenticatedRouteGuard>
             <CodesContextProvider>
-              <ProjectsRouter />
+              <TaxonomyContextProvider>
+                <ProjectsRouter />
+              </TaxonomyContextProvider>
             </CodesContextProvider>
           </AuthenticatedRouteGuard>
         </BaseLayout>
