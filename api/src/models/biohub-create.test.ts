@@ -7,17 +7,20 @@ import { ApiGeneralError } from '../errors/api-error';
 import { ICritterDetailed } from '../services/critterbase-service';
 import {
   BiohubFeatureType,
+  buildArtifactKey,
   buildCodesetExportContext,
   buildFeatureSourceId,
   CodesetCategory,
   minimalCodesetExportContext,
   PostCodesetToBiohubObject,
   PostSurveyAnimalToBiohubObject,
+  PostSurveyAttachmentsToBiohubObject,
   PostSurveyMarkingToBiohubObject,
   PostSurveyMeasurementToBiohubObject,
   PostSurveyMortalityToBiohubObject,
   PostSurveyObservationToBiohubObject,
   PostSurveyReleaseToBiohubObject,
+  PostSurveyReportAttachmentsToBiohubObject,
   PostSurveySubmissionToBioHubObject,
   PostSurveyToBiohubObject
 } from './biohub-create';
@@ -36,6 +39,50 @@ describe('buildFeatureSourceId', () => {
     expect(() => buildFeatureSourceId('marking', undefined)).to.throw(ApiGeneralError, message);
     expect(() => buildFeatureSourceId('survey_stratum', null)).to.throw(ApiGeneralError, message);
     expect(() => buildFeatureSourceId('')).to.throw(ApiGeneralError, message);
+  });
+});
+
+describe('buildArtifactKey', () => {
+  it('builds the archive path of the attachment file', () => {
+    expect(buildArtifactKey('report.pdf')).to.equal('files/report.pdf');
+  });
+
+  it('keeps the file inside the files folder when the name contains path separators', () => {
+    expect(buildArtifactKey('../../etc/passwd')).to.equal('files/passwd');
+    expect(buildArtifactKey('nested\\dir\\photo.jpg')).to.equal('files/photo.jpg');
+  });
+
+  it('throws when the file name is invalid', () => {
+    const message = 'Failed to build BioHub artifact key, the attachment has an invalid file name.';
+
+    expect(() => buildArtifactKey('')).to.throw(ApiGeneralError, message);
+    expect(() => buildArtifactKey('dir/')).to.throw(ApiGeneralError, message);
+    expect(() => buildArtifactKey('..')).to.throw(ApiGeneralError, message);
+  });
+});
+
+describe('attachment artifact keys', () => {
+  it('uses the archive path, not the S3 key, as the artifact_key of a survey attachment', () => {
+    const feature = new PostSurveyAttachmentsToBiohubObject({
+      survey_attachment_id: 1,
+      file_name: 'data.csv',
+      file_type: 'Other',
+      file_size: 10,
+      key: 'sims/projects/1/surveys/1/data.csv'
+    } as any);
+
+    expect(feature.properties.artifact_key).to.equal('files/data.csv');
+  });
+
+  it('uses the archive path, not the S3 key, as the artifact_key of a report attachment', () => {
+    const feature = new PostSurveyReportAttachmentsToBiohubObject({
+      survey_report_attachment_id: 1,
+      file_name: 'report.pdf',
+      file_size: 10,
+      key: 'sims/projects/1/surveys/1/reports/report.pdf'
+    } as any);
+
+    expect(feature.properties.artifact_key).to.equal('files/report.pdf');
   });
 });
 
