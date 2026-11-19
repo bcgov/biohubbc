@@ -3,6 +3,7 @@ import { Feature, FeatureCollection } from 'geojson';
 import chunk from 'lodash/chunk.js';
 import fs from 'node:fs';
 import path from 'node:path';
+import { pipeline } from 'node:stream/promises';
 import zlib from 'node:zlib';
 import qs from 'qs';
 import * as tarStream from 'tar-stream';
@@ -12,6 +13,7 @@ import { ApiError, ApiErrorType, ApiGeneralError } from '../errors/api-error';
 import { formatAxiosError } from '../errors/axios-error';
 import {
   BiohubFeatureType,
+  buildArtifactKey,
   PostSurveySubmissionToBioHubObject,
   PUBLISHABLE_FEATURE_TYPE_PARENTS,
   PUBLISHABLE_FEATURE_TYPES
@@ -489,6 +491,9 @@ export class PlatformService extends DBService {
       ? await this.attachmentService.getSurveyReportAttachments(surveyId)
       : [];
 
+    // Map each attachment's archive path (its artifact_key) to the S3 key its file is downloaded from
+    const artifactSourceKeys = this._buildArtifactSourceKeys(surveyAttachments, surveyReportAttachments);
+
     // Generate survey data package
     const surveyDataPackage = await this._generateSurveyDataPackage(
       surveyId,
@@ -525,7 +530,7 @@ export class PlatformService extends DBService {
     const submissionsBaseDir = path.join(process.cwd(), 'data', 'submissions');
     fs.mkdirSync(submissionsBaseDir, { recursive: true });
     const tarFilePath = path.join(submissionsBaseDir, `${archiveRootId}.${SUBMISSION_ARCHIVE_FORMAT}`);
-    await this._createTarArchive(archiveRootId, blocksByType, tarFilePath);
+    await this._createTarArchive(archiveRootId, blocksByType, tarFilePath, artifactSourceKeys);
 
     defaultLog.info({
       label: 'submitSurveyToBioHub',
@@ -597,6 +602,40 @@ export class PlatformService extends DBService {
     });
 
     return { submission_uuid: submissionUuid };
+  }
+
+  /**
+   * Builds a map of attachment archive paths (the `artifact_key` sent to BioHub) to the S3 keys of the attachment files.
+   *
+   * Used to download each attachment's file into the submission archive at the path its `artifact_key` references.
+   *
+   * @param {ISurveyAttachment[]} surveyAttachments
+   * @param {ISurveyReportAttachment[]} surveyReportAttachments
+   * @throws {ApiGeneralError} If two attachments would be written to the same archive path
+   * @return {*}  {Map<string, string>}
+   * @memberof PlatformService
+   */
+  _buildArtifactSourceKeys(
+    surveyAttachments: ISurveyAttachment[],
+    surveyReportAttachments: ISurveyReportAttachment[]
+  ): Map<string, string> {
+    const artifactSourceKeys = new Map<string, string>();
+
+    for (const attachment of [...surveyAttachments, ...surveyReportAttachments]) {
+      const artifactKey = buildArtifactKey(attachment.file_name);
+
+      // A survey attachment and a report can share a file name, but both can't be written to the same archive path
+      if (artifactSourceKeys.has(artifactKey)) {
+        throw new ApiGeneralError(
+          'Failed to publish survey, more than one attachment has the same file name. Rename one of the attachments and try again.',
+          [{ file_name: attachment.file_name }]
+        );
+      }
+
+      artifactSourceKeys.set(artifactKey, attachment.key);
+    }
+
+    return artifactSourceKeys;
   }
 
   /**
@@ -866,117 +905,104 @@ export class PlatformService extends DBService {
   }
 
   /**
-   * Creates a gzip-compressed TAR archive containing flattened JSON files.
+   * Creates a gzip-compressed TAR archive containing the flattened feature JSON files and the attachment files.
+   *
+   * Rejects (and leaves a partial archive for the caller to clean up) if any entry, including any attachment file,
+   * fails to be written.
    *
    * @param {string} archiveRootId - The archive root ID
    * @param {Map<string, IFlattenedBlock[]>} blocksByType - Map of block types to their flattened blocks
    * @param {string} tarFilePath - Full path where the TAR file should be created
+   * @param {Map<string, string>} [artifactSourceKeys] - Map of attachment artifact keys to the S3 keys of their files
    * @return {*}  {Promise<void>}
    * @memberof PlatformService
    */
   async _createTarArchive(
     archiveRootId: string,
     blocksByType: Map<string, IFlattenedBlock[]>,
-    tarFilePath: string
+    tarFilePath: string,
+    artifactSourceKeys: Map<string, string> = new Map()
   ): Promise<void> {
     const pack = tarStream.pack();
-    const gzip = zlib.createGzip();
-    const outputStream = fs.createWriteStream(tarFilePath);
 
-    pack.pipe(gzip).pipe(outputStream);
+    const archiveWritten = pipeline(pack, zlib.createGzip(), fs.createWriteStream(tarFilePath));
 
-    // Wait for the stream to finish
-    const streamPromise = new Promise<void>((resolve, reject) => {
-      outputStream.on('close', resolve);
-      pack.on('error', reject);
-      gzip.on('error', reject);
-      outputStream.on('error', reject);
-    });
-
-    // Add the archive root directory entry
-    pack.entry(
-      {
-        name: `${archiveRootId}/`,
-        type: 'directory'
-      },
-      undefined,
-      (dirErr?: Error | null) => {
-        if (dirErr) {
-          pack.destroy();
-          throw dirErr;
-        }
-        this._addMetadataFile(pack, archiveRootId, blocksByType);
+    const entriesWritten = this._addArchiveEntries(pack, archiveRootId, blocksByType, artifactSourceKeys).catch(
+      (error) => {
+        // Abort the archive stream so the pipeline settles instead of waiting for entries that will never be written
+        pack.destroy(error instanceof Error ? error : new Error(String(error)));
+        throw error;
       }
     );
 
-    await streamPromise;
+    await Promise.all([entriesWritten, archiveWritten]);
   }
 
   /**
-   * Adds metadata file and JSON files to the TAR archive.
+   * Adds all entries to the TAR archive: the archive root directory, the metadata file, the feature JSON files, and the
+   * attachment files. Finalizes the archive once every entry has been written.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
    * @param {string} archiveRootId - The archive root ID
    * @param {Map<string, IFlattenedBlock[]>} blocksByType - Map of block types to their flattened blocks
+   * @param {Map<string, string>} artifactSourceKeys - Map of attachment artifact keys to the S3 keys of their files
+   * @return {*}  {Promise<void>}
    * @memberof PlatformService
    */
-  _addMetadataFile(pack: tarStream.Pack, archiveRootId: string, blocksByType: Map<string, IFlattenedBlock[]>): void {
-    // Add a metadata file with the archive root ID
-    // Note: tar-stream doesn't easily support PAX extended attributes,
-    // so we store the archive root ID in a metadata file instead
-    const metadataContent = Buffer.from(archiveRootId);
-    pack.entry(
-      {
-        name: `${archiveRootId}/.survey-id`,
-        size: metadataContent.length
-      },
-      metadataContent,
-      (metadataErr?: Error | null) => {
-        if (metadataErr) {
-          pack.destroy();
-          throw metadataErr;
-        }
-        // Start adding JSON files and file blocks (async operation)
-        this._addJsonFiles(pack, archiveRootId, blocksByType).catch((error) => {
-          defaultLog.error({
-            label: '_addMetadataFile',
-            message: 'Failed to add JSON files and file blocks',
-            error: error instanceof Error ? error.message : 'Unknown error'
-          });
-          pack.destroy();
-          throw error;
-        });
-      }
-    );
+  async _addArchiveEntries(
+    pack: tarStream.Pack,
+    archiveRootId: string,
+    blocksByType: Map<string, IFlattenedBlock[]>,
+    artifactSourceKeys: Map<string, string>
+  ): Promise<void> {
+    await this._addArchiveEntry(pack, { name: `${archiveRootId}/`, type: 'directory' });
+    await this._addMetadataFile(pack, archiveRootId);
+    await this._addJsonFiles(pack, archiveRootId, blocksByType, artifactSourceKeys);
   }
 
   /**
-   * Adds all JSON files from the blocksByType Map to the TAR archive and then triggers the addition
-   * of binary file content. Codeset content is written to `codes/codeset.json`; all other feature
-   * blocks are written under `features/`.
+   * Adds the metadata file to the TAR archive.
+   *
+   * Note: tar-stream doesn't easily support PAX extended attributes, so the archive root ID is stored in a metadata file
+   * instead.
+   *
+   * @param {tarStream.Pack} pack - The TAR pack stream
+   * @param {string} archiveRootId - The archive root ID
+   * @return {*}  {Promise<void>}
+   * @memberof PlatformService
+   */
+  _addMetadataFile(pack: tarStream.Pack, archiveRootId: string): Promise<void> {
+    return this._addFileToArchive(pack, archiveRootId, '.survey-id', Buffer.from(archiveRootId));
+  }
+
+  /**
+   * Adds all JSON files from the blocksByType Map and the files of all attachment (file and report) blocks to the TAR
+   * archive, then finalizes the archive. Codeset content is written to `codes/codeset.json`; all other feature blocks
+   * are written under `features/`.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
    * @param {string} archiveRootId - The archive root ID
    * @param {Map<string, IFlattenedBlock[]>} blocksByType - Map of block types to their flattened blocks
+   * @param {Map<string, string>} artifactSourceKeys - Map of attachment artifact keys to the S3 keys of their files
    * @return {*}  {Promise<void>}
    * @memberof PlatformService
    */
   async _addJsonFiles(
     pack: tarStream.Pack,
     archiveRootId: string,
-    blocksByType: Map<string, IFlattenedBlock[]>
+    blocksByType: Map<string, IFlattenedBlock[]>,
+    artifactSourceKeys: Map<string, string>
   ): Promise<void> {
-    if (blocksByType.size === 0) {
-      pack.finalize();
-      return;
-    }
-
-    const fileBlocks = blocksByType.get('file') || [];
+    const attachmentBlocks = [
+      ...(blocksByType.get(BiohubFeatureType.FILE) ?? []),
+      ...(blocksByType.get(BiohubFeatureType.REPORT) ?? [])
+    ];
 
     await Promise.all([
       this._addJsonFilesToArchive(pack, archiveRootId, blocksByType),
-      this._addFileBlocksToArchive(pack, archiveRootId, fileBlocks)
+      this._addFileBlocksToArchive(pack, archiveRootId, attachmentBlocks, artifactSourceKeys)
     ]);
+
     pack.finalize();
   }
 
@@ -1044,115 +1070,106 @@ export class PlatformService extends DBService {
   }
 
   /**
-   * Adds actual file content for file type blocks to the TAR archive.
+   * Adds the files of attachment (file and report) blocks to the TAR archive, one at a time.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
    * @param {string} archiveRootId - The archive root ID
-   * @param {IFlattenedBlock[]} fileBlocks - Array of file blocks to process
-   * @return {Promise<void>} Resolves when all file blocks have been added to the archive
+   * @param {IFlattenedBlock[]} attachmentBlocks - Attachment blocks to add the files of
+   * @param {Map<string, string>} artifactSourceKeys - Map of attachment artifact keys to the S3 keys of their files
+   * @return {Promise<void>} Resolves when all attachment files have been added to the archive
    * @memberof PlatformService
    */
   async _addFileBlocksToArchive(
     pack: tarStream.Pack,
     archiveRootId: string,
-    fileBlocks: IFlattenedBlock[]
+    attachmentBlocks: IFlattenedBlock[],
+    artifactSourceKeys: Map<string, string>
   ): Promise<void> {
     // Serialize downloads and archive writes to avoid buffering every attachment at once.
-    await fileBlocks.reduce(async (previous, fileBlock) => {
+    await attachmentBlocks.reduce(async (previous, attachmentBlock) => {
       await previous;
-      await this._processFileBlock(pack, archiveRootId, fileBlock);
+      await this._processFileBlock(pack, archiveRootId, attachmentBlock, artifactSourceKeys);
     }, Promise.resolve());
   }
 
   /**
-   * Processes a single file block by downloading from S3 and adding to archive.
+   * Downloads the file of a single attachment block from S3 and adds it to the archive at the block's `artifact_key`.
+   *
+   * BioHub resolves the `artifact_key` by an exact match against the archive entry paths (relative to the archive
+   * root), so the file must be written at exactly that path.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
    * @param {string} archiveRootId - The archive root ID
-   * @param {IFlattenedBlock} fileBlock - The file block to process
-   * @return {Promise<void>} Resolves when the file block has been processed (added or skipped)
+   * @param {IFlattenedBlock} attachmentBlock - The attachment block to add the file of
+   * @param {Map<string, string>} artifactSourceKeys - Map of attachment artifact keys to the S3 keys of their files
+   * @throws {ApiGeneralError} If the block has no artifact key, its file can't be found, or the download fails
+   * @return {Promise<void>} Resolves when the file has been added to the archive
    * @memberof PlatformService
    */
-  async _processFileBlock(pack: tarStream.Pack, archiveRootId: string, fileBlock: IFlattenedBlock): Promise<void> {
-    try {
-      const artifactKey = fileBlock.properties?.artifact_key as string | undefined;
-      const filename = (fileBlock.properties?.filename as string | undefined) || fileBlock.id;
+  async _processFileBlock(
+    pack: tarStream.Pack,
+    archiveRootId: string,
+    attachmentBlock: IFlattenedBlock,
+    artifactSourceKeys: Map<string, string>
+  ): Promise<void> {
+    const artifactKey = attachmentBlock.properties?.artifact_key;
 
-      if (!artifactKey) {
-        this._logFileBlockWarning('File block missing artifact_key, skipping', fileBlock.id);
-        return;
-      }
-
-      const fileContent = await this._downloadFileFromS3(artifactKey, fileBlock.id);
-      if (!fileContent) {
-        return;
-      }
-
-      const archivePath = `files/${filename}`;
-      await this._addFileToArchive(pack, archiveRootId, archivePath, fileContent);
-    } catch (error) {
-      this._logFileBlockError('Failed to add file block to archive', fileBlock.id, error);
+    if (typeof artifactKey !== 'string' || !artifactKey) {
+      throw new ApiGeneralError('Failed to add attachment to submission archive, the attachment has no artifact key.', [
+        { id: attachmentBlock.id }
+      ]);
     }
-  }
 
-  /**
-   * Downloads a file from S3 and converts it to a Buffer.
-   *
-   * @param {string} artifactKey - The S3 key for the file
-   * @param {string} blockId - The block ID for logging
-   * @return {*}  {Promise<Buffer | null>} The file content as a Buffer, or null if download fails
-   * @memberof PlatformService
-   */
-  async _downloadFileFromS3(artifactKey: string, blockId: string): Promise<Buffer | null> {
-    try {
-      const s3File = await getFileFromS3(artifactKey);
+    const s3Key = artifactSourceKeys.get(artifactKey);
 
-      if (!s3File.Body) {
-        this._logFileBlockWarning('S3 file Body is null, skipping', blockId, artifactKey);
-        return null;
-      }
-
-      return (await s3File.Body.transformToByteArray()) as Buffer;
-    } catch (error) {
-      this._logFileBlockError('Failed to download file from S3', blockId, error, artifactKey);
-      return null;
+    if (!s3Key) {
+      throw new ApiGeneralError('Failed to add attachment to submission archive, the attachment file was not found.', [
+        { id: attachmentBlock.id, artifact_key: artifactKey }
+      ]);
     }
+
+    const fileContent = await this._downloadFileFromS3(s3Key, attachmentBlock.id);
+
+    await this._addFileToArchive(pack, archiveRootId, artifactKey, fileContent);
   }
 
   /**
-   * Logs a warning for file block processing.
+   * Downloads a file from S3.
    *
-   * @param {string} message - Warning message
-   * @param {string} blockId - The block ID
-   * @param {string} [artifactKey] - Optional artifact key for additional context
+   * @param {string} s3Key - The S3 key for the file
+   * @param {string} blockId - The block ID, for error context
+   * @throws {ApiGeneralError} If the download fails or returns no content
+   * @return {*}  {Promise<Uint8Array>} The file content
    * @memberof PlatformService
    */
-  _logFileBlockWarning(message: string, blockId: string, artifactKey?: string): void {
-    defaultLog.warn({
-      label: '_addJsonFiles',
-      message,
-      blockId,
-      ...(artifactKey && { artifactKey })
-    });
-  }
+  async _downloadFileFromS3(s3Key: string, blockId: string): Promise<Uint8Array> {
+    let fileContent: Uint8Array | undefined;
 
-  /**
-   * Logs an error for file block processing.
-   *
-   * @param {string} message - Error message
-   * @param {string} blockId - The block ID
-   * @param {unknown} error - The error object
-   * @param {string} [artifactKey] - Optional artifact key for additional context
-   * @memberof PlatformService
-   */
-  _logFileBlockError(message: string, blockId: string, error: unknown, artifactKey?: string): void {
-    defaultLog.error({
-      label: '_addJsonFiles',
-      message,
-      blockId,
-      error: error instanceof Error ? error.message : 'Unknown error',
-      ...(artifactKey && { artifactKey })
-    });
+    try {
+      const s3File = await getFileFromS3(s3Key);
+      fileContent = await s3File.Body?.transformToByteArray();
+    } catch (error) {
+      defaultLog.error({
+        label: '_downloadFileFromS3',
+        message: 'Failed to download attachment file from S3',
+        blockId,
+        s3Key,
+        error: error instanceof Error ? error.message : 'Unknown error'
+      });
+
+      throw new ApiGeneralError(
+        'Failed to add attachment to submission archive, the attachment file failed to download.',
+        [{ id: blockId }]
+      );
+    }
+
+    if (!fileContent) {
+      throw new ApiGeneralError('Failed to add attachment to submission archive, the attachment file has no content.', [
+        { id: blockId }
+      ]);
+    }
+
+    return fileContent;
   }
 
   /**
@@ -1160,28 +1177,39 @@ export class PlatformService extends DBService {
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
    * @param {string} archiveRootId - The archive root ID
-   * @param {string} fileName - Filename to add
-   * @param {Buffer} fileContent - File content as a Buffer
+   * @param {string} fileName - Path of the file, relative to the archive root
+   * @param {Uint8Array} fileContent - File content
    * @return {Promise<void>} Resolves when the file entry has been written to the pack
    * @memberof PlatformService
    */
-  _addFileToArchive(pack: tarStream.Pack, archiveRootId: string, fileName: string, fileContent: Buffer): Promise<void> {
+  _addFileToArchive(
+    pack: tarStream.Pack,
+    archiveRootId: string,
+    fileName: string,
+    fileContent: Uint8Array
+  ): Promise<void> {
+    return this._addArchiveEntry(pack, { name: `${archiveRootId}/${fileName}`, size: fileContent.length }, fileContent);
+  }
+
+  /**
+   * Adds a single entry to the TAR archive.
+   *
+   * @param {tarStream.Pack} pack - The TAR pack stream
+   * @param {tarStream.Headers} header - The entry header
+   * @param {Uint8Array} [content] - The entry content (omit for directories)
+   * @return {Promise<void>} Resolves when the entry has been written to the pack, rejects if writing it fails
+   * @memberof PlatformService
+   */
+  _addArchiveEntry(pack: tarStream.Pack, header: tarStream.Headers, content?: Uint8Array): Promise<void> {
     return new Promise((resolve, reject) => {
-      pack.entry(
-        {
-          name: `${archiveRootId}/${fileName}`,
-          size: fileContent.length
-        },
-        fileContent,
-        (entryErr?: Error | null) => {
-          if (entryErr) {
-            pack.destroy();
-            reject(entryErr);
-            return;
-          }
-          resolve();
-        }
-      );
+      const callback = (entryErr?: Error | null) => (entryErr ? reject(entryErr) : resolve());
+
+      const entry = content
+        ? pack.entry(header, Buffer.from(content.buffer, content.byteOffset, content.byteLength), callback)
+        : pack.entry(header, callback);
+
+      // If the archive is aborted, queued entries are destroyed with the error. Handle it here so it isn't uncaught.
+      entry.on('error', reject);
     });
   }
 
