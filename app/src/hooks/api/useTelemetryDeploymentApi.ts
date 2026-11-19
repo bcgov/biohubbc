@@ -1,7 +1,9 @@
 import { AxiosInstance } from 'axios';
+import { IAllDeploymentAdvancedFilters } from 'features/summary/tabular-data/deployments/DeploymentListFilterForm';
 import {
   CreateTelemetryDeployment,
   GetSurveyDeploymentsResponse,
+  IFindTelemetryDeploymentResponse,
   TelemetryDeployment,
   UpdateTelemetryDeployment
 } from 'interfaces/useTelemetryDeploymentApi.interface';
@@ -132,12 +134,37 @@ export const useTelemetryDeploymentApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get deployments for a system user id.
+   *
+   * @param {ApiPaginationRequestOptions} [pagination]
+   * @param {IAllDeploymentAdvancedFilters} filterFieldData
+   * @return {*} {Promise<IFindTelemetryDeploymentResponse>}
+   */
+  const findTelemetryDeployment = async (
+    pagination?: ApiPaginationRequestOptions,
+    filterFieldData?: IAllDeploymentAdvancedFilters
+  ): Promise<IFindTelemetryDeploymentResponse> => {
+    const params = {
+      ...pagination,
+      ...filterFieldData
+    };
+
+    const { data } = await axios.get('/api/deployment', {
+      params,
+      paramsSerializer: (params) => qs.stringify(params)
+    });
+
+    return data;
+  };
+
   return {
     createDeployment,
     updateDeployment,
     getDeploymentById,
     getDeploymentsInSurvey,
     deleteDeployment,
-    deleteDeployments
+    deleteDeployments,
+    findTelemetryDeployment
   };
 };

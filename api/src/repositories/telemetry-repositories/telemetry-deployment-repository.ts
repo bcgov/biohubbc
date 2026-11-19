@@ -168,7 +168,7 @@ export class TelemetryDeploymentRepository extends BaseRepository {
     }
 
     if (filterFields.system_user_id) {
-      getSurveyIdsQuery.whereIn('p.project_id', (subQueryBuilder) => {
+      getSurveyIdsQuery.whereIn('survey.project_id', (subQueryBuilder) => {
         subQueryBuilder
           .select('project_id')
           .from('project_participation')
@@ -227,6 +227,38 @@ export class TelemetryDeploymentRepository extends BaseRepository {
           .from('project_participation')
           .where('system_user_id', filterFields.system_user_id);
       });
+    }
+
+    // Add filtering based on additional filter fields
+    if (filterFields.keyword) {
+      queryBuilder.where((builder) => {
+        builder
+          .orWhere('device.serial', 'ilike', `%${filterFields.keyword}%`)
+          .orWhere('critter.critterbase_critter_id', 'ilike', `%${filterFields.keyword}%`);
+      });
+    }
+
+    if (filterFields.device_serial) {
+      queryBuilder.where('device.serial', 'ilike', `%${filterFields.device_serial}%`);
+    }
+
+    if (filterFields.animal_alias) {
+      queryBuilder.where('critter.critterbase_critter_id', 'ilike', `%${filterFields.animal_alias}%`);
+    }
+
+    if (filterFields.itis_tsn) {
+      // Join with survey to get species information if needed
+      queryBuilder
+        .leftJoin('survey_species', 'survey.survey_id', 'survey_species.survey_id')
+        .where('survey_species.itis_tsn', filterFields.itis_tsn);
+    }
+
+    if (filterFields.start_date) {
+      queryBuilder.where('deployment.attachment_start_date', '>=', filterFields.start_date);
+    }
+
+    if (filterFields.end_date) {
+      queryBuilder.where('deployment.attachment_start_date', '<=', filterFields.end_date);
     }
 
     if (pagination) {

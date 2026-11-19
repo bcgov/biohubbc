@@ -120,3 +120,5 @@ dist
 
 # IDE custom workspace settings
 .vscode/settings.json
+
+**/.vscode

@@ -1,4 +1,4 @@
-import { mdiEye, mdiPaw, mdiPineTree, mdiWifiMarker } from '@mdi/js';
+import { mdiCellphoneBasic, mdiEye, mdiPaw, mdiPineTree, mdiWifiMarker } from '@mdi/js';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Stack from '@mui/material/Stack';
@@ -12,11 +12,13 @@ import TelemetryListContainer from 'features/summary/tabular-data/telemetry/Tele
 import { useSearchParams } from 'hooks/useSearchParams';
 import { MarkdownTypeNameEnum } from 'interfaces/useMarkdownApi.interface';
 import { useState } from 'react';
+import DeploymentListContainer from './deployments/DeploymentListContainer';
 
 const ACTIVE_VIEW_KEY = 'tavk';
 export enum ACTIVE_VIEW_VALUE {
   observations = 'ov',
   telemetry = 'tv',
+  deployments = 'dev',
   animals = 'av',
   habitatFeatures = 'hv'
 }
@@ -50,6 +52,7 @@ export const TabularDataTableContainer = () => {
     { value: ACTIVE_VIEW_VALUE.observations, label: 'observations', icon: mdiEye },
     { value: ACTIVE_VIEW_VALUE.animals, label: 'animals', icon: mdiPaw },
     { value: ACTIVE_VIEW_VALUE.telemetry, label: 'telemetry', icon: mdiWifiMarker },
+    { value: ACTIVE_VIEW_VALUE.deployments, label: 'deployments', icon: mdiCellphoneBasic },
     { value: ACTIVE_VIEW_VALUE.habitatFeatures, label: 'habitat features', icon: mdiPineTree }
   ];
 
@@ -77,6 +80,7 @@ export const TabularDataTableContainer = () => {
         {activeView === ACTIVE_VIEW_VALUE.observations && <ObservationsListContainer showSearch={showSearch} />}
         {activeView === ACTIVE_VIEW_VALUE.animals && <AnimalsListContainer showSearch={showSearch} />}
         {activeView === ACTIVE_VIEW_VALUE.telemetry && <TelemetryListContainer showSearch={showSearch} />}
+        {activeView === ACTIVE_VIEW_VALUE.deployments && <DeploymentListContainer showSearch={showSearch} />}
         {activeView === ACTIVE_VIEW_VALUE.habitatFeatures && <HabitatFeaturesListContainer showSearch={showSearch} />}
       </Box>
     </Stack>
