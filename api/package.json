@@ -36,7 +36,7 @@
     "@turf/circle": "^6.5.0",
     "@turf/helpers": "^6.5.0",
     "@turf/meta": "^6.5.0",
-    "adm-zip": "0.5.12",
+    "adm-zip": "^0.6.1",
     "ajv": "^8.20.0",
     "archiver": "^7.0.1",
     "axios": "^1.21.1",
@@ -76,6 +76,8 @@
   "devDependencies": {
     "@eslint/js": "^9.23.0",
     "@istanbuljs/nyc-config-typescript": "^1.0.1",
+    "@swc/cli": "^0.8.2",
+    "@swc/core": "^1.13.5",
     "@types/adm-zip": "^0.4.34",
     "@types/archiver": "^6.0.2",
     "@types/chai": "^4.3.14",
@@ -99,16 +101,31 @@
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-mocha": "^10.5.0",
     "eslint-plugin-prettier": "^5.2.5",
-    "mocha": "^10.4.0",
+    "mocha": "^12.0.3",
     "npm-run-all": "^4.1.5",
-    "nyc": "^15.1.0",
+    "nyc": "^18.0.0",
     "prettier": "^3.5.3",
     "prettier-plugin-organize-imports": "^4.1.0",
     "sinon": "^17.0.1",
     "sinon-chai": "^3.7.0",
     "tsx": "^4.20.6",
-    "@swc/cli": "^0.7.8",
-    "@swc/core": "^1.13.5",
     "typescript-eslint": "^8.28.0"
+  },
+  "overrides": {
+    "@swc/cli": {
+      "minimatch": "^11.0.9"
+    },
+    "mocha": {
+      "glob": "^14.0.6",
+      "minimatch": "^11.0.9"
+    },
+    "nyc": {
+      "glob": "^14.0.6",
+      "minimatch": "^11.0.9"
+    },
+    "test-exclude": {
+      "glob": "^14.0.6",
+      "minimatch": "^11.0.9"
+    }
   }
 }
