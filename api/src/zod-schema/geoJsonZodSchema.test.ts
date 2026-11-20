@@ -30,7 +30,9 @@ describe('geoJsonZodSchema', () => {
         type: 'Point'
       };
 
-      expect(() => GeoJSONPointZodSchema.parse(geoJson)).to.throw(ZodError);
+      expect(() => GeoJSONPointZodSchema.parse(geoJson))
+        .to.throw(Error, /expected number, received array/)
+        .that.is.instanceOf(ZodError);
     });
   });
 
@@ -53,7 +55,9 @@ describe('geoJsonZodSchema', () => {
         type: 'LineString'
       };
 
-      expect(() => GeoJSONLineStringZodSchema.parse(geoJson)).to.throw(ZodError);
+      expect(() => GeoJSONLineStringZodSchema.parse(geoJson))
+        .to.throw(Error, /expected array to have >=2 items/)
+        .that.is.instanceOf(ZodError);
     });
   });
 
@@ -85,7 +89,9 @@ describe('geoJsonZodSchema', () => {
         ],
         type: 'Polygon'
       };
-      expect(() => GeoJSONPolygonZodSchema.parse(geoJson)).to.throw(ZodError);
+      expect(() => GeoJSONPolygonZodSchema.parse(geoJson))
+        .to.throw(Error, /expected array to have >=4 items/)
+        .that.is.instanceOf(ZodError);
     });
   });
 
@@ -108,7 +114,9 @@ describe('geoJsonZodSchema', () => {
         type: 'MultiPoint'
       };
 
-      expect(() => GeoJSONMultiPointZodSchema.parse(geoJson)).to.throw(ZodError);
+      expect(() => GeoJSONMultiPointZodSchema.parse(geoJson))
+        .to.throw(Error, /expected number, received array/)
+        .that.is.instanceOf(ZodError);
     });
   });
 
@@ -140,7 +148,9 @@ describe('geoJsonZodSchema', () => {
         type: 'MultiLineString'
       };
 
-      expect(() => GeoJSONMultiLineStringZodSchema.parse(geoJson)).to.throw(ZodError);
+      expect(() => GeoJSONMultiLineStringZodSchema.parse(geoJson))
+        .to.throw(Error, /expected array, received number/)
+        .that.is.instanceOf(ZodError);
     });
   });
 
@@ -187,7 +197,9 @@ describe('geoJsonZodSchema', () => {
         type: 'MultiPolygon'
       };
 
-      expect(() => GeoJSONMultiPolygonZodSchema.parse(geoJson)).to.throw(ZodError);
+      expect(() => GeoJSONMultiPolygonZodSchema.parse(geoJson))
+        .to.throw(Error, /expected array to have >=4 items/)
+        .that.is.instanceOf(ZodError);
     });
   });
 
@@ -279,7 +291,9 @@ describe('geoJsonZodSchema', () => {
         ]
       };
 
-      expect(() => GeoJSONGeometryCollectionZodSchema.parse(geoJson)).to.throw(ZodError);
+      expect(() => GeoJSONGeometryCollectionZodSchema.parse(geoJson))
+        .to.throw(Error, /expected \W*GeometryCollection\W/)
+        .that.is.instanceOf(ZodError);
     });
   });
 
@@ -311,7 +325,9 @@ describe('geoJsonZodSchema', () => {
         }
       };
 
-      expect(() => GeoJSONFeatureZodSchema.parse(geoJson)).to.throw(ZodError);
+      expect(() => GeoJSONFeatureZodSchema.parse(geoJson))
+        .to.throw(Error, /expected \W*Feature\W/)
+        .that.is.instanceOf(ZodError);
     });
   });
 
@@ -373,7 +389,9 @@ describe('geoJsonZodSchema', () => {
         }
       };
 
-      expect(() => GeoJSONFeatureCollectionZodSchema.parse(geoJson)).to.throw(ZodError);
+      expect(() => GeoJSONFeatureCollectionZodSchema.parse(geoJson))
+        .to.throw(Error, /expected \W*FeatureCollection\W/)
+        .that.is.instanceOf(ZodError);
     });
   });
 });

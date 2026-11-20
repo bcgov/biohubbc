@@ -1195,12 +1195,16 @@ export class PlatformService extends DBService {
    * Adds a single entry to the TAR archive.
    *
    * @param {tarStream.Pack} pack - The TAR pack stream
-   * @param {tarStream.Headers} header - The entry header
+   * @param {Parameters<tarStream.Pack['entry']>[0]} header - The entry header
    * @param {Uint8Array} [content] - The entry content (omit for directories)
    * @return {Promise<void>} Resolves when the entry has been written to the pack, rejects if writing it fails
    * @memberof PlatformService
    */
-  _addArchiveEntry(pack: tarStream.Pack, header: tarStream.Headers, content?: Uint8Array): Promise<void> {
+  _addArchiveEntry(
+    pack: tarStream.Pack,
+    header: Parameters<tarStream.Pack['entry']>[0],
+    content?: Uint8Array
+  ): Promise<void> {
     return new Promise((resolve, reject) => {
       const callback = (entryErr?: Error | null) => (entryErr ? reject(entryErr) : resolve());
 

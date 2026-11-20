@@ -112,6 +112,7 @@ describe('SurveyBlockService', () => {
           survey_id: 1,
           name: 'Old Block',
           description: 'Updated',
+          geojson: null,
           revision_count: 1
         },
         {
@@ -120,6 +121,7 @@ describe('SurveyBlockService', () => {
           survey_id: 1,
           name: 'Old Block',
           description: 'Going to be deleted',
+          geojson: null,
           revision_count: 1
         }
       ]);
@@ -169,6 +171,7 @@ describe('SurveyBlockService', () => {
         survey_id: 1,
         name: 'Deleted record',
         description: '',
+        geojson: null,
         revision_count: 1
       };
 

@@ -5,8 +5,8 @@ import { BaseRepository } from './base-repository';
 export const ObservationSubCountQualitativeMeasurementRecord = z.object({
   observation_subcount_qualitative_measurement_id: z.number(),
   observation_subcount_id: z.number(),
-  critterbase_taxon_measurement_id: z.string().uuid(),
-  critterbase_measurement_qualitative_option_id: z.string().uuid(),
+  critterbase_taxon_measurement_id: z.guid(),
+  critterbase_measurement_qualitative_option_id: z.guid(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -20,7 +20,7 @@ export type ObservationSubCountQualitativeMeasurementRecord = z.infer<
 export const ObservationSubCountQuantitativeMeasurementRecord = z.object({
   observation_subcount_quantitative_measurement_id: z.number(),
   observation_subcount_id: z.number(),
-  critterbase_taxon_measurement_id: z.string().uuid(),
+  critterbase_taxon_measurement_id: z.guid(),
   value: z.number(),
   create_date: z.string(),
   create_user: z.number(),
@@ -122,10 +122,7 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
           });
       });
 
-    const response = await this.connection.knex(
-      query,
-      z.object({ critterbase_taxon_measurement_id: z.string().uuid() })
-    );
+    const response = await this.connection.knex(query, z.object({ critterbase_taxon_measurement_id: z.guid() }));
 
     return response.rows.map((item) => item.critterbase_taxon_measurement_id);
   }
@@ -170,10 +167,7 @@ export class ObservationSubCountMeasurementRepository extends BaseRepository {
           });
       });
 
-    const response = await this.connection.knex(
-      query,
-      z.object({ critterbase_taxon_measurement_id: z.string().uuid() })
-    );
+    const response = await this.connection.knex(query, z.object({ critterbase_taxon_measurement_id: z.guid() }));
 
     return response.rows.map((item) => item.critterbase_taxon_measurement_id);
   }

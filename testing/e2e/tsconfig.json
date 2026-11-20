@@ -5,21 +5,14 @@
     "outDir": "./dist/out-tsc",
     "sourceMap": true,
     "declaration": false,
-    "module": "es2015",
+    "module": "es2020",
     "moduleResolution": "node",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
-    "importHelpers": true,
-    "target": "es5",
+    "target": "es2020",
     "resolveJsonModule": true,
-    "types": ["cypress", "cypress-file-upload"],
-    "typeRoots": [
-      "node_modules/@types",
-      "./cypress/typings"
-    ],
-    "lib": [
-      "es2015",
-      "dom"
-    ]
-  }
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["cypress", "cypress-file-upload", "node"],
+    "lib": ["es2020", "dom"]
+  },
+  "include": ["cypress.config.ts", "cypress/**/*.ts"]
 }

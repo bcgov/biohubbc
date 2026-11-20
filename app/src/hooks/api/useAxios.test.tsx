@@ -45,9 +45,9 @@ describe('useAxios', () => {
 
   const mockSigninSilent = vi.fn();
 
-  beforeEach(() => {
+  beforeEach(async () => {
     // Assign the real implementation of `AuthProvider`
-    const { AuthProvider } = vi.importActual('react-oidc-context') as any;
+    const { AuthProvider } = await vi.importActual<typeof import('react-oidc-context')>('react-oidc-context');
     mockAuthProvider.mockImplementation(AuthProvider);
 
     // Assign a mock implementation of `useAuth`

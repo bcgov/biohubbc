@@ -29,7 +29,7 @@ export interface ISurveyProprietorModel {
 const SurveyRecord = z.object({
   survey_id: z.number(),
   project_id: z.number(),
-  uuid: z.string().uuid().nullable(),
+  uuid: z.guid().nullable(),
   name: z.string().nullable(),
   additional_details: z.string().nullable(),
   start_date: z.string(),
@@ -101,8 +101,8 @@ export const SurveyTaxonomyWithEcologicalUnits = z.object({
   itis_tsn: z.number(),
   ecological_units: z.array(
     z.object({
-      critterbase_collection_unit_id: z.string().uuid(),
-      critterbase_collection_category_id: z.string().uuid()
+      critterbase_collection_unit_id: z.guid(),
+      critterbase_collection_category_id: z.guid()
     })
   )
 });

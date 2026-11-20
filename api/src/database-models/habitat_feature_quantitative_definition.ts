@@ -7,7 +7,7 @@ import { QuantitativeUnitType } from '../database-units/quantitative_unit';
  * @description Data model for `habitat_feature_quantitative_definition`.
  */
 export const HabitatFeatureQuantitativeDefinitionModel = z.object({
-  habitat_feature_quantitative_definition_id: z.string().uuid(),
+  habitat_feature_quantitative_definition_id: z.guid(),
   name: z.string(),
   description: z.string().nullable(),
   min: z.number().nullable(),

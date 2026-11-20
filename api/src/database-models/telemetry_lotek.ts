@@ -6,7 +6,7 @@ import { z } from 'zod';
  * @description Data model for `telemetry_lotek`.
  */
 export const TelemetryLotekModel = z.object({
-  telemetry_lotek_id: z.string().uuid(),
+  telemetry_lotek_id: z.guid(),
   device_key: z.string(),
 
   recdatetime: z.string().nullable(), // Timestamp the telemetry was recorded - use this

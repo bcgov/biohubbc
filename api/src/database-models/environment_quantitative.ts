@@ -7,7 +7,7 @@ import { EnvironmentUnit } from '../database-units/environment_unit';
  * @description Data model for `environment_quantitative`.
  */
 export const EnvironmentQuantitativeModel = z.object({
-  environment_quantitative_id: z.string().uuid(),
+  environment_quantitative_id: z.guid(),
   name: z.string(),
   description: z.string().nullable(),
   min: z.number().nullable(),

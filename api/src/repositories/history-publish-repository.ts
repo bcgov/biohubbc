@@ -21,7 +21,7 @@ export const SurveyMetadataPublish = z.object({
   survey_metadata_publish_id: z.number(),
   survey_id: z.number(),
   event_timestamp: z.string(),
-  submission_uuid: z.string().uuid(),
+  submission_uuid: z.guid(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
@@ -88,7 +88,7 @@ export const SurveyAttachmentWithPublishData = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
-  uuid: z.string().uuid(),
+  uuid: z.guid(),
   event_timestamp: z.string(),
   artifact_revision_id: z.string()
 });
@@ -110,7 +110,7 @@ export const SurveyReportWithPublishData = z.object({
   update_date: z.string().nullable(),
   update_user: z.number().nullable(),
   revision_count: z.number(),
-  uuid: z.string().uuid(),
+  uuid: z.guid(),
   event_timestamp: z.string(),
   artifact_revision_id: z.string()
 });

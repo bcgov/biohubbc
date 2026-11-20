@@ -26,18 +26,12 @@ export const validateZodCell = (cell: unknown, schema: z.ZodSchema, solution?: s
   const errors: CSVError[] = [];
 
   const parsed = schema.safeParse(cell, {
-    // Custom error message mapping
-    errorMap: (_issue, ctx) => {
-      if (ctx.defaultError === 'Required') {
-        return { message: 'Cell is required' };
-      }
-
-      return { message: ctx.defaultError };
-    }
+    // A missing cell gets its own message; every other issue keeps zod's default.
+    error: (issue) => (issue.input === undefined ? 'Cell is required' : undefined)
   });
 
   if (!parsed.success) {
-    parsed.error.errors.forEach((error) => {
+    parsed.error.issues.forEach((error) => {
       errors.push({
         error: error.message,
         solution: solution ?? 'Update the cell value to match the expected type'
@@ -231,7 +225,7 @@ export const getDateCellValidator = (options?: CSVCellValidatorOptions): CSVCell
       return [];
     }
 
-    return validateZodCell(params.cell, z.string().date());
+    return validateZodCell(params.cell, z.iso.date());
   };
 };
 

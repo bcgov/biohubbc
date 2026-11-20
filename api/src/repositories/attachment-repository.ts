@@ -73,7 +73,7 @@ export interface ISurveyReportAttachmentAuthor {
 
 export const SurveyTelemetryCredentialAttachment = z.object({
   survey_telemetry_credential_attachment_id: z.number(),
-  uuid: z.string().uuid(),
+  uuid: z.guid(),
   file_name: z.string(),
   file_type: z.string(),
   file_size: z.number(),

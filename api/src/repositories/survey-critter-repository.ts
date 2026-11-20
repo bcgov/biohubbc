@@ -12,7 +12,7 @@ const defaultLog = getLogger('repositories/survey-repository');
 export const SurveyCritterRecord = z.object({
   critter_id: z.number(),
   survey_id: z.number(),
-  critterbase_critter_id: z.string().uuid()
+  critterbase_critter_id: z.guid()
 });
 
 export type SurveyCritterRecord = z.infer<typeof SurveyCritterRecord>;

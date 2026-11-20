@@ -135,8 +135,8 @@ const _isCSVRow = (rowOrState: CSVRow | CSVRow[typeof CSVRowState]): rowOrState 
 // Critter / Capture
 export const getCritterCaptureFromRowState = createRowStateGetter(
   z.object({
-    critter_id: z.string().uuid(),
-    capture_id: z.string().uuid()
+    critter_id: z.guid(),
+    capture_id: z.guid()
   }),
   'getCritterCaptureFromRowState'
 );
@@ -176,15 +176,15 @@ export const getTaxonArrayFromRowState = createRowStateGetter(
 // Measurement
 export const getQualitativeMeasurementFromRowState = createRowStateGetter(
   z.object({
-    taxon_measurement_id: z.string().uuid(),
-    qualitative_option_id: z.string().uuid()
+    taxon_measurement_id: z.guid(),
+    qualitative_option_id: z.guid()
   }),
   'getQualitativeMeasurementFromRowState'
 );
 
 export const getQuantitativeMeasurementFromRowState = createRowStateGetter(
   z.object({
-    taxon_measurement_id: z.string().uuid(),
+    taxon_measurement_id: z.guid(),
     value: z.number()
   }),
   'getQuantitativeMeasurementFromRowState'
@@ -193,15 +193,15 @@ export const getQuantitativeMeasurementFromRowState = createRowStateGetter(
 // Environment
 export const getQualitativeEnvironmentFromRowState = createRowStateGetter(
   z.object({
-    environment_qualitative_id: z.string().uuid(),
-    environment_qualitative_option_id: z.string().uuid()
+    environment_qualitative_id: z.guid(),
+    environment_qualitative_option_id: z.guid()
   }),
   'getQualitativeEnvironmentFromRowState'
 );
 
 export const getQuantitativeEnvironmentFromRowState = createRowStateGetter(
   z.object({
-    environment_quantitative_id: z.string().uuid(),
+    environment_quantitative_id: z.guid(),
     value: z.number()
   }),
   'getQuantitativeEnvironmentFromRowState'
