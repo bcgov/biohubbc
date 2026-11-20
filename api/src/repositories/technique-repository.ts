@@ -44,7 +44,7 @@ const ITechniquePostData = MethodTechniqueRecord.pick({
 
 export type ITechniquePostData = z.infer<typeof ITechniquePostData>;
 
-const ITechniquePutData = ITechniquePostData.merge(
+export const ITechniquePutData = ITechniquePostData.merge(
   MethodTechniqueRecord.pick({
     method_technique_id: true
   })
@@ -62,7 +62,7 @@ const ITechniqueRowDataForInsert = MethodTechniqueRecord.pick({
 
 export type ITechniqueRowDataForInsert = z.infer<typeof ITechniqueRowDataForInsert>;
 
-const ITechniqueRowDataForUpdate = ITechniqueRowDataForInsert.merge(
+export const ITechniqueRowDataForUpdate = ITechniqueRowDataForInsert.merge(
   MethodTechniqueRecord.pick({
     method_technique_id: true
   })

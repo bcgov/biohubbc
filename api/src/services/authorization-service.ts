@@ -62,14 +62,10 @@ type AuthorizeByProjectPermissionBySurveyId = {
 };
 
 export type AuthorizeByProjectPermission =
-  | AuthorizeByProjectPermissionByProjectId
-  | AuthorizeByProjectPermissionBySurveyId;
+  AuthorizeByProjectPermissionByProjectId | AuthorizeByProjectPermissionBySurveyId;
 
 export type AuthorizeRule =
-  | AuthorizeBySystemRoles
-  | AuthorizeBySystemUser
-  | AuthorizeByServiceClient
-  | AuthorizeByProjectPermission;
+  AuthorizeBySystemRoles | AuthorizeBySystemUser | AuthorizeByServiceClient | AuthorizeByProjectPermission;
 
 type AuthorizeConfigOr = {
   [AuthorizeOperator.AND]?: never;

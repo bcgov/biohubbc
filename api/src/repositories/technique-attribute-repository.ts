@@ -16,7 +16,7 @@ import { BaseRepository } from './base-repository';
 
 const defaultLog = getLogger('repositories/technique-attribute-repository');
 
-const IQuantitativeAttributePostData = MethodTechniqueAttributeQuantitativeRecord.pick({
+export const IQuantitativeAttributePostData = MethodTechniqueAttributeQuantitativeRecord.pick({
   method_technique_attribute_quantitative_id: true,
   method_lookup_attribute_quantitative_id: true,
   value: true
@@ -28,7 +28,7 @@ const IQuantitativeAttributePostData = MethodTechniqueAttributeQuantitativeRecor
 
 export type IQuantitativeAttributePostData = z.infer<typeof IQuantitativeAttributePostData>;
 
-const IQualitativeAttributePostData = MethodTechniqueAttributeQualitativeRecord.pick({
+export const IQualitativeAttributePostData = MethodTechniqueAttributeQualitativeRecord.pick({
   method_technique_attribute_qualitative_id: true,
   method_lookup_attribute_qualitative_option_id: true,
   method_lookup_attribute_qualitative_id: true

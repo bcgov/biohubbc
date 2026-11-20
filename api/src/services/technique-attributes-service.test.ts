@@ -281,9 +281,11 @@ describe('TechniqueAttributeService', () => {
 
       expect(_areAttributesValidForTechniqueStub).to.have.been.calledOnceWith(methodTechniqueId, attributes);
       expect(getAttributesByTechniqueIdStub).to.have.been.calledOnceWith(methodTechniqueId);
-      expect(deleteQuantitativeAttributesForTechniqueStub).to.have.been.calledOnceWith(surveyId, methodTechniqueId, [
-        2
-      ]);
+      expect(deleteQuantitativeAttributesForTechniqueStub).to.have.been.calledOnceWith(
+        surveyId,
+        methodTechniqueId,
+        [2]
+      );
       expect(insertQuantitativeAttributesForTechniqueStub).to.have.been.calledOnceWith(methodTechniqueId, [
         {
           method_lookup_attribute_quantitative_id: '123-456-33',
