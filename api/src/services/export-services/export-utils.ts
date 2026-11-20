@@ -233,5 +233,5 @@ export const parseTimestampString = (timestamp: string): { dateStr: string; time
  * @returns {boolean} true if it is a uuid
  */
 export const isUUID = (uuid: string | null | undefined): boolean => {
-  return z.string().uuid().safeParse(uuid).success;
+  return z.guid().safeParse(uuid).success;
 };

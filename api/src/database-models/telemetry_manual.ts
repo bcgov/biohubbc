@@ -5,7 +5,7 @@ import { z } from 'zod';
  * @description Data model for `telemetry_manual`.
  */
 export const TelemetryManualModel = z.object({
-  telemetry_manual_id: z.string().uuid(),
+  telemetry_manual_id: z.guid(),
   deployment_id: z.number(),
   latitude: z.number(),
   longitude: z.number(),

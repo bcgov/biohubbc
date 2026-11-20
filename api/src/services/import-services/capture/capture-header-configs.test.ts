@@ -18,7 +18,7 @@ describe('import-captures-service', () => {
 
       const errors = validator({ cell: 'not-a-date' } as any);
 
-      expect(errors[0].error).to.be.equal('Invalid date');
+      expect(errors[0].error).to.be.equal('Invalid ISO date');
     });
 
     it('should return an error if the capture already exists in the map', () => {

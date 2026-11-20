@@ -10,7 +10,7 @@ export const SurveyLocationRecord = z.object({
   survey_id: z.number(),
   name: z.string(),
   description: z.string(),
-  geometry: z.record(z.any()).nullable(),
+  geometry: z.record(z.string(), z.any()).nullable(),
   geography: z.string(),
   geojson: z.any(),
   revision_count: z.number()

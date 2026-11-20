@@ -80,9 +80,9 @@ export const EnvSchema = z.object({
   // GCNotify
   GCNOTIFY_SECRET_API_KEY: ZodEnvString,
   GCNOTIFY_ADMIN_EMAIL: ZodEnvString,
-  GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE: z.string().uuid(),
-  GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE: z.string().uuid(),
-  GCNOTIFY_REQUEST_RESUBMIT_TEMPLATE: z.string().uuid(),
+  GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE: z.guid(),
+  GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE: z.guid(),
+  GCNOTIFY_REQUEST_RESUBMIT_TEMPLATE: z.guid(),
   GCNOTIFY_EMAIL_URL: ZodEnvString,
   GCNOTIFY_SMS_URL: ZodEnvString,
 
@@ -109,7 +109,7 @@ const loadEnvironmentVariablesCore = (): Env => {
     defaultLog.error({
       label: 'loadEnvironmentVariables',
       message: 'Environment variables validation check failed',
-      errors: parsed.error.flatten().fieldErrors
+      errors: z.flattenError(parsed.error).fieldErrors
     });
 
     process.exit(1);

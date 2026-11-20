@@ -5,9 +5,11 @@ import * as z from 'zod';
 const literalSchema = z.union([z.string(), z.number(), z.boolean(), z.null()]);
 type Literal = z.infer<typeof literalSchema>;
 type Json = Literal | { [key: string]: Json } | Json[];
-const jsonSchema: z.ZodType<Json> = z.lazy(() => z.union([literalSchema, z.array(jsonSchema), z.record(jsonSchema)]));
+const jsonSchema: z.ZodType<Json> = z.lazy(() =>
+  z.union([literalSchema, z.array(jsonSchema), z.record(z.string(), jsonSchema)])
+);
 
 // Defines a Zod Schema for a shallow JSON value
 export const shallowJsonSchema: z.ZodType<Json> = z.lazy(() =>
-  z.union([literalSchema, z.array(z.any()), z.record(z.string()), z.record(z.any())])
+  z.union([literalSchema, z.array(z.any()), z.record(z.string(), z.string()), z.record(z.string(), z.any())])
 );

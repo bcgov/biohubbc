@@ -6,8 +6,8 @@ import { z } from 'zod';
  * @description Data model for `method_lookup_attribute_quantitative`.
  */
 export const MethodLookupAttributeQuantitativeModel = z.object({
-  method_lookup_attribute_quantitative_id: z.string().uuid(),
-  technique_attribute_quantitative_id: z.string().uuid(),
+  method_lookup_attribute_quantitative_id: z.guid(),
+  technique_attribute_quantitative_id: z.guid(),
   method_lookup_id: z.number(),
   min: z.number().nullable(),
   max: z.number().nullable(),

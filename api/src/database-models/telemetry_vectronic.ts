@@ -6,7 +6,7 @@ import { z } from 'zod';
  * @description Data model for `telemetry_vectronic`.
  */
 export const TelemetryVectronicModel = z.object({
-  telemetry_vectronic_id: z.string().uuid(),
+  telemetry_vectronic_id: z.guid(),
   device_key: z.string(),
   idposition: z.number(),
   idcollar: z.number(),

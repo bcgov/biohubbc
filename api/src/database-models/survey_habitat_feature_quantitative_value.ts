@@ -8,7 +8,7 @@ import { z } from 'zod';
 export const SurveyHabitatFeatureQuantitativeValueModel = z.object({
   survey_habitat_feature_quantitative_value_id: z.number(),
   survey_habitat_feature_id: z.number(),
-  habitat_feature_quantitative_definition_id: z.string().uuid(),
+  habitat_feature_quantitative_definition_id: z.guid(),
   value: z.number(),
   create_date: z.string(),
   create_user: z.number(),
