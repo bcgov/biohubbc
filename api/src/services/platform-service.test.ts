@@ -997,6 +997,7 @@ describe('PlatformService', () => {
 
       // Verify TAR was created
       expect(createTarArchiveStub).to.have.been.calledOnce;
+      expect(createTarArchiveStub.firstCall.args[3]).to.be.instanceOf(Map);
     });
 
     it('should handle flattening errors gracefully', async () => {
@@ -1084,9 +1085,68 @@ describe('PlatformService', () => {
     });
   });
 
+  describe('_buildArtifactSourceKeys', () => {
+    it('maps each attachment archive path to the S3 key of its file', () => {
+      const platformService = new PlatformService(getMockDBConnection());
+
+      const sourceKeys = platformService._buildArtifactSourceKeys(
+        [{ file_name: 'data.csv', key: 'sims/projects/1/surveys/1/data.csv' } as ISurveyAttachment],
+        [{ file_name: 'report.pdf', key: 'sims/projects/1/surveys/1/reports/report.pdf' } as ISurveyReportAttachment]
+      );
+
+      expect([...sourceKeys.entries()]).to.deep.equal([
+        ['files/data.csv', 'sims/projects/1/surveys/1/data.csv'],
+        ['files/report.pdf', 'sims/projects/1/surveys/1/reports/report.pdf']
+      ]);
+    });
+
+    it('throws when two attachments would be written to the same archive path', () => {
+      const platformService = new PlatformService(getMockDBConnection());
+
+      expect(() =>
+        platformService._buildArtifactSourceKeys(
+          [{ file_name: 'same.pdf', key: 'attachments/same.pdf' } as ISurveyAttachment],
+          [{ file_name: 'same.pdf', key: 'reports/same.pdf' } as ISurveyReportAttachment]
+        )
+      ).to.throw('more than one attachment has the same file name');
+    });
+  });
+
   describe('_createTarArchive and helper methods', () => {
+    let tempDir: string;
+    let tarFilePath: string;
+
+    const readArchive = async (archivePath: string): Promise<Map<string, string>> => {
+      const entries = new Map<string, string>();
+      const extract = tarStream.extract();
+      extract.on('entry', (header, stream, next) => {
+        const chunks: Buffer[] = [];
+        stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+        stream.on('end', () => {
+          entries.set(header.name, Buffer.concat(chunks).toString());
+          next();
+        });
+      });
+      await pipeline(fs.createReadStream(archivePath), zlib.createGunzip(), extract);
+      return entries;
+    };
+
+    const attachmentBlock = (id: string, type: string, artifactKey?: string) => ({
+      id,
+      type,
+      properties: artifactKey ? { artifact_key: artifactKey } : {},
+      content: [],
+      parent: 'root'
+    });
+
+    beforeEach(() => {
+      tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'platform-service-'));
+      tarFilePath = path.join(tempDir, 'root.tar.gz');
+    });
+
     afterEach(() => {
       sinon.restore();
+      fs.rmSync(tempDir, { recursive: true, force: true });
     });
 
     it('finishes each file block before starting the next archive write', async () => {
@@ -1099,46 +1159,105 @@ describe('PlatformService', () => {
         events.push(`end:${block.id}`);
       });
 
-      await platformService._addFileBlocksToArchive({} as any, 'root', fileBlocks);
+      await platformService._addFileBlocksToArchive({} as any, 'root', fileBlocks, new Map());
 
       expect(events).to.deep.equal(['start:first', 'end:first', 'start:second', 'end:second']);
     });
 
     it('should write a gzip-compressed TAR archive with compact JSON files', async () => {
       const platformService = new PlatformService(getMockDBConnection());
-      const tempDir = fs.mkdtempSync(path.join(os.tmpdir(), 'platform-service-'));
-      const tarFilePath = path.join(tempDir, 'root.tar.gz');
       const blocks = [{ id: 't1', type: 'telemetry', properties: { dop: 1 }, content: [], parent: 'root' }];
 
+      await platformService._createTarArchive('root', new Map([['telemetry', blocks]]), tarFilePath);
+
+      const entries = await readArchive(tarFilePath);
+
+      expect(entries.get('root/.survey-id')).to.equal('root');
+      expect(entries.get('root/features/telemetry.json')).to.equal(JSON.stringify(blocks));
+    });
+
+    it('writes file and report attachment files at the path referenced by their artifact_key', async () => {
+      const platformService = new PlatformService(getMockDBConnection());
+      const fileBlock = attachmentBlock('survey_attachment:1', BiohubFeatureType.FILE, 'files/data.csv');
+      const reportBlock = attachmentBlock('survey_report_attachment:1', BiohubFeatureType.REPORT, 'files/report.pdf');
+      const sourceKeys = new Map([
+        ['files/data.csv', 's3/data.csv'],
+        ['files/report.pdf', 's3/reports/report.pdf']
+      ]);
+      const downloadStub = sinon
+        .stub(platformService, '_downloadFileFromS3')
+        .callsFake(async (s3Key: string) => new TextEncoder().encode(`content of ${s3Key}`));
+
+      await platformService._createTarArchive(
+        'root',
+        new Map<string, any[]>([
+          [BiohubFeatureType.FILE, [fileBlock]],
+          [BiohubFeatureType.REPORT, [reportBlock]]
+        ]),
+        tarFilePath,
+        sourceKeys
+      );
+
+      const entries = await readArchive(tarFilePath);
+
+      expect(downloadStub.getCalls().map((call) => call.args[0])).to.deep.equal([
+        's3/data.csv',
+        's3/reports/report.pdf'
+      ]);
+      expect(entries.get('root/files/data.csv')).to.equal('content of s3/data.csv');
+      expect(entries.get('root/files/report.pdf')).to.equal('content of s3/reports/report.pdf');
+      expect(JSON.parse(entries.get('root/features/file.json')!)[0].properties.artifact_key).to.equal('files/data.csv');
+      expect(JSON.parse(entries.get('root/features/report.json')!)[0].properties.artifact_key).to.equal(
+        'files/report.pdf'
+      );
+    });
+
+    it('rejects when an attachment file fails to download', async () => {
+      const platformService = new PlatformService(getMockDBConnection());
+      sinon.stub(platformService, '_downloadFileFromS3').rejects(new Error('download failed'));
+
       try {
-        await platformService._createTarArchive('root', new Map([['telemetry', blocks]]), tarFilePath);
-
-        const entries = new Map<string, string>();
-        const extract = tarStream.extract();
-        extract.on('entry', (header, stream, next) => {
-          const chunks: Buffer[] = [];
-          stream.on('data', (chunk: Buffer) => chunks.push(chunk));
-          stream.on('end', () => {
-            entries.set(header.name, Buffer.concat(chunks).toString());
-            next();
-          });
-        });
-        await pipeline(fs.createReadStream(tarFilePath), zlib.createGunzip(), extract);
-
-        expect(entries.get('root/.survey-id')).to.equal('root');
-        expect(entries.get('root/features/telemetry.json')).to.equal(JSON.stringify(blocks));
-      } finally {
-        fs.rmSync(tempDir, { recursive: true, force: true });
+        await platformService._createTarArchive(
+          'root',
+          new Map<string, any[]>([[BiohubFeatureType.FILE, [attachmentBlock('a:1', 'file', 'files/data.csv')]]]),
+          tarFilePath,
+          new Map([['files/data.csv', 's3/data.csv']])
+        );
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect((error as Error).message).to.equal('download failed');
       }
     });
 
-    it('should call helper methods correctly', () => {
-      const mockDBConnection = getMockDBConnection();
-      const platformService = new PlatformService(mockDBConnection);
+    it('rejects when an attachment has no artifact_key', async () => {
+      const platformService = new PlatformService(getMockDBConnection());
 
-      expect(platformService._addMetadataFile).to.be.a('function');
-      expect(platformService._addJsonFiles).to.be.a('function');
-      expect(platformService._addFileToArchive).to.be.a('function');
+      try {
+        await platformService._createTarArchive(
+          'root',
+          new Map<string, any[]>([[BiohubFeatureType.REPORT, [attachmentBlock('r:1', 'report')]]]),
+          tarFilePath
+        );
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect((error as Error).message).to.include('the attachment has no artifact key');
+      }
+    });
+
+    it('rejects when no S3 key is known for an attachment artifact_key', async () => {
+      const platformService = new PlatformService(getMockDBConnection());
+
+      try {
+        await platformService._createTarArchive(
+          'root',
+          new Map<string, any[]>([[BiohubFeatureType.FILE, [attachmentBlock('a:1', 'file', 'files/missing.csv')]]]),
+          tarFilePath,
+          new Map()
+        );
+        expect.fail('Should have thrown an error');
+      } catch (error) {
+        expect((error as Error).message).to.include('the attachment file was not found');
+      }
     });
 
     it('should write JSON files to expected archive paths', async () => {
@@ -1163,28 +1282,6 @@ describe('PlatformService', () => {
       expect(writtenPaths).to.include('features/survey.json');
       expect(writtenPaths).to.include('codes/codeset.json');
       expect(writtenPaths).to.include('features/habitat_feature.json');
-    });
-
-    it('should write survey metadata marker to the archive root', () => {
-      const mockDBConnection = getMockDBConnection();
-      const platformService = new PlatformService(mockDBConnection);
-
-      const pack: any = {
-        entry: sinon.stub().callsFake((_header: unknown, _content: unknown, callback: () => void) => callback()),
-        destroy: sinon.stub()
-      };
-      const blocksByType = new Map<string, any[]>();
-      const addJsonFilesStub = sinon.stub(platformService as any, '_addJsonFiles').resolves();
-
-      platformService._addMetadataFile(pack, 'test-survey-root-id', blocksByType as any);
-
-      expect(pack.entry).to.have.been.calledOnce;
-      expect(pack.entry.firstCall.args[0]).to.deep.include({
-        name: 'test-survey-root-id/.survey-id',
-        size: 'test-survey-root-id'.length
-      });
-      expect(pack.entry.firstCall.args[1].toString()).to.equal('test-survey-root-id');
-      expect(addJsonFilesStub).to.have.been.calledOnceWith(pack, 'test-survey-root-id', blocksByType);
     });
 
     it('should write codeset block properties as codes/codeset.json content when first block has properties', async () => {

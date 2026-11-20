@@ -120,6 +120,29 @@ export function buildFeatureSourceId(...segments: (string | number | null | unde
   return segments.join(':');
 }
 
+/**
+ * Builds the `artifact_key` for an attachment feature: the path of the attachment's file inside the submission archive,
+ * relative to the archive root, eg: `files/report.pdf`.
+ *
+ * BioHub resolves each `artifact_key` by an exact match against the archive entry paths, so the attachment's file must be
+ * written to the archive at exactly this path.
+ *
+ * @param {string} fileName - The attachment's file name
+ * @return {*}  {string}
+ */
+export function buildArtifactKey(fileName: string): string {
+  // Keep the file inside the archive's `files/` folder, even if the name contains path separators.
+  const baseName = fileName.replaceAll('\\', '/').split('/').pop()?.trim();
+
+  if (!baseName || baseName === '.' || baseName === '..') {
+    throw new ApiGeneralError('Failed to build BioHub artifact key, the attachment has an invalid file name.', [
+      { fileName }
+    ]);
+  }
+
+  return `files/${baseName}`;
+}
+
 interface BioHubSubmission {
   id: string;
   name: string;
@@ -633,7 +656,7 @@ export class PostSurveyAttachmentsToBiohubObject implements BioHubSubmissionFeat
     this.id = buildFeatureSourceId('survey_attachment', attachmentRecord.survey_attachment_id);
     this.type = BiohubFeatureType.FILE;
     this.properties = {
-      artifact_key: attachmentRecord.key,
+      artifact_key: buildArtifactKey(attachmentRecord.file_name),
       filename: attachmentRecord.file_name,
       file_type: attachmentRecord.file_type,
       file_size: Number(attachmentRecord.file_size),
@@ -663,7 +686,7 @@ export class PostSurveyReportAttachmentsToBiohubObject implements BioHubSubmissi
     this.id = buildFeatureSourceId('survey_report_attachment', reportAttachmentRecord.survey_report_attachment_id);
     this.type = BiohubFeatureType.REPORT;
     this.properties = {
-      artifact_key: 'files/' + reportAttachmentRecord.file_name,
+      artifact_key: buildArtifactKey(reportAttachmentRecord.file_name),
       filename: reportAttachmentRecord.file_name,
       file_type: ATTACHMENT_TYPE.REPORT,
       file_size: Number(reportAttachmentRecord.file_size),
