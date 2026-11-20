@@ -20,8 +20,6 @@ env:
   IMAGE_TAG: build-1.0.0-${{ github.event.number }}
   OC_VERSION: "4.16.60"
   OC_CACHE_DIR: ~/.cache/oc
-  # Opt composite JS actions (e.g. actions/download-artifact@v6) into Node.js 24 until they ship node24 runtimes.
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   # Print variables for logging and debugging purposes
@@ -54,13 +52,13 @@ jobs:
       - checkEnv
     steps:
       - name: Checkout Target Branch
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
       # Cache the repo
       - name: Cache repo
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -72,7 +70,7 @@ jobs:
       # Install Node - for `node` and `npm` commands
       # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24
 
@@ -90,7 +88,7 @@ jobs:
     steps:
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -101,7 +99,7 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Authenticate Docker with OpenShift registry.
       # The registry route intermittently times out from some runner egress IPs (same source-IP drop as the
@@ -151,7 +149,7 @@ jobs:
     steps:
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -162,7 +160,7 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Authenticate Docker with OpenShift registry.
       # The registry route intermittently times out from some runner egress IPs (same source-IP drop as the
@@ -212,7 +210,7 @@ jobs:
     steps:
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -223,7 +221,7 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Authenticate Docker with OpenShift registry.
       # The registry route intermittently times out from some runner egress IPs (same source-IP drop as the
@@ -273,7 +271,7 @@ jobs:
     steps:
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -284,7 +282,7 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Authenticate Docker with OpenShift registry.
       # The registry route intermittently times out from some runner egress IPs (same source-IP drop as the
@@ -343,7 +341,7 @@ jobs:
     steps:
       # Load repo from cache
       - name: Cache repo
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         id: cache-repo
         env:
           cache-name: cache-repo
@@ -354,7 +352,7 @@ jobs:
       # Checkout the branch if not restored via cache
       - name: Checkout Target Branch
         if: steps.cache-repo.outputs.cache-hit != 'true'
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Install oc (see .github/actions/setup-openshift-cli). Fork PRs have no secrets — oc commands will fail.
       - uses: ./.github/actions/setup-openshift-cli
@@ -435,12 +433,12 @@ jobs:
       - buildAndPushAPI
     steps:
       - name: Download all Trivy scan results
-        uses: actions/download-artifact@v6
+        uses: actions/download-artifact@v8
         with:
           path: trivy-results
 
       - name: Check for vulnerabilities and comment on PR
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');

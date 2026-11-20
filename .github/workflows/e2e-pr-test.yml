@@ -36,7 +36,7 @@ jobs:
 
       # Checkout the PR branch
       - name: Checkout Target Branch
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Wait for API response
         uses: nev7n/wait_for_response@v1.0.1
@@ -57,7 +57,7 @@ jobs:
       # Install Node - for `node` and `npm` commands
       # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
       - name: Setup Node.js
-        uses: actions/setup-node@v6
+        uses: actions/setup-node@v7
         with:
           node-version: 24
 

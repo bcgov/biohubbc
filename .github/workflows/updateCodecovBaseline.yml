@@ -24,7 +24,7 @@ jobs:
     timeout-minutes: 10
     steps:
       - name: Checkout dev
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
 
@@ -54,7 +54,7 @@ jobs:
 
       - name: Upload coverage to Codecov
         if: steps.download.outputs.found == 'true'
-        uses: codecov/codecov-action@v5
+        uses: codecov/codecov-action@v7
         with:
           token: ${{secrets.CODECOV_TOKEN}}
           # Fail loudly: a silently broken baseline upload defeats the purpose

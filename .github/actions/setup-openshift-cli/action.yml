@@ -41,7 +41,7 @@ runs:
 
     - name: Restore cached oc
       id: cache-oc
-      uses: actions/cache@v5
+      uses: actions/cache@v6
       with:
         path: ${{ steps.paths.outputs.cache_dir }}/${{ inputs.oc-version }}/${{ runner.arch }}/oc
         key: ${{ runner.os }}-oc-${{ inputs.oc-version }}-${{ runner.arch }}

@@ -39,7 +39,7 @@ jobs:
     timeout-minutes: 30
     steps:
       - name: Checkout Target Branch
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       # Install oc (see .github/actions/setup-openshift-cli).
       - uses: ./.github/actions/setup-openshift-cli
