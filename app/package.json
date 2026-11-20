@@ -107,6 +107,7 @@
     "eslint-config-prettier": "^10.1.1",
     "eslint-plugin-prettier": "^5.2.5",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "globals": "^16.5.0",
     "jsdom": "^26.0.0",
     "prettier": "^3.5.3",
     "prettier-plugin-organize-imports": "^4.1.0",
@@ -122,7 +123,7 @@
     "vitest-sonar-reporter": "^3.0.0"
   },
   "overrides": {
-    "globals": "^16.0.0"
+    "globals": "$globals"
   },
   "browserslist": {
     "production": [
