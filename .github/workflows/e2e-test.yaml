@@ -13,8 +13,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v6
 
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+
       - name: E2E Smoke tests
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v7
         # let's give this action an ID so we can refer
         # to its output values later
         id: smoke

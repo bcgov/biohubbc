@@ -17,7 +17,7 @@ Customize the credentials for your application.
 
 - copy [sample.cypress.env.json](./sample.cypress.env.json) to `cypress.env.json`
 - edit `cypress.env.json`, setting the variable values, including `auth_client_id` and `auth_client_secret` from the previous step
-- configure the `baseURL` for your application in the [config file](./cypress/plugins/index.js#L21)
+- configure the `baseUrl` for your application in [cypress.config.ts](./cypress.config.ts), or set `CYPRESS_BASE_URL`
 
 ```bash
 npm run test:e2e
