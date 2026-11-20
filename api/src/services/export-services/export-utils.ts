@@ -1,4 +1,4 @@
-import archiver from 'archiver';
+import { type Archiver, ZipArchive } from 'archiver';
 import { Knex } from 'knex';
 import QueryStream from 'pg-query-stream';
 import { SQLStatement } from 'sql-template-strings';
@@ -20,8 +20,14 @@ interface MeasDataItem {
   mv: string;
 }
 
-export function getArchiveStream(): archiver.Archiver {
-  const archiveStream = archiver('zip', {
+/**
+ * Create a zip archive stream for an export, at the highest zlib compression level.
+ *
+ * @export
+ * @return {*}  {Archiver} The zip archive stream.
+ */
+export function getArchiveStream(): Archiver {
+  const archiveStream = new ZipArchive({
     zlib: {
       level: 9 // Compression level
     }
