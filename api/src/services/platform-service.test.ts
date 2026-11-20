@@ -77,7 +77,7 @@ describe('PlatformService', () => {
       const taxon = await platformService.getTaxonByScientificName('Alces alces');
 
       expect(axiosStub.getCall(0).args[1]?.headers?.authorization).to.equal('Bearer token');
-      expect(axiosStub.getCall(0).args[1]?.params.terms).to.deep.equal(['Alces', 'alces']);
+      expect(axiosStub.getCall(0).args[1]?.params).to.deep.equal({ terms: ['Alces', 'alces'] });
 
       expect(taxon).to.deep.equal({ tsn: 1, scientificName: 'alces alces' });
     });
@@ -108,7 +108,7 @@ describe('PlatformService', () => {
       const taxon = await platformService.getTaxonByScientificName('Alces alces');
 
       expect(axiosStub.getCall(0).args[1]?.headers?.authorization).to.equal('Bearer token');
-      expect(axiosStub.getCall(0).args[1]?.params.terms).to.deep.equal(['Alces', 'alces']);
+      expect(axiosStub.getCall(0).args[1]?.params).to.deep.equal({ terms: ['Alces', 'alces'] });
 
       expect(taxon).to.be.null;
     });
@@ -128,7 +128,7 @@ describe('PlatformService', () => {
       const taxon = await platformService.getTaxonByScientificName('Alces alces');
 
       expect(axiosStub.getCall(0).args[1]?.headers?.authorization).to.equal('Bearer token');
-      expect(axiosStub.getCall(0).args[1]?.params.terms).to.deep.equal(['Alces', 'alces']);
+      expect(axiosStub.getCall(0).args[1]?.params).to.deep.equal({ terms: ['Alces', 'alces'] });
 
       expect(taxon).to.be.null;
     });
@@ -1121,7 +1121,8 @@ describe('PlatformService', () => {
       const extract = tarStream.extract();
       extract.on('entry', (header, stream, next) => {
         const chunks: Buffer[] = [];
-        stream.on('data', (chunk: Buffer) => chunks.push(chunk));
+        // tar-stream types entry chunks as unknown; a pack's entries carry Buffers.
+        stream.on('data', (chunk) => chunks.push(chunk as Buffer));
         stream.on('end', () => {
           entries.set(header.name, Buffer.concat(chunks).toString());
           next();
