@@ -100,7 +100,7 @@
     "@types/shpjs": "^3.4.7",
     "@vitejs/plugin-react": "^4.3.4",
     "@vitejs/plugin-react-swc": "^3.8.1",
-    "@vitest/coverage-v8": "^3.0.9",
+    "@vitest/coverage-v8": "^4.1.12",
     "@vitest/eslint-plugin": "^1.1.38",
     "@xmldom/xmldom": "^0.9.12",
     "axios-mock-adapter": "^2.1.0",
@@ -118,8 +118,8 @@
     "vite-plugin-eslint": "^1.8.1",
     "vite-plugin-node-polyfills": "^0.23.0",
     "vite-tsconfig-paths": "^5.1.4",
-    "vitest": "^3.0.9",
-    "vitest-sonar-reporter": "^2.0.0"
+    "vitest": "^4.1.12",
+    "vitest-sonar-reporter": "^3.0.0"
   },
   "overrides": {
     "globals": "^16.0.0"
