@@ -16,6 +16,7 @@ import {
   UpdateSurveyObservation
 } from './observation-repository.interface';
 import {
+  applyPaginationOptions,
   getSurveyFlattenedObservationsBaseQuery,
   getSurveyObservationsBaseQuery,
   makeFindFlattenedObservationsQuery,
@@ -68,21 +69,7 @@ export class ObservationRepository extends BaseRepository {
   ): Promise<FlattenedObservationRecordWithSamplingAndSubcountData[]> {
     const query = makeFindFlattenedObservationsQuery(isUserAdmin, systemUserId, filterFields);
 
-    if (pagination) {
-      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
-
-      if (pagination.sort && pagination.order) {
-        if (pagination.sort === 'subcount') {
-          const knex = getKnex();
-          // A sort direction is a SQL keyword rather than a value, so it cannot be bound as a
-          // parameter and is narrowed to one of the two literals instead
-          const direction = pagination.order === 'desc' ? 'DESC' : 'ASC';
-          query.orderByRaw(knex.raw(`(subcount->>?)::numeric ${direction}`, [pagination.sort]));
-        } else {
-          query.orderBy(pagination.sort, pagination.order);
-        }
-      }
-    }
+    applyPaginationOptions(query, pagination);
 
     const response = await this.connection.knex(query, FlattenedObservationRecordWithSamplingAndSubcountData);
 
@@ -177,21 +164,7 @@ export class ObservationRepository extends BaseRepository {
       knex.select<any, { survey_id: number }>('survey_id').from('survey').where('survey_id', surveyId)
     );
 
-    if (pagination) {
-      query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
-
-      if (pagination.sort && pagination.order) {
-        if (pagination.sort === 'subcount') {
-          const knex = getKnex();
-          // A sort direction is a SQL keyword rather than a value, so it cannot be bound as a
-          // parameter and is narrowed to one of the two literals instead
-          const direction = pagination.order === 'desc' ? 'DESC' : 'ASC';
-          query.orderByRaw(knex.raw(`(subcount->>?)::numeric ${direction}`, [pagination.sort]));
-        } else {
-          query.orderBy(pagination.sort, pagination.order);
-        }
-      }
-    }
+    applyPaginationOptions(query, pagination);
 
     const response = await this.connection.knex(query, FlattenedObservationRecordWithSamplingAndSubcountData);
 
