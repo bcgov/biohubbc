@@ -3,7 +3,12 @@ import { getRequestHandlerMocks } from '../__mocks__/db';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { SystemUserWithRoles } from '../models/system-user-view';
 import { KeycloakUserInformation } from './keycloak-utils';
-import { getFileFromRequest, getKeycloakTokenFromRequest, getSystemUserFromRequest } from './request';
+import {
+  getFileFromRequest,
+  getKeycloakTokenFromRequest,
+  getQueryParamArrayFromRequest,
+  getSystemUserFromRequest
+} from './request';
 
 describe('getFileFromRequest', () => {
   it('should throw error if unable to retrieve file - missing file', () => {
@@ -39,6 +44,42 @@ describe('getFileFromRequest', () => {
     const { mockReq } = getRequestHandlerMocks();
     mockReq.files = ['file', 'file2'] as unknown as Express.Multer.File[];
     expect(getFileFromRequest(mockReq, 1)).to.be.eql('file2');
+  });
+});
+
+describe('getQueryParamArrayFromRequest', () => {
+  it('should return an empty array if the query parameter is absent', () => {
+    const { mockReq } = getRequestHandlerMocks();
+
+    expect(getQueryParamArrayFromRequest(mockReq, 'type')).to.be.empty;
+  });
+
+  it('should wrap a parameter that appears once in an array', () => {
+    const { mockReq } = getRequestHandlerMocks();
+    mockReq.query = { type: 'System Access' };
+
+    expect(getQueryParamArrayFromRequest(mockReq, 'type')).to.be.eql(['System Access']);
+  });
+
+  it('should return a parameter that appears more than once unchanged', () => {
+    const { mockReq } = getRequestHandlerMocks();
+    mockReq.query = { type: ['System Access', 'System Role'] };
+
+    expect(getQueryParamArrayFromRequest(mockReq, 'type')).to.be.eql(['System Access', 'System Role']);
+  });
+
+  it('should drop a parameter that is neither a string nor an array', () => {
+    const { mockReq } = getRequestHandlerMocks();
+    mockReq.query = { type: { key: 'value' } };
+
+    expect(getQueryParamArrayFromRequest(mockReq, 'type')).to.be.empty;
+  });
+
+  it('should drop the items of an array that are not strings', () => {
+    const { mockReq } = getRequestHandlerMocks();
+    mockReq.query = { type: ['System Access', { key: 'value' }] } as unknown as typeof mockReq.query;
+
+    expect(getQueryParamArrayFromRequest(mockReq, 'type')).to.be.eql(['System Access']);
   });
 });
 

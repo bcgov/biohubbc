@@ -42,6 +42,25 @@ describe('pagination', () => {
         order: 'desc'
       });
     });
+
+    it('should drop an order that is neither asc nor desc', () => {
+      const mockRequest = {
+        query: {
+          limit: '100',
+          page: '2',
+          sort: 'name',
+          order: 'name DESC, 1=1'
+        }
+      } as unknown as Request;
+
+      const result = makePaginationOptionsFromRequest(mockRequest);
+      expect(result).to.eql({
+        limit: 100,
+        page: 2,
+        sort: 'name',
+        order: undefined
+      });
+    });
   });
 
   describe('makePaginationResponse', () => {
