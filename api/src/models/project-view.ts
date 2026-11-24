@@ -57,7 +57,7 @@ export interface IGetProject {
 
 export const ProjectData = z.object({
   project_id: z.number(),
-  uuid: z.string().uuid(),
+  uuid: z.guid(),
   project_name: z.string(),
   comments: z.string().nullable(),
   revision_count: z.number()

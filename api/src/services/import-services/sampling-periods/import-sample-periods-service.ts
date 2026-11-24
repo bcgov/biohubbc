@@ -21,12 +21,7 @@ const defaultLog = getLogger('services/import/import-sample-periods-service');
 
 // Sample Period CSV static headers
 export type SamplePeriodCSVStaticHeader =
-  | 'SAMPLE_SITE'
-  | 'TECHNIQUE_NAME'
-  | 'START_DATE'
-  | 'START_TIME'
-  | 'END_DATE'
-  | 'END_TIME';
+  'SAMPLE_SITE' | 'TECHNIQUE_NAME' | 'START_DATE' | 'START_TIME' | 'END_DATE' | 'END_TIME';
 
 /**
  * ImportSamplePeriodsService - A service for importing Sample Periods into SIMS.

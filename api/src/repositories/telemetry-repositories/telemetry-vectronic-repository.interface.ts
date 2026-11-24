@@ -7,7 +7,7 @@ import { TelemetryVectronicRecord } from '../../database-models/telemetry_vectro
  */
 export type VectronicPayload = Omit<TelemetryVectronicRecord, 'telemetry_vectronic_id' | 'device_key'>;
 
-const VectronicAPIQuery = z.object({
+export const VectronicAPIQuery = z.object({
   idcollar: z.number(),
   collarkey: z.string(),
   afterAcquisition: z.string().optional(), // Request data after or equal to this date
@@ -17,7 +17,7 @@ const VectronicAPIQuery = z.object({
 
 export type VectronicAPIQuery = z.infer<typeof VectronicAPIQuery>;
 
-const VectronicTask = z.object({
+export const VectronicTask = z.object({
   serial: z.number(), // idcollar
   key: z.string() // collarkey
 });

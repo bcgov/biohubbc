@@ -22,7 +22,6 @@ import express from 'express';
 import console from 'node:console';
 import process from 'node:process';
 import path from 'path';
-import request from 'request';
 import { fileURLToPath } from 'url';
 
 /**
@@ -104,21 +103,23 @@ import { fileURLToPath } from 'url';
   });
 
   // Health check
-  app.use('/healthcheck', (_, resp) => {
+  app.use('/healthcheck', async (_, resp) => {
     // Request server api
     const host = process.env.VITE_APP_API_HOST;
-    request(`https://${host}/`, (err, res) => {
-      if (err) {
-        console.log(`Error: ${err}, host: ${host}`);
-        resp.status(404).json({ error: `${err}`, host: host });
+    try {
+      const res = await fetch(`https://${host}/`);
+      // Only the status is read; cancelling the body releases the connection.
+      await res.body?.cancel();
+
+      if (res.status === 200) {
+        resp.status(200).json({ success: true });
       } else {
-        if (res.statusCode === 200) {
-          resp.status(200).json({ success: true });
-        } else {
-          resp.status(404).json({ error: 'API not responding' });
-        }
+        resp.status(404).json({ error: 'API not responding' });
       }
-    });
+    } catch (err) {
+      console.log(`Error: ${err}, host: ${host}`);
+      resp.status(404).json({ error: `${err}`, host: host });
+    }
   });
 
   // All routes

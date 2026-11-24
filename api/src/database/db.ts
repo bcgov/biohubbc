@@ -448,7 +448,7 @@ const getDBConnectionCore = function (keycloakToken?: KeycloakUserInformation): 
         zodResponse
       });
 
-      throw new ApiExecuteSQLError('Failed to validate database response', zodResponse.error.errors);
+      throw new ApiExecuteSQLError('Failed to validate database response', zodResponse.error.issues);
     }
 
     return response;
@@ -512,7 +512,7 @@ const getDBConnectionCore = function (keycloakToken?: KeycloakUserInformation): 
         zodResponse
       });
 
-      throw new ApiExecuteSQLError('Failed to validate database response', zodResponse.error.errors);
+      throw new ApiExecuteSQLError('Failed to validate database response', zodResponse.error.issues);
     }
 
     return response;

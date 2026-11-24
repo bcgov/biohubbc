@@ -6,8 +6,8 @@ import { z } from 'zod';
  * @description Data model for `habitat_feature_qualitative_definition_option`.
  */
 export const HabitatFeatureQualitativeDefinitionOptionModel = z.object({
-  habitat_feature_qualitative_definition_option_id: z.string().uuid(),
-  habitat_feature_qualitative_definition_id: z.string().uuid(),
+  habitat_feature_qualitative_definition_option_id: z.guid(),
+  habitat_feature_qualitative_definition_id: z.guid(),
   name: z.string(),
   description: z.string().nullable(),
   record_end_date: z.string().nullable(),

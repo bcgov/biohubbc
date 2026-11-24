@@ -35,7 +35,7 @@ const SurveyFundingSource = z.object({
 
 export type SurveyFundingSource = z.infer<typeof SurveyFundingSource>;
 
-const SurveyFundingSourceSupplementaryData = z.object({
+export const SurveyFundingSourceSupplementaryData = z.object({
   project_id: z.number(),
   survey_name: z.string()
 });

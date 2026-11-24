@@ -195,7 +195,7 @@ export const getMarkingCaptureDateCellValidator = (
   utils: CSVConfigUtils<MarkingCSVStaticHeader>
 ): CSVCellValidator => {
   return (params: CSVParams): CSVError[] => {
-    const cellErrors = validateZodCell(params.cell, z.string().date());
+    const cellErrors = validateZodCell(params.cell, z.iso.date());
 
     if (cellErrors.length) {
       return cellErrors;

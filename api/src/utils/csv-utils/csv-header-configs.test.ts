@@ -31,7 +31,7 @@ describe('CSVHeaderConfigs', () => {
       const result = validateZodCell('hi', z.number().min(0).max(0));
       expect(result).to.be.deep.equal([
         {
-          error: 'Expected number, received string',
+          error: 'Invalid input: expected number, received string',
           solution: 'Update the cell value to match the expected type'
         }
       ]);

@@ -7,7 +7,7 @@ import { z } from 'zod';
  */
 export const HabitatFeatureTypeQualitativeOptionModel = z.object({
   habitat_feature_type_qualitative_option_id: z.number(),
-  habitat_feature_qualitative_definition_id: z.string().uuid(),
+  habitat_feature_qualitative_definition_id: z.guid(),
   habitat_feature_type_id: z.number(),
   record_end_date: z.string().nullable(),
   create_date: z.string(),

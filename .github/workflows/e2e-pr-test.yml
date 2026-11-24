@@ -36,7 +36,7 @@ jobs:
 
       # Checkout the PR branch
       - name: Checkout Target Branch
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Wait for API response
         uses: nev7n/wait_for_response@v1.0.1
@@ -57,12 +57,12 @@ jobs:
       # Install Node - for `node` and `npm` commands
       # Note: This already uses actions/cache internally, so repeat calls in subsequent jobs are not a performance hit
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
-          node-version: 20
+          node-version: 24
 
       - name: E2E Smoke tests
-        uses: cypress-io/github-action@v6
+        uses: cypress-io/github-action@v7
         # let's give this action an ID so we can refer
         # to its output values later
         id: smoke
@@ -72,6 +72,6 @@ jobs:
           wait-on-timeout: 120
           record: true
           working-directory: testing/e2e
-          spec: cypress/integration/smoke*.spec.ts
+          spec: cypress/e2e/smoke*.cy.ts
           browser: chrome
           ci-build-id: ${{ github.event.number }}

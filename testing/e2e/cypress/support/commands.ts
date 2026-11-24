@@ -12,20 +12,24 @@ import "cypress-file-upload";
 import "./keycloak.js"
 
 Cypress.Commands.overwrite('login', (originalFn) => {
-  originalFn({
-    root: Cypress.env("authUrl"),
-    realm: Cypress.env("authRealm"),
-    username: Cypress.env("username"),
-    password: Cypress.env("password"),
-    client_id: Cypress.env("authClientId"),
-    redirect_uri: Cypress.env("host"),
+  cy.env(['authUrl', 'authRealm', 'username', 'password', 'authClientId', 'host'], { log: false }).then((env) => {
+    originalFn({
+      root: env.authUrl,
+      realm: env.authRealm,
+      username: env.username,
+      password: env.password,
+      client_id: env.authClientId,
+      redirect_uri: env.host,
+    })
   })
 })
 
 Cypress.Commands.overwrite('logout', (originalFn) => {
-  originalFn({
-    root: Cypress.env("authUrl"),
-    realm: Cypress.env("authRealm"),
-    redirect_uri: Cypress.env("host"),
+  cy.env(['authUrl', 'authRealm', 'host'], { log: false }).then((env) => {
+    originalFn({
+      root: env.authUrl,
+      realm: env.authRealm,
+      redirect_uri: env.host,
+    })
   })
 })

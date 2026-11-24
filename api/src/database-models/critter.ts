@@ -7,7 +7,7 @@ import { z } from 'zod';
 export const CritterModel = z.object({
   critter_id: z.number(),
   survey_id: z.number(),
-  critterbase_critter_id: z.string().uuid(),
+  critterbase_critter_id: z.guid(),
   create_date: z.string(),
   create_user: z.number(),
   update_date: z.string().nullable(),
