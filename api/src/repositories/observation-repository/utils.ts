@@ -1,6 +1,7 @@
 import { Knex } from 'knex';
 import { getKnex } from '../../database/db';
 import { IObservationAdvancedFilters } from '../../models/observation-view';
+import { ApiPaginationOptions } from '../../zod-schema/pagination';
 
 /**
  * Generate the observation list query based on user access and filters.
@@ -184,6 +185,39 @@ export function getSurveyFlattenedObservationsBaseQuery(
       // Return all observations for the surveys, including the additional sampling data, and flattened subcount data
       .modify(_selectFlattenedObservationColumns, authorizedSurveyIdsQuery)
   );
+}
+
+/**
+ * Apply pagination and sorting options to an observations query.
+ *
+ * `subcount` is a JSON property rather than a column, so ordering by it needs a raw expression. A
+ * sort direction is a SQL keyword rather than a value, so it cannot be bound as a parameter and is
+ * narrowed to one of the two literals instead.
+ *
+ * @param {Knex.QueryBuilder} query The query to apply the options to, modified in place.
+ * @param {ApiPaginationOptions} [pagination] The pagination options, if the request supplied any.
+ * @return {*}  {void}
+ */
+export function applyPaginationOptions(query: Knex.QueryBuilder, pagination?: ApiPaginationOptions): void {
+  if (!pagination) {
+    return;
+  }
+
+  query.limit(pagination.limit).offset((pagination.page - 1) * pagination.limit);
+
+  if (!pagination.sort || !pagination.order) {
+    return;
+  }
+
+  if (pagination.sort !== 'subcount') {
+    query.orderBy(pagination.sort, pagination.order);
+
+    return;
+  }
+
+  const direction = pagination.order === 'desc' ? 'DESC' : 'ASC';
+
+  query.orderByRaw(getKnex().raw(`(subcount->>?)::numeric ${direction}`, [pagination.sort]));
 }
 
 function _getSamplingDataQuery(authorizedSurveyIdsQuery: Knex.QueryBuilder): Knex.QueryBuilder {

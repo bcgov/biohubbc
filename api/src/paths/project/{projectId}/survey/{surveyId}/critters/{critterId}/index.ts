@@ -8,6 +8,7 @@ import { CritterAttachmentService } from '../../../../../../../services/critter-
 import { CritterbaseService, ICritterbaseUser } from '../../../../../../../services/critterbase-service';
 import { SurveyCritterService } from '../../../../../../../services/survey-critter-service';
 import { getLogger } from '../../../../../../../utils/logger';
+import { getQueryParamArrayFromRequest } from '../../../../../../../utils/request';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/critters/{critterId}');
 
@@ -344,7 +345,7 @@ export function getSurveyCritter(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
     const critterId = Number(req.params.critterId);
-    const expand = (req.query.expand as string[]) ?? [];
+    const expand = getQueryParamArrayFromRequest(req, 'expand');
 
     const connection = getDBConnection(req.keycloak_token);
 

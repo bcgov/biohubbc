@@ -23,9 +23,8 @@ export class PostgisRepository extends BaseRepository {
       .queryBuilder()
       .select(
         knex.raw(
-          `public.ST_AsText(public.ST_TRANSFORM(public.ST_Force2D(public.ST_GeomFromGeoJSON('${JSON.stringify(
-            geometry
-          )}')), ${srid})) as geometry`
+          'public.ST_AsText(public.ST_TRANSFORM(public.ST_Force2D(public.ST_GeomFromGeoJSON(?)), ?)) as geometry',
+          [JSON.stringify(geometry), srid]
         )
       );
 

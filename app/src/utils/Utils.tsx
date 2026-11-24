@@ -10,6 +10,16 @@ import _ from 'lodash';
 import { IDialogContext } from '../contexts/dialogContext';
 
 /**
+ * Matches a url whose host is exactly `localhost` or `host.docker.internal`, with an optional
+ * `http://` prefix and port.
+ *
+ * The host has to end at a port, path, query, fragment or the end of the string, so a host that
+ * merely begins with one of the two names, such as `host.docker.internal.example.com`, is not
+ * treated as local.
+ */
+const LOCAL_URL_REGEX = /^(?:http:\/\/)?(?:localhost|host\.docker\.internal)(?::\d+)?(?:[/?#]|$)/;
+
+/**
  * Checks if a url string starts with an `http[s]://` protocol, and adds `https://` if it does not. If the url
  * begins with `localhost` or `host.docker.internal`, the `http` protocol is used.
  *
@@ -18,15 +28,13 @@ import { IDialogContext } from '../contexts/dialogContext';
  * @return {*}  {string} the url which is guaranteed to have an `http(s)://` protocol.
  */
 export const ensureProtocol = (url: string, protocol: 'http://' | 'https://' = 'https://'): string => {
-  if (url.startsWith('localhost') || url.startsWith('host.docker.internal')) {
+  const isLocalUrl = LOCAL_URL_REGEX.test(url);
+
+  if (isLocalUrl && !url.startsWith('http://')) {
     return `${'http://'}${url}`;
   }
 
-  if (
-    url.startsWith('https://') ||
-    url.startsWith('http://localhost') ||
-    url.startsWith('http://host.docker.internal')
-  ) {
+  if (url.startsWith('https://') || isLocalUrl) {
     return url;
   }
 

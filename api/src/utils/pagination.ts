@@ -22,9 +22,10 @@ import { ApiPaginationOptions, ApiPaginationResults } from '../zod-schema/pagina
 export const makePaginationOptionsFromRequest = (request: Request): Partial<ApiPaginationOptions> => {
   const page: number | undefined = request.query.page ? Number(request.query.page) : undefined;
   const limit: number | undefined = request.query.limit ? Number(request.query.limit) : undefined;
-  const order: 'asc' | 'desc' | undefined = request.query.order
-    ? (String(request.query.order) as 'asc' | 'desc')
-    : undefined;
+  // Any other direction is dropped rather than cast, so the value matches its declared type and
+  // never reaches a query as an unrecognized SQL keyword
+  const order: 'asc' | 'desc' | undefined =
+    request.query.order === 'asc' || request.query.order === 'desc' ? request.query.order : undefined;
   const sort: string | undefined = request.query.sort ? String(request.query.sort) : undefined;
 
   return {
