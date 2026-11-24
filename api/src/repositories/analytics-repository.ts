@@ -199,19 +199,15 @@ export class AnalyticsRepository extends BaseRepository {
     // Measurement properties are objects of {'<critterbase_taxon_measurement_id>' : '<value>', '<critterbase_taxon_measurement_id>' : '<value>'}
     queryBuilder.select(
       knex.raw(
-        `jsonb_build_object(${groupByQuantitativeMeasurements
-          .map((column) => `'${column}', ??`)
-          .join(', ')}) as quant_measurements`,
-        groupByQuantitativeMeasurements
+        `jsonb_build_object(${groupByQuantitativeMeasurements.map(() => '?, ??').join(', ')}) as quant_measurements`,
+        groupByQuantitativeMeasurements.flatMap((column) => [column, column])
       )
     );
 
     queryBuilder.select(
       knex.raw(
-        `jsonb_build_object(${groupByQualitativeMeasurements
-          .map((column) => `'${column}', ??`)
-          .join(', ')}) as qual_measurements`,
-        groupByQualitativeMeasurements
+        `jsonb_build_object(${groupByQualitativeMeasurements.map(() => '?, ??').join(', ')}) as qual_measurements`,
+        groupByQualitativeMeasurements.flatMap((column) => [column, column])
       )
     );
 

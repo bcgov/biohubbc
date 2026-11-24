@@ -9,6 +9,7 @@ import { getDBConnection } from '../database/db';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { AdministrativeActivityService } from '../services/administrative-activity-service';
 import { getLogger } from '../utils/logger';
+import { getQueryParamArrayFromRequest } from '../utils/request';
 
 const defaultLog = getLogger('paths/administrative-activities');
 
@@ -153,12 +154,16 @@ export function getAdministrativeActivities(): RequestHandler {
     const connection = getDBConnection(req.keycloak_token);
 
     try {
+      const requestedTypes = getQueryParamArrayFromRequest(req, 'type');
+      const requestedStatusTypes = getQueryParamArrayFromRequest(req, 'status');
+
       // Only search for specified types if provided, otherwise search all types
-      const administrativeActivityTypes = (req.query.type as string[]) || getAllAdministrativeActivityTypes();
+      const administrativeActivityTypes = requestedTypes.length ? requestedTypes : getAllAdministrativeActivityTypes();
 
       // Only search for specified status types if provided, otherwise search all status types
-      const administrativeActivityStatusTypes: string[] =
-        (req.query.status as string[]) || getAllAdministrativeActivityStatusTypes();
+      const administrativeActivityStatusTypes = requestedStatusTypes.length
+        ? requestedStatusTypes
+        : getAllAdministrativeActivityStatusTypes();
 
       await connection.open();
 

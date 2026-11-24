@@ -90,37 +90,19 @@ export class AdministrativeActivityRepository extends BaseRepository {
     `;
 
     if (administrativeActivityTypeNames?.length) {
+      // The whole list is bound as one array parameter, so the statement holds a single
+      // placeholder regardless of how many names were requested
       sqlStatement.append(SQL`
         AND
-          aat.name IN (
+          aat.name = ANY(${administrativeActivityTypeNames})
       `);
-
-      // Add first element
-      sqlStatement.append(SQL`${administrativeActivityTypeNames[0]}`);
-
-      for (let idx = 1; idx < administrativeActivityTypeNames.length; idx++) {
-        // Add subsequent elements, which get a comma prefix
-        sqlStatement.append(SQL`, ${administrativeActivityTypeNames[idx]}`);
-      }
-
-      sqlStatement.append(SQL`)`);
     }
 
     if (administrativeActivityStatusTypes?.length) {
       sqlStatement.append(SQL`
         AND
-          aast.name IN (
+          aast.name = ANY(${administrativeActivityStatusTypes})
       `);
-
-      // Add first element
-      sqlStatement.append(SQL`${administrativeActivityStatusTypes[0]}`);
-
-      for (let idx = 1; idx < administrativeActivityStatusTypes.length; idx++) {
-        // Add subsequent elements, which get a comma prefix
-        sqlStatement.append(SQL`, ${administrativeActivityStatusTypes[idx]}`);
-      }
-
-      sqlStatement.append(SQL`)`);
     }
 
     sqlStatement.append(`

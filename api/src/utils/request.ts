@@ -41,6 +41,30 @@ export const getSystemUserFromRequest = (req: Request): SystemUserWithRoles => {
 };
 
 /**
+ * Get a query parameter from the request as an array of strings.
+ *
+ * Express parses a query parameter that appears once as a string and one that appears more than
+ * once as an array, so a parameter the OpenAPI spec declares as an array arrives as either. A
+ * caller that indexes or iterates the raw value walks the characters of the string form, so
+ * callers that treat the parameter as a list must normalize it first. Values that are neither a
+ * string nor an array of strings, which a nested query parameter such as `?name[key]=value`
+ * produces, are dropped.
+ *
+ * @param {Request} req - Express Request
+ * @param {string} name - Name of the query parameter
+ * @returns {string[]} The query parameter values, empty if the parameter is absent
+ */
+export const getQueryParamArrayFromRequest = (req: Request, name: string): string[] => {
+  const value = req.query?.[name];
+
+  if (value === undefined) {
+    return [];
+  }
+
+  return (Array.isArray(value) ? value : [value]).filter((item): item is string => typeof item === 'string');
+};
+
+/**
  * Get file by index from request or throws error if missing. Defaults to first file.
  *
  * @see schemas/file.ts

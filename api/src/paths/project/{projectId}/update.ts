@@ -9,6 +9,7 @@ import { projectAndSystemUserSchema } from '../../../openapi/schemas/user';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
+import { getQueryParamArrayFromRequest } from '../../../utils/request';
 
 const defaultLog = getLogger('paths/project/{projectId}/update');
 
@@ -190,7 +191,9 @@ export function getProjectForUpdate(): RequestHandler {
     try {
       const projectId = Number(req.params?.projectId);
 
-      const entities: string[] = (req.query?.entity as string[]) || getAllEntities();
+      const requestedEntities = getQueryParamArrayFromRequest(req, 'entity');
+
+      const entities: string[] = requestedEntities.length ? requestedEntities : getAllEntities();
 
       if (!projectId) {
         throw new HTTP400('Missing required path parameter: projectId');

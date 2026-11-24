@@ -608,7 +608,7 @@ export class CritterbaseService {
    * @returns {Promise<any>} - The response data containing family information.
    */
   async getFamilyById(family_id: string): Promise<any> {
-    const response = await this.axiosInstance.get(`/family/${family_id}`);
+    const response = await this.axiosInstance.get(`/family/${encodeURIComponent(family_id)}`);
 
     return response.data;
   }
@@ -620,7 +620,7 @@ export class CritterbaseService {
    * @returns {Promise<any>} - The response data containing critter information.
    */
   async getCritter(critter_id: string): Promise<any> {
-    const response = await this.axiosInstance.get(`/critters/${critter_id}`, {
+    const response = await this.axiosInstance.get(`/critters/${encodeURIComponent(critter_id)}`, {
       params: { format: CritterbaseFormatEnum.DETAILED }
     });
 
@@ -628,7 +628,7 @@ export class CritterbaseService {
   }
 
   async getCaptureById(capture_id: string): Promise<ICapture> {
-    const response = await this.axiosInstance.get(`/captures/${capture_id}`, {
+    const response = await this.axiosInstance.get(`/captures/${encodeURIComponent(capture_id)}`, {
       params: { format: CritterbaseFormatEnum.DETAILED }
     });
 
@@ -825,7 +825,9 @@ export class CritterbaseService {
    */
   async getMortalityMarkingsByMultipleCritterIds(critterIds: string[]): Promise<Map<string, IMortalityMarkingsData[]>> {
     // Create an array of promises for each API call
-    const promises = critterIds.map((critterId) => this.axiosInstance.get(`/markings/critter/${critterId}`));
+    const promises = critterIds.map((critterId) =>
+      this.axiosInstance.get(`/markings/critter/${encodeURIComponent(critterId)}`)
+    );
     const responses = await Promise.all(promises);
 
     const mortalityMarkingsDataMap = new Map<string, IMortalityMarkingsData[]>();
@@ -865,7 +867,9 @@ export class CritterbaseService {
    */
   async getMortalityLocationsByMultipleCritterIds(critterIds: string[]): Promise<Map<string, IMortalityLocationsData>> {
     // Create an array of promises for each mortality API call
-    const promises = critterIds.map((critterId) => this.axiosInstance.get(`/mortality/critter/${critterId}`));
+    const promises = critterIds.map((critterId) =>
+      this.axiosInstance.get(`/mortality/critter/${encodeURIComponent(critterId)}`)
+    );
     const responses = await Promise.all(promises);
 
     const mortalityLocationsDataMap = new Map<string, IMortalityLocationsData>();
@@ -899,7 +903,7 @@ export class CritterbaseService {
    * @memberof CritterbaseService
    */
   async getDetailedMortalityById(mortalityId: string): Promise<any> {
-    const { data } = await this.axiosInstance.get(`/mortality/${mortalityId}`);
+    const { data } = await this.axiosInstance.get(`/mortality/${encodeURIComponent(mortalityId)}`);
     return data;
   }
 }

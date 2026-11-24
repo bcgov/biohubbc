@@ -74,7 +74,10 @@ export class ObservationRepository extends BaseRepository {
       if (pagination.sort && pagination.order) {
         if (pagination.sort === 'subcount') {
           const knex = getKnex();
-          query.orderByRaw(knex.raw(`(subcount->>?)::numeric ${pagination.order}`, [pagination.sort]));
+          // A sort direction is a SQL keyword rather than a value, so it cannot be bound as a
+          // parameter and is narrowed to one of the two literals instead
+          const direction = pagination.order === 'desc' ? 'DESC' : 'ASC';
+          query.orderByRaw(knex.raw(`(subcount->>?)::numeric ${direction}`, [pagination.sort]));
         } else {
           query.orderBy(pagination.sort, pagination.order);
         }
@@ -180,7 +183,10 @@ export class ObservationRepository extends BaseRepository {
       if (pagination.sort && pagination.order) {
         if (pagination.sort === 'subcount') {
           const knex = getKnex();
-          query.orderByRaw(knex.raw(`(subcount->>?)::numeric ${pagination.order}`, [pagination.sort]));
+          // A sort direction is a SQL keyword rather than a value, so it cannot be bound as a
+          // parameter and is narrowed to one of the two literals instead
+          const direction = pagination.order === 'desc' ? 'DESC' : 'ASC';
+          query.orderByRaw(knex.raw(`(subcount->>?)::numeric ${direction}`, [pagination.sort]));
         } else {
           query.orderBy(pagination.sort, pagination.order);
         }
