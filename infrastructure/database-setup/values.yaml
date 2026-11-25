@@ -20,11 +20,11 @@ app:
   database:
     # useCrunchy: true = Crunchy Postgres (DEV/TEST/PROD). Set to false for PR environments (legacy dbHost secret).
     useCrunchy: true
-    host: "" # e.g. "biohubbc-db-dev-primary" (use -primary not pgbouncer; also used for migrations unless migrationHost set)
+    host: "" # e.g. "biohubbc-db-dev-pg18-primary" (use -primary not pgbouncer; also used for migrations unless migrationHost set)
     migrationHost: "" # optional; defaults to host when empty (set only if migration target differs from app host)
-    adminSecretName: "" # e.g. "biohubbc-db-dev-pguser-postgres"
-    appSecretName: "" # e.g. "biohubbc-db-dev-pguser-biohub-api"
-    dbNameSecretName: "" # e.g. "biohubbc-db-dev-pguser-biohubbc-db-dev"
+    adminSecretName: "" # e.g. "biohubbc-db-dev-pg18-pguser-postgres"
+    appSecretName: "" # e.g. "biohubbc-db-dev-pg18-pguser-biohub-api"
+    dbNameSecretName: "" # e.g. "biohubbc-db-dev-pg18-pguser-biohubbc-db-dev-pg18"
     # Secret keys default in templates: user/password/dbname (override in parent values if needed)
     # PGO root CA for TLS verification (same secret name in all envs)
     caSecretName: "pgo-root-cacert"

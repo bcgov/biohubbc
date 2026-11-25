@@ -76,10 +76,10 @@ biohubbc-db-setup:
 
     # Database
     database:
-      host: "biohubbc-db-prod-primary"
-      adminSecretName: "biohubbc-db-prod-pguser-postgres"
-      appSecretName: "biohubbc-db-prod-pguser-biohub-api"
-      dbNameSecretName: "biohubbc-db-prod-pguser-biohubbc-db-prod"
+      host: "biohubbc-db-prod-pg18-primary"
+      adminSecretName: "biohubbc-db-prod-pg18-pguser-postgres"
+      appSecretName: "biohubbc-db-prod-pg18-pguser-biohub-api"
+      dbNameSecretName: "biohubbc-db-prod-pg18-pguser-biohubbc-db-prod-pg18"
 
 # Values passed to biohubbc-clamav subchart
 biohubbc-clamav:
@@ -130,11 +130,11 @@ biohubbc-api:
 
     # Database
     database:
-      host: "biohubbc-db-prod-primary"
+      host: "biohubbc-db-prod-pg18-primary"
       port: 5432
-      appSecretName: "biohubbc-db-prod-pguser-biohub-api"
-      dbNameSecretName: "biohubbc-db-prod-pguser-biohubbc-db-prod"
-      adminSecretName: "biohubbc-db-prod-pguser-postgres"
+      appSecretName: "biohubbc-db-prod-pg18-pguser-biohub-api"
+      dbNameSecretName: "biohubbc-db-prod-pg18-pguser-biohubbc-db-prod-pg18"
+      adminSecretName: "biohubbc-db-prod-pg18-pguser-postgres"
 
     # Keycloak
     keycloak:
