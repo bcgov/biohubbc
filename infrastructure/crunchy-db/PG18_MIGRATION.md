@@ -120,7 +120,8 @@ primary() { oc get pod -l postgres-operator.crunchydata.com/cluster=$1,postgres-
    oc exec $(primary $OLD) -c database -- psql -d $OLD -Atc "SELECT usename, count(*) FROM pg_stat_activity WHERE datname = current_database() GROUP BY 1"
    ```
    Only your own `postgres` session should remain.
-2. **Run the migration.** Repeat step A6 with `--set migration.enabled=true`, then follow the job:
+2. **Run the migration.** Repeat step A6 with `--set migration.enabled=true --timeout 35m`, then follow the job.
+   Helm waits for the migration Job, which may run for up to 30 minutes, so the timeout has to outlast it:
    ```bash
    oc logs -f job/biohubbc-db-migration
    oc get job biohubbc-db-migration -o jsonpath='{.status.succeeded}'   # 1
@@ -139,7 +140,10 @@ primary() { oc get pod -l postgres-operator.crunchydata.com/cluster=$1,postgres-
      ```sql
      SELECT schemaname, tablename FROM pg_tables
      WHERE schemaname IN ('biohub', 'public')
-       AND NOT has_table_privilege('biohub_api', format('%I.%I', schemaname, tablename), 'SELECT,INSERT,UPDATE,DELETE');
+       AND NOT (has_table_privilege('biohub_api', format('%I.%I', schemaname, tablename), 'SELECT')
+            AND has_table_privilege('biohub_api', format('%I.%I', schemaname, tablename), 'INSERT')
+            AND has_table_privilege('biohub_api', format('%I.%I', schemaname, tablename), 'UPDATE')
+            AND has_table_privilege('biohub_api', format('%I.%I', schemaname, tablename), 'DELETE'));
      ```
 
 ## C. Switch the apps

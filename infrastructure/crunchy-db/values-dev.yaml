@@ -4,8 +4,7 @@
 fullnameOverride: biohubbc-db-dev-pg18
 
 instances:
-  # Sized from the database's size on disk (PG18_MIGRATION.md, step A1); volumes grow online but never
-  # shrink.
+  # Sized from the database's size on disk, with room to grow. Volumes grow online but never shrink.
   replicas: 1
   dataVolumeClaimSpec:
     storage: 5Gi

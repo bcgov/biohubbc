@@ -4,9 +4,8 @@
 fullnameOverride: biohubbc-db-prod-pg18
 
 instances:
-  # Sized from the database's size on disk (PG18_MIGRATION.md, step A1). Two instances fit the namespace's
-  # storage quota beside the Postgres 17 cluster this replaces once that cluster is down to one instance
-  # (step A5). Volumes grow online but never shrink.
+  # Sized from the database's size on disk, with room to grow; every volume in the namespace counts against
+  # its storage quota. Volumes grow online but never shrink.
   replicas: 2
   dataVolumeClaimSpec:
     storage: 20Gi

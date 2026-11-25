@@ -22,7 +22,7 @@ app:
   postgresUserApi: "" # Username for PostgreSQL user that will be used for accessing the database.
   postgresUserApiPassword: "" # Password for the PostgreSQL connection user.
   postgresDb: "" # Name of the PostgreSQL database accessed.
-  pgData: /var/lib/postgresql/data/18 # Path to PostgreSQL data directory; named for the major version, so a PR environment on an older major starts an empty directory and is re-seeded
+  pgData: /var/lib/postgresql/data/18 # Path to PostgreSQL data directory, named for the major version: a PR environment created on an older major starts an empty directory and is re-seeded. The older directory stays on the volume, so an environment whose volume cannot hold both is recreated by deleting its database PVC.
 
 # Openshift Resources
 replicas: 1
