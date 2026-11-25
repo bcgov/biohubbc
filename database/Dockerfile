@@ -2,7 +2,7 @@
 # This DockerFile is used for Openshift deployments only.
 # ########################################################################################################
 
-ARG POSTGRES_VERSION=17-bookworm
+ARG POSTGRES_VERSION=18-bookworm
 
 FROM postgres:$POSTGRES_VERSION
 

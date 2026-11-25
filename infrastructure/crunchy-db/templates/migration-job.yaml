@@ -25,7 +25,7 @@ spec:
       initContainers:
         # Wait for the old database to be reachable
         - name: wait-for-old-db
-          image: postgres:17-alpine
+          image: postgres:18-alpine
           command: ['sh', '-c']
           args:
             - |
@@ -44,7 +44,7 @@ spec:
         # Wait for the new Crunchy DB to be ready (host from postgres secret = primary)
         # Secret name uses cluster name (fullnameOverride), not Helm release name.
         - name: wait-for-new-db
-          image: postgres:17-alpine
+          image: postgres:18-alpine
           command: ['sh', '-c']
           args:
             - |
@@ -67,7 +67,7 @@ spec:
                   key: {{ .Values.migration.newDb.adminUserKey }}
       containers:
         - name: migrate
-          image: postgres:17-alpine
+          image: postgres:18-alpine
           command: ['sh', '-c']
           args:
             - |
@@ -78,9 +78,9 @@ spec:
               echo "Target: $NEW_DB_HOST / $NEW_DB_NAME"
 
               # biohub_api password comes from a secret you create manually (see values migration.newDb.appUserSecretName).
-              # Example: kubectl create secret generic biohubbc-db-dev-pguser-biohub-api --from-literal=user=biohub_api --from-literal=password='YOUR_PASSWORD' -n <namespace>
+              # Example: kubectl create secret generic biohubbc-db-dev-pg18-pguser-biohub-api --from-literal=user=biohub_api --from-literal=password='YOUR_PASSWORD' -n <namespace>
               if [ -z "$NEW_DB_APP_PASS" ]; then
-                echo "ERROR: NEW_DB_APP_PASS is not set. Create the app user secret before running migration (e.g. biohubbc-db-dev-pguser-biohub-api with key password)."
+                echo "ERROR: NEW_DB_APP_PASS is not set. Create the app user secret before running migration (e.g. biohubbc-db-dev-pg18-pguser-biohub-api with key password)."
                 exit 1
               fi
 
@@ -171,6 +171,20 @@ spec:
                 GRANT USAGE, SELECT ON ALL SEQUENCES IN SCHEMA biohub_dapi_v1 TO biohub_api;
               " || true
               echo "biohub_api search_path and ACLs set."
+
+              echo "--- Re-establish default privileges for biohub_api (dump used --no-acl, which drops them) ---"
+              # Tables, functions, types and sequences that later migrations create are owned by postgres, and
+              # reach biohub_api only through these defaults; they match the grants the release migration made.
+              psql -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN -d $NEW_DB_NAME -v ON_ERROR_STOP=1 -c "
+                ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA biohub, public GRANT SELECT, INSERT, UPDATE, DELETE ON TABLES TO biohub_api;
+                ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA biohub, public GRANT EXECUTE ON FUNCTIONS TO biohub_api;
+                ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA biohub, public GRANT USAGE ON TYPES TO biohub_api;
+                ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA biohub, public GRANT USAGE, SELECT ON SEQUENCES TO biohub_api;
+              "
+              psql -h "$NEW_DB_HOST" -p 5432 -U $NEW_DB_ADMIN -d $NEW_DB_NAME -v ON_ERROR_STOP=0 -c "
+                ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA biohub_dapi_v1 GRANT ALL ON TABLES TO biohub_api;
+              " || true
+              echo "biohub_api default privileges set."
 
               echo "=== Migration complete ==="
           env:

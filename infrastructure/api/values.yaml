@@ -42,10 +42,10 @@ app:
     port: 5432 # Database port
     # useCrunchy: true = Crunchy Postgres (DEV/TEST/PROD). Set to false for PR environments (legacy dbHost secret).
     useCrunchy: true
-    host: "" # e.g. "<release>-primary" (biohubbc-db-dev-primary for DEV); use primary not pgbouncer (biohub_api not in PgBouncer config)
-    appSecretName: "" # e.g. "<release>-pguser-biohub-api" (biohubbc-db-dev-pguser-biohub-api for DEV)
-    dbNameSecretName: "" # e.g. "<release>-pguser-<cluster-name>" (biohubbc-db-dev-pguser-biohubbc-db-dev for DEV)
-    adminSecretName: "" # e.g. "<release>-pguser-postgres" (biohubbc-db-dev-pguser-postgres for DEV)
+    host: "" # e.g. "<release>-primary" (biohubbc-db-dev-pg18-primary for DEV); use primary not pgbouncer (biohub_api not in PgBouncer config)
+    appSecretName: "" # e.g. "<release>-pguser-biohub-api" (biohubbc-db-dev-pg18-pguser-biohub-api for DEV)
+    dbNameSecretName: "" # e.g. "<release>-pguser-<cluster-name>" (biohubbc-db-dev-pg18-pguser-biohubbc-db-dev-pg18 for DEV)
+    adminSecretName: "" # e.g. "<release>-pguser-postgres" (biohubbc-db-dev-pg18-pguser-postgres for DEV)
     # Secret keys default in templates: user/password/dbname (override in parent values if needed)
     # PGO root CA for TLS verification (same secret name in all envs)
     caSecretName: "pgo-root-cacert"

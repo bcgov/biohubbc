@@ -47,7 +47,7 @@ database:
     postgresUserApi: ""
     postgresUserApiPassword: ""
     postgresDb: ""
-    pgData: /var/lib/postgresql/data/17
+    pgData: /var/lib/postgresql/data/18
   # Add any database-specific overrides here
 
 database-setup:
